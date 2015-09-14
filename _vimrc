@@ -1,8 +1,7 @@
-" vundle
 set nocompatible
-
 let mapleader=","
 
+" vundle
 filetype off " required!
 set rtp+=D:/tools/Vim/bundle/Vundle.vim
 
@@ -32,7 +31,7 @@ Plugin 'Mizuchi/STL-Syntax'
 "Plugin 'fholgado/minibufexpl.vim'
 
 Plugin 'moll/vim-bbye'
-    :nnoremap <Leader>q :Bdelete<CR>
+    :nnoremap <Leader>bd :Bdelete<CR>
 
 Plugin 'Raimondi/delimitMate'
 	let delimitMate_autoclose = 1
@@ -98,6 +97,9 @@ Plugin 'bling/vim-airline'
 	let g:airline#extensions#tabline#enabled = 1
 	let g:airline#extensions#tabline#left_sep = ' '
 	let g:airline#extensions#tabline#left_alt_sep = '|'
+    let g:airline#extensions#tabline#buffer_nr_show = 1
+    let g:airline#extensions#buffline#enabled = 1
+    let g:airline#extensions#bufferline#overwrite_variables = 1
 
 Plugin 'scrooloose/nerdtree'
     nmap <leader>nt :NERDTree<cr>
@@ -108,6 +110,7 @@ Plugin 'scrooloose/nerdtree'
 	let NERDTreeAutoDeleteBuffer=1
 	let NERDTreeShowBookmarks=1
     let NERDTreeShowLineNumbers=1
+    let NERDTreeShowHidden=1
 
 Plugin 'scrooloose/nerdcommenter'
     let NERD_c_alt_style=1
@@ -165,10 +168,12 @@ onoremap <C-A> <C-C>gggH<C-O>G
 snoremap <C-A> <C-C>gggH<C-O>G
 xnoremap <C-A> <C-C>ggV
 
-set wildmenu
-set guioptions -=T
-set guioptions -=m
+if has('gui_running')
+    set guioptions -=T
+    set guioptions -=m
+endif
 set guifont=Consolas:h11
+set wildmenu
 set mouse=a
 set backspace=indent,eol,start whichwrap+=<,>,[,]
 autocmd GUIEnter * set vb t_vb=       " 关闭警告提示
@@ -207,8 +212,8 @@ set noswapfile
 set nobackup
 set nowritebackup
 "set encoding=utf-8
-"set splitright
-"set splitbelow
+set splitright
+set splitbelow
 
 set incsearch
 set hlsearch
@@ -227,6 +232,8 @@ set nowrap
 set laststatus=2
 "set cursorline
 "set cursorcolumn
+set virtualedit=onemore     "onemore all
+
 autocmd! bufwritepost _vimrc source % 
 
 set foldmethod=syntax

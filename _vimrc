@@ -30,7 +30,9 @@ Plugin 'jonathanfilip/vim-lucius'
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'Mizuchi/STL-Syntax'
 "Plugin 'fholgado/minibufexpl.vim'
+
 Plugin 'moll/vim-bbye'
+    :nnoremap <Leader>q :Bdelete<CR>
 
 Plugin 'Raimondi/delimitMate'
 	let delimitMate_autoclose = 1
@@ -136,7 +138,8 @@ Plugin 'Lokaltog/vim-easymotion'
 Plugin 'dkprice/vim-easygrep'	
 
 call vundle#end()            " required
-filetype plugin indent on    " required
+filetype plugin on    " required
+"filetype indent on
 syntax on
 
 "colorscheme lucius
@@ -204,6 +207,8 @@ set noswapfile
 set nobackup
 set nowritebackup
 "set encoding=utf-8
+"set splitright
+"set splitbelow
 
 set incsearch
 set hlsearch

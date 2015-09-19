@@ -1,6 +1,130 @@
 set nocompatible
 let mapleader=","
 
+let s:useYCM=0
+
+if has('gui_running')
+    let s:useGUI=1
+else
+    let s:useGUI=0
+endif
+
+" windows like
+behave mswin        "set 'selection', 'selectmode', 'mousemodel' and 'keymodel' for MS-Windows
+vnoremap <C-X>      "+x
+vnoremap <C-C>      "+y
+map      <C-V>      "+gP
+cmap     <C-V>      <C-R>+
+" Use CTRL-G u to have CTRL-Z only undo the paste.
+exe 'inoremap <script> <C-V> <C-G>u' . paste#paste_cmd['i']
+exe 'vnoremap <script> <C-V> ' . paste#paste_cmd['v']
+noremap  <C-Q> <C-V>
+noremap  <C-S> :update<CR>
+vnoremap <C-S> <C-C>:update<CR>
+inoremap <C-S> <C-O>:update<CR>
+noremap  <C-A> gggH<C-O>G
+inoremap <C-A> <C-O>gg<C-O>gH<C-O>G
+cnoremap <C-A> <C-C>gggH<C-O>G
+onoremap <C-A> <C-C>gggH<C-O>G
+snoremap <C-A> <C-C>gggH<C-O>G
+xnoremap <C-A> <C-C>ggV
+
+if s:useGUI > 0
+    set guioptions -=T
+    set guioptions -=m
+endif
+set guifont=Consolas:h11
+set wildmenu
+set mouse=a
+set backspace=indent,eol,start whichwrap+=<,>,[,]
+autocmd GUIEnter * set vb t_vb=       "close beep
+set ttyfast     " when will this cause problems?
+autocmd VimEnter * set shellredir=>
+set iskeyword -=-
+set iskeyword -=.
+set iskeyword -=#
+
+"set columns=135
+"set lines=50
+"winpos 620 45
+au GUIEnter * simalt ~x
+
+" Easier moving in tabs and windows
+map <C-H> <C-W>h
+map <C-J> <C-W>j
+map <C-K> <C-W>k
+map <C-L> <C-W>l
+
+" Wrapped lines goes down/up to next row, rather than next line in file
+map j gj
+map k gk
+
+" Visual shifting (does not exit Visual mode)
+vmap < <gv
+vmap > >gv
+
+"delete space
+nnoremap <leader>ds :%s/\s\+$//<CR>     
+
+"set langmenu=zh_CN.UTF-8
+"set helplang=cn
+"set encoding=utf-8
+set fileencoding=utf-8
+set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
+set fileformat=dos
+set ffs=dos,unix,mac
+
+set scrolloff=3
+set hidden
+"set noswapfile
+set nobackup
+set nowritebackup
+set splitright
+set splitbelow
+
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+set noautochdir
+set path=".,../inc,../src,"
+
+set expandtab
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set autoindent
+"set smartindent
+"inoremap # X#
+
+set number
+set ruler
+set wrap
+set laststatus=2
+"set cursorline
+"set cursorcolumn
+set virtualedit=onemore     "onemore all
+
+autocmd! bufwritepost _vimrc source %
+
+set foldmethod=syntax
+set nofoldenable
+
+nnoremap <leader>ee :e $VIM/_vimrc<CR>
+
+"autocomplete
+set completeopt=longest,menu
+autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+imap <expr> <CR> pumvisible() ? "\<c-y>" : "<Plug>delimitMateCR"
+inoremap <expr> <TAB>      pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr> <S-TAB>    pumvisible() ? "\<C-p>" : "\<TAB>"
+inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
+inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
+inoremap <expr> <PageDown> pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<PageDown>"
+inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
+
+
+
 " vundle
 filetype off " required!
 set rtp+=D:/tools/Vim/bundle/Vundle.vim
@@ -9,18 +133,20 @@ set rtp+=D:/tools/Vim/bundle/FencView.vim
     let g:fencview_autodetect = 1  
     let g:fencview_checklines = 10 
 
-"set rtp+=D:/tools/Vim/bundle/ycm
+if s:useYCM > 0
+set rtp+=D:/tools/Vim/bundle/ycm
     let g:ycm_server_use_vim_stdout = 1
-    "let g:ycm_server_log_level = 'debug'
+    let g:ycm_server_log_level = 'debug'
     let g:ycm_global_ycm_extra_conf = 'd:/tools/Vim/.ycm_extra_conf.py'   "set default .ycm_extra_conf.py
     let g:ycm_confirm_extra_conf=0
-    nnoremap <Leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>   "jump definition
+    nnoremap <Leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR> 
     let g:ycm_collect_identifiers_from_tag_files = 1                      "use tag files
     let g:ycm_cache_omnifunc=0                                            " disable cache
     let g:ycm_seed_identifiers_with_syntax=1
     let g:ycm_complete_in_comments = 1
     let g:ycm_complete_in_strings = 1
     let g:ycm_collect_identifiers_from_comments_and_strings = 0
+endif
 
 call vundle#begin('D:/tools/Vim/bundle/')
 
@@ -32,8 +158,6 @@ Plugin 'adah1972/tellenc'
 Plugin 'Mizuchi/STL-Syntax'
 "Plugin 'fholgado/minibufexpl.vim'
 
-Plugin 'FencView.vim'
-
 Plugin 'moll/vim-bbye'
     :nnoremap <Leader>bd :Bdelete<CR>
 
@@ -44,11 +168,14 @@ Plugin 'Raimondi/delimitMate'
 "Plugin 'SirVer/ultisnips'
 
 Plugin 'kien/ctrlp.vim'
+  let g:ctrlp_working_path_mode = 'a'   "ra c
+
+"Plugin 'szw/vim-ctrlspace'
 
 Plugin 'kshenoy/vim-signature'
 
 Plugin 'majutsushi/tagbar'
-    let g:tagbar_ctags_bin = 'D:/tools/ctags/ctags.exe'
+    let g:tagbar_ctags_bin = $VIM . '/ctags.exe'
     let tagbar_left=1
     nnoremap <Leader>tt :TagbarToggle<CR>
     let tagbar_width=32
@@ -69,6 +196,7 @@ Plugin 'majutsushi/tagbar'
     let g:syntastic_check_on_wq = 0
     let g:syntastic_enable_signs=1
 
+if s:useYCM == 0
 Plugin 'Shougo/neocomplete.vim'
     " Disable AutoComplPop.
     let g:acp_enableAtStartup = 0
@@ -90,8 +218,11 @@ Plugin 'Shougo/neocomplete.vim'
 
 Plugin 'Rip-Rip/clang_complete'
     let g:clang_use_library=1
-    let g:clang_library_path="D:/tools/Vim"
+    let g:clang_library_path=$VIM
     let g:clang_auto_select=1
+    let g:clang_complete_copen = 1
+    "let g:clang_complete_macros=1
+endif
 
 Plugin 'a.vim'
     map <leader>h <ESC>:A<CR>
@@ -106,7 +237,7 @@ Plugin 'bling/vim-airline'
     let g:airline#extensions#tabline#fnamemod = ':p:.'
 
 Plugin 'scrooloose/nerdtree'
-    nmap <leader>nt :NERDTree<cr>
+    nmap <leader>nt :NERDTreeToggle<cr>
     let NERDTreeWinSize=32
     let NERDTreeWinPos="right"
     let NERDTreeShowHidden=1
@@ -150,115 +281,3 @@ filetype plugin on    " required
 syntax on
 
 "colorscheme lucius
-
-
-" windows like
-behave mswin        "set 'selection', 'selectmode', 'mousemodel' and 'keymodel' for MS-Windows
-vnoremap <C-X>      "+x
-vnoremap <C-C>      "+y
-map      <C-V>      "+gP
-cmap     <C-V>      <C-R>+
-" Use CTRL-G u to have CTRL-Z only undo the paste.
-exe 'inoremap <script> <C-V> <C-G>u' . paste#paste_cmd['i']
-exe 'vnoremap <script> <C-V> ' . paste#paste_cmd['v']
-noremap  <C-Q> <C-V>
-noremap  <C-S> :update<CR>
-vnoremap <C-S> <C-C>:update<CR>
-inoremap <C-S> <C-O>:update<CR>
-noremap  <C-A> gggH<C-O>G
-inoremap <C-A> <C-O>gg<C-O>gH<C-O>G
-cnoremap <C-A> <C-C>gggH<C-O>G
-onoremap <C-A> <C-C>gggH<C-O>G
-snoremap <C-A> <C-C>gggH<C-O>G
-xnoremap <C-A> <C-C>ggV
-
-if has('gui_running')
-    set guioptions -=T
-    "set guioptions -=m
-endif
-set guifont=Consolas:h11
-set wildmenu
-set mouse=a
-set backspace=indent,eol,start whichwrap+=<,>,[,]
-autocmd GUIEnter * set vb t_vb=       "close beep
-set ttyfast     " when will this cause problems?
-autocmd VimEnter * set shellredir=>
-set iskeyword +=-
-set iskeyword -=.
-set iskeyword -=#
-
-"set columns=135
-"set lines=50
-"winpos 620 45
-au GUIEnter * simalt ~x
-
-" Easier moving in tabs and windows
-map <C-H> <C-W>h
-map <C-J> <C-W>j
-map <C-K> <C-W>k
-map <C-L> <C-W>l
-
-" Wrapped lines goes down/up to next row, rather than next line in file
-map j gj
-map k gk
-
-" Visual shifting (does not exit Visual mode)
-vmap < <gv
-vmap > >gv
-
-nnoremap <leader>ds :%s/\s\+$//     "delete space
-
-"set langmenu=zh_CN.UTF-8
-"set helplang=cn
-"set encoding=utf-8
-set fileencoding=utf-8
-set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
-set fileformat=dos
-set ffs=dos,unix,mac
-
-set scrolloff=3
-set autoindent
-set hidden
-set noswapfile
-set nobackup
-set nowritebackup
-set splitright
-set splitbelow
-
-set incsearch
-set hlsearch
-set ignorecase
-set smartcase
-"set autochdir
-
-set expandtab
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
-
-set number
-set ruler
-set nowrap
-set laststatus=2
-"set cursorline
-"set cursorcolumn
-set virtualedit=onemore     "onemore all
-
-autocmd! bufwritepost _vimrc source %
-
-set foldmethod=syntax
-set nofoldenable
-
-nnoremap <leader>ee :e $VIM/_vimrc<CR>
-
-"autocomplete
-set completeopt=longest,menu
-autocmd InsertLeave * if pumvisible() == 0|pclose|endif
-imap <expr> <CR> pumvisible() ? "\<c-y>" : "<Plug>delimitMateCR"
-inoremap <expr> <TAB>      pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <expr> <S-TAB>    pumvisible() ? "\<C-p>" : "\<TAB>"
-inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
-inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
-inoremap <expr> <PageDown> pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<PageDown>"
-inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
-

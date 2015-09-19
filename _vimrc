@@ -36,13 +36,9 @@ endif
 set guifont=Consolas:h11
 set wildmenu
 set mouse=a
-set backspace=indent,eol,start whichwrap+=<,>,[,]
 autocmd GUIEnter * set vb t_vb=       "close beep
 set ttyfast     " when will this cause problems?
 autocmd VimEnter * set shellredir=>
-set iskeyword -=-
-set iskeyword -=.
-set iskeyword -=#
 
 "set columns=135
 "set lines=50
@@ -64,7 +60,7 @@ vmap < <gv
 vmap > >gv
 
 "delete space
-nnoremap <leader>ds :%s/\s\+$//<CR>     
+nnoremap <leader>ds :%s/\s\+$//<CR>
 
 "set langmenu=zh_CN.UTF-8
 "set helplang=cn
@@ -84,38 +80,50 @@ set splitbelow
 
 set incsearch
 set hlsearch
+set wrapscan    "search loop
 set ignorecase
 set smartcase
 set noautochdir
-set path=".,../inc,../src,"
+set path=.,../inc,../src,
+
 
 set expandtab
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
+set nopaste
 set autoindent
-"set smartindent
-"inoremap # X#
+set smartindent
+set indentexpr=""
+set cinkeys-=0#
+inoremap # X#
 
 set number
 set ruler
+set noshowmatch
+set nolist
 set wrap
 set laststatus=2
+set backspace=indent,eol,start whichwrap+=<,>,[,]
+set iskeyword -=-
+set iskeyword -=.
+set iskeyword -=#
 "set cursorline
 "set cursorcolumn
 set virtualedit=onemore     "onemore all
 
-autocmd! bufwritepost _vimrc source %
+autocmd! bufwritepost _vimrc source $MYVIMRC
 
 set foldmethod=syntax
 set nofoldenable
 
-nnoremap <leader>ee :e $VIM/_vimrc<CR>
+nnoremap <leader>ee :e $MYVIMRC<CR>
 
 "autocomplete
 set completeopt=longest,menu
 autocmd InsertLeave * if pumvisible() == 0|pclose|endif
 imap <expr> <CR> pumvisible() ? "\<c-y>" : "<Plug>delimitMateCR"
+"imap <expr> <CR> pumvisible() ? "\<c-y>" : "<CR>"
 inoremap <expr> <TAB>      pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr> <S-TAB>    pumvisible() ? "\<C-p>" : "\<TAB>"
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
@@ -127,19 +135,21 @@ inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
 
 " vundle
 filetype off " required!
-set rtp+=D:/tools/Vim/bundle/Vundle.vim
+set rtp+=$VIM/bundle/Vundle.vim
 
-set rtp+=D:/tools/Vim/bundle/FencView.vim
-    let g:fencview_autodetect = 1  
-    let g:fencview_checklines = 10 
+"set rtp+=$VIM/bundle/MyCIndent
+
+set rtp+=$VIM/bundle/FencView.vim
+    let g:fencview_autodetect = 1
+    let g:fencview_checklines = 10
 
 if s:useYCM > 0
-set rtp+=D:/tools/Vim/bundle/ycm
+set rtp+=$VIM/bundle/ycm
     let g:ycm_server_use_vim_stdout = 1
     let g:ycm_server_log_level = 'debug'
     let g:ycm_global_ycm_extra_conf = 'd:/tools/Vim/.ycm_extra_conf.py'   "set default .ycm_extra_conf.py
     let g:ycm_confirm_extra_conf=0
-    nnoremap <Leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR> 
+    nnoremap <Leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
     let g:ycm_collect_identifiers_from_tag_files = 1                      "use tag files
     let g:ycm_cache_omnifunc=0                                            " disable cache
     let g:ycm_seed_identifiers_with_syntax=1
@@ -148,7 +158,7 @@ set rtp+=D:/tools/Vim/bundle/ycm
     let g:ycm_collect_identifiers_from_comments_and_strings = 0
 endif
 
-call vundle#begin('D:/tools/Vim/bundle/')
+call vundle#begin($VIM . '/bundle/')
 
 Plugin 'jonathanfilip/vim-lucius'
     let g:lucius_style = 'light'
@@ -277,7 +287,7 @@ Plugin 'dkprice/vim-easygrep'
 
 call vundle#end()            " required
 filetype plugin on    " required
-"filetype indent on
+filetype indent on
 syntax on
 
 "colorscheme lucius

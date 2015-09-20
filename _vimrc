@@ -85,6 +85,7 @@ set ignorecase
 set smartcase
 set noautochdir
 set path=.,../inc,../src,
+let $PATH = $VIM . ';' . $PATH
 
 
 set expandtab
@@ -113,11 +114,14 @@ set iskeyword -=#
 set virtualedit=onemore     "onemore all
 
 autocmd! bufwritepost _vimrc source $MYVIMRC
+nnoremap <leader>ee :e $MYVIMRC<CR>
+
+if filereadable($VIM . '/vimrc')
+  set tags=./tags,tags
+endif
 
 set foldmethod=syntax
 set nofoldenable
-
-nnoremap <leader>ee :e $MYVIMRC<CR>
 
 "autocomplete
 set completeopt=longest,menu
@@ -178,13 +182,22 @@ Plugin 'Raimondi/delimitMate'
 "Plugin 'SirVer/ultisnips'
 
 Plugin 'kien/ctrlp.vim'
-  let g:ctrlp_working_path_mode = 'a'   "ra c
+    let g:ctrlp_working_path_mode = 'a'   "ra c
 
-"Plugin 'szw/vim-ctrlspace'
+Plugin 'terryma/vim-multiple-cursors'
+
+Plugin 'Shougo/neomru.vim'
+Plugin 'Shougo/vimproc.vim'
+
+Plugin 'Shougo/unite.vim'
+    nnoremap <leader>uf :Unite file<CR>
+    nnoremap <leader>ub :Unite file<CR>
+    nnoremap <leader>ur :Unite file_rec<CR>
+    nnoremap <leader>up :Unite file_rec/async<CR>
 
 Plugin 'kshenoy/vim-signature'
 
-Plugin 'majutsushi/tagbar'
+"Plugin 'majutsushi/tagbar'
     let g:tagbar_ctags_bin = $VIM . '/ctags.exe'
     let tagbar_left=1
     nnoremap <Leader>tt :TagbarToggle<CR>

@@ -9,7 +9,9 @@ else
     let s:useGUI=0
 endif
 
-" windows like
+autocmd! bufwritepost _vimrc source $MYVIMRC
+nnoremap <leader>ee :e $MYVIMRC<CR>
+
 behave mswin        "set 'selection', 'selectmode', 'mousemodel' and 'keymodel' for MS-Windows
 vnoremap <C-X>      "+x
 vnoremap <C-C>      "+y
@@ -60,7 +62,7 @@ vmap < <gv
 vmap > >gv
 
 "delete space
-nnoremap <leader>ds :%s/\s\+$//<CR>
+nnoremap <leader>ds :%s/\s\+$//<CR>:nohl<CR>
 
 "set langmenu=zh_CN.UTF-8
 "set helplang=cn
@@ -85,7 +87,7 @@ set ignorecase
 set smartcase
 set noautochdir
 set path=.,../inc,../src,
-let $PATH = $VIM . ';' . $PATH
+let $PATH=$VIM . ';' . $PATH
 
 
 set expandtab
@@ -113,13 +115,6 @@ set iskeyword -=#
 "set cursorcolumn
 set virtualedit=onemore     "onemore all
 
-autocmd! bufwritepost _vimrc source $MYVIMRC
-nnoremap <leader>ee :e $MYVIMRC<CR>
-
-if filereadable($VIM . '/vimrc')
-  set tags=./tags,tags
-endif
-
 set foldmethod=syntax
 set nofoldenable
 
@@ -128,13 +123,13 @@ set completeopt=longest,menu
 autocmd InsertLeave * if pumvisible() == 0|pclose|endif
 imap <expr> <CR> pumvisible() ? "\<c-y>" : "<Plug>delimitMateCR"
 "imap <expr> <CR> pumvisible() ? "\<c-y>" : "<CR>"
-inoremap <expr> <TAB>      pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <expr> <S-TAB>    pumvisible() ? "\<C-p>" : "\<TAB>"
+"imap <expr> <ESC> pumvisible() ? pclose : "<ESC>"
+"inoremap <expr> <TAB>      pumvisible() ? "\<C-n>" : "\<TAB>"
+"inoremap <expr> <S-TAB>    pumvisible() ? "\<C-p>" : "\<TAB>"
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
 inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
 inoremap <expr> <PageDown> pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<PageDown>"
 inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
-
 
 
 " vundle
@@ -165,142 +160,184 @@ endif
 call vundle#begin($VIM . '/bundle/')
 
 Plugin 'jonathanfilip/vim-lucius'
-    let g:lucius_style = 'light'
-
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'adah1972/tellenc'
 Plugin 'Mizuchi/STL-Syntax'
-"Plugin 'fholgado/minibufexpl.vim'
-
 Plugin 'moll/vim-bbye'
-    :nnoremap <Leader>bd :Bdelete<CR>
-
 Plugin 'Raimondi/delimitMate'
-    let delimitMate_autoclose = 1
-    let delimitMate_expand_cr = 1
-
 "Plugin 'SirVer/ultisnips'
-
 Plugin 'kien/ctrlp.vim'
-    let g:ctrlp_working_path_mode = 'a'   "ra c
-
 Plugin 'terryma/vim-multiple-cursors'
-
 Plugin 'Shougo/neomru.vim'
 Plugin 'Shougo/vimproc.vim'
-
 Plugin 'Shougo/unite.vim'
-    nnoremap <leader>uf :Unite file<CR>
-    nnoremap <leader>ub :Unite file<CR>
-    nnoremap <leader>ur :Unite file_rec<CR>
-    nnoremap <leader>up :Unite file_rec/async<CR>
-
 Plugin 'kshenoy/vim-signature'
-
-"Plugin 'majutsushi/tagbar'
-    let g:tagbar_ctags_bin = $VIM . '/ctags.exe'
-    let tagbar_left=1
-    nnoremap <Leader>tt :TagbarToggle<CR>
-    let tagbar_width=32
-    let g:tagbar_compact=1
-    "let g:tagbar_autofocus = 1
-    "let g:tagbar_autoclose = 1
-    "autocmd FileType c,cpp,h nested :TagbarOpen
-
+Plugin 'majutsushi/tagbar'
 "Plugin 'scrooloose/syntastic'
-    "let g:syntastic_ignore_files=[".*\.py$"]
-    "set statusline+=%#warningmsg#
-    "set statusline+=%{SyntasticStatuslineFlag()}
-    "set statusline+=%*
-
-    let g:syntastic_always_populate_loc_list = 0
-    let g:syntastic_auto_loc_list = 0
-    let g:syntastic_check_on_open = 1
-    let g:syntastic_check_on_wq = 0
-    let g:syntastic_enable_signs=1
-
 if s:useYCM == 0
 Plugin 'Shougo/neocomplete.vim'
-    " Disable AutoComplPop.
-    let g:acp_enableAtStartup = 0
-    " Use neocomplete.
-    let g:neocomplete#enable_at_startup = 1
-    let g:neocomplete#enable_auto_select = 1
-    " Use smartcase.
-    let g:neocomplete#enable_smart_case = 1
-    " Set minimum syntax keyword length.
-    let g:neocomplete#sources#syntax#min_keyword_length = 3
-    let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
-
-    " Enable omni completion.
-    autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-    autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-    autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-    autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-
 Plugin 'Rip-Rip/clang_complete'
-    let g:clang_use_library=1
-    let g:clang_library_path=$VIM
-    let g:clang_auto_select=1
-    let g:clang_complete_copen = 1
-    "let g:clang_complete_macros=1
 endif
-
 Plugin 'a.vim'
-    map <leader>h <ESC>:A<CR>
-    map <leader>sh <ESC>:AS<CR>
-
 Plugin 'bling/vim-airline'
-    let g:airline#extensions#tabline#enabled = 1
-    let g:airline#extensions#tabline#left_sep = ' '
-    let g:airline#extensions#tabline#left_alt_sep = '|'
-    let g:airline#extensions#tabline#show_buffers = 1
-    let g:airline#extensions#tabline#buffer_nr_show = 1
-    let g:airline#extensions#tabline#fnamemod = ':p:.'
-
 Plugin 'scrooloose/nerdtree'
-    nmap <leader>nt :NERDTreeToggle<cr>
-    let NERDTreeWinSize=32
-    let NERDTreeWinPos="right"
-    let NERDTreeShowHidden=1
-    let NERDTreeMinimalUI=1
-    let NERDTreeAutoDeleteBuffer=1
-    let NERDTreeShowBookmarks=1
-    let NERDTreeShowLineNumbers=1
-    let NERDTreeShowHidden=1
-
 Plugin 'scrooloose/nerdcommenter'
-    let NERD_c_alt_style=1
-    let NERD_cpp_alt_style=1
-    let g:NERDCustomDelimiters = {
-        \ 'c': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-        \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' }
-    \ }
-    nmap <A-/> <plug>NERDCommenterInvert
-    vmap <A-/> <plug>NERDCommenterInvert gv
-    nmap <leader>cc <plug>NERDCommenterInvert
-    vmap <leader>cc <plug>NERDCommenterInvert gv
-
 Plugin 'nathanaelkane/vim-indent-guides'
-    let g:indent_guides_enable_on_vim_startup=0
-    let g:indent_guides_start_level=2
-    let g:indent_guides_guide_size=1
-    :nmap <silent> <Leader>i <Plug>IndentGuidesToggle
-
 Plugin 'Lokaltog/vim-easymotion'
-    let g:EasyMotion_smartcase = 0
-    let g:EasyMotion_do_mapping = 0 " Disable default mappings
-    nmap s <Plug>(easymotion-s)
-    nmap S <Plug>(easymotion-s2)
-    map <Leader>j <Plug>(easymotion-j)
-    map <Leader>k <Plug>(easymotion-k)
-
 Plugin 'dkprice/vim-easygrep'
-
+Plugin 'rking/ag.vim'
+Plugin 'autohotkey-ahk'
+Plugin 'vim-AHKcomplete'
 call vundle#end()            " required
 filetype plugin on    " required
 filetype indent on
 syntax on
-
+    
+"lucius
+let g:lucius_style = 'light'
 "colorscheme lucius
+
+"vim-bbye
+:nnoremap <Leader>bd :Bdelete<CR>
+
+"'Raimondi/delimitMate'
+let delimitMate_autoclose = 1
+let delimitMate_expand_cr = 1
+
+"ctrlp
+let g:ctrlp_working_path_mode = 'a'   "ra c
+
+"unite
+let g:unite_data_directory=$VIM . '/.cache/unite'
+let g:unite_enable_start_insert=0
+let g:unite_source_history_yank_enable=1
+"let g:unite_source_rec_max_cache_files=5000
+let g:unite_force_overwrite_statusline=1
+
+call unite#filters#matcher_default#use(['matcher_fuzzy'])
+"call unite#filters#sorter_default#use(['sorter_rank'])
+"call unite#set_profile('files', 'smartcase', 1)
+
+" Using ack-grep as recursive command.
+"let g:unite_source_rec_async_command = ['ack', '-f', '--nofilter']
+
+" Using ag as recursive command.
+let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', '']
+
+nnoremap <leader>f :Unite file buffer<CR>
+nnoremap <leader>r :Unite file_rec/async<cr>
+nnoremap <leader>t :<C-u>Unite -no-split -buffer-name=files   -start-insert file_rec/async:!<cr>
+
+autocmd FileType unite call s:unite_settings()
+function! s:unite_settings()
+  nmap <buffer> Q <plug>(unite_exit)
+  nmap <buffer> <esc> <plug>(unite_exit)
+  imap <buffer> <esc> <plug>(unite_exit)
+  imap <buffer> <C-j>   <Plug>(unite_select_next_line)
+  imap <buffer> <C-k>   <Plug>(unite_select_previous_line)
+endfunction
+
+"tagbar
+let g:tagbar_ctags_bin = $VIM . '/ctags.exe'
+let tagbar_left=1
+nnoremap <Leader>tt :TagbarToggle<CR>
+let tagbar_width=32
+let g:tagbar_compact=1
+"let g:tagbar_autofocus = 1
+"let g:tagbar_autoclose = 1
+"autocmd FileType c,cpp,h nested :TagbarOpen
+
+"syntastic
+"let g:syntastic_ignore_files=[".*\.py$"]
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 0
+let g:syntastic_auto_loc_list = 0
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_enable_signs=1
+
+if s:useYCM == 0
+"'Shougo/neocomplete.vim'
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+" Use neocomplete.
+let g:neocomplete#enable_at_startup = 1
+let g:neocomplete#enable_auto_select = 1
+" Use smartcase.
+let g:neocomplete#enable_smart_case = 1
+" Set minimum syntax keyword length.
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete
+
+"clang_complete
+let g:clang_use_library=1
+let g:clang_library_path=$VIM
+let g:clang_auto_select=1
+let g:clang_complete_copen = 1
+"let g:clang_complete_macros=1
+endif
+
+"a.vim
+map <leader>h <ESC>:A<CR>
+map <leader>sh <ESC>:AS<CR>
+
+"vim-airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#buffer_nr_show = 1
+let g:airline#extensions#tabline#fnamemod = ':p:.'
+
+"nerdtree
+nmap <leader>nt :NERDTreeToggle<cr>
+let NERDTreeWinSize=32
+let NERDTreeWinPos="right"
+let NERDTreeShowHidden=1
+let NERDTreeMinimalUI=1
+let NERDTreeAutoDeleteBuffer=1
+let NERDTreeShowBookmarks=1
+let NERDTreeShowLineNumbers=1
+let NERDTreeShowHidden=1
+
+"nerdcommenter
+let NERD_c_alt_style=1
+let NERD_cpp_alt_style=1
+let g:NERDCustomDelimiters = {
+    \ 'c': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
+    \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' }
+\ }
+nmap <A-/> <plug>NERDCommenterInvert
+vmap <A-/> <plug>NERDCommenterInvert gv
+nmap <leader>cc <plug>NERDCommenterInvert
+vmap <leader>cc <plug>NERDCommenterInvert gv
+
+"vim-indent-guides
+let g:indent_guides_enable_on_vim_startup=0
+let g:indent_guides_start_level=2
+let g:indent_guides_guide_size=1
+:nmap <silent> <Leader>i <Plug>IndentGuidesToggle
+
+"vim-easymotion
+let g:EasyMotion_smartcase = 0
+let g:EasyMotion_do_mapping = 0 " Disable default mappings
+nmap s <Plug>(easymotion-s)
+nmap S <Plug>(easymotion-s2)
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
+
+"ag.vim
+let g:agprg="<custom-ag-path-goes-here> --vimgrep"
+let g:ag_working_path_mode="r"
+

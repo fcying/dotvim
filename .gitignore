@@ -1,2 +1,6 @@
 *.pyc
 .cache/
+.neobundle/
+/vim_origin/
+/vim*/
+bundle/

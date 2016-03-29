@@ -153,6 +153,7 @@ inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
 "Plugin============================================================================================
 filetype off " required!
 
+set rtp+=$VIM/myBundle
 let g:plug_threads=5
 let g:plug_retries=5
 call plug#begin($VIM . '/bundle/')

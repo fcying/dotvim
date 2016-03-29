@@ -3,6 +3,7 @@ if has('vim_starting')
         set nocompatible
     endif
 endif
+
 "detect OS {{{
 function! OSX()
     return has('macunix')
@@ -14,6 +15,12 @@ function! WINDOWS()
     return (has('win16') || has('win32') || has('win64'))
 endfunction
 "}}}
+
+if WINDOWS()
+    let g:config_dir = $vim
+elseif LINUX()
+    let g:config_dir = '~/.vim'
+endif
 
 let mapleader=","
 
@@ -79,9 +86,9 @@ map k gk
 vmap < <gv
 vmap > >gv
 
-"delete space, delete
+"delete space, delete
 nnoremap <leader>ds :%s/\s\+$//
-nnoremap <leader>dm :%s/
+nnoremap <leader>dm :%s/
 
 "set langmenu=zh_CN.UTF-8
 "set helplang=cn
@@ -106,7 +113,7 @@ set ignorecase
 set smartcase
 set noautochdir
 set path=.,../inc,../src,
-let $PATH=$VIM . '/lib;' . $PATH
+"let $PATH=$VIM . '/lib;' . $PATH
 
 set expandtab
 set tabstop=4
@@ -153,11 +160,11 @@ inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
 "Plugin============================================================================================
 filetype off " required!
 
-set rtp+=$VIM/myBundle
 let g:plug_threads=5
 let g:plug_retries=5
-call plug#begin($VIM . '/bundle/')
-Plug $VIM . '/myBundle/FencView.vim'
+let &runtimepath = expand(g:config_dir) . '/myBundle'
+call plug#begin(expand(g:config_dir) . '/bundle')
+Plug expand(g:config_dir) . '/myBundle/FencView.vim'
     let g:fencview_autodetect = 1
     let g:fencview_checklines = 10
 Plug  'adah1972/tellenc'

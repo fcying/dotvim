@@ -126,7 +126,7 @@ set iskeyword -=.
 set iskeyword -=#
 set virtualedit=onemore     "onemore all
 
-set foldmethod=syntax
+set foldmethod=marker
 set nofoldenable
 
 "autocomplete

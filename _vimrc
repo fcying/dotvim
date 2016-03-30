@@ -1,8 +1,4 @@
-if has('vim_starting')
-    if &compatible
-        set nocompatible
-    endif
-endif
+set nocompatible
 
 "detect OS {{{
 function! OSX()
@@ -17,14 +13,14 @@ endfunction
 "}}}
 
 if WINDOWS()
-    let g:config_dir = $vim
+    let g:config_dir = $VIM
 elseif LINUX()
     let g:config_dir = '~/.vim'
 endif
 
-let mapleader=","
-
-let s:useYCM=0
+let s:usePlug = 1
+let s:useYCM  = 0
+let mapleader = ","
 
 if has('gui_running')
     let s:useGUI=1
@@ -36,14 +32,6 @@ autocmd! bufwritepost _vimrc source $MYVIMRC
 nnoremap <leader>ee :e $MYVIMRC<CR>
 
 behave mswin        "set 'selection', 'selectmode', 'mousemodel' and 'keymodel' for MS-Windows
-vnoremap <C-X>      "+x
-vnoremap <C-C>      "+y
-map      <C-V>      "+gP
-cmap     <C-V>      <C-R>+
-" Use CTRL-G u to have CTRL-Z only undo the paste.
-exe 'inoremap <script> <C-V> <C-G>u' . paste#paste_cmd['i']
-exe 'vnoremap <script> <C-V> ' . paste#paste_cmd['v']
-noremap  <C-Q> <C-V>
 noremap  <C-S> :update<CR>
 vnoremap <C-S> <C-C>:update<CR>
 inoremap <C-S> <C-O>:update<CR>
@@ -65,11 +53,7 @@ set t_Co=256
 set ttyfast     " when will this cause problems?
 autocmd GUIEnter * set vb t_vb=       "close beep
 autocmd VimEnter * set shellredir=>
-"set vbs=4
 
-"set columns=135
-"set lines=50
-"winpos 620 45
 au GUIEnter * simalt ~x
 
 " Easier moving in tabs and windows
@@ -95,7 +79,7 @@ nnoremap <leader>dm :%s/
 set encoding=utf-8
 "set fileencoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
-set fileformat=dos
+"set fileformat=dos
 set ffs=dos,unix,mac
 
 set scrolloff=3
@@ -112,8 +96,12 @@ set wrapscan    "search loop
 set ignorecase
 set smartcase
 set noautochdir
-set path=.,../inc,../src,
-"let $PATH=$VIM . '/lib;' . $PATH
+set path+=../inc,../src,
+if WINDOWS()
+    let $PATH = g:config_dir . '/lib' . ';' . $PATH
+elseif LINUX()
+    let $PATH = g:config_dir . '/lib' . ':' . $PATH
+endif
 
 set expandtab
 set tabstop=4
@@ -136,8 +124,6 @@ set backspace=indent,eol,start whichwrap+=<,>,[,]
 set iskeyword -=-
 set iskeyword -=.
 set iskeyword -=#
-"set cursorline
-"set cursorcolumn
 set virtualedit=onemore     "onemore all
 
 set foldmethod=syntax
@@ -147,10 +133,6 @@ set nofoldenable
 set completeopt=longest,menu
 autocmd InsertLeave * if pumvisible() == 0|pclose|endif
 imap <expr> <CR> pumvisible() ? "\<c-y>" : "<Plug>delimitMateCR"
-"imap <expr> <CR> pumvisible() ? "\<c-y>" : "<CR>"
-"imap <expr> <ESC> pumvisible() ? pclose : "<ESC>"
-"inoremap <expr> <TAB>      pumvisible() ? "\<C-n>" : "\<TAB>"
-"inoremap <expr> <S-TAB>    pumvisible() ? "\<C-p>" : "\<TAB>"
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
 inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
 inoremap <expr> <PageDown> pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<PageDown>"
@@ -160,11 +142,13 @@ inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
 "Plugin============================================================================================
 filetype off " required!
 
+let &runtimepath = &runtimepath . ',' . g:config_dir . '/myBundle'
+
+if s:usePlug
 let g:plug_threads=5
 let g:plug_retries=5
-let &runtimepath = expand(g:config_dir) . '/myBundle'
-call plug#begin(expand(g:config_dir) . '/bundle')
-Plug expand(g:config_dir) . '/myBundle/FencView.vim'
+call plug#begin(g:config_dir . '/bundle')
+Plug g:config_dir . '/myBundle/FencView.vim'
     let g:fencview_autodetect = 1
     let g:fencview_checklines = 10
 Plug  'adah1972/tellenc'
@@ -179,7 +163,7 @@ Plug  'kien/ctrlp.vim'
     let g:ctrlp_working_path_mode = 'a'   "ra c
 Plug  'terryma/vim-multiple-cursors'
 Plug  'Shougo/unite.vim'
-    let g:unite_data_directory=$VIM . '/.cache/unite'
+    let g:unite_data_directory=g:config_dir . '/.cache/unite'
     let g:unite_enable_start_insert=0
     let g:unite_source_history_yank_enable=1
     "let g:unite_source_rec_max_cache_files=5000
@@ -218,7 +202,7 @@ Plug 'Shougo/vimfiler'
     let g:vimfiler_as_default_explorer = 1
 Plug  'kshenoy/vim-signature'
 Plug  'majutsushi/tagbar'
-    let g:tagbar_ctags_bin = $VIM . '/lib/ctags.exe'
+    let g:tagbar_ctags_bin = g:config_dir . '/lib/ctags.exe'
     let tagbar_left=1
     nnoremap <silent><Leader>tt :TagbarToggle<CR>
     let tagbar_width=32
@@ -250,7 +234,7 @@ if s:useYCM == 0
     "clang_complete
     nmap <F3> <C-]>
     let g:clang_use_library=1
-    let g:clang_library_path=$VIM . "/lib"
+    let g:clang_library_path=g:config_dir . "/lib"
     let g:clang_auto_select=1
     "let g:clang_complete_macros=1
     set completeopt=menu,longest
@@ -273,7 +257,7 @@ else
     "let g:ycm_key_list_previous_completion = ['<Up>']
     let g:ycm_server_use_vim_stdout = 1
     "let g:ycm_server_log_level = 'debug'
-    let g:ycm_global_ycm_extra_conf = $VIM . '/lib/.ycm_extra_conf.py'   "set default .ycm_extra_conf.py
+    let g:ycm_global_ycm_extra_conf = g:config_dir . '/lib/.ycm_extra_conf.py'   "set default .ycm_extra_conf.py
     let g:ycm_confirm_extra_conf=0
     let g:ycm_collect_identifiers_from_tag_files = 1                      "use tag files
     let g:ycm_cache_omnifunc=0                                            " disable cache
@@ -361,6 +345,7 @@ Plug  'dkprice/vim-easygrep'
 Plug  'autohotkey-ahk'
 Plug  'vim-AHKcomplete'
 call plug#end()
+endif
 filetype plugin on              " required
 filetype indent on
 syntax on

@@ -24,7 +24,7 @@ let s:useYCM    = 0
 
 if has('nvim')
     let s:autocomplete_method = 'deoplete'
-elseif has('lua')
+else
     let s:autocomplete_method = 'neocomplete'
 endif
 
@@ -33,7 +33,7 @@ if has('gui_running')
 else
     let s:useGUI=0
 endif
-
+  
 autocmd! bufwritepost _vimrc source $MYVIMRC
 nnoremap <leader>ee :e $MYVIMRC<CR>
 
@@ -154,8 +154,8 @@ let &runtimepath = &runtimepath . ',' . g:config_dir . '/bundle/neobundle.vim'
 
 if s:useVendor
 call neobundle#begin(g:config_dir . '/bundle')
-NeoBundleFetch 'Shougo/neobundle.vim'
-NeoBundle g:config_dir . '/myBundle/FencView.vim'
+NeoBundleFetch 'https://github.com/Shougo/neobundle.vim'
+NeoBundle 'mbbill/fencview'
     let g:fencview_autodetect = 1
     let g:fencview_checklines = 10
 NeoBundle  'adah1972/tellenc'
@@ -222,7 +222,7 @@ NeoBundle  'majutsushi/tagbar'
     let g:syntastic_check_on_wq = 0
     let g:syntastic_enable_signs=1
 if s:useYCM == 0
-    if s:autocomplete_method  == 'neocomplete'
+    if s:autocomplete_method == 'neocomplete'
         NeoBundle  'Shougo/neocomplete.vim'
             let s:hooks = neobundle#get_hooks("neocomplete")
             function! s:hooks.on_source(bundle) abort

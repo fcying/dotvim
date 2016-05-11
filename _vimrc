@@ -63,6 +63,11 @@ set ttyfast     " when will this cause problems?
 autocmd GUIEnter * set vb t_vb=       "close beep
 autocmd VimEnter * set shellredir=>
 
+if LINUX()
+	colorscheme desert
+endif
+
+
 " Easier moving in tabs and windows
 map <C-H> <C-W>h
 map <C-J> <C-W>j
@@ -87,7 +92,11 @@ set encoding=utf-8
 "set fileencoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 "set fileformat=dos
-set ffs=dos,unix,mac
+if WINDOWS()
+	set ffs=dos,unix,mac
+else
+	set ffs=unix,dos,mac
+endif
 
 set scrolloff=3
 set hidden
@@ -114,7 +123,6 @@ set expandtab
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
-"set nopaste
 set autoindent
 set smartindent
 set indentexpr=""
@@ -136,6 +144,8 @@ set virtualedit=onemore     "onemore all
 
 set foldmethod=marker
 set nofoldenable
+
+set paste
 
 "autocomplete
 set completeopt=longest,menu
@@ -267,9 +277,9 @@ if s:useYCM == 0
             nmap <F3> <C-]>
             let g:clang_use_library=1
             if WINDOWS()
-                let g:clang_library_path=g:config_dir . '/lib'
+                let g:clang_library_path='C:/LLVM/bin'
             elseif LINUX()
-                let g:clang_library_path='/usr/lib/llvm-3.6/lib'
+                let g:clang_library_path='/usr/lib/llvm-3.8/lib'
             endif
             let g:clang_auto_select=1
             "let g:clang_complete_macros=1

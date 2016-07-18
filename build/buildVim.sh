@@ -2,13 +2,16 @@
 
 #https://github.com/vim/vim.git 
 
+cd `dirname $0`
+if [ ! -d "../vim_origin" ]; then
+    git clone https://github.com/vim/vim.git ../vim_origin --depth 2
+fi
+cd ../vim_origin/
+git fetch origin master
+git reset --hard origin/master
 
 if [ $(uname | grep MINGW -c) -eq 1 ]; then
-	cd `dirname $0`
-	cd ../vim_origin/
     mingw32-make.exe distclean
-    git pull origin master
-    git reset --hard origin/master
     cd src
 	mingw32-make.exe -f Make_ming.mak ARCH=x86-64 \
 					FEATURES=huge \
@@ -26,11 +29,7 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
 	cp -v *.exe ../../vim74/
 	gvim.exe --version
 else
-	cd `dirname $0`
-	cd ../vim_origin
 	sudo make distclean
-    git pull origin master
-    git reset --hard origin/master
 	./configure --with-features=huge \
 				--enable-multibyte \
 				--enable-cscope \

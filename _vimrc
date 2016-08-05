@@ -214,9 +214,9 @@ NeoBundle 'Shougo/vimfiler'
     let g:vimfiler_as_default_explorer = 1
 NeoBundle  'kshenoy/vim-signature'
 NeoBundle  'majutsushi/tagbar'
-    if WINDOWS()
-        let g:tagbar_ctags_bin = g:config_dir . '/lib/ctags.exe'
-    endif
+    "if WINDOWS()
+        "let g:tagbar_ctags_bin = g:config_dir . '/lib/ctags.exe'
+    "endif
     let tagbar_left=1
     nnoremap <silent><Leader>tt :TagbarToggle<CR>
     let tagbar_width=32

@@ -192,8 +192,8 @@ inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
 
 set tags+=./tags
 nmap <F3> <C-]>
-nmap <Leader>cr :!ctags -R --c++-kin=+p+l+x+c+d+e+f+g+m+n+s+t+u+v --fields=+liaS --extra=+q --language-force=c++<CR>
-nmap <Leader>co :!ctags -R --language-force=c++<CR>
+nmap <Leader>cr :!ctags -R --language-force=c++<CR>
+nmap <Leader>co :!ctags -R<CR>
 nmap <Leader>tn :tnext<CR>
 nmap <Leader>tp :tprevious<CR>
 

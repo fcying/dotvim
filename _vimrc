@@ -53,9 +53,10 @@ else
     else
         call add(s:plugin_groups, 'neocomplete')
     endif
-    "call add(s:plugin_groups, 'vim-clang')
-    call add(s:plugin_groups, 'clang_complete')
+    call add(s:plugin_groups, 'vim-clang')
+    "call add(s:plugin_groups, 'clang_complete')
 endif
+call add(s:plugin_groups, 'gen_tags.vim')
 call add(s:plugin_groups, 'vim-fswitch')
 call add(s:plugin_groups, 'vim-airline')
 call add(s:plugin_groups, 'nerdtree')
@@ -118,7 +119,7 @@ vmap > >gv
 
 "delete space, delete
 nnoremap <leader> :%s/\s\+$//<CR>
-nnoremap <leader>dm :%s/<CR>
+nnoremap <leader>dm :%s///<CR>
 
 "set langmenu=zh_CN.UTF-8
 "set helplang=cn
@@ -148,7 +149,7 @@ set smartcase
 set noautochdir
 set path+=../inc,../src,
 if WINDOWS()
-    let $PATH = g:config_dir . '/lib' . ';' . $PATH
+    let $PATH = g:config_dir . '\lib' . ';' . $PATH
 elseif LINUX()
     let $PATH = g:config_dir . '/lib' . ':' . $PATH
 endif
@@ -182,7 +183,6 @@ set nofoldenable
 "set paste
 
 "autocomplete
-"set completeopt=longest,menu
 autocmd InsertLeave * if pumvisible() == 0|pclose|endif
 imap <expr> <CR> pumvisible() ? "\<c-y>" : "<Plug>delimitMateCR"
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
@@ -193,7 +193,6 @@ inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
 set tags+=./tags
 nmap <F3> <C-]>
 nmap <Leader>cr :!ctags -R --language-force=c++<CR>
-nmap <Leader>co :!ctags -R<CR>
 nmap <Leader>tn :tnext<CR>
 nmap <Leader>tp :tprevious<CR>
 
@@ -307,59 +306,52 @@ if count(s:plugin_groups, 'syntastic')
 endif
 if count(s:plugin_groups, 'neocomplete')
     NeoBundle  'Shougo/neocomplete.vim'
-    let s:hooks = neobundle#get_hooks("neocomplete")
-    function! s:hooks.on_source(bundle) abort
-        "let g:neocomplete#data_directory='~/.cache/neocomplete'
-        let g:acp_enableAtStartup = 0
-        let g:neocomplete#enable_at_startup = 1
-        " Use smartcase.
-        let g:neocomplete#enable_smart_case = 1
-        let g:neocomplete#enable_camel_case = 1
-        "let g:neocomplete#enable_ignore_case = 1
-        let g:neocomplete#enable_fuzzy_completion = 1
-        " Set minimum syntax keyword length.
-        let g:neocomplete#sources#syntax#min_keyword_length = 3
-        let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+    "let g:neocomplete#data_directory='~/.cache/neocomplete'
+    let g:acp_enableAtStartup = 0
+    let g:neocomplete#enable_at_startup = 1
+    " Use smartcase.
+    let g:neocomplete#enable_smart_case = 1
+    let g:neocomplete#enable_camel_case = 1
+    "let g:neocomplete#enable_ignore_case = 1
+    let g:neocomplete#enable_fuzzy_completion = 1
+    " Set minimum syntax keyword length.
+    let g:neocomplete#sources#syntax#min_keyword_length = 3
+    let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
 
-        let g:neocomplete#enable_auto_delimiter = 1
+    let g:neocomplete#enable_auto_delimiter = 1
 
-        " Define keyword.
-        if !exists('g:neocomplete#keyword_patterns')
-            let g:neocomplete#keyword_patterns = {}
-        endif
-        let g:neocomplete#keyword_patterns._ = '\h\k*(\?'
+    " Define keyword.
+    if !exists('g:neocomplete#keyword_patterns')
+        let g:neocomplete#keyword_patterns = {}
+    endif
+    let g:neocomplete#keyword_patterns._ = '\h\k*(\?'
 
-        let g:neocomplete#enable_auto_select = 1
+    let g:neocomplete#enable_auto_select = 1
 
-        if !exists('g:neocomplete#sources#omni#input_patterns')
-            let g:neocomplete#sources#omni#input_patterns = {}
-        endif
+    if !exists('g:neocomplete#sources#omni#input_patterns')
+        let g:neocomplete#sources#omni#input_patterns = {}
+    endif
 
-        let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
-        let g:neocomplete#sources#omni#input_patterns.java ='[^. \t0-9]\.\w*'
-        let g:neocomplete#force_omni_input_patterns = {}
-        "let g:neocomplete#force_omni_input_patterns.java = '^\s*'
-        " <C-h>, <BS>: close popup and delete backword char.
-        inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-        inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-        inoremap <expr><C-y>  neocomplete#close_popup()
-        inoremap <expr><C-e>  neocomplete#cancel_popup()
-    endfunction
+    let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+    let g:neocomplete#sources#omni#input_patterns.java ='[^. \t0-9]\.\w*'
+    let g:neocomplete#force_omni_input_patterns = {}
+    "let g:neocomplete#force_omni_input_patterns.java = '^\s*'
+    " <C-h>, <BS>: close popup and delete backword char.
+    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-y>  neocomplete#close_popup()
+    inoremap <expr><C-e>  neocomplete#cancel_popup()
 endif
 if count(s:plugin_groups, 'vim-clang')
     NeoBundle 'justmao945/vim-clang'
     if WINDOWS()
-        let g:clang_exec='C:/LLVM/bin/clang.exe'
-        let g:clang_format_exec = 'C:/LLVM/bin/clang-format.exe'
-        let g:clang_gcc_exec = 'C:/msys64/mingw64/bin/gcc.exe'
-        let g:clang_vim_exec = 'gvim'
-    elseif LINUX()
-        let g:clang_exec = 'clang'
-        let g:clang_format_exec = 'clang-format'
+        let g:clang_exec = 'C:\LLVM\bin\clang.exe'
+        let g:clang_format_exec = 'C:\LLVM\bin\clang-format.exe'
     endif
-    let g:clang_auto = 1
-    let g:clang_c_completeopt = 'menuone,preview'
-    let g:clang_cpp_completeopt = 'menuone,preview'
+    let g:clang_auto = 0
+    set completeopt=menu,longest
+    "let g:clang_c_completeopt = 'menuone,preview'   "'menuone,preview'
+    "let g:clang_cpp_completeopt = 'menuone,preview'
     let g:clang_auto_select=1
     " use neocomplete
     " input patterns
@@ -377,9 +369,9 @@ if count(s:plugin_groups, 'clang_complete')
     NeoBundle  'Rip-Rip/clang_complete'
     let g:clang_use_library=1
     if WINDOWS()
-        let g:clang_library_path='C:/LLVM/bin'
+        let g:clang_library_path = 'C:\LLVM\bin'
     elseif LINUX()
-        let g:clang_library_path='/usr/lib/llvm-3.8/lib'
+        let g:clang_library_path = '/usr/lib/llvm-3.8/lib'
     endif
     let g:clang_auto_select=1
     "let g:clang_complete_macros=1
@@ -394,25 +386,22 @@ if count(s:plugin_groups, 'clang_complete')
 endif
 if count(s:plugin_groups, 'deoplete')
     NeoBundle 'Shougo/deoplete.nvim'
-    let s:hooks = neobundle#get_hooks("deoplete.nvim")
-    function! s:hooks.on_source(bundle)
-        let g:deoplete#enable_at_startup = 1
-        let g:deoplete#enable_ignore_case = 1
-        let g:deoplete#enable_smart_case = 1
-        let g:deoplete#enable_refresh_always = 1
-        let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
-        let g:deoplete#omni#input_patterns.java = [
-                    \'[^. \t0-9]\.\w*',
-                    \'[^. \t0-9]\->\w*',
-                    \'[^. \t0-9]\::\w*',
-                    \]
-        let g:deoplete#omni#input_patterns.jsp = ['[^. \t0-9]\.\w*']
-        let g:deoplete#ignore_sources = {}
-        let g:deoplete#ignore_sources._ = ['javacomplete2']
-        call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
-        inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
-        inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
-    endfunction
+    let g:deoplete#enable_at_startup = 1
+    let g:deoplete#enable_ignore_case = 1
+    let g:deoplete#enable_smart_case = 1
+    let g:deoplete#enable_refresh_always = 1
+    let g:deoplete#omni#input_patterns = get(g:,'deoplete#omni#input_patterns',{})
+    let g:deoplete#omni#input_patterns.java = [
+                \'[^. \t0-9]\.\w*',
+                \'[^. \t0-9]\->\w*',
+                \'[^. \t0-9]\::\w*',
+                \]
+    let g:deoplete#omni#input_patterns.jsp = ['[^. \t0-9]\.\w*']
+    let g:deoplete#ignore_sources = {}
+    let g:deoplete#ignore_sources._ = ['javacomplete2']
+    call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
+    inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
+    inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
 endif
 if count(s:plugin_groups, 'YouCompleteMe')
     NeoBundle 'Valloric/YouCompleteMe'
@@ -499,6 +488,11 @@ if count(s:plugin_groups, 'vim-easymotion')
     nmap S <Plug>(easymotion-s2)
     map <Leader>j <Plug>(easymotion-j)
     map <Leader>k <Plug>(easymotion-k)
+endif
+if count(s:plugin_groups, 'gen_tags.vim')
+    NeoBundle  'jsfaint/gen_tags.vim'
+    "let g:gtags_split = 'v'
+    let g:ctags_opts = '--language-force=c++'
 endif
 if count(s:plugin_groups, 'ack.vim')
     NeoBundle  'mileszs/ack.vim'

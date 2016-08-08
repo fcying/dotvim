@@ -17,6 +17,17 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
     cd src
 	mingw32-make.exe -f Make_ming.mak ARCH=x86-64 \
 					FEATURES=huge \
+					GUI=no \
+					MBYTE=yes \
+					IME=yes \
+					CSCOPE=yes \
+					POSTSCRIPT=yes \
+					PYTHON=/d/tools/python/Python27 PYTHON_VER=27 DYNAMIC_PYTHON=yes \
+					PYTHON3=/d/tools/python/Python35 PYTHON3_VER=35 DYNAMIC_PYTHON3=yes \
+					LUA=/d/tools/Lua/523 LUA_VER=52 DYNAMIC_LUA=yes \
+					USERNAME=JasonYing USERDOMAIN=JasonYing-PC
+	mingw32-make.exe -f Make_ming.mak ARCH=x86-64 \
+					FEATURES=huge \
 					GUI=yes \
 					MBYTE=yes \
 					IME=yes \

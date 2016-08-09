@@ -93,15 +93,16 @@ else
     set mouse=
 endif
 set wildmenu
+set wildignore=*.bak,*.o,*.e,*~
 set t_Co=256
 set ttyfast     " when will this cause problems?
 autocmd GUIEnter * set vb t_vb=       "close beep
+set noerrorbells
 autocmd VimEnter * set shellredir=>
 
 if LINUX()
     colorscheme desert
 endif
-
 
 " Easier moving in tabs and windows
 map <C-H> <C-W>h
@@ -170,6 +171,7 @@ set noshowmatch
 set nolist
 set wrap
 set laststatus=2
+set showcmd
 "set cmdheight=1
 set backspace=indent,eol,start whichwrap+=<,>,[,]
 set iskeyword -=-
@@ -230,6 +232,7 @@ endif
 if count(s:plugin_groups, 'ctrlp.vim')
     NeoBundle  'kien/ctrlp.vim'
     let g:ctrlp_working_path_mode = 'a'   "ra c
+    let g:ctrlp_clear_cache_on_exit = 1
 endif
 if count(s:plugin_groups, 'ctrlsf.vim')
     NeoBundle 'dyng/ctrlsf.vim'
@@ -306,41 +309,29 @@ if count(s:plugin_groups, 'syntastic')
 endif
 if count(s:plugin_groups, 'neocomplete')
     NeoBundle  'Shougo/neocomplete.vim'
-    "let g:neocomplete#data_directory='~/.cache/neocomplete'
-    let g:acp_enableAtStartup = 0
-    let g:neocomplete#enable_at_startup = 1
     " Use smartcase.
-    let g:neocomplete#enable_smart_case = 1
-    let g:neocomplete#enable_camel_case = 1
+    "let g:neocomplete#enable_smart_case = 1
+    "let g:neocomplete#enable_camel_case = 1
     "let g:neocomplete#enable_ignore_case = 1
-    let g:neocomplete#enable_fuzzy_completion = 1
+    "let g:neocomplete#enable_fuzzy_completion = 1
     " Set minimum syntax keyword length.
-    let g:neocomplete#sources#syntax#min_keyword_length = 3
-    let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+    "let g:neocomplete#sources#syntax#min_keyword_length = 3
+    "let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
 
-    let g:neocomplete#enable_auto_delimiter = 1
-
-    " Define keyword.
-    if !exists('g:neocomplete#keyword_patterns')
-        let g:neocomplete#keyword_patterns = {}
-    endif
-    let g:neocomplete#keyword_patterns._ = '\h\k*(\?'
-
-    let g:neocomplete#enable_auto_select = 1
+    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
 
     if !exists('g:neocomplete#sources#omni#input_patterns')
-        let g:neocomplete#sources#omni#input_patterns = {}
+    let g:neocomplete#sources#omni#input_patterns = {}
+    let g:neocomplete#sources#omni#input_patterns.c =
+          \ '[^.[:digit:] *\t]\%(\.\|->\)'
+    let g:neocomplete#sources#omni#input_patterns.cpp =
+          \'[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
     endif
 
-    let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
-    let g:neocomplete#sources#omni#input_patterns.java ='[^. \t0-9]\.\w*'
-    let g:neocomplete#force_omni_input_patterns = {}
-    "let g:neocomplete#force_omni_input_patterns.java = '^\s*'
-    " <C-h>, <BS>: close popup and delete backword char.
-    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><C-y>  neocomplete#close_popup()
-    inoremap <expr><C-e>  neocomplete#cancel_popup()
+    let g:neocomplete#fallback_mappings = ["\<C-x>\<C-o>", "\<C-x>\<C-n>"]
+    let g:neocomplete#enable_auto_select = 1
+    let g:neocomplete#enable_at_startup = 1
 endif
 if count(s:plugin_groups, 'vim-clang')
     NeoBundle 'justmao945/vim-clang'
@@ -349,10 +340,11 @@ if count(s:plugin_groups, 'vim-clang')
         let g:clang_format_exec = 'C:\LLVM\bin\clang-format.exe'
     endif
     let g:clang_auto = 0
-    set completeopt=menu,longest
-    "let g:clang_c_completeopt = 'menuone,preview'   "'menuone,preview'
+    set completeopt=menu,noinsert       "menu,longest
+    "let g:clang_c_completeopt = 'menuone,noinsert'   "'menuone,preview'
     "let g:clang_cpp_completeopt = 'menuone,preview'
-    let g:clang_auto_select=1
+    "let g:clang_auto_select=1
+    let g:clang_format_style = 'webkit'
     " use neocomplete
     " input patterns
     if !exists('g:neocomplete#force_omni_input_patterns')

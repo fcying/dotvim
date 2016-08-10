@@ -5,11 +5,13 @@
 cd `dirname $0`
 if [ ! -d "../vim_origin" ]; then
     git clone https://github.com/vim/vim.git ../vim_origin --depth 2
+    cd ../vim_origin/
+else
+    echo "git fetch"
+    cd ../vim_origin/
+    git fetch origin master
+    git reset --hard origin/master
 fi
-cd ../vim_origin/
-echo "git fetch"
-git fetch origin master
-git reset --hard origin/master
 
 echo "start build vim"
 if [ $(uname | grep MINGW -c) -eq 1 ]; then

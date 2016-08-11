@@ -119,7 +119,7 @@ vmap < <gv
 vmap > >gv
 
 "delete space, delete
-nnoremap <leader> :%s/\s\+$//<CR>
+nnoremap <leader>ds :%s/\s\+$//<CR>
 nnoremap <leader>dm :%s///<CR>
 
 "set langmenu=zh_CN.UTF-8
@@ -229,13 +229,15 @@ endif
 if count(s:plugin_groups, 'ultisnips')
     NeoBundle  'SirVer/ultisnips'
 endif
-if count(s:plugin_groups, 'ctrlp.vim')
+if count(s:plugin_groups, 'ctrlp')
     NeoBundle  'kien/ctrlp.vim'
     let g:ctrlp_working_path_mode = 'a'   "ra c
     let g:ctrlp_clear_cache_on_exit = 1
 endif
-if count(s:plugin_groups, 'ctrlsf.vim')
+if count(s:plugin_groups, 'ctrlsf')
     NeoBundle 'dyng/ctrlsf.vim'
+    let g:ctrlsf_ackprg = 'ag'
+    let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS']
     nnoremap <Leader>sp :CtrlSF<CR>
 endif
 if count(s:plugin_groups, 'vim-multiple-cursors')
@@ -427,7 +429,7 @@ endif
     autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete
 if count(s:plugin_groups, 'vim-fswitch')
     NeoBundle 'derekwyatt/vim-fswitch'
-    map <silent> <Leader>sw <ESC>:FSHere<CR>
+    map <silent> <Leader>h <ESC>:FSHere<CR>
 endif
 if count(s:plugin_groups, 'vim-airline')
     NeoBundle  'bling/vim-airline'

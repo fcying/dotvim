@@ -56,7 +56,9 @@ else
     call add(s:plugin_groups, 'vim-clang')
     "call add(s:plugin_groups, 'clang_complete')
 endif
-call add(s:plugin_groups, 'gen_tags.vim')
+if (executable('ctags') && executable('gtags'))
+    call add(s:plugin_groups, 'gen_tags.vim')
+endif
 call add(s:plugin_groups, 'vim-fswitch')
 call add(s:plugin_groups, 'vim-airline')
 call add(s:plugin_groups, 'nerdtree')
@@ -76,12 +78,6 @@ behave mswin        "set 'selection', 'selectmode', 'mousemodel' and 'keymodel' 
 noremap  <C-S> :update<CR>
 vnoremap <C-S> <C-C>:update<CR>
 inoremap <C-S> <C-O>:update<CR>
-noremap  <C-A> gggH<C-O>G
-inoremap <C-A> <C-O>gg<C-O>gH<C-O>G
-cnoremap <C-A> <C-C>gggH<C-O>G
-onoremap <C-A> <C-C>gggH<C-O>G
-snoremap <C-A> <C-C>gggH<C-O>G
-xnoremap <C-A> <C-C>ggV
 
 if s:useGUI
     set guioptions -=T
@@ -194,9 +190,18 @@ inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
 
 set tags+=./tags
 nmap <F3> <C-]>
-nmap <Leader>cr :!ctags -R --language-force=c++<CR>
 nmap <Leader>tn :tnext<CR>
 nmap <Leader>tp :tprevious<CR>
+
+nmap <silent> <Leader>cr :FcyGentags<CR>
+command! -nargs=0 FcyGentags call s:fcy_gen_tags("", "")
+function! s:fcy_gen_tags(filename, dir)
+    let l:cmd = 'ctags -R --language-force=c++'
+    call vimproc#system_bg(l:cmd)
+    call vimproc#system_bg('gtags')
+    echon "gen tags done"
+endfunction
+
 
 "Plugin============================================================================================
 filetype off " required!
@@ -451,8 +456,7 @@ if count(s:plugin_groups, 'nerdtree')
     let NERDTreeShowBookmarks=1
     let NERDTreeShowLineNumbers=1
     let NERDTreeShowHidden=1
-    let g:NERDTreeDirArrowExpandable = '?'
-    let g:NERDTreeDirArrowCollapsible = '?'
+    let NERDTreeMouseMode=2
 endif
 if count(s:plugin_groups, 'nerdcommenter')
     NeoBundle  'scrooloose/nerdcommenter'

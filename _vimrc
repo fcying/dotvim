@@ -250,6 +250,8 @@ if count(s:plugin_groups, 'vim-multiple-cursors')
 endif
 if count(s:plugin_groups, 'unite')
     NeoBundle  'Shougo/unite.vim'
+    let s:hooks = neobundle#get_hooks("unite.vim")
+    function! s:hooks.on_source(bundle)
     let g:unite_data_directory=g:config_dir . '/.cache/unite'
     let g:unite_enable_start_insert=0
     let g:unite_source_history_yank_enable=1
@@ -269,6 +271,7 @@ if count(s:plugin_groups, 'unite')
         imap <buffer> <esc> <plug>(unite_exit)
         imap <buffer> <C-j> <Plug>(unite_select_next_line)
         imap <buffer> <C-k> <Plug>(unite_select_previous_line)
+    endfunction
     endfunction
 endif
 if count(s:plugin_groups, 'neomru')
@@ -316,14 +319,16 @@ if count(s:plugin_groups, 'syntastic')
 endif
 if count(s:plugin_groups, 'neocomplete')
     NeoBundle  'Shougo/neocomplete.vim'
+    let s:hooks = neobundle#get_hooks("neocomplete.vim")
+    function! s:hooks.on_source(bundle)
     " Use smartcase.
     "let g:neocomplete#enable_smart_case = 1
     "let g:neocomplete#enable_camel_case = 1
     "let g:neocomplete#enable_ignore_case = 1
     "let g:neocomplete#enable_fuzzy_completion = 1
     " Set minimum syntax keyword length.
-    "let g:neocomplete#sources#syntax#min_keyword_length = 3
-    "let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+    let g:neocomplete#sources#syntax#min_keyword_length = 3
+    let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
 
     inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
     inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
@@ -339,9 +344,12 @@ if count(s:plugin_groups, 'neocomplete')
     let g:neocomplete#fallback_mappings = ["\<C-x>\<C-o>", "\<C-x>\<C-n>"]
     let g:neocomplete#enable_auto_select = 1
     let g:neocomplete#enable_at_startup = 1
+    endfunction
 endif
 if count(s:plugin_groups, 'vim-clang')
     NeoBundle 'justmao945/vim-clang'
+    let s:hooks = neobundle#get_hooks("vim-clang")
+    function! s:hooks.on_source(bundle)
     if WINDOWS()
         let g:clang_exec = 'C:\LLVM\bin\clang.exe'
         let g:clang_format_exec = 'C:\LLVM\bin\clang-format.exe'
@@ -363,6 +371,7 @@ if count(s:plugin_groups, 'vim-clang')
     " for c and c++
     let g:neocomplete#force_omni_input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
     let g:neocomplete#force_omni_input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+    endfunction
 endif
 if count(s:plugin_groups, 'clang_complete')
     NeoBundle  'Rip-Rip/clang_complete'
@@ -385,6 +394,8 @@ if count(s:plugin_groups, 'clang_complete')
 endif
 if count(s:plugin_groups, 'deoplete')
     NeoBundle 'Shougo/deoplete.nvim'
+    let s:hooks = neobundle#get_hooks("deoplete.nvim")
+    function! s:hooks.on_source(bundle)
     let g:deoplete#enable_at_startup = 1
     let g:deoplete#enable_ignore_case = 1
     let g:deoplete#enable_smart_case = 1
@@ -401,6 +412,7 @@ if count(s:plugin_groups, 'deoplete')
     call deoplete#custom#set('_', 'matchers', ['matcher_full_fuzzy'])
     inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
     inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
+    endfunction
 endif
 if count(s:plugin_groups, 'YouCompleteMe')
     NeoBundle 'Valloric/YouCompleteMe'

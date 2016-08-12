@@ -116,7 +116,7 @@ vmap > >gv
 
 "delete space, delete
 nnoremap <leader>ds :%s/\s\+$//<CR>
-nnoremap <leader>dm :%s///<CR>
+nnoremap <leader>dm :%s/\r//g<CR>
 
 "set langmenu=zh_CN.UTF-8
 "set helplang=cn
@@ -293,7 +293,7 @@ if count(s:plugin_groups, 'vim-signature')
     NeoBundle  'kshenoy/vim-signature'
 endif
 if count(s:plugin_groups, 'tagbar')
-    NeoBundle  'majutsushi/tagbar'
+    NeoBundle  'fcymk2/tagbar'
     "if WINDOWS()
         "let g:tagbar_ctags_bin = g:config_dir . '/lib/ctags.exe'
     "endif

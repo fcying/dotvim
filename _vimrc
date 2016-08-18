@@ -70,6 +70,7 @@ call add(s:plugin_groups, 'ag.vim')
 call add(s:plugin_groups, 'vim-easygrep')
 call add(s:plugin_groups, 'autohotkey-ahk')
 call add(s:plugin_groups, 'vim-AHKcomplete')
+"call add(s:plugin_groups, 'vim-instant-markdown')
 
 autocmd! bufwritepost _vimrc source $MYVIMRC
 nnoremap <leader>ee :e $MYVIMRC<CR>
@@ -101,10 +102,10 @@ if LINUX()
 endif
 
 " Easier moving in tabs and windows
-map <C-H> <C-W>h
-map <C-J> <C-W>j
-map <C-K> <C-W>k
-map <C-L> <C-W>l
+"map <C-H> <C-W>h
+"map <C-J> <C-W>j
+"map <C-K> <C-W>k
+"map <C-L> <C-W>l
 
 " Wrapped lines goes down/up to next row, rather than next line in file
 map j gj
@@ -130,6 +131,7 @@ else
     set ffs=unix,dos,mac
 endif
 
+set updatetime=1000
 set scrolloff=3
 set hidden
 set noswapfile
@@ -197,6 +199,7 @@ nmap <silent> <Leader>cr :FcyGentags<CR>
 command! -nargs=0 FcyGentags call s:fcy_gen_tags("", "")
 function! s:fcy_gen_tags(filename, dir)
     let l:cmd = 'ctags -R --language-force=c++'
+    "let l:cmd = 'ctags -R'
     call vimproc#system_bg(l:cmd)
     call vimproc#system_bg('gtags')
     echon "gen tags done"
@@ -241,7 +244,7 @@ if count(s:plugin_groups, 'ctrlp')
 endif
 if count(s:plugin_groups, 'ctrlsf')
     NeoBundle 'dyng/ctrlsf.vim'
-    let g:ctrlsf_ackprg = 'ag'
+    let g:ctrlsf_ackprg = 'ack'
     let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS']
     nnoremap <Leader>sp :CtrlSF<CR>
 endif
@@ -304,9 +307,6 @@ if count(s:plugin_groups, 'tagbar')
     nnoremap <silent><Leader>tt :TagbarToggle<CR>
     let tagbar_width=32
     let g:tagbar_compact=1
-    let g:tagbar_autopreview=0
-    "let g:tagbar_autofocus = 1
-    "let g:tagbar_autoclose = 1
     "autocmd FileType c,cpp,h nested :TagbarOpen
 endif
 if count(s:plugin_groups, 'syntastic')
@@ -468,7 +468,6 @@ if count(s:plugin_groups, 'nerdtree')
     let NERDTreeShowBookmarks=1
     let NERDTreeShowLineNumbers=1
     let NERDTreeShowHidden=1
-    let NERDTreeMouseMode=2
 endif
 if count(s:plugin_groups, 'nerdcommenter')
     NeoBundle  'scrooloose/nerdcommenter'
@@ -509,6 +508,9 @@ if count(s:plugin_groups, 'ack.vim')
 endif
 if count(s:plugin_groups, 'ag.vim')
     NeoBundle  'rking/ag.vim'
+    let g:ag_prg='ag --vimgrep --smart-case'
+    let g:ag_working_path_mode="r"
+    let g:ag_highlight=1
 endif
 if count(s:plugin_groups, 'vim-easygrep')
     NeoBundle  'dkprice/vim-easygrep'
@@ -520,20 +522,17 @@ if count(s:plugin_groups, 'vim-easygrep')
     let g:EasyGrepJumpToMatch=0
     let g:EasyGrepRecursive = 1
     let g:EasyGrepIgnoreCase = 1
-    let g:EasyGrepFilesToExclude=".svn,.git,*.pyc,*.bak,cscope.*,*.a,*.o,*.d,*.lst,tags"
+    let g:EasyGrepFilesToExclude=".svn,.git,*.pyc,*.bak,cscope.*,*.a,*.o,*.d,*.lst,tags,GTAGS,GRTAGS,GPATH"
     "let g:EasyGrepFilesToExclude=''
 endif
-    "ag.vim
-    let g:ag_prg='ag --vimgrep --smart-case'
-    let g:ag_working_path_mode="r"
-    let g:ag_highlight=1
-    "ack.vim
-    "let g:agprg='ack --smart-case'
 if count(s:plugin_groups, 'autohotkey-ahk')
     NeoBundle  'autohotkey-ahk'
 endif
 if count(s:plugin_groups, 'vim-AHKcomplete')
     NeoBundle  'vim-AHKcomplete'
+endif
+if count(s:plugin_groups, 'vim-instant-markdown')
+    NeoBundle  'suan/vim-instant-markdown'
 endif
 call neobundle#end()
 NeoBundleCheck

@@ -196,6 +196,7 @@ nmap <Leader>tn :tnext<CR>
 nmap <Leader>tp :tprevious<CR>
 
 nmap <silent> <Leader>cr :FcyGentags<CR>
+nmap <silent> <F5> :FcyGentags<CR>
 command! -nargs=0 FcyGentags call s:fcy_gen_tags("", "")
 function! s:fcy_gen_tags(filename, dir)
     let l:cmd = 'ctags -R --language-force=c++'
@@ -250,6 +251,23 @@ if count(s:plugin_groups, 'ctrlsf')
 endif
 if count(s:plugin_groups, 'vim-multiple-cursors')
     NeoBundle  'terryma/vim-multiple-cursors'
+    let g:multi_cursor_next_key='<S-n>'
+    let g:multi_cursor_prev_key='<S-p>'
+    let g:multi_cursor_skip_key='<S-x>'
+    let g:multi_cursor_quit_key='<Esc>'
+    " Called once right before you start selecting multiple cursors
+    function! Multiple_cursors_before()
+      if exists(':NeoCompleteLock')==2
+        exe 'NeoCompleteLock'
+      endif
+    endfunction
+
+    " Called once only when the multiple selection is canceled (default <Esc>)
+    function! Multiple_cursors_after()
+      if exists(':NeoCompleteUnlock')==2
+        exe 'NeoCompleteUnlock'
+      endif
+    endfunction
 endif
 if count(s:plugin_groups, 'unite')
     NeoBundle  'Shougo/unite.vim'
@@ -359,6 +377,7 @@ if count(s:plugin_groups, 'vim-clang')
     "let g:clang_c_completeopt = 'menuone,noinsert'   "'menuone,preview'
     "let g:clang_cpp_completeopt = 'menuone,preview'
     "let g:clang_auto_select=1
+    let g:clang_diagsopt = ''   " <- disable diagnostics
     let g:clang_format_style = 'webkit'
     " use neocomplete
     " input patterns

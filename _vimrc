@@ -33,44 +33,49 @@ call add(s:plugin_groups, 'fencview')
 call add(s:plugin_groups, 'tellenc')
 call add(s:plugin_groups, 'STL-Syntax')
 call add(s:plugin_groups, 'vim-bbye')
-call add(s:plugin_groups, 'delimitMate')
+"call add(s:plugin_groups, 'delimitMate')
 "call add(s:plugin_groups, 'ultisnips')
 call add(s:plugin_groups, 'ctrlp')
+"call add(s:plugin_groups, 'ctrlspace')
 call add(s:plugin_groups, 'ctrlsf')
 call add(s:plugin_groups, 'vim-multiple-cursors')
-call add(s:plugin_groups, 'unite')
-call add(s:plugin_groups, 'neomru')
+"call add(s:plugin_groups, 'unite')
+"call add(s:plugin_groups, 'neomru')
 call add(s:plugin_groups, 'vimproc')
 "call add(s:plugin_groups, 'vimfiler')
-call add(s:plugin_groups, 'vim-signature')
+"call add(s:plugin_groups, 'vim-signature')
 call add(s:plugin_groups, 'tagbar')
 "call add(s:plugin_groups, 'syntastic')
 if s:useYCM
-    call add(s:plugin_groups, 'YouCompleteMe')
+   call add(s:plugin_groups, 'YouCompleteMe')
 else
     if has('nvim')
-        call add(s:plugin_groups, 'deoplete')
+       call add(s:plugin_groups, 'deoplete')
     else
-        call add(s:plugin_groups, 'neocomplete')
+       if has('lua')
+           call add(s:plugin_groups, 'neocomplete')
+       endif
     endif
     call add(s:plugin_groups, 'vim-clang')
     "call add(s:plugin_groups, 'clang_complete')
 endif
+call add(s:plugin_groups, 'vim-airline')
+"call add(s:plugin_groups, 'minibufexpl.vim')
 call add(s:plugin_groups, 'vim-fswitch')
 call add(s:plugin_groups, 'nerdtree')
 call add(s:plugin_groups, 'nerdcommenter')
 call add(s:plugin_groups, 'vim-easymotion')
 call add(s:plugin_groups, 'ack.vim')
 "call add(s:plugin_groups, 'ag.vim')
-call add(s:plugin_groups, 'vim-airline')
 call add(s:plugin_groups, 'vim-easygrep')
 call add(s:plugin_groups, 'vim-indent-guides')
 call add(s:plugin_groups, 'autohotkey-ahk')
 call add(s:plugin_groups, 'vim-AHKcomplete')
+call add(s:plugin_groups, 'vim-markdown')
 "call add(s:plugin_groups, 'vim-instant-markdown')
-"if (executable('ctags') && executable('gtags'))
-"    call add(s:plugin_groups, 'gen_tags.vim')
-"endif
+if (executable('ctags') && executable('gtags'))
+    "call add(s:plugin_groups, 'gen_tags.vim')
+endif
 
 autocmd! bufwritepost _vimrc source $MYVIMRC
 nnoremap <leader>ee :e $MYVIMRC<CR>
@@ -190,8 +195,13 @@ inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
 inoremap <expr> <PageDown> pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<PageDown>"
 inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
 
-set tags+=./tags
-nmap <F3> <C-]>
+if WINDOWS()
+    set tags=tags
+else
+    set tags=tags
+endif
+nmap <F3> <c-]>
+nmap <F4> <C-o>
 nmap <Leader>tn :tnext<CR>
 nmap <Leader>tp :tprevious<CR>
 
@@ -199,7 +209,8 @@ nmap <silent> <Leader>cr :FcyGentags<CR>
 nmap <silent> <F5> :FcyGentags<CR>
 command! -nargs=0 FcyGentags call s:fcy_gen_tags("", "")
 function! s:fcy_gen_tags(filename, dir)
-    let l:cmd = 'ctags -R --language-force=c++'
+    "let l:cmd = 'ctags -R --language-force=c++'
+    let l:cmd = 'ctags -R --c++-kinds=+p --fields=+iaS --extra=+q'
     "let l:cmd = 'ctags -R'
     call vimproc#system_bg(l:cmd)
     call vimproc#system_bg('gtags')
@@ -211,7 +222,7 @@ endfunction
 filetype off " required!
 
 let &runtimepath = &runtimepath . ',' . g:config_dir . '/bundle/neobundle.vim'
-
+    
 if s:useVendor
     call neobundle#begin(g:config_dir . '/bundle')
     NeoBundleFetch 'https://github.com/Shougo/neobundle.vim'
@@ -254,11 +265,17 @@ if s:useVendor
                         \ }
         endfunction
     endif
+    if count(s:plugin_groups, 'ctrlspace')
+        NeoBundle 'vim-ctrlspace/vim-ctrlspace'
+        nnoremap <silent><C-p> :CtrlSpace O<CR>
+        let g:CtrlSpaceDefaultMappingKey = "<C-Space>"
+        let g:CtrlSpaceProjectRootMarkers = []
+    endif
     if count(s:plugin_groups, 'ctrlsf')
         NeoBundle 'dyng/ctrlsf.vim'
         let s:hooks = neobundle#get_hooks("ctrlsf.vim")
         function! s:hooks.on_source(bundle)
-            let g:ctrlsf_ackprg = 'ack'
+            let g:ctrlsf_ackprg = 'ag'
             let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS']
             nnoremap <Leader>sp :CtrlSF<CR>
         endfunction
@@ -277,7 +294,7 @@ if s:useVendor
                     exe 'NeoCompleteLock'
                 endif
             endfunction
-
+    
             " Called once only when the multiple selection is canceled (default <Esc>)
             function! Multiple_cursors_after()
                 if exists(':NeoCompleteUnlock')==2
@@ -298,7 +315,7 @@ if s:useVendor
             " Using ag as recursive command.
             let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', '']
             call unite#filters#matcher_default#use(['matcher_fuzzy'])
-
+    
             "nnoremap <c-p> :Unite -start-insert buffer file_rec/async<cr>
             nnoremap <leader>f :Unite -start-insert buffer file_rec/async<cr>
             nnoremap <leader>t :<C-u>Unite -no-split -buffer-name=files   -start-insert file_rec/async:!<cr>
@@ -306,7 +323,7 @@ if s:useVendor
             nnoremap <leader>uy :Unite history/yank<cr>
             nnoremap <leader>uf :Unite buffer file<cr>
             nnoremap <leader>ub :Unite buffer<cr>
-
+    
             autocmd FileType unite call s:unite_settings()
             function! s:unite_settings()
                 nmap <buffer> Q <plug>(unite_exit)
@@ -344,6 +361,7 @@ if s:useVendor
         NeoBundle  'fcymk2/tagbar'
         let tagbar_left=1
         nnoremap <silent><Leader>tt :TagbarToggle<CR>
+        nnoremap <silent><F11> :TagbarToggle<CR>
         let tagbar_width=32
         let g:tagbar_compact=1
         "autocmd FileType c,cpp,h nested :TagbarOpen
@@ -371,10 +389,10 @@ if s:useVendor
             " Set minimum syntax keyword length.
             let g:neocomplete#sources#syntax#min_keyword_length = 3
             let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
-
+    
             inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
             inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
-
+    
             if !exists('g:neocomplete#sources#omni#input_patterns')
                 let g:neocomplete#sources#omni#input_patterns = {}
                 let g:neocomplete#sources#omni#input_patterns.c =
@@ -382,7 +400,7 @@ if s:useVendor
                 let g:neocomplete#sources#omni#input_patterns.cpp =
                             \'[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
             endif
-
+    
             let g:neocomplete#fallback_mappings = ["\<C-x>\<C-o>", "\<C-x>\<C-n>"]
             let g:neocomplete#enable_auto_select = 1
             let g:neocomplete#enable_at_startup = 1
@@ -393,8 +411,8 @@ if s:useVendor
         let s:hooks = neobundle#get_hooks("vim-clang")
         function! s:hooks.on_source(bundle)
             if WINDOWS()
-                let g:clang_exec = 'C:\LLVM\bin\clang.exe'
-                let g:clang_format_exec = 'C:\LLVM\bin\clang-format.exe'
+                let g:clang_exec = 'C:/LLVM/bin/clang.exe'
+                let g:clang_format_exec = 'C:/LLVM/bin/clang-format.exe'
             endif
             let g:clang_auto = 0
             set completeopt=menu,noinsert       "menu,longest
@@ -410,7 +428,7 @@ if s:useVendor
             endif
             let g:clang_c_options = '-std=gnu11'
             let g:clang_cpp_options = '-std=c++11 -stdlib=libc++'
-
+    
             " for c and c++
             let g:neocomplete#force_omni_input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
             let g:neocomplete#force_omni_input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
@@ -486,29 +504,26 @@ if s:useVendor
             let g:ycm_autoclose_preview_window_after_completion = 0
         endfunction
     endif
-    " Enable omni completion.
-    autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-    autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-    autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-    autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-    autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete
     if count(s:plugin_groups, 'vim-fswitch')
         NeoBundle 'derekwyatt/vim-fswitch'
         map <silent> <Leader>h <ESC>:FSHere<CR>
     endif
     if count(s:plugin_groups, 'vim-airline')
         NeoBundle  'bling/vim-airline'
-        let g:airline#extensions#tabline#enabled = 1
-        let g:airline#extensions#tabline#left_sep = ' '
-        let g:airline#extensions#tabline#left_alt_sep = '|'
-        let g:airline#extensions#tabline#show_buffers = 1
-        let g:airline#extensions#tabline#buffer_nr_show = 1
-        let g:airline#extensions#tabline#fnamemod = ':p:.'
+        let s:hooks = neobundle#get_hooks("vim-airline")
+        function! s:hooks.on_source(bundle)
+            let g:airline#extensions#tabline#enabled = 1
+            "let g:airline#extensions#tabline#left_sep = ' '
+            "let g:airline#extensions#tabline#left_alt_sep = '|'
+            let g:airline#extensions#tabline#show_buffers = 1
+            let g:airline#extensions#tabline#buffer_nr_show = 1
+            let g:airline#extensions#tabline#fnamemod = ':p:.'
+        endfunction
     endif
     if count(s:plugin_groups, 'nerdtree')
         NeoBundle  'scrooloose/nerdtree'
         nmap <leader>nt :NERDTreeToggle<cr>
+        nmap <F12> :NERDTreeToggle<cr>
         let NERDTreeWinSize=32
         let NERDTreeWinPos="right"
         let NERDTreeShowHidden=1
@@ -566,7 +581,7 @@ if s:useVendor
         "set grepprg=ag\ --smart-case
         "set grepprg=ack\ --smart-case
         "set grepprg=grep\ --smart-case
-
+    
         let g:EasyGrepCommand = 0
         let g:EasyGrepJumpToMatch=0
         let g:EasyGrepRecursive = 1
@@ -583,9 +598,27 @@ if s:useVendor
     if count(s:plugin_groups, 'vim-instant-markdown')
         NeoBundle  'suan/vim-instant-markdown'
     endif
+    if count(s:plugin_groups, 'vim-markdown')
+        NeoBundle 'godlygeek/tabular'
+        NeoBundle 'plasticboy/vim-markdown'
+        let g:vim_markdown_folding_disabled = 1
+    endif
+    if count(s:plugin_groups, 'minibufexpl.vim')
+        NeoBundle 'fholgado/minibufexpl.vim'
+        map <Leader>bl :MBEToggle<cr>
+        "map <C-Tab> :MBEbn<cr>
+        "map <C-S-Tab> :MBEbp<cr>
+    endif
     call neobundle#end()
     NeoBundleCheck
 endif
 filetype plugin indent on              " required
 syntax on
 
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete

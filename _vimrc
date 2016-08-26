@@ -14,13 +14,15 @@ endfunction
 
 if WINDOWS()
     let g:config_dir = $VIM
+    let g:home_dir = $HOME
 elseif LINUX()
     let g:config_dir = '~/.vim'
+    let g:home_dir = '~'
 endif
 
 
 " ============================================================================
-" Plugins 
+" Plugins
 " ============================================================================
 let s:useYCM    = 0
 
@@ -28,14 +30,11 @@ let s:plugin_groups = []
 call add(s:plugin_groups, 'fencview')
 call add(s:plugin_groups, 'tellenc')
 call add(s:plugin_groups, 'vim-bbye')
-"call add(s:plugin_groups, 'delimitMate')
 "call add(s:plugin_groups, 'ultisnips')
-call add(s:plugin_groups, 'ctrlp')
-"call add(s:plugin_groups, 'ctrlspace')
+"call add(s:plugin_groups, 'ctrlp')
 call add(s:plugin_groups, 'ctrlsf')
 call add(s:plugin_groups, 'vim-multiple-cursors')
-"call add(s:plugin_groups, 'unite')
-"call add(s:plugin_groups, 'neomru')
+call add(s:plugin_groups, 'unite')
 call add(s:plugin_groups, 'vimproc')
 "call add(s:plugin_groups, 'vimfiler')
 "call add(s:plugin_groups, 'vim-signature')
@@ -51,18 +50,18 @@ else
            call add(s:plugin_groups, 'neocomplete')
        endif
     endif
-    call add(s:plugin_groups, 'vim-clang')
+    "call add(s:plugin_groups, 'vim-clang')
     "call add(s:plugin_groups, 'clang_complete')
 endif
-call add(s:plugin_groups, 'vim-airline')
+"call add(s:plugin_groups, 'vim-airline')
 "call add(s:plugin_groups, 'minibufexpl.vim')
 call add(s:plugin_groups, 'vim-fswitch')
 call add(s:plugin_groups, 'nerdtree')
 call add(s:plugin_groups, 'nerdcommenter')
 call add(s:plugin_groups, 'vim-easymotion')
-call add(s:plugin_groups, 'ack.vim')
+"call add(s:plugin_groups, 'ack.vim')
 "call add(s:plugin_groups, 'ag.vim')
-call add(s:plugin_groups, 'vim-easygrep')
+"call add(s:plugin_groups, 'vim-easygrep')
 call add(s:plugin_groups, 'vim-indent-guides')
 call add(s:plugin_groups, 'autohotkey-ahk')
 call add(s:plugin_groups, 'vim-AHKcomplete')
@@ -70,234 +69,6 @@ call add(s:plugin_groups, 'vim-markdown')
 "call add(s:plugin_groups, 'vim-instant-markdown')
 if (executable('ctags') && executable('gtags'))
     "call add(s:plugin_groups, 'gen_tags.vim')
-endif
-
-silent! if plug#begin(g:config_dir . '/plugin')
-if count(s:plugin_groups, 'fencview')
-    Plug 'mbbill/fencview'
-    let g:fencview_autodetect = 1
-    let g:fencview_checklines = 10
-endif
-if count(s:plugin_groups, 'tellenc')
-    Plug  'adah1972/tellenc'
-endif
-if count(s:plugin_groups, 'nerdtree')
-    Plug  'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-    nmap <leader>nt :NERDTreeToggle<cr>
-    nmap <F12> :NERDTreeToggle<cr>
-    let NERDTreeWinSize=32
-    let NERDTreeWinPos="right"
-    let NERDTreeShowHidden=1
-    let NERDTreeMinimalUI=1
-    let NERDTreeAutoDeleteBuffer=1
-    let NERDTreeShowBookmarks=1
-    let NERDTreeShowLineNumbers=1
-    let NERDTreeShowHidden=1
-endif
-if count(s:plugin_groups, 'tagbar')
-    Plug  'fcymk2/tagbar'
-endif
-if count(s:plugin_groups, 'vimproc')
-    function! BuildVimproc(info)
-      " info is a dictionary with 3 fields
-      " - name:   name of the plugin
-      " - status: 'installed', 'updated', or 'unchanged'
-      " - force:  set on PlugInstall! or PlugUpdate!
-      if a:info.status != 'unchanged' || a:info.force
-        if WINDOWS()
-            silent !Tools\update-dll-mingw.bat
-        else
-            make
-        endif
-      endif
-    endfunction
-    Plug 'Shougo/vimproc.vim', {'do' : function('BuildVimproc')}
-endif
-if count(s:plugin_groups, 'vim-bbye')
-    Plug  'moll/vim-bbye'
-    :nnoremap <Leader>bd :Bdelete<CR>
-    :nnoremap <Leader>q :Bdelete<CR>
-endif
-if count(s:plugin_groups, 'delimitMate')
-    Plug  'Raimondi/delimitMate'
-    let delimitMate_autoclose = 1
-    let delimitMate_expand_cr = 1
-endif
-if count(s:plugin_groups, 'ultisnips')
-    Plug  'SirVer/ultisnips'
-endif
-if count(s:plugin_groups, 'ctrlp')
-    Plug  'ctrlpvim/ctrlp.vim'
-    nnoremap <c-p> :CtrlPMixed<CR>  
-    let g:ctrlp_show_hidden = 0
-    let g:ctrlp_working_path_mode = 'a'   "ra c
-    let g:ctrlp_clear_cache_on_exit = 1
-    let g:ctrlp_custom_ignore = {
-                \ 'dir':  '\v[\/]((\.(git|hg|svn))|(obj|backup))$',
-                \ 'file': '\v\.(exe|so|dll)$',
-                \ 'link': 'some_bad_symbolic_links',
-                \ }
-endif
-if count(s:plugin_groups, 'ctrlspace')
-    Plug 'vim-ctrlspace/vim-ctrlspace'
-    nnoremap <silent><C-p> :CtrlSpace O<CR>
-    let g:CtrlSpaceDefaultMappingKey = "<C-Space>"
-    let g:CtrlSpaceProjectRootMarkers = []
-endif
-if count(s:plugin_groups, 'ctrlsf')
-    Plug 'dyng/ctrlsf.vim'
-    let g:ctrlsf_ackprg = 'ag'
-    let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS']
-    nnoremap <Leader>sp :CtrlSF<CR>
-endif
-if count(s:plugin_groups, 'vim-multiple-cursors')
-    Plug  'terryma/vim-multiple-cursors'
-endif
-if count(s:plugin_groups, 'unite')
-    Plug  'Shougo/unite.vim'
-endif
-if count(s:plugin_groups, 'neomru')
-    Plug  'Shougo/neomru.vim'
-endif
-if count(s:plugin_groups, 'vim-signature')
-    Plug  'kshenoy/vim-signature'
-endif
-if count(s:plugin_groups, 'neocomplete')
-    Plug  'Shougo/neocomplete.vim'
-endif
-if count(s:plugin_groups, 'vim-clang')
-    Plug 'fcymk2/vim-clang'
-endif
-if count(s:plugin_groups, 'clang_complete')
-    Plug  'Rip-Rip/clang_complete'
-    let g:clang_use_library=1
-    if WINDOWS()
-        let g:clang_library_path = 'C:\LLVM\bin'
-    elseif LINUX()
-        let g:clang_library_path = '/usr/lib/llvm-3.8/lib'
-    endif
-    let g:clang_auto_select=1
-    "let g:clang_complete_macros=1
-    set completeopt=menu,longest
-    let g:clang_complete_auto=1     " automatically complete after -> . ::
-    "let g:clang_hl_errors=0         " highlight the warnings and error the same way clang does it
-    let g:clang_complete_copen=0    " open quickfix window on error
-    let g:clang_periodic_quickfix=0 " periodically update the quickfix window
-    let g:clang_snippets=0
-    let g:clang_close_preview=1
-    let g:clang_user_options='-stdlib=libc++ -std=c++11'
-endif
-if count(s:plugin_groups, 'deoplete')
-    Plug 'Shougo/deoplete.nvim'
-endif
-if count(s:plugin_groups, 'YouCompleteMe')
-    Plug 'Valloric/YouCompleteMe'
-    nnoremap <Leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
-    nnoremap <F3> :YcmCompleter GoToDefinitionElseDeclaration<CR>
-    nnoremap <leader>je :YcmCompleter GoToDeclaration<CR>
-    let g:ycm_key_list_select_completion=['<c-n>']
-    "let g:ycm_key_list_select_completion = ['<Down>']
-    let g:ycm_key_list_previous_completion=['<c-p>']
-    "let g:ycm_key_list_previous_completion = ['<Up>']
-    let g:ycm_server_use_vim_stdout = 1
-    "let g:ycm_server_log_level = 'debug'
-    let g:ycm_global_ycm_extra_conf = g:config_dir . '/lib/.ycm_extra_conf.py'   "set default .ycm_extra_conf.py
-    let g:ycm_confirm_extra_conf=0
-    let g:ycm_collect_identifiers_from_tag_files = 1                      "use tag files
-    let g:ycm_cache_omnifunc=0                                            " disable cache
-    let g:ycm_seed_identifiers_with_syntax=1
-    let g:ycm_complete_in_comments = 1
-    let g:ycm_complete_in_strings = 1
-    let g:ycm_min_num_of_chars_for_completion=3
-    let g:ycm_collect_identifiers_from_comments_and_strings = 0
-    let g:ycm_autoclose_preview_window_after_insertion = 0
-    let g:ycm_autoclose_preview_window_after_completion = 0
-endif
-if count(s:plugin_groups, 'vim-fswitch')
-    Plug 'derekwyatt/vim-fswitch'
-    map <silent> <Leader>h <ESC>:FSHere<CR>
-endif
-if count(s:plugin_groups, 'vim-airline')
-    Plug  'vim-airline/vim-airline'
-endif
-if count(s:plugin_groups, 'nerdcommenter')
-    Plug  'scrooloose/nerdcommenter'
-    let NERD_c_alt_style=1
-    let NERD_cpp_alt_style=1
-    let g:NERDCustomDelimiters = {
-                \ 'c': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-                \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' }
-                \ }
-    nmap <A-/> <plug>NERDCommenterInvert
-    vmap <A-/> <plug>NERDCommenterInvert gv
-    nmap <leader>cc <plug>NERDCommenterInvert
-    vmap <leader>cc <plug>NERDCommenterInvert gv
-endif
-if count(s:plugin_groups, 'vim-indent-guides')
-    Plug  'nathanaelkane/vim-indent-guides'
-    let g:indent_guides_enable_on_vim_startup=0
-    let g:indent_guides_start_level=2
-    let g:indent_guides_guide_size=1
-    :nmap <silent> <Leader>i <Plug>IndentGuidesToggle
-endif
-if count(s:plugin_groups, 'vim-easymotion')
-    Plug  'Lokaltog/vim-easymotion'
-    let g:EasyMotion_smartcase = 0
-    let g:EasyMotion_do_mapping = 0 " Disable default mappings
-    nmap s <Plug>(easymotion-s)
-    nmap S <Plug>(easymotion-s2)
-    map <Leader>j <Plug>(easymotion-j)
-    map <Leader>k <Plug>(easymotion-k)
-endif
-if count(s:plugin_groups, 'gen_tags.vim')
-    Plug  'jsfaint/gen_tags.vim'
-    "let g:gtags_split = 'v'
-    let g:ctags_opts = '--language-force=c++'
-    let g:ctags_opts = 'ctags -R --c++-kinds=+p --fields=+iaS --extra=+q'
-endif
-if count(s:plugin_groups, 'ack.vim')
-    Plug  'mileszs/ack.vim'
-endif
-if count(s:plugin_groups, 'ag.vim')
-    Plug  'rking/ag.vim'
-    let g:ag_prg='ag --vimgrep --smart-case'
-    let g:ag_working_path_mode="r"
-    let g:ag_highlight=1
-endif
-if count(s:plugin_groups, 'vim-easygrep')
-    Plug  'dkprice/vim-easygrep'
-    "set grepprg=ag\ --smart-case
-    "set grepprg=ack\ --smart-case
-    "set grepprg=grep\ --smart-case
-
-    let g:EasyGrepCommand = 0
-    let g:EasyGrepJumpToMatch=0
-    let g:EasyGrepRecursive = 1
-    let g:EasyGrepIgnoreCase = 1
-    let g:EasyGrepFilesToExclude=".svn,.git,*.pyc,*.bak,cscope.*,*.a,*.o,*.d,*.lst,tags,GTAGS,GRTAGS,GPATH"
-    "let g:EasyGrepFilesToExclude=''
-endif
-if count(s:plugin_groups, 'autohotkey-ahk')
-    Plug  'autohotkey-ahk', { 'for': 'autohotkey' }
-endif
-if count(s:plugin_groups, 'vim-AHKcomplete')
-    Plug  'vim-AHKcomplete', { 'for': 'autohotkey' }
-endif
-if count(s:plugin_groups, 'vim-instant-markdown')
-    Plug  'suan/vim-instant-markdown', { 'for': 'markdown' }
-endif
-if count(s:plugin_groups, 'vim-markdown')
-    Plug 'godlygeek/tabular', { 'for': 'markdown' }
-    Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
-    let g:vim_markdown_folding_disabled = 1
-endif
-if count(s:plugin_groups, 'minibufexpl.vim')
-    Plug 'fholgado/minibufexpl.vim'
-    map <Leader>bl :MBEToggle<cr>
-    "map <C-Tab> :MBEbn<cr>
-    "map <C-S-Tab> :MBEbp<cr>
-endif
-call plug#end()
 endif
 
 " ============================================================================
@@ -312,10 +83,8 @@ else
     let s:useGUI=0
 endif
 
-filetype plugin indent on
-syntax on
 
-autocmd! bufwritepost _vimrc source $MYVIMRC
+"autocmd! bufwritepost _vimrc source $MYVIMRC
 nnoremap <leader>ee :e $MYVIMRC<CR>
 
 "behave mswin        "set 'selection', 'selectmode', 'mousemodel' and 'keymodel' for MS-Windows
@@ -412,6 +181,7 @@ set noshowmatch
 set nolist
 set wrap
 set laststatus=2
+set statusline=%F%m%r%w%=[%{&ff}]\ [%Y]\ [ASCII=\%03.3b,HEX=\%02.2B]\ [%04l,%04v]\ [%p%%,%L]
 set showcmd
 "set cmdheight=1
 set backspace=indent,eol,start whichwrap+=<,>,[,]
@@ -463,9 +233,131 @@ autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete
 
+filetype plugin indent on
+syntax on
+
 " ============================================================================
 " Plugin SETTINGS
 " ============================================================================
+silent! if plug#begin(g:config_dir . '/plugged')
+if count(s:plugin_groups, 'fencview')
+    Plug 'mbbill/fencview'
+endif
+if count(s:plugin_groups, 'tellenc')
+    Plug  'adah1972/tellenc'
+endif
+if count(s:plugin_groups, 'nerdtree')
+    Plug  'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+endif
+if count(s:plugin_groups, 'tagbar')
+    Plug  'fcymk2/tagbar', { 'on': 'TagbarToggle' }
+endif
+if count(s:plugin_groups, 'vimproc')
+    function! BuildVimproc(info)
+      " info is a dictionary with 3 fields
+      " - name:   name of the plugin
+      " - status: 'installed', 'updated', or 'unchanged'
+      " - force:  set on PlugInstall! or PlugUpdate!
+      if a:info.status != 'unchanged' || a:info.force
+        if WINDOWS()
+            silent !Tools\update-dll-mingw.bat
+        else
+            make
+        endif
+      endif
+    endfunction
+    Plug 'Shougo/vimproc.vim', {'do' : function('BuildVimproc')}
+endif
+if count(s:plugin_groups, 'vim-bbye')
+    Plug  'moll/vim-bbye', {'on': 'Bdelete'}
+endif
+if count(s:plugin_groups, 'ultisnips')
+    Plug  'SirVer/ultisnips'
+endif
+if count(s:plugin_groups, 'ctrlp')
+    Plug  'ctrlpvim/ctrlp.vim', { 'on': 'CtrlP' }
+endif
+if count(s:plugin_groups, 'ctrlsf')
+    Plug 'dyng/ctrlsf.vim'
+endif
+if count(s:plugin_groups, 'vim-multiple-cursors')
+    Plug  'terryma/vim-multiple-cursors'
+endif
+if count(s:plugin_groups, 'unite')
+    Plug 'Shougo/unite.vim'
+    Plug 'Shougo/unite-outline'
+    Plug 'Shougo/neomru.vim'
+    Plug 'Shougo/neoyank.vim'
+endif
+if count(s:plugin_groups, 'vim-signature')
+    Plug  'kshenoy/vim-signature'
+endif
+if count(s:plugin_groups, 'neocomplete')
+    Plug  'Shougo/neocomplete.vim'
+endif
+if count(s:plugin_groups, 'vim-clang')
+    Plug 'fcymk2/vim-clang'
+endif
+if count(s:plugin_groups, 'clang_complete')
+    Plug  'Rip-Rip/clang_complete'
+endif
+if count(s:plugin_groups, 'deoplete')
+    Plug 'Shougo/deoplete.nvim'
+endif
+if count(s:plugin_groups, 'YouCompleteMe')
+    Plug 'Valloric/YouCompleteMe'
+endif
+if count(s:plugin_groups, 'vim-fswitch')
+    Plug 'derekwyatt/vim-fswitch'
+endif
+if count(s:plugin_groups, 'vim-airline')
+    Plug  'vim-airline/vim-airline'
+endif
+if count(s:plugin_groups, 'nerdcommenter')
+    Plug  'scrooloose/nerdcommenter', { 'on': '<plug>NERDCommenterInvert' }
+endif
+if count(s:plugin_groups, 'vim-indent-guides')
+    Plug  'nathanaelkane/vim-indent-guides', { 'on': '<Plug>IndentGuidesToggle' }
+endif
+if count(s:plugin_groups, 'vim-easymotion')
+    Plug  'Lokaltog/vim-easymotion'
+endif
+if count(s:plugin_groups, 'gen_tags.vim')
+    Plug  'jsfaint/gen_tags.vim'
+endif
+if count(s:plugin_groups, 'ack.vim')
+    Plug  'mileszs/ack.vim', { 'on': 'Ack' }
+endif
+if count(s:plugin_groups, 'ag.vim')
+    Plug  'rking/ag.vim', { 'on': 'Ag' }
+endif
+if count(s:plugin_groups, 'vim-easygrep')
+    Plug  'dkprice/vim-easygrep'
+endif
+if count(s:plugin_groups, 'autohotkey-ahk')
+    Plug  'autohotkey-ahk', { 'for': 'autohotkey' }
+endif
+if count(s:plugin_groups, 'vim-AHKcomplete')
+    Plug  'vim-AHKcomplete', { 'for': 'autohotkey' }
+endif
+if count(s:plugin_groups, 'vim-instant-markdown')
+    Plug  'suan/vim-instant-markdown', { 'for': 'markdown' }
+endif
+if count(s:plugin_groups, 'vim-markdown')
+    Plug 'godlygeek/tabular', { 'for': 'markdown' }
+    Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
+endif
+if count(s:plugin_groups, 'minibufexpl.vim')
+    Plug 'fholgado/minibufexpl.vim'
+endif
+call plug#end()
+endif
+
+
+if count(s:plugin_groups, 'fencview')
+    let g:fencview_autodetect = 1
+    let g:fencview_checklines = 10
+endif
 if count(s:plugin_groups, 'tagbar')
     let tagbar_left=1
     nnoremap <silent><Leader>tt :TagbarToggle<CR>
@@ -485,31 +377,52 @@ endif
 if count(s:plugin_groups, 'unite')
     let g:unite_data_directory=g:config_dir . '/.cache/unite'
     let g:unite_enable_start_insert=0
-    let g:unite_source_history_yank_enable=1
-    "let g:unite_source_rec_max_cache_files=5000
+    let g:unite_source_history_yank_enable = 1
     let g:unite_force_overwrite_statusline=1
-    " Using ag as recursive command.
+
     let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', '']
     call unite#filters#matcher_default#use(['matcher_fuzzy'])
 
-    "nnoremap <c-p> :Unite -start-insert buffer file_rec/async<cr>
-    nnoremap <leader>f :Unite -start-insert buffer file_rec/async<cr>
-    nnoremap <leader>t :<C-u>Unite -no-split -buffer-name=files   -start-insert file_rec/async:!<cr>
-    nnoremap <leader>ug :Unite grep:.<cr>
+    nnoremap <c-p> :Unite -start-insert -silent -auto-resize buffer file_rec/async<cr>
+    nmap <leader>f <c-p>
+    nnoremap <leader>t :<C-u>Unite -no-split -buffer-name=files -start-insert file_rec/async:!<cr>
+    nnoremap <leader>ug :Unite -silent -auto-resize grep:.<CR>
     nnoremap <leader>uy :Unite history/yank<cr>
     nnoremap <leader>uf :Unite buffer file<cr>
-    nnoremap <leader>ub :Unite buffer<cr>
+    nnoremap <leader>b :Unite -quick-match buffer<cr>
+    nnoremap <leader>ub :Unite -quick-match buffer<cr>
+    nnoremap <leader>ul :<C-u>Unite -start-insert -auto-resize line<CR>
+    nnoremap <leader>uo :<C-u>Unite -auto-resize outline<CR>
 
     autocmd FileType unite call s:unite_settings()
     function! s:unite_settings()
         nmap <buffer> Q <plug>(unite_exit)
         nmap <buffer> <esc> <plug>(unite_exit)
-        "imap <buffer> <esc> <plug>(unite_exit)
+        imap <buffer> <esc> <plug>(unite_exit)
         imap <buffer> <C-j> <Plug>(unite_select_next_line)
         imap <buffer> <C-k> <Plug>(unite_select_previous_line)
         nmap <buffer> <C-p> <plug>(unite_exit)
         imap <buffer> <C-p> <plug>(unite_exit)
     endfunction
+
+    if executable('ag')
+        let g:unite_source_grep_command = 'ag'
+        let g:unite_source_grep_default_opts =
+        \ '-i --vimgrep --hidden --ignore ' .
+        \ '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
+        let g:unite_source_grep_recursive_opt = ''
+    endif
+endif
+if count(s:plugin_groups, 'ctrlp')
+    "nnoremap <c-p> :CtrlPMixed<CR>
+    let g:ctrlp_show_hidden = 0
+    let g:ctrlp_working_path_mode = 'a'   "ra c
+    let g:ctrlp_clear_cache_on_exit = 1
+    let g:ctrlp_custom_ignore = {
+                \ 'dir':  '\v[\/]((\.(git|hg|svn))|(obj|backup))$',
+                \ 'file': '\v\.(exe|so|dll)$',
+                \ 'link': 'some_bad_symbolic_links',
+                \ }
 endif
 if count(s:plugin_groups, 'neocomplete')
     " Use smartcase.
@@ -536,7 +449,7 @@ if count(s:plugin_groups, 'neocomplete')
     let g:neocomplete#enable_auto_select = 1
     let g:neocomplete#enable_at_startup = 1
 endif
-if count(s:plugin_groups, 'vim-multiple-cursors')    
+if count(s:plugin_groups, 'vim-multiple-cursors')
     let g:multi_cursor_next_key='<S-n>'
     let g:multi_cursor_prev_key='<S-p>'
     let g:multi_cursor_skip_key='<S-x>'
@@ -597,3 +510,125 @@ if count(s:plugin_groups, 'deoplete')
     inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
     inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
 endif
+if count(s:plugin_groups, 'vim-bbye')
+    :nnoremap <Leader>q :Bdelete<CR>
+endif
+if count(s:plugin_groups, 'ctrlsf')
+    let g:ctrlsf_ackprg = 'ag'
+    let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS', 'obj', 'out', 'lib*']
+    nnoremap <Leader>sp :CtrlSF<CR>
+endif
+if count(s:plugin_groups, 'nerdtree')
+    nmap <leader>nt :NERDTreeToggle<cr>
+    nmap <F12> :NERDTreeToggle<cr>
+    let NERDTreeWinSize=32
+    let NERDTreeWinPos="right"
+    let NERDTreeShowHidden=1
+    let NERDTreeMinimalUI=1
+    let NERDTreeAutoDeleteBuffer=1
+    let NERDTreeShowBookmarks=1
+    let NERDTreeShowLineNumbers=1
+    let NERDTreeShowHidden=1
+endif
+if count(s:plugin_groups, 'clang_complete')
+    let g:clang_use_library=1
+    if WINDOWS()
+        let g:clang_library_path = 'C:\LLVM\bin'
+    elseif LINUX()
+        let g:clang_library_path = '/usr/lib/llvm-3.8/lib'
+    endif
+    let g:clang_auto_select=1
+    "let g:clang_complete_macros=1
+    set completeopt=menu,longest
+    let g:clang_complete_auto=1     " automatically complete after -> . ::
+    "let g:clang_hl_errors=0         " highlight the warnings and error the same way clang does it
+    let g:clang_complete_copen=0    " open quickfix window on error
+    let g:clang_periodic_quickfix=0 " periodically update the quickfix window
+    let g:clang_snippets=0
+    let g:clang_close_preview=1
+    let g:clang_user_options='-stdlib=libc++ -std=c++11'
+endif
+if count(s:plugin_groups, 'YouCompleteMe') "{{{
+    nnoremap <Leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
+    nnoremap <F3> :YcmCompleter GoToDefinitionElseDeclaration<CR>
+    nnoremap <leader>je :YcmCompleter GoToDeclaration<CR>
+    let g:ycm_key_list_select_completion=['<c-n>']
+    "let g:ycm_key_list_select_completion = ['<Down>']
+    let g:ycm_key_list_previous_completion=['<c-p>']
+    "let g:ycm_key_list_previous_completion = ['<Up>']
+    let g:ycm_server_use_vim_stdout = 1
+    "let g:ycm_server_log_level = 'debug'
+    let g:ycm_global_ycm_extra_conf = g:config_dir . '/lib/.ycm_extra_conf.py'   "set default .ycm_extra_conf.py
+    let g:ycm_confirm_extra_conf=0
+    let g:ycm_collect_identifiers_from_tag_files = 1                      "use tag files
+    let g:ycm_cache_omnifunc=0                                            " disable cache
+    let g:ycm_seed_identifiers_with_syntax=1
+    let g:ycm_complete_in_comments = 1
+    let g:ycm_complete_in_strings = 1
+    let g:ycm_min_num_of_chars_for_completion=3
+    let g:ycm_collect_identifiers_from_comments_and_strings = 0
+    let g:ycm_autoclose_preview_window_after_insertion = 0
+    let g:ycm_autoclose_preview_window_after_completion = 0
+endif "}}}
+if count(s:plugin_groups, 'nerdcommenter')
+    let NERD_c_alt_style=1
+    let NERD_cpp_alt_style=1
+    let g:NERDCustomDelimiters = {
+                \ 'c': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
+                \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' }
+                \ }
+    nmap <A-/> <plug>NERDCommenterInvert
+    vmap <A-/> <plug>NERDCommenterInvert gv
+    nmap <leader>cc <plug>NERDCommenterInvert
+    vmap <leader>cc <plug>NERDCommenterInvert gv
+endif
+if count(s:plugin_groups, 'vim-indent-guides')
+    let g:indent_guides_enable_on_vim_startup=0
+    let g:indent_guides_start_level=2
+    let g:indent_guides_guide_size=1
+    :nmap <silent> <Leader>i <Plug>IndentGuidesToggle
+endif
+if count(s:plugin_groups, 'vim-easymotion')
+    let g:EasyMotion_smartcase = 0
+    let g:EasyMotion_do_mapping = 0 " Disable default mappings
+    nmap s <Plug>(easymotion-s)
+    nmap S <Plug>(easymotion-s2)
+    map <Leader>j <Plug>(easymotion-j)
+    map <Leader>k <Plug>(easymotion-k)
+endif
+if count(s:plugin_groups, 'gen_tags.vim')
+    "let g:gtags_split = 'v'
+    let g:ctags_opts = '--language-force=c++'
+    let g:ctags_opts = 'ctags -R --c++-kinds=+p --fields=+iaS --extra=+q'
+endif
+if count(s:plugin_groups, 'ag.vim')
+    let g:ag_prg='ag --vimgrep --smart-case'
+    let g:ag_working_path_mode="r"
+    let g:ag_highlight=1
+endif
+if count(s:plugin_groups, 'ack.vim')
+endif
+if count(s:plugin_groups, 'vim-easygrep')
+    "set grepprg=ag\ --smart-case
+    "set grepprg=ack\ --smart-case
+    "set grepprg=grep\ --smart-case
+
+    let g:EasyGrepCommand = 0
+    let g:EasyGrepJumpToMatch=0
+    let g:EasyGrepRecursive = 1
+    let g:EasyGrepIgnoreCase = 1
+    let g:EasyGrepFilesToExclude=".svn,.git,*.pyc,*.bak,cscope.*,*.a,*.o,*.d,*.lst,tags,GTAGS,GRTAGS,GPATH"
+    "let g:EasyGrepFilesToExclude=''
+endif
+if count(s:plugin_groups, 'minibufexpl.vim')
+    map <Leader>bl :MBEToggle<cr>
+    "map <C-Tab> :MBEbn<cr>
+    "map <C-S-Tab> :MBEbp<cr>
+endif
+if count(s:plugin_groups, 'vim-markdown')
+    let g:vim_markdown_folding_disabled = 1
+endif
+if count(s:plugin_groups, 'vim-fswitch')
+    map <silent> <Leader>h <ESC>:FSHere<CR>
+endif
+

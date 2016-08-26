@@ -3,7 +3,7 @@
 .neobundle/
 /vim_origin/
 /vim*/
-/plugin/
+/plugged/
 /.netrwhist
 /init.vim
 /.init.vim-rplugin~

@@ -37,6 +37,7 @@ call add(s:plugin_groups, 'vim-multiple-cursors')
 call add(s:plugin_groups, 'unite')
 call add(s:plugin_groups, 'vimproc')
 "call add(s:plugin_groups, 'vimfiler')
+call add(s:plugin_groups, 'vimshell')
 "call add(s:plugin_groups, 'vim-signature')
 call add(s:plugin_groups, 'tagbar')
 "call add(s:plugin_groups, 'syntastic')
@@ -197,7 +198,6 @@ set nofoldenable
 
 "autocomplete
 autocmd InsertLeave * if pumvisible() == 0|pclose|endif
-imap <expr> <CR> pumvisible() ? "\<c-y>" : "<Plug>delimitMateCR"
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
 inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
 inoremap <expr> <PageDown> pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<PageDown>"
@@ -267,6 +267,12 @@ if count(s:plugin_groups, 'vimproc')
       endif
     endfunction
     Plug 'Shougo/vimproc.vim', {'do' : function('BuildVimproc')}
+endif
+if count(s:plugin_groups, 'vimshell')
+    Plug 'Shougo/vimshell.vim', {'on': 'VimShell'}
+endif
+if count(s:plugin_groups, 'vimfiler')
+    Plug 'Shougo/vimfiler.vim' 
 endif
 if count(s:plugin_groups, 'vim-bbye')
     Plug  'moll/vim-bbye', {'on': 'Bdelete'}
@@ -413,6 +419,18 @@ if count(s:plugin_groups, 'unite')
         let g:unite_source_grep_recursive_opt = ''
     endif
 endif
+if count(s:plugin_groups, 'vimshell')
+    nnoremap <leader>vs :silent VimShell<CR>
+    let g:vimshell_prompt_expr =
+        \ 'escape(fnamemodify(getcwd(), ":~").">", "\\[]()?! ")." "'
+    let g:vimshell_prompt_pattern = '^\%(\f\|\\.\)\+> '
+    let g:vimshell_no_default_keymappings=0
+endif
+if count(s:plugin_groups, 'vimfiler')
+    nnoremap <leader>ve :silent VimFilerExplorer<CR>
+    let g:vimfiler_ignore_pattern = ['^\.git$', '^\.svn$']
+endif
+
 if count(s:plugin_groups, 'ctrlp')
     "nnoremap <c-p> :CtrlPMixed<CR>
     let g:ctrlp_show_hidden = 0
@@ -425,29 +443,58 @@ if count(s:plugin_groups, 'ctrlp')
                 \ }
 endif
 if count(s:plugin_groups, 'neocomplete')
-    " Use smartcase.
-    "let g:neocomplete#enable_smart_case = 1
-    "let g:neocomplete#enable_camel_case = 1
-    "let g:neocomplete#enable_ignore_case = 1
-    "let g:neocomplete#enable_fuzzy_completion = 1
+    " Disable AutoComplPop.
+    let g:acp_enableAtStartup = 0
+    let g:neocomplete#enable_at_startup = 1
+    let g:neocomplete#enable_smart_case = 1
     " Set minimum syntax keyword length.
     let g:neocomplete#sources#syntax#min_keyword_length = 3
     let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
 
-    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><CR> pumvisible() ? "\<C-y>" : "\<CR>"
+    " Define dictionary.
+    let g:neocomplete#sources#dictionary#dictionaries = {
+        \ 'default' : '',
+        \ 'vimshell' : $HOME.'/.vimshell_hist',
+        \ 'scheme' : $HOME.'/.gosh_completions'
+            \ }
 
+    " Define keyword.
+    if !exists('g:neocomplete#keyword_patterns')
+        let g:neocomplete#keyword_patterns = {}
+    endif
+    let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+
+    " Plugin key-mappings.
+    inoremap <expr><C-g>     neocomplete#undo_completion()
+    inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+    " Recommended key-mappings.
+    " <CR>: close popup and save indent.
+    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    function! s:my_cr_function()
+      return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+      " For no inserting <CR> key.
+      "return pumvisible() ? "\<C-y>" : "\<CR>"
+    endfunction
+    " <TAB>: completion.
+    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+    inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
+    " <C-h>, <BS>: close popup and delete backword char.
+    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+    " Close popup by <Space>.
+    "inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
+
+    let g:neocomplete#enable_auto_select = 0
+
+    " Enable heavy omni completion.
     if !exists('g:neocomplete#sources#omni#input_patterns')
         let g:neocomplete#sources#omni#input_patterns = {}
-        let g:neocomplete#sources#omni#input_patterns.c =
-                    \ '[^.[:digit:] *\t]\%(\.\|->\)'
-        let g:neocomplete#sources#omni#input_patterns.cpp =
-                    \'[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
     endif
-
-    let g:neocomplete#fallback_mappings = ["\<C-x>\<C-o>", "\<C-x>\<C-n>"]
-    let g:neocomplete#enable_auto_select = 1
-    let g:neocomplete#enable_at_startup = 1
+    "let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+    let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+    let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+    set completeopt=menu,longest       "menu longest noinsert preview
 endif
 if count(s:plugin_groups, 'vim-multiple-cursors')
     let g:multi_cursor_next_key='<S-n>'

@@ -250,7 +250,7 @@ if count(s:plugin_groups, 'nerdtree')
     Plug  'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 endif
 if count(s:plugin_groups, 'tagbar')
-    Plug  'fcymk2/tagbar', { 'on': 'TagbarToggle' }
+    Plug  'https://github.com/fcymk2/tagbar', { 'on': 'TagbarToggle' }
 endif
 if count(s:plugin_groups, 'vimproc')
     function! BuildVimproc(info)
@@ -302,7 +302,7 @@ if count(s:plugin_groups, 'neocomplete')
     Plug  'Shougo/neocomplete.vim'
 endif
 if count(s:plugin_groups, 'vim-clang')
-    Plug 'fcymk2/vim-clang'
+    Plug 'https://github.com/fcymk2/vim-clang'
 endif
 if count(s:plugin_groups, 'clang_complete')
     Plug  'Rip-Rip/clang_complete'
@@ -386,17 +386,27 @@ if count(s:plugin_groups, 'unite')
     let g:unite_source_history_yank_enable = 1
     let g:unite_force_overwrite_statusline=1
 
-    let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', '']
     call unite#filters#matcher_default#use(['matcher_fuzzy'])
 
-    nnoremap <c-p> :Unite -start-insert -silent -auto-resize buffer file_rec/async<cr>
-    nmap <leader>f <c-p>
+    if executable('ag')
+        let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '--nogroup', '--hidden',
+        \ '--ignore','lib','--ignore','obj','--ignore','out',
+        \'-g', '']
+        let g:unite_source_grep_command = 'ag'
+        let g:unite_source_grep_default_opts =
+        \ '-i --vimgrep --hidden --ignore ' .
+        \ '''.hg'' --ignore ''.svn'' --ignore ''.git''' .
+        \ '--ignore ''lib'''
+        let g:unite_source_grep_recursive_opt = ''
+    endif
+
+    nmap <c-p> <leader>f
+    nnoremap <leader>f :Unite -start-insert -auto-resize buffer file_rec/async<cr>
     nnoremap <leader>t :<C-u>Unite -no-split -buffer-name=files -start-insert file_rec/async:!<cr>
-    nnoremap <leader>ug :Unite -silent -auto-resize grep:.<CR>
-    nnoremap <leader>uy :Unite history/yank<cr>
-    nnoremap <leader>uf :Unite buffer file<cr>
-    nnoremap <leader>b :Unite -quick-match buffer<cr>
-    nnoremap <leader>ub :Unite -quick-match buffer<cr>
+    nnoremap <leader>ug :Unite -auto-resize grep:.<CR>
+    nnoremap <leader>uy :Unite -auto-resize history/yank<cr>
+    nnoremap <leader>uf :Unite -auto-resize buffer file<cr>
+    nnoremap <leader>b :Unite -auto-resize buffer<cr>
     nnoremap <leader>ul :<C-u>Unite -start-insert -auto-resize line<CR>
     nnoremap <leader>uo :<C-u>Unite -auto-resize outline<CR>
 
@@ -410,14 +420,6 @@ if count(s:plugin_groups, 'unite')
         nmap <buffer> <C-p> <plug>(unite_exit)
         imap <buffer> <C-p> <plug>(unite_exit)
     endfunction
-
-    if executable('ag')
-        let g:unite_source_grep_command = 'ag'
-        let g:unite_source_grep_default_opts =
-        \ '-i --vimgrep --hidden --ignore ' .
-        \ '''.hg'' --ignore ''.svn'' --ignore ''.git'' --ignore ''.bzr'''
-        let g:unite_source_grep_recursive_opt = ''
-    endif
 endif
 if count(s:plugin_groups, 'vimshell')
     nnoremap <leader>vs :silent VimShell<CR>
@@ -432,7 +434,7 @@ if count(s:plugin_groups, 'vimfiler')
 endif
 
 if count(s:plugin_groups, 'ctrlp')
-    "nnoremap <c-p> :CtrlPMixed<CR>
+    nnoremap <c-p> :CtrlP<CR>
     let g:ctrlp_show_hidden = 0
     let g:ctrlp_working_path_mode = 'a'   "ra c
     let g:ctrlp_clear_cache_on_exit = 1

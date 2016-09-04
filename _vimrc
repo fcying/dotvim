@@ -567,6 +567,7 @@ if count(s:plugin_groups, 'vim-bbye')
 endif
 if count(s:plugin_groups, 'ctrlsf')
     let g:ctrlsf_ackprg = 'ag'
+    let g:ctrlsf_case_sensitive = 'smart'
     let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS', 'obj', 'out', 'lib*']
     nnoremap <Leader>sp :CtrlSF<CR>
 endif

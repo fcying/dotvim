@@ -381,7 +381,7 @@ if count(s:plugin_groups, 'vim-airline')
     let g:airline#extensions#tabline#fnamemod = ':p:.'
 endif
 if count(s:plugin_groups, 'unite')
-    let g:unite_data_directory=g:config_dir . '/.cache/unite'
+    "let g:unite_data_directory=g:config_dir . '/.cache/unite'
     let g:unite_enable_start_insert=0
     let g:unite_source_history_yank_enable = 1
     let g:unite_force_overwrite_statusline=1
@@ -389,25 +389,28 @@ if count(s:plugin_groups, 'unite')
     call unite#filters#matcher_default#use(['matcher_fuzzy'])
 
     if executable('ag')
-        let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '--nogroup', '--hidden',
-        \ '--ignore','lib','--ignore','obj','--ignore','out',
-        \'-g', '']
+        let g:unite_source_rec_async_command = [
+		\ 'ag', '--follow', '--nocolor', '--nogroup', '--hidden',
+        \ '--ignore','[l,L]ib', '--ignore','[o,O]bj', '--ignore','[o,O]ut',
+        \ '-g', '']
+		
         let g:unite_source_grep_command = 'ag'
         let g:unite_source_grep_default_opts =
-        \ '-i --vimgrep --hidden --ignore ' .
-        \ '''.hg'' --ignore ''.svn'' --ignore ''.git''' .
-        \ '--ignore ''lib'''
-        let g:unite_source_grep_recursive_opt = ''
+        \ '--vimgrep --hidden --nocolor --nogroup
+        \ --ignore ''.svn'' --ignore ''.git''
+        \ --ignore ''[l,L]ib'' --ignore ''[o,O]obj'' --ignore ''[o,O]out'''
     endif
 
     nmap <c-p> <leader>f
-    nnoremap <leader>f :Unite -start-insert -auto-resize buffer file_rec/async<cr>
+    nnoremap <leader>f :Unite -silent -start-insert -auto-resize file_rec/async<cr>
     nnoremap <leader>t :<C-u>Unite -no-split -buffer-name=files -start-insert file_rec/async:!<cr>
+    nmap <leader>g <leader>ug
     nnoremap <leader>ug :Unite -auto-resize grep:.<CR>
     nnoremap <leader>uy :Unite -auto-resize history/yank<cr>
     nnoremap <leader>uf :Unite -auto-resize buffer file<cr>
     nnoremap <leader>b :Unite -auto-resize buffer<cr>
     nnoremap <leader>ul :<C-u>Unite -start-insert -auto-resize line<CR>
+    nmap <leader>o <leader>uo
     nnoremap <leader>uo :<C-u>Unite -auto-resize outline<CR>
 
     autocmd FileType unite call s:unite_settings()

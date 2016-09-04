@@ -8,3 +8,4 @@
 /init.vim
 /.init.vim-rplugin~
 /.vim
+/autoload

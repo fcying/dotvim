@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#https://github.com/vim/vim.git 
-
 cd `dirname $0`
 if [ ! -d "../vim_origin" ]; then
     git clone https://github.com/vim/vim.git ../vim_origin --depth 2
@@ -49,16 +47,19 @@ else
 				--enable-multibyte \
 				--enable-cscope \
 				--enable-gui=no \
-				--enable-rubyinterp \
-				--enable-pythoninterp \
-				--enable-python3interp \
-				--enable-perlinterp \
-				--enable-luainterp \
+				--enable-rubyinterp=dynamic \
+				--enable-pythoninterp=dynamic \
+				--enable-python3interp=dynamic \
+				--enable-perlinterp=dynamic \
+				--enable-luainterp=dynamic \
 				--prefix=/usr \
+				--with-features=huge \
+				--with-compiledby=JasonYing \
 				| tee log
+				
 	sudo make
 	sudo make install
-    vim --version | grep -E \(python\|lua\)
+    vim --version #| grep -E \(python\|lua\)
 fi
 
 

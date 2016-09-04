@@ -262,7 +262,7 @@ if count(s:plugin_groups, 'vimproc')
         if WINDOWS()
             silent !Tools\update-dll-mingw.bat
         else
-            make
+            silent !make
         endif
       endif
     endfunction

@@ -40,7 +40,7 @@ call add(s:plugin_groups, 'vimproc')
 call add(s:plugin_groups, 'vimshell')
 "call add(s:plugin_groups, 'vim-signature')
 call add(s:plugin_groups, 'tagbar')
-"call add(s:plugin_groups, 'syntastic')
+call add(s:plugin_groups, 'vim-cpp-enhanced-highlight')
 if s:useYCM
    call add(s:plugin_groups, 'YouCompleteMe')
 else
@@ -182,7 +182,7 @@ set noshowmatch
 set nolist
 set wrap
 set laststatus=2
-set statusline=%F%m%r%w%=[%{&ff}]\ [%Y]\ [ASCII=\%03.3b,HEX=\%02.2B]\ [%04l,%04v]\ [%p%%,%L]
+set statusline=%F%m%r%w%=[%{&ff}]\ [%Y]\ [ASCII=\%03.3b,HEX=\%02.2B]\ [%04l,%04v,%p%%]
 set showcmd
 "set cmdheight=1
 set backspace=indent,eol,start whichwrap+=<,>,[,]
@@ -196,12 +196,25 @@ set nofoldenable
 
 "set paste
 
-"autocomplete
-autocmd InsertLeave * if pumvisible() == 0|pclose|endif
-inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
-inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
-inoremap <expr> <PageDown> pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<PageDown>"
-inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
+" auto pairs
+if 1
+	:inoremap ( ()<ESC>i
+	:inoremap ) <c-r>=ClosePair(')')<CR>
+	:inoremap {<CR> {}<ESC>i<CR><c-o><s-o>
+	:inoremap } <c-r>=ClosePair('}')<CR>
+	:inoremap [ []<ESC>i
+	:inoremap ] <c-r>=ClosePair(']')<CR>
+	:inoremap < <><ESC>i
+	:inoremap > <c-r>=ClosePair('>')<CR>
+	 
+	function ClosePair(char)
+		if getline('.')[col('.') - 1] == a:char
+			return "\<Right>"
+		else
+			return a:char
+		endif
+	endf
+endif
 
 if WINDOWS()
     set tags=tags
@@ -213,6 +226,7 @@ nmap <F4> <C-o>
 nmap <Leader>tn :tnext<CR>
 nmap <Leader>tp :tprevious<CR>
 
+" gen tag
 nmap <silent> <Leader>cr :FcyGentags<CR>
 nmap <silent> <F5> :FcyGentags<CR>
 command! -nargs=0 FcyGentags call s:fcy_gen_tags("", "")
@@ -224,6 +238,13 @@ function! s:fcy_gen_tags(filename, dir)
     call vimproc#system_bg('gtags')
     echon "gen tags done"
 endfunction
+
+" autocomplete
+autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
+inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
+inoremap <expr> <PageDown> pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<PageDown>"
+inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
 
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
@@ -297,6 +318,9 @@ if count(s:plugin_groups, 'unite')
 endif
 if count(s:plugin_groups, 'vim-signature')
     Plug  'kshenoy/vim-signature'
+endif
+if count(s:plugin_groups, 'vim-cpp-enhanced-highlight')
+    Plug 'octol/vim-cpp-enhanced-highlight'
 endif
 if count(s:plugin_groups, 'neocomplete')
     Plug  'Shougo/neocomplete.vim'
@@ -683,5 +707,11 @@ if count(s:plugin_groups, 'vim-markdown')
 endif
 if count(s:plugin_groups, 'vim-fswitch')
     map <silent> <Leader>h <ESC>:FSHere<CR>
+endif
+if count(s:plugin_groups, 'ultisnips')
+    let g:UltiSnipsSnippetDirectories=["mysnippets"]
+    let g:UltiSnipsExpandTrigger="<leader><tab>"
+    let g:UltiSnipsJumpForwardTrigger="<leader><tab>"
+    let g:UltiSnipsJumpBackwardTrigger="<leader><s-tab>"
 endif
 

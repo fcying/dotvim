@@ -416,26 +416,30 @@ if count(s:plugin_groups, 'unite')
         let g:unite_source_rec_async_command = [
 		\ 'ag', '--follow', '--nocolor', '--nogroup', '--hidden',
         \ '--ignore','[l,L]ib', '--ignore','[o,O]bj', '--ignore','[o,O]ut',
+        \ '--ignore','tags', '--ignore','GTAGS', '--ignore','GRTAGS', '--ignore','GPATH',
         \ '-g', '']
 		
         let g:unite_source_grep_command = 'ag'
         let g:unite_source_grep_default_opts =
-        \ '--vimgrep --hidden --nocolor --nogroup
+        \'--vimgrep --hidden --nocolor --nogroup
         \ --ignore ''.svn'' --ignore ''.git''
-        \ --ignore ''[l,L]ib'' --ignore ''[o,O]obj'' --ignore ''[o,O]out'''
+        \ --ignore ''[l,L]ib'' --ignore ''[o,O]obj'' --ignore ''[o,O]out''
+        \ --ignore ''tags'' --ignore ''GTAGS'' --ignore ''GRTAGS'' --ignore ''GPATH''
+		\'		
     endif
-
-    nmap <c-p> <leader>f
-    nnoremap <leader>f :Unite -silent -start-insert -auto-resize file_rec/async<cr>
-    nnoremap <leader>t :<C-u>Unite -no-split -buffer-name=files -start-insert file_rec/async:!<cr>
-    nmap <leader>g <leader>ug
-    nnoremap <leader>ug :Unite -auto-resize grep:.<CR>
-    nnoremap <leader>uy :Unite -auto-resize history/yank<cr>
-    nnoremap <leader>uf :Unite -auto-resize buffer file<cr>
-    nnoremap <leader>b :Unite -auto-resize buffer<cr>
-    nnoremap <leader>ul :<C-u>Unite -start-insert -auto-resize line<CR>
-    nmap <leader>o <leader>uo
-    nnoremap <leader>uo :<C-u>Unite -auto-resize outline<CR>
+	
+	nnoremap [unite] <Nop>
+	nmap f [unite]
+	nmap <c-p> [unite]
+	nnoremap <silent> [unite]s :<C-u>Unite source<CR>
+	nnoremap <silent> [unite]f :<C-u>Unite -silent -start-insert file_rec/async:!<CR>
+	nnoremap <silent> [unite]b :<C-u>Unite -start-insert buffer bookmark<CR>
+	nnoremap <silent> [unite]g :<C-u>Unite grep:.<CR>
+	nnoremap <silent> [unite]l :<C-u>Unite -start-insert line<CR>
+	nnoremap <silent> [unite]o :<C-u>Unite -start-insert outline<CR>
+	nnoremap <silent> [unite]y :<C-u>Unite history/yank<CR>
+	nnoremap <silent> [unite]h :<C-u>Unite file_mru<CR>
+	nnoremap <silent> [unite]p :<C-u>Unite jump_point file_point<CR>
 
     autocmd FileType unite call s:unite_settings()
     function! s:unite_settings()

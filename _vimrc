@@ -54,8 +54,6 @@ else
     "call add(s:plugin_groups, 'vim-clang')
     "call add(s:plugin_groups, 'clang_complete')
 endif
-"call add(s:plugin_groups, 'vim-airline')
-"call add(s:plugin_groups, 'minibufexpl.vim')
 call add(s:plugin_groups, 'vim-fswitch')
 call add(s:plugin_groups, 'nerdtree')
 call add(s:plugin_groups, 'nerdcommenter')
@@ -71,6 +69,9 @@ call add(s:plugin_groups, 'vim-markdown')
 if (executable('ctags') && executable('gtags'))
     "call add(s:plugin_groups, 'gen_tags.vim')
 endif
+"color
+call add(s:plugin_groups, 'solarized')
+"call add(s:plugin_groups, 'molokai')
 
 " ============================================================================
 " BASIC SETTINGS {{{
@@ -109,10 +110,6 @@ set ttyfast     " when will this cause problems?
 autocmd GUIEnter * set vb t_vb=       "close beep
 set noerrorbells
 autocmd VimEnter * set shellredir=>
-
-if LINUX()
-    colorscheme desert
-endif
 
 " Easier moving in tabs and windows
 "map <C-H> <C-W>h
@@ -340,9 +337,6 @@ endif
 if count(s:plugin_groups, 'vim-fswitch')
     Plug 'derekwyatt/vim-fswitch'
 endif
-if count(s:plugin_groups, 'vim-airline')
-    Plug  'vim-airline/vim-airline'
-endif
 if count(s:plugin_groups, 'nerdcommenter')
     Plug  'scrooloose/nerdcommenter', { 'on': '<plug>NERDCommenterInvert' }
 endif
@@ -377,12 +371,26 @@ if count(s:plugin_groups, 'vim-markdown')
     Plug 'godlygeek/tabular', { 'for': 'markdown' }
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 endif
-if count(s:plugin_groups, 'minibufexpl.vim')
-    Plug 'fholgado/minibufexpl.vim'
+"color
+if count(s:plugin_groups, 'solarized')
+    Plug 'altercation/vim-colors-solarized'
+endif
+if count(s:plugin_groups, 'molokai')
+    Plug 'tomasr/molokai'
 endif
 call plug#end()
 endif
 
+" color
+if count(s:plugin_groups, 'solarized')
+    set background=light
+    let g:solarized_termcolors=256
+    colorscheme solarized
+elseif count(s:plugin_groups, 'molokai')
+    let g:molokai_original = 1
+    let g:rehash256 = 1
+    colorscheme molokai
+endif
 
 if count(s:plugin_groups, 'fencview')
     let g:fencview_autodetect = 1
@@ -395,14 +403,6 @@ if count(s:plugin_groups, 'tagbar')
     let tagbar_width=32
     let g:tagbar_compact=1
     "autocmd FileType c,cpp,h nested :TagbarOpen
-endif
-if count(s:plugin_groups, 'vim-airline')
-    let g:airline#extensions#tabline#enabled = 1
-    "let g:airline#extensions#tabline#left_sep = ' '
-    "let g:airline#extensions#tabline#left_alt_sep = '|'
-    let g:airline#extensions#tabline#show_buffers = 1
-    let g:airline#extensions#tabline#buffer_nr_show = 1
-    let g:airline#extensions#tabline#fnamemod = ':p:.'
 endif
 if count(s:plugin_groups, 'unite')
     "let g:unite_data_directory=g:config_dir . '/.cache/unite'
@@ -700,11 +700,6 @@ if count(s:plugin_groups, 'vim-easygrep')
     let g:EasyGrepIgnoreCase = 1
     let g:EasyGrepFilesToExclude=".svn,.git,*.pyc,*.bak,cscope.*,*.a,*.o,*.d,*.lst,tags,GTAGS,GRTAGS,GPATH"
     "let g:EasyGrepFilesToExclude=''
-endif
-if count(s:plugin_groups, 'minibufexpl.vim')
-    map <Leader>bl :MBEToggle<cr>
-    "map <C-Tab> :MBEbn<cr>
-    "map <C-S-Tab> :MBEbp<cr>
 endif
 if count(s:plugin_groups, 'vim-markdown')
     let g:vim_markdown_folding_disabled = 1

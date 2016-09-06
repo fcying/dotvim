@@ -432,7 +432,7 @@ if count(s:plugin_groups, 'unite')
 	nmap f [unite]
 	nmap <c-p> [unite]
 	nnoremap <silent> [unite]s :<C-u>Unite source<CR>
-	nnoremap <silent> [unite]f :<C-u>Unite -silent -start-insert file_rec/async:!<CR>
+	nnoremap <silent> [unite]f :<C-u>Unite -silent -start-insert file_rec/async<CR>
 	nnoremap <silent> [unite]b :<C-u>Unite -start-insert buffer bookmark<CR>
 	nnoremap <silent> [unite]g :<C-u>Unite grep:.<CR>
 	nnoremap <silent> [unite]l :<C-u>Unite -start-insert line<CR>

@@ -201,8 +201,6 @@ if 1
 	:inoremap } <c-r>=ClosePair('}')<CR>
 	:inoremap [ []<ESC>i
 	:inoremap ] <c-r>=ClosePair(']')<CR>
-	:inoremap < <><ESC>i
-	:inoremap > <c-r>=ClosePair('>')<CR>
 	 
 	function ClosePair(char)
 		if getline('.')[col('.') - 1] == a:char
@@ -383,7 +381,7 @@ endif
 
 " color
 if count(s:plugin_groups, 'solarized')
-    set background=light
+    set background=dark
     let g:solarized_termcolors=256
     colorscheme solarized
 elseif count(s:plugin_groups, 'molokai')
@@ -415,7 +413,7 @@ if count(s:plugin_groups, 'unite')
     if executable('ag')
         let g:unite_source_rec_async_command = [
 		\ 'ag', '--follow', '--nocolor', '--nogroup', '--hidden',
-        \ '--ignore','[l,L]ib', '--ignore','[o,O]bj', '--ignore','[o,O]ut',
+        \ '--ignore','lib', '--ignore','obj', '--ignore','out',
         \ '--ignore','tags', '--ignore','GTAGS', '--ignore','GRTAGS', '--ignore','GPATH',
         \ '-g', '']
 		
@@ -423,7 +421,7 @@ if count(s:plugin_groups, 'unite')
         let g:unite_source_grep_default_opts =
         \'--vimgrep --hidden --nocolor --nogroup
         \ --ignore ''.svn'' --ignore ''.git''
-        \ --ignore ''[l,L]ib'' --ignore ''[o,O]obj'' --ignore ''[o,O]out''
+        \ --ignore ''lib'' --ignore ''obj'' --ignore ''out''
         \ --ignore ''tags'' --ignore ''GTAGS'' --ignore ''GRTAGS'' --ignore ''GPATH''
 		\'		
     endif

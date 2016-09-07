@@ -202,7 +202,7 @@ if 1
 	:inoremap [ []<ESC>i
 	:inoremap ] <c-r>=ClosePair(']')<CR>
 	 
-	function ClosePair(char)
+	function! ClosePair(char)
 		if getline('.')[col('.') - 1] == a:char
 			return "\<Right>"
 		else
@@ -227,7 +227,8 @@ nmap <silent> <F5> :FcyGentags<CR>
 command! -nargs=0 FcyGentags call s:fcy_gen_tags("", "")
 function! s:fcy_gen_tags(filename, dir)
     "let l:cmd = 'ctags -R --language-force=c++'
-    let l:cmd = 'ctags -R --c++-kinds=+p --fields=+iaS --extra=+q'
+    "let l:cmd = 'ctags -R --c++-kinds=+p --fields=+iaS --extra=+q'
+    let l:cmd = 'ctags -R --fields=+iaS --extra=+q'
     "let l:cmd = 'ctags -R'
     call vimproc#system_bg(l:cmd)
     call vimproc#system_bg('gtags')
@@ -595,7 +596,33 @@ if count(s:plugin_groups, 'ctrlsf')
     let g:ctrlsf_ackprg = 'ag'
     let g:ctrlsf_case_sensitive = 'smart'
     let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS', 'obj', 'out', 'lib*']
-    nnoremap <Leader>sp :CtrlSF<CR>
+
+    nnoremap [CtrlSF] <Nop>
+    nmap <leader>s [CtrlSF]
+    vmap <leader>s [CtrlSF]
+    nmap [CtrlSF]f :CtrlSF<CR>
+    nmap [CtrlSF]i <Plug>CtrlSFPrompt
+    vmap [CtrlSF]f <Plug>CtrlSFVwordExec
+    vmap [CtrlSF]F <Plug>CtrlSFVwordPath
+    nmap [CtrlSF]n <Plug>CtrlSFCwordPath
+    nmap [CtrlSF]p <Plug>CtrlSFPwordPath
+    nmap [CtrlSF]l <Plug>CtrlSFQuickfixPrompt
+    vmap [CtrlSF]l <Plug>CtrlSFQuickfixVwordPath
+    vmap [CtrlSF]L <Plug>CtrlSFQuickfixVwordExec
+    nnoremap [CtrlSF]o :CtrlSFOpen<CR>
+    nnoremap [CtrlSF]t :CtrlSFToggle<CR>
+    inoremap [CtrlSF]t <Esc>:CtrlSFToggle<CR>
+
+    let g:ctrlsf_mapping = {
+        \ "next"    : "<c-a-j>",
+        \ "prev"    : "<c-a-k>",
+        \ }
+
+    autocmd FileType CTRLSF call s:ctrlsf_settings()
+    function! s:ctrlsf_settings()
+        nmap <buffer> <c-j> <c-a-j>p
+        nmap <buffer> <c-k> <c-a-k>p
+    endfunction
 endif
 if count(s:plugin_groups, 'nerdtree')
     nmap <leader>nt :NERDTreeToggle<cr>

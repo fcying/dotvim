@@ -13,13 +13,10 @@ endfunction
 "}}}
 
 if WINDOWS()
-    let g:config_dir = $VIM
-    let g:home_dir = $HOME
+    let g:config_dir=$VIM
 elseif LINUX()
     let g:config_dir = '~/.vim'
-    let g:home_dir = '~'
 endif
-
 
 " ============================================================================
 " Plugins
@@ -41,6 +38,7 @@ call add(s:plugin_groups, 'vimshell')
 "call add(s:plugin_groups, 'vim-signature')
 call add(s:plugin_groups, 'tagbar')
 call add(s:plugin_groups, 'vim-cpp-enhanced-highlight')
+"call add(s:plugin_groups, 'fastfold')
 if s:useYCM
    call add(s:plugin_groups, 'YouCompleteMe')
 else
@@ -67,7 +65,7 @@ call add(s:plugin_groups, 'vim-AHKcomplete')
 call add(s:plugin_groups, 'vim-markdown')
 "call add(s:plugin_groups, 'vim-instant-markdown')
 if (executable('ctags') && executable('gtags'))
-    "call add(s:plugin_groups, 'gen_tags.vim')
+    call add(s:plugin_groups, 'gen_tags.vim')
 endif
 "color
 call add(s:plugin_groups, 'solarized')
@@ -188,8 +186,8 @@ set iskeyword -=.
 set iskeyword -=#
 set virtualedit=onemore        "onemore all
 
-set foldmethod=marker
-set nofoldenable
+set foldmethod=manual
+set foldenable
 
 "set paste
 
@@ -318,6 +316,9 @@ endif
 if count(s:plugin_groups, 'vim-cpp-enhanced-highlight')
     Plug 'octol/vim-cpp-enhanced-highlight'
 endif
+if count(s:plugin_groups, 'fastfold')
+    Plug 'Konfekt/FastFold'
+endif
 if count(s:plugin_groups, 'neocomplete')
     Plug  'Shougo/neocomplete.vim'
 endif
@@ -371,23 +372,19 @@ if count(s:plugin_groups, 'vim-markdown')
     Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
 endif
 "color
-if count(s:plugin_groups, 'solarized')
-    Plug 'altercation/vim-colors-solarized'
-endif
-if count(s:plugin_groups, 'molokai')
-    Plug 'tomasr/molokai'
-endif
+Plug 'altercation/vim-colors-solarized'
+Plug 'tomasr/molokai'
 call plug#end()
 endif
 
 " color
+let g:solarized_termcolors=256
+let g:molokai_original = 1
+let g:rehash256 = 1
 if count(s:plugin_groups, 'solarized')
-    set background=dark
-    let g:solarized_termcolors=256
+    set background=light
     colorscheme solarized
 elseif count(s:plugin_groups, 'molokai')
-    let g:molokai_original = 1
-    let g:rehash256 = 1
     colorscheme molokai
 endif
 
@@ -593,6 +590,8 @@ if count(s:plugin_groups, 'vim-bbye')
     :nnoremap <Leader>q :Bdelete<CR>
 endif
 if count(s:plugin_groups, 'ctrlsf')
+    "let g:ctrlsf_debug_mode = 1
+    "redir > ctrlsf.log
     let g:ctrlsf_ackprg = 'ag'
     let g:ctrlsf_case_sensitive = 'smart'
     let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS', 'obj', 'out', 'lib*']
@@ -604,7 +603,7 @@ if count(s:plugin_groups, 'ctrlsf')
     nmap [CtrlSF]i <Plug>CtrlSFPrompt
     vmap [CtrlSF]f <Plug>CtrlSFVwordExec
     vmap [CtrlSF]F <Plug>CtrlSFVwordPath
-    nmap [CtrlSF]n <Plug>CtrlSFCwordPath
+    nmap [CtrlSF]c <Plug>CtrlSFCwordPath
     nmap [CtrlSF]p <Plug>CtrlSFPwordPath
     nmap [CtrlSF]l <Plug>CtrlSFQuickfixPrompt
     vmap [CtrlSF]l <Plug>CtrlSFQuickfixVwordPath
@@ -704,7 +703,7 @@ if count(s:plugin_groups, 'vim-easymotion')
 endif
 if count(s:plugin_groups, 'gen_tags.vim')
     "let g:gtags_split = 'v'
-    let g:ctags_opts = '--language-force=c++'
+    "let g:ctags_opts = '--language-force=c++'
     let g:ctags_opts = 'ctags -R --c++-kinds=+p --fields=+iaS --extra=+q'
 endif
 if count(s:plugin_groups, 'ag.vim')
@@ -737,5 +736,12 @@ if count(s:plugin_groups, 'ultisnips')
     let g:UltiSnipsExpandTrigger="<leader><tab>"
     let g:UltiSnipsJumpForwardTrigger="<leader><tab>"
     let g:UltiSnipsJumpBackwardTrigger="<leader><s-tab>"
+endif
+if count(s:plugin_groups, 'fastfold')
+	let g:tex_fold_enabled=1
+	let g:vimsyn_folding='af'
+	let g:xml_syntax_folding = 1
+	let g:php_folding = 1
+	let g:perl_fold = 1
 endif
 

@@ -7,9 +7,10 @@ cd `dirname $0`
 #git clone https://github.com/Shougo/neobundle.vim
 
 if [ $(uname | grep MINGW -c) -eq 1 ]; then
-	curl -fLo ../vim74/autoload/plug.vim --create-dirs \
-		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    mkdir -p $USERPROFILE/vimfiles/autoload
+    curl -fLo $USERPROFILE/vimfiles/autoload/plug.vim --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 else
-	curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-		https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-fi	
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+fi  

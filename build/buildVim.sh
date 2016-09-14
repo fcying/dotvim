@@ -20,6 +20,7 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
                     FEATURES=huge \
                     GUI=no \
                     OLE=yes \
+                    DIRECTX=yes \
                     MBYTE=yes \
                     IME=yes \
                     CSCOPE=yes \
@@ -32,6 +33,7 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
                     FEATURES=huge \
                     GUI=yes \
                     OLE=yes \
+                    DIRECTX=yes \
                     MBYTE=yes \
                     IME=yes \
                     CSCOPE=yes \

@@ -52,6 +52,7 @@ else
     "call add(s:plugin_groups, 'vim-clang')
     "call add(s:plugin_groups, 'clang_complete')
 endif
+call add(s:plugin_groups, 'vim-go')
 call add(s:plugin_groups, 'vim-fswitch')
 call add(s:plugin_groups, 'nerdtree')
 call add(s:plugin_groups, 'nerdcommenter')
@@ -91,6 +92,11 @@ nnoremap <leader>ee :e $MYVIMRC<CR>
 noremap  <C-S> :update<CR>
 vnoremap <C-S> <C-C>:update<CR>
 inoremap <C-S> <C-O>:update<CR>
+
+if WINDOWS()
+    set renderoptions=type:directx,level:0.50,
+                \gamma:1.0,contrast:0.0,geom:1,renmode:5,taamode:1
+endif
 
 if s:useGUI
     set guioptions -=T
@@ -322,6 +328,9 @@ endif
 if count(s:plugin_groups, 'neocomplete')
     Plug  'Shougo/neocomplete.vim'
 endif
+if count(s:plugin_groups, 'vim-go')
+    Plug  'fatih/vim-go'
+endif
 if count(s:plugin_groups, 'vim-clang')
     Plug 'https://github.com/fcymk2/vim-clang'
 endif
@@ -471,6 +480,29 @@ if count(s:plugin_groups, 'ctrlp')
                 \ 'link': 'some_bad_symbolic_links',
                 \ }
 endif
+if count(s:plugin_groups, 'vim-go')
+    let g:go_highlight_functions = 1
+    let g:go_highlight_methods = 1
+    let g:go_highlight_fields = 1
+    let g:go_highlight_types = 1
+    let g:go_highlight_operators = 1
+    let g:go_highlight_build_constraints = 1
+    au FileType go nmap <leader>r <Plug>(go-run)
+    au FileType go nmap <leader>b <Plug>(go-build)
+    au FileType go nmap <leader>t <Plug>(go-test)
+    au FileType go nmap <leader>c <Plug>(go-coverage)
+
+    au FileType go nmap <Leader>ds <Plug>(go-def-split)
+    au FileType go nmap <Leader>dv <Plug>(go-def-vertical)
+    au FileType go nmap <Leader>dt <Plug>(go-def-tab)
+
+    au FileType go nmap <Leader>gd <Plug>(go-doc)
+    au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+    au FileType go nmap <Leader>gb <Plug>(go-doc-browser)
+
+    au FileType go nmap <Leader>i <Plug>(go-info)
+    au FileType go nmap <Leader>e <Plug>(go-rename)
+endif
 if count(s:plugin_groups, 'neocomplete')
     " Disable AutoComplPop.
     let g:acp_enableAtStartup = 0
@@ -591,7 +623,7 @@ if count(s:plugin_groups, 'vim-bbye')
 endif
 if count(s:plugin_groups, 'ctrlsf')
     "let g:ctrlsf_debug_mode = 1
-    "redir > ctrlsf.log
+    "redir! > ctrlsf.log
     let g:ctrlsf_ackprg = 'ag'
     let g:ctrlsf_case_sensitive = 'smart'
     let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS', 'obj', 'out', 'lib*']

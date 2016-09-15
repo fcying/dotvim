@@ -52,7 +52,8 @@ else
     "call add(s:plugin_groups, 'vim-clang')
     "call add(s:plugin_groups, 'clang_complete')
 endif
-call add(s:plugin_groups, 'vim-go')
+"call add(s:plugin_groups, 'vim-go')
+call add(s:plugin_groups, 'gocode')
 call add(s:plugin_groups, 'vim-fswitch')
 call add(s:plugin_groups, 'nerdtree')
 call add(s:plugin_groups, 'nerdcommenter')
@@ -68,6 +69,7 @@ call add(s:plugin_groups, 'vim-markdown')
 if (executable('ctags') && executable('gtags'))
     call add(s:plugin_groups, 'gen_tags.vim')
 endif
+
 "color
 call add(s:plugin_groups, 'solarized')
 "call add(s:plugin_groups, 'molokai')
@@ -205,6 +207,17 @@ if 1
 	:inoremap } <c-r>=ClosePair('}')<CR>
 	:inoremap [ []<ESC>i
 	:inoremap ] <c-r>=ClosePair(']')<CR>
+	:inoremap " <c-r>=CloseSamePair('"')<CR>
+	:inoremap ' <c-r>=CloseSamePair('''')<CR>
+    
+	function! CloseSamePair(char)
+        if getline('.')[col('.') - 1] == a:char
+            return "\<Right>"
+        else    
+            let l:char=a:char . a:char . "\<Left>"
+            return l:char
+        endif
+	endf    
 	 
 	function! ClosePair(char)
 		if getline('.')[col('.') - 1] == a:char
@@ -228,15 +241,28 @@ nmap <Leader>tp :tprevious<CR>
 " gen tag
 nmap <silent> <Leader>cr :FcyGentags<CR>
 nmap <silent> <F5> :FcyGentags<CR>
-command! -nargs=0 FcyGentags call s:fcy_gen_tags("", "")
-function! s:fcy_gen_tags(filename, dir)
-    "let l:cmd = 'ctags -R --language-force=c++'
+command! -nargs=0 FcyGentags call s:fcy_gen_tags()
+function! s:fcy_gen_tags()
     "let l:cmd = 'ctags -R --c++-kinds=+p --fields=+iaS --extra=+q'
     let l:cmd = 'ctags -R --fields=+iaS --extra=+q'
     "let l:cmd = 'ctags -R'
     call vimproc#system_bg(l:cmd)
     call vimproc#system_bg('gtags')
     echon "gen tags done"
+endfunction
+
+" go
+autocmd! BufWritePre *.go :Goimports
+command! -nargs=0 GoImports %!goimports
+command! -nargs=0 GoRun call s:fcy_gorun()
+command! -nargs=0 GoBuild call s:fcy_gobuild()
+function! s:fcy_gorun()
+    let l:cmd = '!go run ' . expand('%')
+    exec l:cmd
+endfunction
+function! s:fcy_gobuild()
+    let l:cmd = 'go build ' . expand('%')
+    call vimproc#system_bg(l:cmd)
 endfunction
 
 " autocomplete
@@ -275,17 +301,17 @@ if count(s:plugin_groups, 'tagbar')
 endif
 if count(s:plugin_groups, 'vimproc')
     function! BuildVimproc(info)
-      " info is a dictionary with 3 fields
-      " - name:   name of the plugin
-      " - status: 'installed', 'updated', or 'unchanged'
-      " - force:  set on PlugInstall! or PlugUpdate!
-      if a:info.status != 'unchanged' || a:info.force
-        if WINDOWS()
-            silent !Tools\update-dll-mingw.bat
-        else
-            silent !make
+        " info is a dictionary with 3 fields
+        " - name:   name of the plugin
+        " - status: 'installed', 'updated', or 'unchanged'
+        " - force:  set on PlugInstall! or PlugUpdate!
+        if a:info.status != 'unchanged' || a:info.force
+            if WINDOWS()
+                silent !Tools\update-dll-mingw.bat
+            else
+                silent !make
+            endif
         endif
-      endif
     endfunction
     Plug 'Shougo/vimproc.vim', {'do' : function('BuildVimproc')}
 endif
@@ -302,7 +328,7 @@ if count(s:plugin_groups, 'ultisnips')
     Plug  'SirVer/ultisnips'
 endif
 if count(s:plugin_groups, 'ctrlp')
-    Plug  'ctrlpvim/ctrlp.vim', { 'on': 'CtrlP' }
+    Plug  'ctrlpvim/ctrlp.vim', {'on': 'CtrlP'}
 endif
 if count(s:plugin_groups, 'ctrlsf')
     Plug 'dyng/ctrlsf.vim'
@@ -330,6 +356,27 @@ if count(s:plugin_groups, 'neocomplete')
 endif
 if count(s:plugin_groups, 'vim-go')
     Plug  'fatih/vim-go'
+endif
+if count(s:plugin_groups, 'gocode')
+    function! GetGoCode(info)
+        if a:info.status != 'unchanged' || a:info.force
+            !go get golang.org/x/tools/cmd/goimports
+            if WINDOWS()
+                silent !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
+                let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\ftplugin ' 
+                            \ . $HOME . '\vimfiles'
+                call system(l:cmd)
+                let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\autoload ' . $HOME 
+                            \ . '\vimfiles'
+                call system(l:cmd)
+            else
+                silent !go get -u github.com/nsf/gocode
+                let l:cmd = 'sh ' . g:config_dir . '/plugged/gocode/vim/update.sh'
+                call system(l:cmd)
+            endif
+      endif
+    endfunction
+    Plug 'nsf/gocode', {'do': function('GetGoCode')}
 endif
 if count(s:plugin_groups, 'vim-clang')
     Plug 'https://github.com/fcymk2/vim-clang'
@@ -481,12 +528,16 @@ if count(s:plugin_groups, 'ctrlp')
                 \ }
 endif
 if count(s:plugin_groups, 'vim-go')
+    let g:go_bin_path = expand("$HOME/.gotools")
     let g:go_highlight_functions = 1
     let g:go_highlight_methods = 1
     let g:go_highlight_fields = 1
     let g:go_highlight_types = 1
     let g:go_highlight_operators = 1
     let g:go_highlight_build_constraints = 1
+    "let g:go_fmt_command = "goimports"
+    "let g:go_fmt_fail_silently = 1
+    
     au FileType go nmap <leader>r <Plug>(go-run)
     au FileType go nmap <leader>b <Plug>(go-build)
     au FileType go nmap <leader>t <Plug>(go-test)

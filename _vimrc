@@ -19,62 +19,6 @@ elseif LINUX()
 endif
 
 " ============================================================================
-" Plugins
-" ============================================================================
-let s:useYCM    = 0
-
-let s:plugin_groups = []
-call add(s:plugin_groups, 'fencview')
-call add(s:plugin_groups, 'tellenc')
-call add(s:plugin_groups, 'vim-bbye')
-"call add(s:plugin_groups, 'ultisnips')
-"call add(s:plugin_groups, 'ctrlp')
-call add(s:plugin_groups, 'ctrlsf')
-call add(s:plugin_groups, 'vim-multiple-cursors')
-call add(s:plugin_groups, 'unite')
-call add(s:plugin_groups, 'vimproc')
-"call add(s:plugin_groups, 'vimfiler')
-call add(s:plugin_groups, 'vimshell')
-"call add(s:plugin_groups, 'vim-signature')
-call add(s:plugin_groups, 'tagbar')
-call add(s:plugin_groups, 'vim-cpp-enhanced-highlight')
-"call add(s:plugin_groups, 'fastfold')
-if s:useYCM
-   call add(s:plugin_groups, 'YouCompleteMe')
-else
-    if has('nvim')
-       call add(s:plugin_groups, 'deoplete')
-    else
-       if has('lua')
-           call add(s:plugin_groups, 'neocomplete')
-       endif
-    endif
-    "call add(s:plugin_groups, 'vim-clang')
-    "call add(s:plugin_groups, 'clang_complete')
-endif
-"call add(s:plugin_groups, 'vim-go')
-call add(s:plugin_groups, 'gocode')
-call add(s:plugin_groups, 'vim-fswitch')
-call add(s:plugin_groups, 'nerdtree')
-call add(s:plugin_groups, 'nerdcommenter')
-call add(s:plugin_groups, 'vim-easymotion')
-"call add(s:plugin_groups, 'ack.vim')
-"call add(s:plugin_groups, 'ag.vim')
-"call add(s:plugin_groups, 'vim-easygrep')
-call add(s:plugin_groups, 'vim-indent-guides')
-call add(s:plugin_groups, 'autohotkey-ahk')
-call add(s:plugin_groups, 'vim-AHKcomplete')
-call add(s:plugin_groups, 'vim-markdown')
-"call add(s:plugin_groups, 'vim-instant-markdown')
-if (executable('ctags') && executable('gtags'))
-    call add(s:plugin_groups, 'gen_tags.vim')
-endif
-
-"color
-call add(s:plugin_groups, 'solarized')
-"call add(s:plugin_groups, 'molokai')
-
-" ============================================================================
 " BASIC SETTINGS {{{
 " ============================================================================
 
@@ -85,7 +29,6 @@ if has('gui_running')
 else
     let s:useGUI=0
 endif
-
 
 "autocmd! bufwritepost _vimrc source $MYVIMRC
 nnoremap <leader>ee :e $MYVIMRC<CR>
@@ -131,7 +74,7 @@ map k gk
 vmap < <gv
 vmap > >gv
 
-"delete space, delete
+"delete space, delete ^M
 nnoremap <leader>ds :%s/\s\+$//<CR>
 nnoremap <leader>dm :%s/\r//g<CR>
 
@@ -193,40 +136,37 @@ set iskeyword -=-
 set iskeyword -=.
 set iskeyword -=#
 set virtualedit=onemore        "onemore all
-
-set foldmethod=manual
-set foldenable
-
 "set paste
 
+set foldmethod=manual
+set nofoldenable
+
 " auto pairs
-if 1
-	:inoremap ( ()<ESC>i
-	:inoremap ) <c-r>=ClosePair(')')<CR>
-	:inoremap {<CR> {}<ESC>i<CR><c-o><s-o>
-	:inoremap } <c-r>=ClosePair('}')<CR>
-	:inoremap [ []<ESC>i
-	:inoremap ] <c-r>=ClosePair(']')<CR>
-	:inoremap " <c-r>=CloseSamePair('"')<CR>
-	:inoremap ' <c-r>=CloseSamePair('''')<CR>
-    
-	function! CloseSamePair(char)
-        if getline('.')[col('.') - 1] == a:char
-            return "\<Right>"
-        else    
-            let l:char=a:char . a:char . "\<Left>"
-            return l:char
-        endif
-	endf    
-	 
-	function! ClosePair(char)
-		if getline('.')[col('.') - 1] == a:char
-			return "\<Right>"
-		else
-			return a:char
-		endif
-	endf
-endif
+inoremap ( ()<ESC>i
+inoremap ) <c-r>=ClosePair(')')<CR>
+inoremap {<CR> {}<ESC>i<CR><c-o><s-o>
+inoremap } <c-r>=ClosePair('}')<CR>
+inoremap [ []<ESC>i
+inoremap ] <c-r>=ClosePair(']')<CR>
+inoremap " <c-r>=CloseSamePair('"')<CR>
+inoremap ' <c-r>=CloseSamePair('''')<CR>
+
+function! CloseSamePair(char)
+    if getline('.')[col('.') - 1] == a:char
+        return "\<Right>"
+    else    
+        let l:char=a:char . a:char . "\<Left>"
+        return l:char
+    endif
+endf    
+ 
+function! ClosePair(char)
+    if getline('.')[col('.') - 1] == a:char
+        return "\<Right>"
+    else
+        return a:char
+    endif
+endf
 
 if WINDOWS()
     set tags=tags
@@ -251,7 +191,7 @@ function! s:fcy_gen_tags()
     echon "gen tags done"
 endfunction
 
-" go
+" golang
 autocmd! BufWritePre *.go :Goimports
 command! -nargs=0 GoImports %!goimports
 command! -nargs=0 GoRun call s:fcy_gorun()
@@ -283,8 +223,66 @@ autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete
 filetype plugin indent on
 syntax on
 
+" }}}
 " ============================================================================
-" Plugin SETTINGS
+" Plugins {{{
+" ============================================================================
+let s:useYCM    = 0
+
+let s:plugin_groups = []
+call add(s:plugin_groups, 'fencview')
+call add(s:plugin_groups, 'tellenc')
+call add(s:plugin_groups, 'vim-bbye')
+"call add(s:plugin_groups, 'ultisnips')
+"call add(s:plugin_groups, 'ctrlp')
+call add(s:plugin_groups, 'ctrlsf')
+call add(s:plugin_groups, 'vim-multiple-cursors')
+call add(s:plugin_groups, 'unite')
+call add(s:plugin_groups, 'vimproc')
+"call add(s:plugin_groups, 'vimfiler')
+call add(s:plugin_groups, 'vimshell')
+"call add(s:plugin_groups, 'vim-signature')
+call add(s:plugin_groups, 'tagbar')
+call add(s:plugin_groups, 'vim-cpp-enhanced-highlight')
+"call add(s:plugin_groups, 'fastfold')
+if s:useYCM
+   call add(s:plugin_groups, 'YouCompleteMe')
+else
+    if has('nvim')
+       call add(s:plugin_groups, 'deoplete')
+    else
+       if has('lua')
+           call add(s:plugin_groups, 'neocomplete')
+       endif
+    endif
+    "call add(s:plugin_groups, 'vim-clang')
+    "call add(s:plugin_groups, 'clang_complete')
+endif
+"call add(s:plugin_groups, 'vim-go')
+call add(s:plugin_groups, 'gocode')
+call add(s:plugin_groups, 'vim-fswitch')
+call add(s:plugin_groups, 'nerdtree')
+call add(s:plugin_groups, 'nerdcommenter')
+call add(s:plugin_groups, 'vim-easymotion')
+"call add(s:plugin_groups, 'ack.vim')
+"call add(s:plugin_groups, 'ag.vim')
+"call add(s:plugin_groups, 'vim-easygrep')
+call add(s:plugin_groups, 'vim-indent-guides')
+call add(s:plugin_groups, 'autohotkey-ahk')
+call add(s:plugin_groups, 'vim-AHKcomplete')
+call add(s:plugin_groups, 'vim-markdown')
+"call add(s:plugin_groups, 'vim-instant-markdown')
+if (executable('ctags') && executable('gtags'))
+    call add(s:plugin_groups, 'gen_tags.vim')
+endif
+
+"color
+call add(s:plugin_groups, 'solarized')
+"call add(s:plugin_groups, 'molokai')
+" }}}
+
+" ============================================================================
+" Plugin SETTINGS {{{
 " ============================================================================
 silent! if plug#begin(g:config_dir . '/plugged')
 if count(s:plugin_groups, 'fencview')
@@ -827,4 +825,4 @@ if count(s:plugin_groups, 'fastfold')
 	let g:php_folding = 1
 	let g:perl_fold = 1
 endif
-
+" }}}

@@ -53,6 +53,7 @@ else
     set mouse=
 endif
 set wildmenu
+set wildmode=longest:full,full
 set wildignore=*.bak,*.o,*.e,*~,*.swp
 set t_Co=256
 set ttyfast     " when will this cause problems?

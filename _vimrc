@@ -359,7 +359,7 @@ endif
 if count(s:plugin_groups, 'gocode')
     function! GetGoCode(info)
         if a:info.status != 'unchanged' || a:info.force
-            !go get golang.org/x/tools/cmd/goimports
+            silent !go get golang.org/x/tools/cmd/goimports
             if WINDOWS()
                 silent !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
                 let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\ftplugin ' 
@@ -695,14 +695,14 @@ if count(s:plugin_groups, 'ctrlsf')
     inoremap [CtrlSF]t <Esc>:CtrlSFToggle<CR>
 
     let g:ctrlsf_mapping = {
-        \ "next"    : "<c-a-j>",
-        \ "prev"    : "<c-a-k>",
+        \ "next"    : "<c-w>",
+        \ "prev"    : "<c-e>",
         \ }
 
-    autocmd FileType CTRLSF call s:ctrlsf_settings()
+    autocmd! FileType ctrlsf call s:ctrlsf_settings()
     function! s:ctrlsf_settings()
-        nmap <buffer> <c-j> <c-a-j>p
-        nmap <buffer> <c-k> <c-a-k>p
+        nmap <buffer> <c-j> <c-w>p
+        nmap <buffer> <c-k> <c-e>p
     endfunction
 endif
 if count(s:plugin_groups, 'nerdtree')

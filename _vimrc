@@ -193,25 +193,33 @@ function! s:fcy_gen_tags()
 endfunction
 
 " golang
-autocmd! BufWritePre *.go :Goimports
-command! -nargs=0 GoImports %!goimports
+autocmd! BufWritePost *.go call s:fcy_goimports()
+command! -nargs=0 GoImports call s:fcy_goimports()
 command! -nargs=0 GoRun call s:fcy_gorun()
 command! -nargs=0 GoBuild call s:fcy_gobuild()
+function! s:fcy_goimports()
+    "let l:line = line('.')
+    "let l:col = col('.')
+    "silent %!goimports
+    "call cursor(l:line, l:col)
+    let l:cmd = 'goimports -w ' . expand('%')
+    call vimproc#system(l:cmd)
+    e
+endfunction
 function! s:fcy_gorun()
-    let l:cmd = '!go run ' . expand('%')
+    let l:cmd = 'silent !go run ' . expand('%')
     exec l:cmd
+    "call vimproc#system_bg(l:cmd)
 endfunction
 function! s:fcy_gobuild()
-    let l:cmd = 'go build ' . expand('%')
+    let l:cmd = 'go build -ldflags "-H windowsgui" ' . expand('%')
     call vimproc#system_bg(l:cmd)
 endfunction
 
 " autocomplete
 autocmd InsertLeave * if pumvisible() == 0|pclose|endif
-inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
-inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
-inoremap <expr> <PageDown> pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<PageDown>"
-inoremap <expr> <PageUp>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<PageUp>"
+inoremap <expr> <c-j>     pumvisible() ? "\<c-n>" : "\<c-j>"
+inoremap <expr> <c-k>       pumvisible() ? "\<c-p>" : "\<c-k>"
 
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
@@ -397,7 +405,7 @@ if count(s:plugin_groups, 'vim-fswitch')
     Plug 'derekwyatt/vim-fswitch'
 endif
 if count(s:plugin_groups, 'nerdcommenter')
-    Plug  'scrooloose/nerdcommenter', { 'on': '<plug>NERDCommenterInvert' }
+    Plug  'scrooloose/nerdcommenter', { 'on': '<Plug>NERDCommenterToggle' }
 endif
 if count(s:plugin_groups, 'vim-indent-guides')
     Plug  'nathanaelkane/vim-indent-guides', { 'on': '<Plug>IndentGuidesToggle' }
@@ -762,16 +770,16 @@ if count(s:plugin_groups, 'YouCompleteMe') "{{{
     let g:ycm_autoclose_preview_window_after_completion = 0
 endif "}}}
 if count(s:plugin_groups, 'nerdcommenter')
-    let NERD_c_alt_style=1
-    let NERD_cpp_alt_style=1
+    let g:NERDCreateDefaultMappings = 0
+    let g:NERDDefaultAlign = 'left'
     let g:NERDCustomDelimiters = {
                 \ 'c': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
                 \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' }
                 \ }
-    nmap <A-/> <plug>NERDCommenterInvert
-    vmap <A-/> <plug>NERDCommenterInvert gv
-    nmap <leader>cc <plug>NERDCommenterInvert
-    vmap <leader>cc <plug>NERDCommenterInvert gv
+    nmap <A-/> <plug>NERDCommenterToggle
+    vmap <A-/> <plug>NERDCommenterToggle gv
+    nmap <leader>cc <plug>NERDCommenterToggle
+    vmap <leader>cc <plug>NERDCommenterToggle gv
 endif
 if count(s:plugin_groups, 'vim-indent-guides')
     let g:indent_guides_enable_on_vim_startup=0

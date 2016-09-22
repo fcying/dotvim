@@ -229,8 +229,9 @@ autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete
 
-if findfile(".vimconf", ".;") != ""
-    source ./.vimconf
+let s:vimconf_path = findfile(".vimconf", ".;")
+if s:vimconf_path != ""
+    exec 'source ' . s:vimconf_path
 endif
 
 filetype plugin indent on

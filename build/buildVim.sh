@@ -62,8 +62,7 @@ else
                 --enable-luainterp=dynamic \
                 --prefix=/usr \
                 --with-features=huge \
-                --with-compiledby=JasonYing \
-                | tee log
+                --with-compiledby=JasonYing
                 
     sudo make
     sudo make install

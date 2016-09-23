@@ -129,7 +129,7 @@ set noshowmatch
 set nolist
 set wrap
 set laststatus=2
-set statusline=%F%m%r%w%=[%{&ff}]\ [%Y]\ [ASCII=\%03.3b,HEX=\%02.2B]\ [%04l,%04v,%p%%]
+set statusline=%F%m%r%w%=[%{&ff},%{&fenc}]\ [%Y]\ [A=\%03.3b,H=\%02.2B]\ [%04l,%04v,%p%%]
 set showcmd
 "set cmdheight=1
 set backspace=indent,eol,start whichwrap+=<,>,[,]
@@ -149,8 +149,8 @@ inoremap {<CR> {}<ESC>i<CR><c-o><s-o>
 inoremap } <c-r>=ClosePair('}')<CR>
 inoremap [ []<ESC>i
 inoremap ] <c-r>=ClosePair(']')<CR>
-inoremap " <c-r>=CloseSamePair('"')<CR>
-inoremap ' <c-r>=CloseSamePair('''')<CR>
+"inoremap " <c-r>=CloseSamePair('"')<CR>
+"inoremap ' <c-r>=CloseSamePair('''')<CR>
 
 function! CloseSamePair(char)
     if getline('.')[col('.') - 1] == a:char
@@ -372,9 +372,11 @@ endif
 if count(s:plugin_groups, 'gocode')
     function! GetGoCode(info)
         if a:info.status != 'unchanged' || a:info.force
-            silent !go get golang.org/x/tools/cmd/goimports
+            silent !go get -u golang.org/x/tools/cmd/goimports
+            silent !go get -u github.com/rogpeppe/godef         
+            silent !go get -u github.com/jstemmer/gotags
+            silent !go get -u github.com/nsf/gocode
             if WINDOWS()
-                silent !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
                 let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\ftplugin ' 
                             \ . $HOME . '\vimfiles'
                 call system(l:cmd)
@@ -382,13 +384,13 @@ if count(s:plugin_groups, 'gocode')
                             \ . '\vimfiles'
                 call system(l:cmd)
             else
-                silent !go get -u github.com/nsf/gocode
                 let l:cmd = 'sh ' . g:config_dir . '/plugged/gocode/vim/update.sh'
                 call system(l:cmd)
             endif
       endif
     endfunction
     Plug 'nsf/gocode', {'do': function('GetGoCode')}
+    Plug 'dgryski/vim-godef'
 endif
 if count(s:plugin_groups, 'vim-clang')
     Plug 'https://github.com/fcymk2/vim-clang'
@@ -467,6 +469,33 @@ if count(s:plugin_groups, 'tagbar')
     let tagbar_width=32
     let g:tagbar_compact=1
     "autocmd FileType c,cpp,h nested :TagbarOpen
+    let g:tagbar_type_go = {
+    \ 'ctagstype' : 'go',
+    \ 'kinds'     : [
+        \ 'p:package',
+        \ 'i:imports:1',
+        \ 'c:constants',
+        \ 'v:variables',
+        \ 't:types',
+        \ 'n:interfaces',
+        \ 'w:fields',
+        \ 'e:embedded',
+        \ 'm:methods',
+        \ 'r:constructor',
+        \ 'f:functions'
+    \ ],
+    \ 'sro' : '.',
+    \ 'kind2scope' : {
+        \ 't' : 'ctype',
+        \ 'n' : 'ntype'
+    \ },
+    \ 'scope2kind' : {
+        \ 'ctype' : 't',
+        \ 'ntype' : 'n'
+    \ },
+    \ 'ctagsbin'  : 'gotags',
+    \ 'ctagsargs' : '-sort -silent'
+    \ }    
 endif
 if count(s:plugin_groups, 'unite')
     "let g:unite_data_directory=g:config_dir . '/.cache/unite'
@@ -539,6 +568,20 @@ if count(s:plugin_groups, 'ctrlp')
                 \ 'link': 'some_bad_symbolic_links',
                 \ }
 endif
+if count(s:plugin_groups, 'gocode')
+    "start gocode first
+    function! s:fcy_CallGocode()
+        if !exists('g:startGocode')
+            call vimproc#system_bg('gocode')
+            let g:startGocode = 1
+        endif
+    endfunction
+    autocmd! VimEnter *.go call s:fcy_CallGocode()
+    
+    "let g:gocomplete#system_function = 'vimproc#system'
+    let g:godef_split=0
+    let g:godef_same_file_in_same_window=1
+endif
 if count(s:plugin_groups, 'vim-go')
     let g:go_bin_path = expand("$HOME/.gotools")
     let g:go_highlight_functions = 1
@@ -547,7 +590,7 @@ if count(s:plugin_groups, 'vim-go')
     let g:go_highlight_types = 1
     let g:go_highlight_operators = 1
     let g:go_highlight_build_constraints = 1
-    "let g:go_fmt_command = "goimports"
+    let g:go_fmt_command = "goimports"
     "let g:go_fmt_fail_silently = 1
     
     au FileType go nmap <leader>r <Plug>(go-run)
@@ -574,6 +617,7 @@ if count(s:plugin_groups, 'neocomplete')
     " Set minimum syntax keyword length.
     let g:neocomplete#sources#syntax#min_keyword_length = 3
     let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+    let g:neocomplete#skip_auto_completion_time = ""
 
     " Define dictionary.
     let g:neocomplete#sources#dictionary#dictionaries = {
@@ -688,6 +732,7 @@ if count(s:plugin_groups, 'ctrlsf')
     "let g:ctrlsf_debug_mode = 1
     "redir! > ctrlsf.log
     let g:ctrlsf_ackprg = 'ag'
+    let g:ctrlsf_regex_pattern = 1
     let g:ctrlsf_case_sensitive = 'smart'
     let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS', 'obj', 'out', 'lib*']
 

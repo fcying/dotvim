@@ -229,6 +229,8 @@ autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete
 
+au BufNewFile,BufRead *.qml set filetype=qml
+
 let s:vimconf_path = findfile(".vimconf", ".;")
 if s:vimconf_path != ""
     exec 'source ' . s:vimconf_path
@@ -510,6 +512,7 @@ if count(s:plugin_groups, 'unite')
 		\ 'ag', '--follow', '--nocolor', '--nogroup', '--hidden',
         \ '--ignore','lib', '--ignore','obj', '--ignore','out',
         \ '--ignore','tags', '--ignore','GTAGS', '--ignore','GRTAGS', '--ignore','GPATH',
+        \ '--ignore','deploy',
         \ '-g', '']
 		
         let g:unite_source_grep_command = 'ag'
@@ -518,6 +521,7 @@ if count(s:plugin_groups, 'unite')
         \ --ignore ''.svn'' --ignore ''.git''
         \ --ignore ''lib'' --ignore ''obj'' --ignore ''out''
         \ --ignore ''tags'' --ignore ''GTAGS'' --ignore ''GRTAGS'' --ignore ''GPATH''
+        \ --ignore ''deploy''
 		\'		
     endif
 	
@@ -820,7 +824,9 @@ if count(s:plugin_groups, 'nerdcommenter')
     let g:NERDDefaultAlign = 'left'
     let g:NERDCustomDelimiters = {
                 \ 'c': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-                \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' }
+                \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
+                \ 'go': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
+                \ 'qml': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
                 \ }
     nmap <A-/> <plug>NERDCommenterToggle
     vmap <A-/> <plug>NERDCommenterToggle gv

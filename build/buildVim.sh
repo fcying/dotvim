@@ -7,7 +7,7 @@ if [ ! -d "../vim_origin" ]; then
 else
     echo "git fetch"
     cd ../vim_origin/
-    git fetch origin master
+    git fetch -v --progress --depth 2 origin master
     git reset --hard origin/master
 fi
 

@@ -377,8 +377,8 @@ if count(s:plugin_groups, 'gocode')
             silent !go get -u golang.org/x/tools/cmd/goimports
             silent !go get -u github.com/rogpeppe/godef         
             silent !go get -u github.com/jstemmer/gotags
-            silent !go get -u github.com/nsf/gocode
             if WINDOWS()
+                silent !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
                 let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\ftplugin ' 
                             \ . $HOME . '\vimfiles'
                 call system(l:cmd)
@@ -386,6 +386,7 @@ if count(s:plugin_groups, 'gocode')
                             \ . '\vimfiles'
                 call system(l:cmd)
             else
+                silent !go get -u github.com/nsf/gocode
                 let l:cmd = 'sh ' . g:config_dir . '/plugged/gocode/vim/update.sh'
                 call system(l:cmd)
             endif
@@ -507,14 +508,28 @@ if count(s:plugin_groups, 'unite')
 
     call unite#filters#matcher_default#use(['matcher_fuzzy'])
 
+    if WINDOWS()
+        if executable('files')
+            "go get github.com/mattn/files
+            let g:unite_source_rec_async_command = [
+            \'files', '-a', '-i',
+            \'(^(lib|Lib|out|Out|obj|Obj))
+            \|(deploy)
+            \|(^(tags|GTAGS|GRTAGS|GPATH)$)'
+            \,]
+        endif
+    endif
+
     if executable('ag')
-        let g:unite_source_rec_async_command = [
-		\ 'ag', '--follow', '--nocolor', '--nogroup', '--hidden',
-        \ '--ignore','lib', '--ignore','obj', '--ignore','out',
-        \ '--ignore','tags', '--ignore','GTAGS', '--ignore','GRTAGS', '--ignore','GPATH',
-        \ '--ignore','deploy',
-        \ '-g', '']
-		
+        if LINUX()
+            let g:unite_source_rec_async_command = [
+            \ 'ag', '--follow', '--nocolor', '--nogroup', '--hidden',
+            \ '--ignore','lib', '--ignore','obj', '--ignore','out',
+            \ '--ignore','tags', '--ignore','GTAGS', '--ignore','GRTAGS', '--ignore','GPATH',
+            \ '--ignore','deploy',
+            \ '-g', '']
+        endif
+        
         let g:unite_source_grep_command = 'ag'
         let g:unite_source_grep_default_opts =
         \'--vimgrep --hidden --nocolor --nogroup
@@ -528,8 +543,8 @@ if count(s:plugin_groups, 'unite')
 	nnoremap [unite] <Nop>
 	nmap f [unite]
 	nmap <c-p> [unite]
-	nnoremap <silent> [unite]s :<C-u>Unite source<CR>
-	nnoremap <silent> [unite]f :<C-u>Unite -silent -start-insert file_rec/async<CR>
+	"nnoremap <silent> [unite]s :<C-u>Unite source<CR>
+    nnoremap <silent> [unite]f :<C-u>Unite -silent -start-insert file_rec/async<CR>
 	nnoremap <silent> [unite]b :<C-u>Unite -start-insert buffer bookmark<CR>
 	nnoremap <silent> [unite]g :<C-u>Unite grep:.<CR>
 	nnoremap <silent> [unite]l :<C-u>Unite -start-insert line<CR>

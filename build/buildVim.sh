@@ -2,6 +2,9 @@
 
 cd `dirname $0`
 if [ ! -d "../vim_origin" ]; then
+    sudo apt install libncurses5-dev
+    sudo apt install python3-dev python2.7-dev lua5.2 liblua5.2-dev
+
     git clone https://github.com/vim/vim.git ../vim_origin --depth 2
     cd ../vim_origin/
 else
@@ -60,9 +63,8 @@ else
                 --enable-python3interp=dynamic \
                 --enable-perlinterp=dynamic \
                 --enable-luainterp=dynamic \
-                --prefix=/usr \
                 --with-features=huge \
-                --with-compiledby=JasonYing
+                --with-compiledby=JasonYing 2>&1 > build.log
                 
     sudo make
     sudo make install

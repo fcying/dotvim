@@ -515,8 +515,9 @@ if count(s:plugin_groups, 'unite')
             \'files', '-a', '-i',
             \'(^(lib|Lib|out|Out|obj|Obj))
             \|(deploy)
-            \|(^(tags|GTAGS|GRTAGS|GPATH)$)'
-            \,]
+            \|(^(tags|GTAGS|GRTAGS|GPATH)$)
+            \|(^(\.git|\.hg|\.svn|_darcs|\.bzr)$)
+            \',]
         endif
     endif
 

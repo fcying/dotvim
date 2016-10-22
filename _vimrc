@@ -685,9 +685,9 @@ if count(s:plugin_groups, 'neocomplete')
     set completeopt=menu,longest       "menu longest noinsert preview
 endif
 if count(s:plugin_groups, 'vim-multiple-cursors')
-    let g:multi_cursor_next_key='<S-n>'
-    let g:multi_cursor_prev_key='<S-p>'
-    let g:multi_cursor_skip_key='<S-x>'
+    "let g:multi_cursor_next_key='<S-n>'
+    "let g:multi_cursor_prev_key='<S-p>'
+    "let g:multi_cursor_skip_key='<S-x>'
     let g:multi_cursor_quit_key='<Esc>'
     " Called once right before you start selecting multiple cursors
     function! Multiple_cursors_before()

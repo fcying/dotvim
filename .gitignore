@@ -9,4 +9,5 @@
 /.init.vim-rplugin~
 /.vim
 /autoload
+/ftplugin
 /neovim-qt

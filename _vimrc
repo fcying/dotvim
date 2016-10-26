@@ -174,6 +174,7 @@ if WINDOWS()
 else
     set tags=tags
 endif
+nmap <c-]> :tj <c-r><c-w><CR>
 nmap <F3> <c-]>
 nmap <F4> <C-o>
 nmap <Leader>tn :tnext<CR>
@@ -289,7 +290,7 @@ call add(s:plugin_groups, 'vim-AHKcomplete')
 call add(s:plugin_groups, 'vim-markdown')
 "call add(s:plugin_groups, 'vim-instant-markdown')
 if (executable('ctags') && executable('gtags'))
-    call add(s:plugin_groups, 'gen_tags.vim')
+    "call add(s:plugin_groups, 'gen_tags.vim')
 endif
 
 "color
@@ -553,6 +554,7 @@ if count(s:plugin_groups, 'unite')
 	nnoremap <silent> [unite]y :<C-u>Unite history/yank<CR>
 	nnoremap <silent> [unite]h :<C-u>Unite file_mru<CR>
 	nnoremap <silent> [unite]p :<C-u>Unite jump_point file_point<CR>
+	nnoremap <silent> [unite]r <Plug>(unite_redraw)
 
     autocmd FileType unite call s:unite_settings()
     function! s:unite_settings()

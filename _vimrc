@@ -155,12 +155,12 @@ inoremap ] <c-r>=ClosePair(']')<CR>
 function! CloseSamePair(char)
     if getline('.')[col('.') - 1] == a:char
         return "\<Right>"
-    else    
+    else
         let l:char=a:char . a:char . "\<Left>"
         return l:char
     endif
-endf    
- 
+endf
+
 function! ClosePair(char)
     if getline('.')[col('.') - 1] == a:char
         return "\<Right>"
@@ -334,7 +334,7 @@ if count(s:plugin_groups, 'vimshell')
     Plug 'Shougo/vimshell.vim', {'on': 'VimShell'}
 endif
 if count(s:plugin_groups, 'vimfiler')
-    Plug 'Shougo/vimfiler.vim' 
+    Plug 'Shougo/vimfiler.vim'
 endif
 if count(s:plugin_groups, 'vim-bbye')
     Plug  'moll/vim-bbye', {'on': 'Bdelete'}
@@ -376,15 +376,15 @@ if count(s:plugin_groups, 'gocode')
     function! GetGoCode(info)
         if a:info.status != 'unchanged' || a:info.force
             silent !go get -u golang.org/x/tools/cmd/goimports
-            silent !go get -u github.com/rogpeppe/godef         
+            silent !go get -u github.com/rogpeppe/godef
             silent !go get -u github.com/jstemmer/gotags
             if WINDOWS()
                 "silent !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
                 silent !go get -u github.com/nsf/gocode
-                let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\ftplugin ' 
+                let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\ftplugin '
                             \ . $HOME . '\vimfiles'
                 call system(l:cmd)
-                let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\autoload ' . $HOME 
+                let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\autoload ' . $HOME
                             \ . '\vimfiles'
                 call system(l:cmd)
                 gocode set lib-path %GOPATH%\pkg\windows_386
@@ -464,6 +464,13 @@ if count(s:plugin_groups, 'solarized')
 elseif count(s:plugin_groups, 'molokai')
     colorscheme molokai
 endif
+"enable 256 colors in ConEmu on Win
+if has('win32') && !has('gui_running') && !empty($CONEMUBUILD)
+    set term=xterm
+    set t_Co=256
+    let &t_AB="\e[48;5;%dm"
+    let &t_AF="\e[38;5;%dm"
+endif
 
 if count(s:plugin_groups, 'fencview')
     let g:fencview_autodetect = 1
@@ -502,7 +509,7 @@ if count(s:plugin_groups, 'tagbar')
     \ },
     \ 'ctagsbin'  : 'gotags',
     \ 'ctagsargs' : '-sort -silent'
-    \ }    
+    \ }
 endif
 if count(s:plugin_groups, 'unite')
     "let g:unite_data_directory=g:config_dir . '/.cache/unite'
@@ -534,7 +541,7 @@ if count(s:plugin_groups, 'unite')
             \ '--ignore','deploy',
             \ '-g', '']
         endif
-        
+
         let g:unite_source_grep_command = 'ag'
         let g:unite_source_grep_default_opts =
         \'--vimgrep --hidden --nocolor --nogroup
@@ -542,9 +549,9 @@ if count(s:plugin_groups, 'unite')
         \ --ignore ''lib'' --ignore ''obj'' --ignore ''out''
         \ --ignore ''tags'' --ignore ''GTAGS'' --ignore ''GRTAGS'' --ignore ''GPATH''
         \ --ignore ''deploy''
-		\'		
+		\'
     endif
-	
+
 	nnoremap [unite] <Nop>
 	nmap f [unite]
 	nmap <c-p> [unite]
@@ -602,7 +609,7 @@ if count(s:plugin_groups, 'gocode')
         endif
     endfunction
     autocmd! VimEnter *.go call s:fcy_CallGocode()
-    
+
     "let g:gocomplete#system_function = 'vimproc#system'
     let g:godef_split=0
     let g:godef_same_file_in_same_window=1
@@ -617,7 +624,7 @@ if count(s:plugin_groups, 'vim-go')
     let g:go_highlight_build_constraints = 1
     let g:go_fmt_command = "goimports"
     "let g:go_fmt_fail_silently = 1
-    
+
     au FileType go nmap <leader>r <Plug>(go-run)
     au FileType go nmap <leader>b <Plug>(go-build)
     au FileType go nmap <leader>t <Plug>(go-test)

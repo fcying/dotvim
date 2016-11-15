@@ -50,7 +50,7 @@ if s:useGUI
     set guifont=Consolas:h11
     au GUIEnter * simalt ~x
 else
-    set mouse=
+    set mouse=n
 endif
 set wildmenu
 set wildmode=longest:full,full
@@ -204,7 +204,7 @@ function! s:fcy_goimports()
     "silent %!goimports
     "call cursor(l:line, l:col)
     let l:cmd = 'goimports -w ' . expand('%')
-    call vimproc#system(l:cmd)
+    call system(l:cmd)
     e
 endfunction
 function! s:fcy_gorun()
@@ -275,8 +275,10 @@ else
     "call add(s:plugin_groups, 'vim-clang')
     "call add(s:plugin_groups, 'clang_complete')
 endif
-"call add(s:plugin_groups, 'vim-go')
-call add(s:plugin_groups, 'gocode')
+if (executable('go'))
+    "call add(s:plugin_groups, 'vim-go')
+    call add(s:plugin_groups, 'gocode')
+endif
 call add(s:plugin_groups, 'vim-fswitch')
 call add(s:plugin_groups, 'nerdtree')
 call add(s:plugin_groups, 'nerdcommenter')
@@ -379,8 +381,10 @@ if count(s:plugin_groups, 'gocode')
             silent !go get -u github.com/rogpeppe/godef
             silent !go get -u github.com/jstemmer/gotags
             if WINDOWS()
-                "silent !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
-                silent !go get -u github.com/nsf/gocode
+                silent !go get -u github.com/mattn/files    "for unite
+                silent !taskkill /F /IM gocode.exe
+                silent !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
+                "silent !go get -u github.com/nsf/gocode
                 let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\ftplugin '
                             \ . $HOME . '\vimfiles'
                 call system(l:cmd)
@@ -389,6 +393,7 @@ if count(s:plugin_groups, 'gocode')
                 call system(l:cmd)
                 gocode set lib-path %GOPATH%\pkg\windows_386
             else
+                silent !killall gocode
                 silent !go get -u github.com/nsf/gocode
                 let l:cmd = 'sh ' . g:config_dir . '/plugged/gocode/vim/update.sh'
                 call system(l:cmd)
@@ -849,6 +854,7 @@ if count(s:plugin_groups, 'YouCompleteMe') "{{{
 endif "}}}
 if count(s:plugin_groups, 'nerdcommenter')
     let g:NERDCreateDefaultMappings = 0
+    let g:NERDRemoveExtraSpaces = 1
     let g:NERDDefaultAlign = 'left'
     let g:NERDCustomDelimiters = {
                 \ 'c': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },

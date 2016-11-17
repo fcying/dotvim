@@ -7,7 +7,7 @@ cd `dirname $0`
 cd ..
 vim_home=$PWD
 
-if [ "$1" = "all" ]; then
+if [ "$1" == "all" ]; then
     if [ $(uname | grep MINGW -c) -eq 1 ]; then
         pacman -S mingw-w64-x86_64-lua
         #pacman -S mingw-w64-x86_64-python2
@@ -18,20 +18,21 @@ if [ "$1" = "all" ]; then
     fi
 fi
 
-if [ "$1" = "all" ] || [ "$1" = "update" ]; then
+if [ "$1" == "all" ] || [ "$1" == "update" ]; then
     if [ ! -d "$vim_home/vim_origin" ]; then
-        git clone https://github.com/vim/vim.git ../vim_origin --depth 2
+        git clone https://github.com/vim/vim.git ../vim_origin --depth 100
         cd $vim_home/vim_origin/
     else
         echo "git fetch"
         cd $vim_home/vim_origin/
-        git fetch -v --progress --depth 2 origin master
+        git clean -fxd
         git reset --hard origin/master
+        git pull -v --progress --depth 100 origin master
     fi
+else
+    cd $vim_home/vim_origin/
+    git clean -fxd
 fi
-
-cd $vim_home/vim_origin/
-git clean -fxd
 
 echo "start build vim"
 if [ $(uname | grep MINGW -c) -eq 1 ]; then

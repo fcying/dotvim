@@ -260,6 +260,7 @@ call add(s:plugin_groups, 'vimproc')
 call add(s:plugin_groups, 'vimshell')
 "call add(s:plugin_groups, 'vim-signature')
 call add(s:plugin_groups, 'tagbar')
+call add(s:plugin_groups, 'vim-session')
 call add(s:plugin_groups, 'vim-cpp-enhanced-highlight')
 "call add(s:plugin_groups, 'fastfold')
 if s:useYCM
@@ -315,6 +316,10 @@ if count(s:plugin_groups, 'nerdtree')
 endif
 if count(s:plugin_groups, 'tagbar')
     Plug  'https://github.com/fcymk2/tagbar', { 'on': 'TagbarToggle' }
+endif
+if count(s:plugin_groups, 'vim-session')
+    Plug  'https://github.com/xolox/vim-misc'
+    Plug  'https://github.com/xolox/vim-session'
 endif
 if count(s:plugin_groups, 'vimproc')
     function! BuildVimproc(info)
@@ -515,6 +520,10 @@ if count(s:plugin_groups, 'tagbar')
     \ 'ctagsbin'  : 'gotags',
     \ 'ctagsargs' : '-sort -silent'
     \ }
+endif
+if count(s:plugin_groups, 'vim-session')
+    let g:session_autosave = 'no'
+    let g:session_autoload = 'no'
 endif
 if count(s:plugin_groups, 'unite')
     "let g:unite_data_directory=g:config_dir . '/.cache/unite'

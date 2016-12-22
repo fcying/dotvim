@@ -1,20 +1,27 @@
 set nocompatible
 
-"detect OS {{{
-function! OSX()
-    return has('macunix')
-endfunction
-function! LINUX()
-    return has('unix') && !has('macunix') && !has('win32unix')
-endfunction
-function! WINDOWS()
-    return (has('win16') || has('win32') || has('win64'))
-endfunction
+"check environment {{{
+let s:os_osx = 0
+let s:os_linux = 0
+let s:os_windows = 0
+if has('macunix')
+    let s:os_osx = 1
+elseif (has('unix') && !has('macunix') && !has('win32unix'))
+    let s:os_linux = 1
+elseif (has('win16') || has('win32') || has('win64'))
+    let s:os_windows = 1
+endif
+
+if has('gui_running')
+    let s:use_gui = 1
+else
+    let s:use_gui = 0
+endif
 "}}}
 
-if WINDOWS()
+if s:os_windows
     let g:config_dir=$VIM
-elseif LINUX()
+elseif s:os_linux
     let g:config_dir = '~/.vim'
 endif
 
@@ -24,11 +31,6 @@ endif
 
 let mapleader   = ","
 
-if has('gui_running')
-    let s:useGUI=1
-else
-    let s:useGUI=0
-endif
 
 "autocmd! bufwritepost _vimrc source $MYVIMRC
 nnoremap <leader>ee :e $MYVIMRC<CR>
@@ -38,12 +40,12 @@ noremap  <C-S> :update<CR>
 vnoremap <C-S> <C-C>:update<CR>
 inoremap <C-S> <C-O>:update<CR>
 
-if WINDOWS()
+if s:os_windows
     set renderoptions=type:directx,level:0.50,
                 \gamma:1.0,contrast:0.0,geom:1,renmode:5,taamode:1
 endif
 
-if s:useGUI
+if s:use_gui
     set guioptions -=T
     set guioptions -=m
     set mouse=a
@@ -55,7 +57,6 @@ endif
 set wildmenu
 set wildmode=longest:full,full
 set wildignore=*.bak,*.o,*.e,*~,*.swp
-set t_Co=256
 set ttyfast     " when will this cause problems?
 autocmd GUIEnter * set vb t_vb=       "close beep
 set noerrorbells
@@ -85,7 +86,7 @@ set encoding=utf-8
 "set fileencoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 "set fileformat=dos
-if WINDOWS()
+if s:os_windows
     set ffs=dos,unix,mac
 else
     set ffs=unix,dos,mac
@@ -107,9 +108,9 @@ set ignorecase
 set smartcase
 set noautochdir
 set path+=../inc,../src,
-if WINDOWS()
+if s:os_windows
     let $PATH = g:config_dir . '\lib' . ';' . $PATH
-elseif LINUX()
+elseif s:os_linux
     let $PATH = g:config_dir . '/lib' . ':' . $PATH
 endif
 
@@ -181,7 +182,7 @@ function! ClosePair(char)
     endif
 endf
 
-if WINDOWS()
+if s:os_windows
     set tags=tags
 else
     set tags=tags
@@ -340,7 +341,7 @@ if count(s:plugin_groups, 'vimproc')
         " - status: 'installed', 'updated', or 'unchanged'
         " - force:  set on PlugInstall! or PlugUpdate!
         if a:info.status != 'unchanged' || a:info.force
-            if WINDOWS()
+            if s:os_windows
                 silent !Tools\update-dll-mingw.bat
             else
                 silent !make
@@ -397,7 +398,7 @@ if count(s:plugin_groups, 'gocode')
             silent !go get -u golang.org/x/tools/cmd/goimports
             silent !go get -u github.com/rogpeppe/godef
             silent !go get -u github.com/jstemmer/gotags
-            if WINDOWS()
+            if s:os_windows
                 silent !go get -u github.com/mattn/files    "for unite
                 silent !taskkill /F /IM gocode.exe
                 silent !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
@@ -477,22 +478,22 @@ call plug#end()
 endif
 
 " color
-let g:solarized_termcolors=256
-let g:molokai_original = 1
-let g:rehash256 = 1
 if count(s:plugin_groups, 'solarized')
+    let g:solarized_termcolors=256
     set background=light
     colorscheme solarized
 elseif count(s:plugin_groups, 'molokai')
+    let g:rehash256 = 1
+    let g:molokai_original = 1
     colorscheme molokai
 endif
 "enable 256 colors in ConEmu on Win
-if has('win32') && !has('gui_running') && !empty($CONEMUBUILD)
+if s:os_windows && s:use_gui==0 && !empty($CONEMUBUILD)
     set term=xterm
-    set t_Co=256
     let &t_AB="\e[48;5;%dm"
     let &t_AF="\e[38;5;%dm"
 endif
+set t_Co=256
 
 if count(s:plugin_groups, 'fencview')
     let g:fencview_autodetect = 1
@@ -545,7 +546,7 @@ if count(s:plugin_groups, 'unite')
 
     call unite#filters#matcher_default#use(['matcher_fuzzy'])
 
-    if WINDOWS()
+    if s:os_windows
         if executable('files')
             "go get github.com/mattn/files
             let g:unite_source_rec_async_command = [
@@ -559,7 +560,7 @@ if count(s:plugin_groups, 'unite')
     endif
 
     if executable('ag')
-        if LINUX()
+        if s:os_linux
             let g:unite_source_rec_async_command = [
             \ 'ag', '--follow', '--nocolor', '--nogroup', '--hidden',
             \ '--ignore','lib', '--ignore','obj', '--ignore','out',
@@ -742,7 +743,7 @@ if count(s:plugin_groups, 'vim-multiple-cursors')
     endfunction
 endif
 if count(s:plugin_groups, 'vim-clang')
-    if WINDOWS()
+    if s:os_windows
         let g:clang_exec = 'C:/LLVM/bin/clang.exe'
         let g:clang_format_exec = 'C:/LLVM/bin/clang-format.exe'
     endif
@@ -835,9 +836,9 @@ if count(s:plugin_groups, 'nerdtree')
 endif
 if count(s:plugin_groups, 'clang_complete')
     let g:clang_use_library=1
-    if WINDOWS()
+    if s:os_windows
         let g:clang_library_path = 'C:\LLVM\bin'
-    elseif LINUX()
+    elseif s:os_linux
         let g:clang_library_path = '/usr/lib/llvm-3.8/lib'
     endif
     let g:clang_auto_select=1

@@ -248,6 +248,7 @@ autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete
 
 au BufNewFile,BufRead *.qml set filetype=qml
+au BufNewFile,BufRead *.conf set filetype=conf
 
 let s:vimconf_path = findfile(".vimconf", ".;")
 if s:vimconf_path != ""
@@ -887,6 +888,7 @@ if count(s:plugin_groups, 'nerdcommenter')
                 \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
                 \ 'go': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
                 \ 'qml': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
+                \ 'conf': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '#' },
                 \ }
     nmap <A-/> <plug>NERDCommenterToggle
     vmap <A-/> <plug>NERDCommenterToggle gv

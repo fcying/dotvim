@@ -54,6 +54,10 @@ if s:use_gui
 else
     set mouse=n
 endif
+if &term =~ '^screen'
+    " tmux knows the extended mouse mode
+    set ttymouse=xterm2
+endif
 set wildmenu
 set wildmode=longest:full,full
 set wildignore=*.bak,*.o,*.e,*~,*.swp

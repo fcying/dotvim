@@ -33,7 +33,7 @@ endif
 " BASIC SETTINGS {{{
 " ============================================================================
 
-let mapleader = ","
+let mapleader = " "
 
 "autocmd! bufwritepost _vimrc source $MYVIMRC
 nnoremap <leader>ee :e $MYVIMRC<CR>

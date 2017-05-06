@@ -346,7 +346,7 @@ let g:plugin_dir = g:config_dir . '/plugged'
 let g:plugin_manager_dir = g:config_dir . '/.cache/vim-plug'
 if filereadable(expand(g:plugin_manager_dir . '/autoload/plug.vim')) == 0
     if executable('curl')
-        exec '!curl -fLo '
+        silent exec '!curl -fLo '
                     \ . g:plugin_manager_dir . '/autoload/plug.vim'
                     \ . ' --create-dirs '
                     \ . 'https://raw.githubusercontent.com/'

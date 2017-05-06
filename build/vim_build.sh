@@ -26,7 +26,8 @@ if [ "$1" == "all" ] || [ "$1" == "update" ]; then
         echo "git fetch"
         cd $vim_home/vim_origin/
         git clean -fxd
-        git pull -v --progress --depth 100 origin master
+        git reset --hard origin/master
+        git pull -v --progress --depth 100 origin master --allow-unrelated-histories
         git reset --hard origin/master
     fi
 else

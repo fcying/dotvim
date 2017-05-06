@@ -33,7 +33,7 @@ endif
 " basic settings {{{
 " ============================================================================
 
-let mapleader = " "
+let mapleader = ";"
 
 "autocmd! bufwritepost _vimrc source $MYVIMRC
 nnoremap <leader>ee :e $MYVIMRC<CR>
@@ -140,8 +140,7 @@ set iskeyword -=.
 set iskeyword -=#
 set virtualedit=onemore        "onemore all
 "set paste
-
-let g:session_autoload = 'no'
+set lazyredraw
 
 set foldmethod=manual
 set nofoldenable
@@ -249,6 +248,7 @@ autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete
 au BufNewFile,BufRead *.qml set filetype=qml
 au BufNewFile,BufRead *.conf set filetype=conf
 
+" find project file
 let s:vimconf_path = findfile(".vimconf", ".;")
 if s:vimconf_path != ""
     exec 'source ' . s:vimconf_path
@@ -258,7 +258,7 @@ endif
 
 
 " ============================================================================
-" function {{{
+" plugin {{{
 " ============================================================================
 function! Fcy_source_rc(file) abort
     "if filereadable(g:config_dir . '/' . a:file)
@@ -294,49 +294,57 @@ endfunction
 
 
 
-" ============================================================================
-" plugin {{{
-" ============================================================================
 let s:useYCM = 0
-let s:colorscheme = 'solarized'
 let s:plugins = []
 call Fcy_source_rc('config/plugin_hook.vim')
 call add(s:plugins, ['mbbill/fencview', {'loadconf':1}])
 call add(s:plugins, ['adah1972/tellenc'])
 call add(s:plugins, ['moll/vim-bbye', {'on':'Bdelete', 'loadconf':1}])
-call add(s:plugins, ['dyng/ctrlsf.vim', {'loadconf':1}])
+call add(s:plugins, ['MattesGroeger/vim-bookmarks', {'loadconf':1}])
+call add(s:plugins, ['thinca/vim-ref', {'loadconf':1}])
+call add(s:plugins, ['terryma/vim-expand-region', {'loadconf':1}])
 call add(s:plugins, ['terryma/vim-multiple-cursors', {'loadconf':1}])
-call add(s:plugins, ['Shougo/unite.vim', {'loadconf':1}])
-call add(s:plugins, ['Shougo/unite-outline'])
-call add(s:plugins, ['Shougo/neomru.vim'])
-call add(s:plugins, ['Shougo/neoyank.vim'])
-call add(s:plugins, ['Shougo/vimproc', {'do':function('BuildVimproc')}])
-"call add(s:plugins, ['Shougo/vimfiler'])
-call add(s:plugins, ['Shougo/vimshell', {'on':'VimShell', 'loadconf':1}])
+call add(s:plugins, ['dyng/ctrlsf.vim', {'loadconf':1}])
+call add(s:plugins, ['easymotion/vim-easymotion', {'loadconf':1}])
+call add(s:plugins, ['derekwyatt/vim-fswitch', {'loadconf':1}])
+call add(s:plugins, ['nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle', 'loadconf':1}])
+call add(s:plugins, ['scrooloose/nerdtree', {'on':'NERDTreeToggle', 'loadconf':1}])
+call add(s:plugins, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggle', 'loadconf':1}])
 call add(s:plugins, ['fcymk2/tagbar', {'on':'TagbarToggle', 'loadconf':1}])
 call add(s:plugins, ['xolox/vim-session', {'loadconf':1}])
 call add(s:plugins, ['xolox/vim-misc'])
-"call add(s:plugins, ['vim-cpp-enhanced-highlight'])
+
+"call add(s:plugins, ['Shougo/denite.nvim', {'loadconf':1}])
+"call add(s:plugins, ['nixprime/cpsm'])
+call add(s:plugins, ['Shougo/unite.vim', {'loadconf':1}])
+call add(s:plugins, ['Shougo/unite-outline'])
+call add(s:plugins, ['Shougo/neoyank.vim'])
+call add(s:plugins, ['Shougo/neomru.vim'])
+call add(s:plugins, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
+"call add(s:plugins, ['Shougo/vimfiler', {'loadconf':1}])
+call add(s:plugins, ['Shougo/vimshell', {'on':'VimShell', 'loadconf':1}])
+call add(s:plugins, ['hewes/unite-gtags' ,{'loadconf' : 1}])
+
 if s:useYCM
    call add(s:plugins, ['Valloric/YouCompleteMe, {'loadconf':1}'])
 else
    if has('lua')
        call add(s:plugins, ['Shougo/neocomplete', {'loadconf':1}])
+       call add(s:plugins, ['Shougo/neoinclude.vim'])
+       call add(s:plugins, ['Shougo/neco-syntax'])
+       call add(s:plugins, ['Shougo/neco-vim', {'loadconf':1}])
    endif
 endif
+
 call add(s:plugins, ['nsf/gocode', {'do':function('GetGoCode'), 'for':'go', 'loadconf':1}])
 call add(s:plugins, ['dgryski/vim-godef', {'for':'go'}])
-call add(s:plugins, ['derekwyatt/vim-fswitch', {'loadconf':1}])
-call add(s:plugins, ['scrooloose/nerdtree', {'on':'NERDTreeToggle', 'loadconf':1}])
-call add(s:plugins, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggle', 'loadconf':1}])
-call add(s:plugins, ['easymotion/vim-easymotion', {'loadconf':1}])
-call add(s:plugins, ['nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle', 'loadconf':1}])
 call add(s:plugins, ['vim-scripts/autohotkey-ahk', {'for':'autohotkey'}])
 call add(s:plugins, ['huleiak47/vim-AHKcomplete', {'for':'autohotkey'}])
 call add(s:plugins, ['plasticboy/vim-markdown', {'for':'markdown'}])
 call add(s:plugins, ['godlygeek/tabular', {'for':'markdown'}])
 
 "color
+"call add(s:plugins, ['vim-cpp-enhanced-highlight'])
 call add(s:plugins, ['altercation/vim-colors-solarized'])
 call add(s:plugins, ['tomasr/molokai'])
 
@@ -372,10 +380,12 @@ syntax enable
 " ============================================================================
 " color {{{
 " ============================================================================
+let s:colorscheme = 'solarized'
+
 if s:colorscheme == 'solarized'
     let g:solarized_termcolors=256
     set background=light
-else
+elseif s:colorscheme == 'molokai'
     let g:rehash256 = 1
     let g:molokai_original = 1
 endif

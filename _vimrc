@@ -1,8 +1,8 @@
+"check environment {{{
 if &compatible
     set nocompatible
 endif    
 
-"check environment {{{
 let g:os_osx = 0
 let g:os_linux = 0
 let g:os_windows = 0
@@ -19,18 +19,18 @@ if has('gui_running')
 else
     let s:use_gui = 0
 endif
-"}}}
 
 if g:os_windows
     let g:config_dir=$VIM
 else
     let g:config_dir = '~/.vim'
 endif
+"}}}
 
 
 
 " ============================================================================
-" BASIC SETTINGS {{{
+" basic settings {{{
 " ============================================================================
 
 let mapleader = " "
@@ -253,7 +253,6 @@ let s:vimconf_path = findfile(".vimconf", ".;")
 if s:vimconf_path != ""
     exec 'source ' . s:vimconf_path
 endif
-
 " }}}
 
 
@@ -340,12 +339,11 @@ call add(s:plugins, ['godlygeek/tabular', {'for':'markdown'}])
 "color
 call add(s:plugins, ['altercation/vim-colors-solarized'])
 call add(s:plugins, ['tomasr/molokai'])
-" }}}
 
 
 
 let g:plugin_dir = g:config_dir . '/plugged'
-let g:plugin_manager_dir = g:plugin_dir . '/vim-plug'
+let g:plugin_manager_dir = g:config_dir . '/.cache/vim-plug'
 if filereadable(expand(g:plugin_manager_dir . '/autoload/plug.vim')) == 0
     if executable('curl')
         exec '!curl -fLo '
@@ -367,7 +365,13 @@ call s:load_plugins_conf()
 
 filetype plugin indent on
 syntax enable
+" }}}
 
+
+
+" ============================================================================
+" color {{{
+" ============================================================================
 if s:colorscheme == 'solarized'
     let g:solarized_termcolors=256
     set background=light
@@ -385,4 +389,5 @@ if g:os_windows && s:use_gui==0 && !empty($CONEMUBUILD)
     let &t_AF="\e[38;5;%dm"
 endif
 set t_Co=256
+" }}}
 

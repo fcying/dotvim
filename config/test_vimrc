@@ -1,0 +1,11 @@
+set nocompatible
+set guioptions=
+
+set runtimepath+=~/.vim/plugged/denite.nvim
+set runtimepath+=~/.vim/plugged/unite-outline
+
+filetype plugin indent on
+syntax enable
+
+nnoremap <silent> fo :Denite outline<CR>
+

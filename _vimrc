@@ -313,20 +313,21 @@ call add(s:plugins, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggl
 call add(s:plugins, ['fcymk2/tagbar', {'on':'TagbarToggle', 'loadconf':1}])
 call add(s:plugins, ['xolox/vim-session', {'loadconf':1}])
 call add(s:plugins, ['xolox/vim-misc'])
+"call add(s:plugins, ['junegunn/fzf', {'do': './install --all'}])
 
-"call add(s:plugins, ['Shougo/denite.nvim', {'loadconf':1}])
-"call add(s:plugins, ['nixprime/cpsm'])
-call add(s:plugins, ['Shougo/unite.vim', {'loadconf':1}])
+call add(s:plugins, ['Shougo/denite.nvim', {'loadconf':1}])
+"call add(s:plugins, ['nixprime/cpsm', {'do':'./install.sh'}])
+"call add(s:plugins, ['Shougo/unite.vim', {'loadconf':1}])
 call add(s:plugins, ['Shougo/unite-outline'])
 call add(s:plugins, ['Shougo/neoyank.vim'])
 call add(s:plugins, ['Shougo/neomru.vim'])
 call add(s:plugins, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
-"call add(s:plugins, ['Shougo/vimfiler', {'loadconf':1}])
-call add(s:plugins, ['Shougo/vimshell', {'on':'VimShell', 'loadconf':1}])
-call add(s:plugins, ['hewes/unite-gtags' ,{'loadconf' : 1}])
+"call add(s:plugins, ['Shougo/vimfiler', {'loadconf': 1}])
+call add(s:plugins, ['Shougo/vimshell', {'on': 'VimShell', 'loadconf': 1}])
+call add(s:plugins, ['hewes/unite-gtags', {'loadconf': 1}])
 
 if s:useYCM
-   call add(s:plugins, ['Valloric/YouCompleteMe, {'loadconf':1}'])
+   call add(s:plugins, ['Valloric/YouCompleteMe', {'loadconf':1}])
 else
    if has('lua')
        call add(s:plugins, ['Shougo/neocomplete', {'loadconf':1}])
@@ -335,6 +336,7 @@ else
        call add(s:plugins, ['Shougo/neco-vim', {'loadconf':1}])
    endif
 endif
+"call add(s:plugins, ['ervandew/supertab', {'loadconf':1}])
 
 call add(s:plugins, ['nsf/gocode', {'do':function('GetGoCode'), 'for':'go', 'loadconf':1}])
 call add(s:plugins, ['dgryski/vim-godef', {'for':'go'}])
@@ -369,10 +371,11 @@ exec 'set runtimepath+=' . g:plugin_manager_dir
 call plug#begin(expand(g:plugin_dir))
 call s:load_plugins()
 call plug#end()
-call s:load_plugins_conf()
 
 filetype plugin indent on
 syntax enable
+
+call s:load_plugins_conf()
 " }}}
 
 

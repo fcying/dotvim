@@ -5,10 +5,10 @@ let g:ctrlsf_regex_pattern = 1
 let g:ctrlsf_case_sensitive = 'smart'
 let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS', 'obj', 'out', 'lib*']
 
-nmap <leader>sn <Plug>CtrlSFCwordExec
-nmap <leader>sf <Plug>CtrlSFPrompt
-vmap <leader>sf <Plug>CtrlSFVwordPath
-vmap <leader>sF <Plug>CtrlSFVwordExec
+nmap <leader>sf <Plug>CtrlSFCwordExec
+nmap <leader>sF <Plug>CtrlSFPrompt
+vmap <leader>sf <Plug>CtrlSFVwordExec
+vmap <leader>sF <Plug>CtrlSFVwordPath
 nmap <leader>sp <Plug>CtrlSFPwordPath
 nnoremap <leader>so :CtrlSFOpen<CR>
 nnoremap <leader>st :CtrlSFToggle<CR>

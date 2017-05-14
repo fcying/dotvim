@@ -299,6 +299,8 @@ let s:plugins = []
 call Fcy_source_rc('config/plugin_hook.vim')
 call add(s:plugins, ['mbbill/fencview', {'loadconf':1}])
 call add(s:plugins, ['adah1972/tellenc'])
+call add(s:plugins, ['bogado/file-line'])
+call add(s:plugins, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)', 'loadconf':1}])
 call add(s:plugins, ['moll/vim-bbye', {'on':'Bdelete', 'loadconf':1}])
 call add(s:plugins, ['MattesGroeger/vim-bookmarks', {'loadconf':1}])
 call add(s:plugins, ['thinca/vim-ref', {'loadconf':1}])

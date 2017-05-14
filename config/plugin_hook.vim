@@ -40,3 +40,4 @@ function! GetGoCode(info)
         endif
   endif
 endfunction
+

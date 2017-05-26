@@ -48,6 +48,10 @@ if g:os_windows
                 \gamma:1.0,contrast:0.0,geom:1,renmode:5,taamode:1
 endif
 
+if has('clipboard')
+   set clipboard=unnamed
+endif
+
 if s:use_gui
     set guioptions -=T
     set guioptions -=m

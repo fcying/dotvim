@@ -21,7 +21,7 @@ else
 endif
 
 if g:os_windows
-    let g:config_dir=$VIM
+    let g:config_dir = $HOME . '/.vim'
 else
     let g:config_dir = '~/.vim'
 endif
@@ -43,9 +43,11 @@ noremap  <C-S> :update<CR>
 vnoremap <C-S> <C-C>:update<CR>
 inoremap <C-S> <C-O>:update<CR>
 
-if g:os_windows
-    set renderoptions=type:directx,level:0.50,
+if !has('nvim')
+    if g:os_windows
+        set renderoptions=type:directx,level:0.50,
                 \gamma:1.0,contrast:0.0,geom:1,renmode:5,taamode:1
+    endif
 endif
 
 if has('clipboard')
@@ -401,11 +403,13 @@ endif
 
 exec 'colorscheme ' . s:colorscheme
 
-"enable 256 colors in ConEmu on Win
-if g:os_windows && s:use_gui==0 && !empty($CONEMUBUILD)
-    set term=xterm
-    let &t_AB="\e[48;5;%dm"
-    let &t_AF="\e[38;5;%dm"
+if !has('nvim')
+    "enable 256 colors in ConEmu on Win
+    if g:os_windows && s:use_gui==0 && !empty($CONEMUBUILD)
+        set term=xterm
+        let &t_AB="\e[48;5;%dm"
+        let &t_AF="\e[38;5;%dm"
+    endif
 endif
 set t_Co=256
 " }}}

@@ -19,7 +19,6 @@ function! GetGoCode(info)
             silent !go get -u github.com/rogpeppe/godef
             silent !go get -u github.com/jstemmer/gotags
             if g:os_windows
-                silent !go get -u github.com/mattn/files    "for unite
                 silent !taskkill /F /IM gocode.exe
                 silent !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
                 "silent !go get -u github.com/nsf/gocode

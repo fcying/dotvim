@@ -318,7 +318,7 @@ call add(s:plugins, ['derekwyatt/vim-fswitch', {'loadconf':1}])
 call add(s:plugins, ['nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle', 'loadconf':1}])
 call add(s:plugins, ['scrooloose/nerdtree', {'on':'NERDTreeToggle', 'loadconf':1}])
 call add(s:plugins, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggle', 'loadconf':1}])
-call add(s:plugins, ['fcymk2/tagbar', {'on':'TagbarToggle', 'loadconf':1}])
+call add(s:plugins, ['fcying/tagbar', {'on':'TagbarToggle', 'loadconf':1}])
 call add(s:plugins, ['xolox/vim-session', {'loadconf':1}])
 call add(s:plugins, ['xolox/vim-misc'])
 "call add(s:plugins, ['junegunn/fzf', {'do': './install --all'}])
@@ -355,8 +355,10 @@ call add(s:plugins, ['godlygeek/tabular', {'for':'markdown'}])
 
 "color
 "call add(s:plugins, ['vim-cpp-enhanced-highlight'])
-call add(s:plugins, ['altercation/vim-colors-solarized'])
+"call add(s:plugins, ['altercation/vim-colors-solarized'])
+call add(s:plugins, ['fcying/vim-colors-solarized'])
 call add(s:plugins, ['tomasr/molokai'])
+call add(s:plugins, ['icymind/NeoSolarized'])
 
 
 
@@ -391,26 +393,46 @@ call s:load_plugins_conf()
 " ============================================================================
 " color {{{
 " ============================================================================
-let s:colorscheme = 'solarized'
+if g:os_windows
+    let s:colorscheme = 'NeoSolarized'
+else
+    let s:colorscheme = 'solarized'
+endif    
+
+if &term =~ '256color' 
+    " disable background color erase
+    set t_ut=
+endif
+
+if !has('nvim')
+    "enable 256 colors in ConEmu on Win
+    if g:os_windows && !has('gui_running') && !empty($CONEMUBUILD)
+        set term=xterm
+    endif
+endif
 
 if s:colorscheme == 'solarized'
     let g:solarized_termcolors=256
+    set t_Co=256
     set background=light
+    if g:os_windows && !has('gui_running') && !empty($CONEMUBUILD)
+        let &t_AB="\e[48;5;%dm"
+        let &t_AF="\e[38;5;%dm"
+    endif
 elseif s:colorscheme == 'molokai'
     let g:rehash256 = 1
     let g:molokai_original = 1
+    set background=dark
+elseif s:colorscheme == 'NeoSolarized'    
+    set termguicolors
+    let g:neosolarized_vertSplitBgTrans = 0
+    set background=light
+    set t_8b=[48;2;%lu;%lu;%lum    
+    set t_8f=[38;2;%lu;%lu;%lum
+else    
 endif
 
 exec 'colorscheme ' . s:colorscheme
 
-if !has('nvim')
-    "enable 256 colors in ConEmu on Win
-    if g:os_windows && s:use_gui==0 && !empty($CONEMUBUILD)
-        set term=xterm
-        let &t_AB="\e[48;5;%dm"
-        let &t_AF="\e[38;5;%dm"
-    endif
-endif
-set t_Co=256
 " }}}
 

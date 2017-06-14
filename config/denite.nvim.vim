@@ -1,11 +1,24 @@
-if executable('pt')
+if executable('rg')
+    call denite#custom#var('grep', 'command', ['rg'])
+	call denite#custom#var('file_rec', 'command',
+        \ ['rg', '--files', '--hidden', '--follow',
+        \ '-g','!out', '-g','!obj', '-g', '!deploy',
+        \ '-g','!tags', '-g','!GTAGS', '-g','!GRTAGS', '-g','!GPATH',
+        \ '-g', '!.git', '-g', '!.svn'])
+    call denite#custom#var('grep', 'default_opts',
+        \ ['--vimgrep', '--no-heading'])
+    call denite#custom#var('grep', 'recursive_opts', [])
+    call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+    call denite#custom#var('grep', 'separator', ['--'])
+    call denite#custom#var('grep', 'final_opts', [])
+elseif executable('pt')
+    call denite#custom#var('grep', 'command', ['pt'])
     call denite#custom#var('file_rec', 'command',
         \ ['pt', '--follow', '--nocolor', '--nogroup', '--hidden',
         \ '--ignore','lib', '--ignore','obj', '--ignore','out',
         \ '--ignore','deploy',
         \ '--ignore','tags', '--ignore','GTAGS', '--ignore','GRTAGS', '--ignore','GPATH',
         \ '--ignore','.git', '--ignore','.svn', '-g', ''])
-    call denite#custom#var('grep', 'command', ['pt'])
     call denite#custom#var('grep', 'default_opts',
         \ ['--nogroup', '--nocolor', '--smart-case', '--hidden',
         \ '--ignore','lib', '--ignore','obj', '--ignore','out',

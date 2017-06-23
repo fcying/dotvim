@@ -22,6 +22,13 @@ let g:neocomplete#sources#dictionary#dictionaries =
 
 let g:neocomplete#enable_auto_delimiter = 1
 
+" neco-vim
+if !exists('g:necovim#complete_functions')
+    let g:necovim#complete_functions = {}
+endif
+let g:necovim#complete_functions.Ref =
+            \ 'ref#complete'
+
 " Define keyword.
 if !exists('g:neocomplete#keyword_patterns')
   let g:neocomplete#keyword_patterns = {}

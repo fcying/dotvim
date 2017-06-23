@@ -136,8 +136,6 @@ set ruler
 "set noshowmatch
 set nolist
 set wrap
-set laststatus=2
-set statusline=%F%m%r%w%=[%{&ff},%{&fenc}]\ [%Y]\ [A=\%03.3b,H=\%02.2B]\ [%04l,%04v,%p%%]
 set showcmd
 "set cmdheight=1
 set backspace=indent,eol,start whichwrap+=<,>,[,]
@@ -207,8 +205,8 @@ nmap <silent> <F5> :FcyGentags<CR>
 command! -nargs=0 FcyGentags call s:fcy_gen_tags()
 function! s:fcy_gen_tags()
     "let l:cmd = 'ctags -R --c++-kinds=+p --fields=+iaS --extra=+q'
-    let l:cmd = 'ctags -R --fields=+iaS --extra=+q'
-    "let l:cmd = 'ctags -R'
+    "let l:cmd = 'ctags -R --fields=+iaS --extra=+q'
+    let l:cmd = 'ctags -R'
     call vimproc#system_bg(l:cmd)
     call vimproc#system_bg('gtags')
     echon "gen tags done"
@@ -300,12 +298,14 @@ endfunction
 
 
 
-let s:useYCM = 0
+let s:complete_type = 0
 let s:plugins = []
 call Fcy_source_rc('config/plugin_hook.vim')
 call add(s:plugins, ['mbbill/fencview', {'loadconf':1}])
 call add(s:plugins, ['adah1972/tellenc'])
 call add(s:plugins, ['bogado/file-line'])
+call add(s:plugins, ['roxma/vim-paste-easy'])
+"call add(s:plugins, ['liuchengxu/eleline.vim'])
 call add(s:plugins, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)', 'loadconf':1}])
 call add(s:plugins, ['moll/vim-bbye', {'on':'Bdelete', 'loadconf':1}])
 call add(s:plugins, ['MattesGroeger/vim-bookmarks', {'loadconf':1}])
@@ -334,15 +334,26 @@ call add(s:plugins, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
 call add(s:plugins, ['Shougo/vimshell', {'on': 'VimShell', 'loadconf': 1}])
 call add(s:plugins, ['hewes/unite-gtags', {'loadconf': 1}])
 
-if s:useYCM
-   call add(s:plugins, ['Valloric/YouCompleteMe', {'loadconf':1}])
+if s:complete_type == 0
+    if has('lua')
+        call add(s:plugins, ['Shougo/neocomplete', {'loadconf':1}])
+        call add(s:plugins, ['Shougo/neoinclude.vim'])
+        call add(s:plugins, ['Shougo/neco-syntax'])
+        call add(s:plugins, ['Shougo/neco-vim', {'loadconf':0}])
+    endif
+elseif s:complete_type == 1
+    call add(s:plugins, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
+    if !has('nvim')
+        call add(s:plugins, ['roxma/vim-hug-neovim-rpc', {'loadconf':0}])
+    endif
+    call add(s:plugins, ['roxma/nvim-completion-manager', {'loadconf':0}])
+    let g:LanguageClient_autoStart = 1
+    let g:LanguageClient_serverCommands = {
+        \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+        \ 'c': ['c', 'run', 'nightly', 'c'],
+        \ }
 else
-   if has('lua')
-       call add(s:plugins, ['Shougo/neocomplete', {'loadconf':1}])
-       call add(s:plugins, ['Shougo/neoinclude.vim'])
-       call add(s:plugins, ['Shougo/neco-syntax'])
-       call add(s:plugins, ['Shougo/neco-vim', {'loadconf':1}])
-   endif
+    call add(s:plugins, ['Valloric/YouCompleteMe', {'loadconf':1}])
 endif
 "call add(s:plugins, ['ervandew/supertab', {'loadconf':1}])
 
@@ -436,3 +447,15 @@ exec 'colorscheme ' . s:colorscheme
 
 " }}}
 
+
+
+"statusline
+set laststatus=2
+function! Buf_total_num()
+    return len(filter(range(1, bufnr('$')), 'buflisted(v:val)'))
+endfunction
+
+set statusline=[B-%n:%{Buf_total_num()}]
+set statusline+=\ %F%m%r%w
+set statusline+=%=[%{&ff},%{&fenc}]\ [%Y]
+set statusline+=\ [H=\%02.2B]\ [%l,%v,%p%%]

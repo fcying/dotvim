@@ -200,8 +200,7 @@ nmap <Leader>tn :tnext<CR>
 nmap <Leader>tp :tprevious<CR>
 
 " gen tag
-nmap <silent> <Leader>cr :FcyGentags<CR>
-nmap <silent> <F5> :FcyGentags<CR>
+nmap <silent> <Leader>gt :FcyGentags<CR>
 command! -nargs=0 FcyGentags call s:fcy_gen_tags()
 function! s:fcy_gen_tags()
     "let l:cmd = 'ctags -R --c++-kinds=+p --fields=+iaS --extra=+q'
@@ -323,16 +322,17 @@ call add(s:plugins, ['xolox/vim-session', {'loadconf':1}])
 call add(s:plugins, ['xolox/vim-misc'])
 "call add(s:plugins, ['junegunn/fzf', {'do': './install --all'}])
 
-call add(s:plugins, ['Shougo/denite.nvim', {'loadconf':1}])
+call add(s:plugins, ['Yggdroot/LeaderF', {'loadconf':1}])
+"call add(s:plugins, ['Shougo/denite.nvim', {'loadconf':1}])
 "call add(s:plugins, ['nixprime/cpsm', {'do':'./install.sh'}])
 "call add(s:plugins, ['Shougo/unite.vim', {'loadconf':1}])
-call add(s:plugins, ['Shougo/unite-outline'])
-call add(s:plugins, ['Shougo/neoyank.vim'])
-call add(s:plugins, ['Shougo/neomru.vim'])
+"call add(s:plugins, ['Shougo/unite-outline'])
+"call add(s:plugins, ['Shougo/neoyank.vim'])
+"call add(s:plugins, ['Shougo/neomru.vim'])
+"call add(s:plugins, ['hewes/unite-gtags', {'loadconf': 1}])
 call add(s:plugins, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
 "call add(s:plugins, ['Shougo/vimfiler', {'loadconf': 1}])
 call add(s:plugins, ['Shougo/vimshell', {'on': 'VimShell', 'loadconf': 1}])
-call add(s:plugins, ['hewes/unite-gtags', {'loadconf': 1}])
 
 if s:complete_type == 0
     if has('lua')

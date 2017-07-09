@@ -3,7 +3,7 @@
 let g:ctrlsf_ackprg = 'pt'
 let g:ctrlsf_regex_pattern = 1
 let g:ctrlsf_case_sensitive = 'smart'
-let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS', 'obj', 'out']
+let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS', 'obj', 'out', 'Out']
 
 nmap <leader>sf <Plug>CtrlSFCwordExec
 nmap <leader>sF <Plug>CtrlSFPrompt

@@ -211,6 +211,12 @@ function! s:fcy_gen_tags()
     echon "gen tags done"
 endfunction
 
+command! -nargs=0 UpdatePlugin call s:fcy_update_plugin()
+function! s:fcy_update_plugin()
+    PlugUpgrade
+    PlugUpdate
+endfunction
+
 " golang
 autocmd! BufWritePost *.go call s:fcy_goimports()
 command! -nargs=0 GoImports call s:fcy_goimports()

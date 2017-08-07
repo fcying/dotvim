@@ -367,8 +367,8 @@ call add(s:plugins, ['nsf/gocode', {'do':function('GetGoCode'), 'for':'go', 'loa
 call add(s:plugins, ['dgryski/vim-godef', {'for':'go'}])
 call add(s:plugins, ['vim-scripts/autohotkey-ahk', {'for':'autohotkey'}])
 call add(s:plugins, ['huleiak47/vim-AHKcomplete', {'for':'autohotkey'}])
-call add(s:plugins, ['plasticboy/vim-markdown', {'for':'markdown'}])
 call add(s:plugins, ['godlygeek/tabular', {'for':'markdown'}])
+call add(s:plugins, ['plasticboy/vim-markdown', {'for':'markdown'}])
 
 "color
 "call add(s:plugins, ['vim-cpp-enhanced-highlight'])

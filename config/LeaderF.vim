@@ -12,8 +12,5 @@ nnoremap fl :<C-u>LeaderfLine<CR>
 nnoremap fo :<C-u>LeaderfFunction<CR>
 nnoremap ft :<C-u>LeaderfTag<CR>
 nnoremap fm :<C-u>LeaderfMru<CR>
-
-"autocmd FileType leaderf call s:lf_my_settings()
-function! s:lf_my_settings()
-    map <buffer> <esc> :exec g:Lf_py "fileExplManager.quit()"<CR>
-endfunction
+nnoremap fh :<C-u>LeaderfHistorySearch<CR>
+nnoremap fg :<C-u>CtrlSF 

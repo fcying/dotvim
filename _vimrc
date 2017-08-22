@@ -328,7 +328,11 @@ call add(s:plugins, ['xolox/vim-session', {'loadconf':1}])
 call add(s:plugins, ['xolox/vim-misc'])
 "call add(s:plugins, ['junegunn/fzf', {'do': './install --all'}])
 
-call add(s:plugins, ['Yggdroot/LeaderF', {'loadconf':1}])
+if g:os_windows 
+    call add(s:plugins, ['Yggdroot/LeaderF', {'do': '.\install.bat', 'loadconf':1}])
+else
+    call add(s:plugins, ['Yggdroot/LeaderF', {'do': './install.sh', 'loadconf':1}])
+endif
 "call add(s:plugins, ['Shougo/denite.nvim', {'loadconf':1}])
 "call add(s:plugins, ['nixprime/cpsm', {'do':'./install.sh'}])
 "call add(s:plugins, ['Shougo/unite.vim', {'loadconf':1}])

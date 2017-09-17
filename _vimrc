@@ -35,6 +35,10 @@ endif
 
 let mapleader = ";"
 
+if filereadable($HOME . '/.vimrc.local')
+    execute 'source ' . $HOME .'/.vimrc.local'
+endif
+
 "autocmd! bufwritepost _vimrc source $MYVIMRC
 nnoremap <leader>ee :e $MYVIMRC<CR>
 

@@ -349,11 +349,12 @@ call add(s:plugins, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
 call add(s:plugins, ['Shougo/vimshell', {'on': 'VimShell', 'loadconf': 1}])
 
 if s:complete_type == 0
-    if has('lua')
-        call add(s:plugins, ['Shougo/neocomplete', {'loadconf':1}])
-        call add(s:plugins, ['Shougo/neoinclude.vim'])
-        call add(s:plugins, ['Shougo/neco-syntax'])
-        call add(s:plugins, ['Shougo/neco-vim', {'loadconf':0}])
+    if has('nvim')
+       call add(s:plugins, ['Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins', 'loadconf':1}])
+    else
+       call add(s:plugins, ['Shougo/deoplete.nvim', {'loadconf':1}])
+       call add(s:plugins, ['roxma/nvim-yarp'])
+       call add(s:plugins, ['roxma/vim-hug-neovim-rpc'])
     endif
 elseif s:complete_type == 1
     call add(s:plugins, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
@@ -366,6 +367,13 @@ elseif s:complete_type == 1
         \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
         \ 'c': ['c', 'run', 'nightly', 'c'],
         \ }
+elseif s:complete_type == 2
+    if has('lua')
+      call add(s:plugins, ['Shougo/neocomplete', {'loadconf':1}])
+      call add(s:plugins, ['Shougo/neoinclude.vim'])
+      call add(s:plugins, ['Shougo/neco-syntax'])
+      call add(s:plugins, ['Shougo/neco-vim', {'loadconf':0}])
+    endif
 else
     call add(s:plugins, ['Valloric/YouCompleteMe', {'loadconf':1}])
 endif

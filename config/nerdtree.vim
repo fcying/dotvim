@@ -8,3 +8,5 @@ let NERDTreeAutoDeleteBuffer=1
 let NERDTreeShowBookmarks=1
 let NERDTreeShowLineNumbers=1
 let NERDTreeShowHidden=1
+
+let NERDTreeIgnore=['GPATH', 'tags', 'GRTAGS', 'GTAGS', 'GSYMS', '\~$']

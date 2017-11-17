@@ -14,4 +14,10 @@ function! Multiple_cursors_after()
     if exists(':NeoCompleteUnlock')==2
         exe 'NeoCompleteUnlock'
     endif
+    let g:deoplete#disable_auto_complete = 0
 endfunction
+
+function! g:Multiple_cursors_before()
+    let g:deoplete#disable_auto_complete = 1
+endfunction
+

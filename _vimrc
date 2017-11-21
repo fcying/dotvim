@@ -347,6 +347,7 @@ endif
 call add(s:plugins, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
 "call add(s:plugins, ['Shougo/vimfiler', {'loadconf': 1}])
 call add(s:plugins, ['Shougo/vimshell', {'on': 'VimShell', 'loadconf': 1}])
+call add(s:plugins, ['lambdalisue/gina.vim', {'on': 'Gina', 'loadconf': 1}])
 
 if s:complete_type == 0
     if has('nvim')

@@ -54,10 +54,6 @@ if !has('nvim')
     endif
 endif
 
-if has('clipboard')
-   set clipboard=unnamed
-endif
-
 if s:use_gui
     set guioptions -=T
     set guioptions -=m
@@ -245,11 +241,6 @@ function! s:fcy_gobuild()
     call vimproc#system_bg(l:cmd)
 endfunction
 
-" autocomplete
-autocmd InsertLeave * if pumvisible() == 0|pclose|endif
-inoremap <expr> <c-j>     pumvisible() ? "\<c-n>" : "\<c-j>"
-inoremap <expr> <c-k>       pumvisible() ? "\<c-p>" : "\<c-k>"
-
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
@@ -306,15 +297,17 @@ endfunction
 " }}}
 
 
+"ncm ycm deoplete neocomplte
+if g:complete_func == ''
+    let g:complete_func = 'neocomplte'
+endif
 
-let s:complete_type = 0
 let s:plugins = []
 call Fcy_source_rc('config/plugin_hook.vim')
 call add(s:plugins, ['mbbill/fencview', {'loadconf':1}])
 call add(s:plugins, ['adah1972/tellenc'])
 call add(s:plugins, ['bogado/file-line'])
 call add(s:plugins, ['roxma/vim-paste-easy'])
-"call add(s:plugins, ['liuchengxu/eleline.vim'])
 call add(s:plugins, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)', 'loadconf':1}])
 call add(s:plugins, ['moll/vim-bbye', {'on':'Bdelete', 'loadconf':1}])
 call add(s:plugins, ['MattesGroeger/vim-bookmarks', {'loadconf':1}])
@@ -330,7 +323,6 @@ call add(s:plugins, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggl
 call add(s:plugins, ['majutsushi/tagbar', {'on':'TagbarToggle', 'loadconf':1}])
 call add(s:plugins, ['xolox/vim-session', {'loadconf':1}])
 call add(s:plugins, ['xolox/vim-misc'])
-"call add(s:plugins, ['junegunn/fzf', {'do': './install --all'}])
 
 if g:os_windows 
     call add(s:plugins, ['Yggdroot/LeaderF', {'do': '.\install.bat', 'loadconf':1}])
@@ -349,7 +341,10 @@ call add(s:plugins, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
 call add(s:plugins, ['Shougo/vimshell', {'on': 'VimShell', 'loadconf': 1}])
 call add(s:plugins, ['lambdalisue/gina.vim', {'on': 'Gina', 'loadconf': 1}])
 
-if s:complete_type == 0
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
+if g:complete_func == 'deoplete'
     if has('nvim')
        call add(s:plugins, ['Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins', 'loadconf':1}])
     else
@@ -357,28 +352,28 @@ if s:complete_type == 0
        call add(s:plugins, ['roxma/nvim-yarp'])
        call add(s:plugins, ['roxma/vim-hug-neovim-rpc'])
     endif
-elseif s:complete_type == 1
-    call add(s:plugins, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
+elseif g:complete_func == 'ncm'
     if !has('nvim')
         call add(s:plugins, ['roxma/vim-hug-neovim-rpc', {'loadconf':0}])
     endif
+    call add(s:plugins, ['roxma/ncm-clang'])
     call add(s:plugins, ['roxma/nvim-completion-manager', {'loadconf':0}])
-    let g:LanguageClient_autoStart = 1
-    let g:LanguageClient_serverCommands = {
-        \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
-        \ 'c': ['c', 'run', 'nightly', 'c'],
-        \ }
-elseif s:complete_type == 2
+    "call add(s:plugins, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
+    "let g:LanguageClient_autoStart = 1
+    "let g:LanguageClient_serverCommands = {
+    "    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+    "    \ 'c': ['c', 'run', 'nightly', 'c'],
+    "    \ }
+elseif g:complete_func == 'ycm'
+    call add(s:plugins, ['Valloric/YouCompleteMe', {'loadconf':1}])
+else
     if has('lua')
       call add(s:plugins, ['Shougo/neocomplete', {'loadconf':1}])
       call add(s:plugins, ['Shougo/neoinclude.vim'])
       call add(s:plugins, ['Shougo/neco-syntax'])
       call add(s:plugins, ['Shougo/neco-vim', {'loadconf':0}])
     endif
-else
-    call add(s:plugins, ['Valloric/YouCompleteMe', {'loadconf':1}])
 endif
-"call add(s:plugins, ['ervandew/supertab', {'loadconf':1}])
 
 call add(s:plugins, ['nsf/gocode', {'do':function('GetGoCode'), 'for':'go', 'loadconf':1}])
 call add(s:plugins, ['dgryski/vim-godef', {'for':'go'}])

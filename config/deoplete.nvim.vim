@@ -1,10 +1,6 @@
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#enable_smart_case = 1
 
-" <TAB>: completion.
-"inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-"inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
-
 "let g:deoplete#sources.c = ['buffer', 'tag']
 "
 " <C-h>, <BS>: close popup and delete backword char.

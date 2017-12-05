@@ -32,7 +32,6 @@ endif
 " ============================================================================
 " basic settings {{{
 " ============================================================================
-
 let mapleader = ";"
 
 if filereadable($HOME . '/.vimrc.local')
@@ -53,6 +52,8 @@ if !has('nvim')
                 \gamma:1.0,contrast:0.0,geom:1,renmode:5,taamode:1
     endif
 endif
+
+"set clipboard=exclude:.*
 
 if s:use_gui
     set guioptions -=T
@@ -271,12 +272,8 @@ function! Fcy_source_rc(file) abort
 endf
 
 function! s:load_plugins() abort
-    for plugin in s:plugins
+    for plugin in g:plugins
         if len(plugin) == 2
-            let l:plugin_name = split(plugin[0], '/')[-1]
-            if get(plugin[1], 'loadconf_before', 0)
-                call Fcy_source_rc('config/' . l:plugin_name . '.before.vim')
-            endif
             exec "Plug " . "'" . plugin[0] . "', " . string(plugin[1])
         else
             exec "Plug " . "'" . plugin[0] . "'"
@@ -284,110 +281,98 @@ function! s:load_plugins() abort
     endfor
 endfunction
 
-function! s:load_plugins_conf() abort
-    for plugin in s:plugins
-        if len(plugin) == 2
-            let l:plugin_name = split(plugin[0], '/')[-1]
-            if get(plugin[1], 'loadconf', 0)
-                call Fcy_source_rc('config/' . l:plugin_name . '.vim')
-            endif
-        endif
-    endfor
-endfunction
-" }}}
-
 
 "ncm ycm deoplete neocomplte
-if g:complete_func == ''
+if !exists('g:complete_func')
     let g:complete_func = 'neocomplte'
 endif
 
-let s:plugins = []
-call Fcy_source_rc('config/plugin_hook.vim')
-call add(s:plugins, ['mbbill/fencview', {'loadconf':1}])
-call add(s:plugins, ['adah1972/tellenc'])
-call add(s:plugins, ['bogado/file-line'])
-call add(s:plugins, ['roxma/vim-paste-easy'])
-call add(s:plugins, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)', 'loadconf':1}])
-call add(s:plugins, ['moll/vim-bbye', {'on':'Bdelete', 'loadconf':1}])
-call add(s:plugins, ['MattesGroeger/vim-bookmarks', {'loadconf':1}])
-call add(s:plugins, ['thinca/vim-ref', {'loadconf':1}])
-call add(s:plugins, ['terryma/vim-expand-region', {'loadconf':1}])
-call add(s:plugins, ['terryma/vim-multiple-cursors', {'loadconf':1}])
-call add(s:plugins, ['dyng/ctrlsf.vim', {'loadconf':1}])
-call add(s:plugins, ['easymotion/vim-easymotion', {'loadconf':1}])
-call add(s:plugins, ['derekwyatt/vim-fswitch', {'loadconf':1}])
-call add(s:plugins, ['nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle', 'loadconf':1}])
-call add(s:plugins, ['scrooloose/nerdtree', {'on':'NERDTreeToggle', 'loadconf':1}])
-call add(s:plugins, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggle', 'loadconf':1}])
-call add(s:plugins, ['majutsushi/tagbar', {'on':'TagbarToggle', 'loadconf':1}])
-call add(s:plugins, ['xolox/vim-session', {'loadconf':1}])
-call add(s:plugins, ['xolox/vim-misc'])
+let g:plugins = []
+call Fcy_source_rc('_vimrc.plug.before')
+call add(g:plugins, ['mbbill/fencview', {'loadconf':1}])
+call add(g:plugins, ['adah1972/tellenc'])
+call add(g:plugins, ['bogado/file-line'])
+call add(g:plugins, ['roxma/vim-paste-easy'])
+call add(g:plugins, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)', 'loadconf':1}])
+call add(g:plugins, ['moll/vim-bbye', {'on':'Bdelete', 'loadconf':1}])
+call add(g:plugins, ['MattesGroeger/vim-bookmarks', {'loadconf':1}])
+call add(g:plugins, ['thinca/vim-ref', {'loadconf':1}])
+call add(g:plugins, ['terryma/vim-expand-region', {'loadconf':1}])
+call add(g:plugins, ['terryma/vim-multiple-cursors', {'loadconf':1}])
+call add(g:plugins, ['dyng/ctrlsf.vim', {'loadconf':1}])
+call add(g:plugins, ['easymotion/vim-easymotion', {'loadconf':1}])
+call add(g:plugins, ['derekwyatt/vim-fswitch', {'loadconf':1}])
+call add(g:plugins, ['nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle', 'loadconf':1}])
+call add(g:plugins, ['scrooloose/nerdtree', {'on':'NERDTreeToggle', 'loadconf':1}])
+call add(g:plugins, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggle', 'loadconf':1}])
+call add(g:plugins, ['majutsushi/tagbar', {'on':'TagbarToggle', 'loadconf':1}])
+call add(g:plugins, ['xolox/vim-session', {'loadconf':1}])
+call add(g:plugins, ['xolox/vim-misc'])
 
 if g:os_windows 
-    call add(s:plugins, ['Yggdroot/LeaderF', {'do': '.\install.bat', 'loadconf':1}])
+    call add(g:plugins, ['Yggdroot/LeaderF', {'do': '.\install.bat', 'loadconf':1}])
 else
-    call add(s:plugins, ['Yggdroot/LeaderF', {'do': './install.sh', 'loadconf':1}])
+    call add(g:plugins, ['Yggdroot/LeaderF', {'do': './install.sh', 'loadconf':1}])
 endif
-"call add(s:plugins, ['Shougo/denite.nvim', {'loadconf':1}])
-"call add(s:plugins, ['nixprime/cpsm', {'do':'./install.sh'}])
-"call add(s:plugins, ['Shougo/unite.vim', {'loadconf':1}])
-"call add(s:plugins, ['Shougo/unite-outline'])
-"call add(s:plugins, ['Shougo/neoyank.vim'])
-"call add(s:plugins, ['Shougo/neomru.vim'])
-"call add(s:plugins, ['hewes/unite-gtags', {'loadconf': 1}])
-call add(s:plugins, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
-"call add(s:plugins, ['Shougo/vimfiler', {'loadconf': 1}])
-call add(s:plugins, ['Shougo/vimshell', {'on': 'VimShell', 'loadconf': 1}])
-call add(s:plugins, ['lambdalisue/gina.vim', {'on': 'Gina', 'loadconf': 1}])
+"call add(g:plugins, ['Shougo/denite.nvim', {'loadconf':1}])
+"call add(g:plugins, ['nixprime/cpsm', {'do':'./install.sh'}])
+"call add(g:plugins, ['Shougo/unite.vim', {'loadconf':1}])
+"call add(g:plugins, ['Shougo/unite-outline'])
+"call add(g:plugins, ['Shougo/neoyank.vim'])
+"call add(g:plugins, ['Shougo/neomru.vim'])
+"call add(g:plugins, ['hewes/unite-gtags', {'loadconf': 1}])
+call add(g:plugins, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
+"call add(g:plugins, ['Shougo/vimfiler', {'loadconf': 1}])
+call add(g:plugins, ['Shougo/vimshell', {'on': 'VimShell', 'loadconf': 1}])
+call add(g:plugins, ['lambdalisue/gina.vim', {'on': 'Gina', 'loadconf': 1}])
 
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
 if g:complete_func == 'deoplete'
     if has('nvim')
-       call add(s:plugins, ['Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins', 'loadconf':1}])
+       call add(g:plugins, ['Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins', 'loadconf':1}])
     else
-       call add(s:plugins, ['Shougo/deoplete.nvim', {'loadconf':1}])
-       call add(s:plugins, ['roxma/nvim-yarp'])
-       call add(s:plugins, ['roxma/vim-hug-neovim-rpc'])
+       call add(g:plugins, ['Shougo/deoplete.nvim', {'loadconf':1}])
+       call add(g:plugins, ['roxma/nvim-yarp'])
+       call add(g:plugins, ['roxma/vim-hug-neovim-rpc'])
     endif
 elseif g:complete_func == 'ncm'
     if !has('nvim')
-        call add(s:plugins, ['roxma/vim-hug-neovim-rpc', {'loadconf':0}])
+        call add(g:plugins, ['roxma/vim-hug-neovim-rpc', {'loadconf':0}])
     endif
-    call add(s:plugins, ['roxma/ncm-clang'])
-    call add(s:plugins, ['roxma/nvim-completion-manager', {'loadconf':0}])
-    "call add(s:plugins, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
+    call add(g:plugins, ['roxma/ncm-clang'])
+    call add(g:plugins, ['roxma/nvim-completion-manager', {'loadconf':0}])
+    "call add(g:plugins, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
     "let g:LanguageClient_autoStart = 1
     "let g:LanguageClient_serverCommands = {
     "    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
     "    \ 'c': ['c', 'run', 'nightly', 'c'],
     "    \ }
 elseif g:complete_func == 'ycm'
-    call add(s:plugins, ['Valloric/YouCompleteMe', {'loadconf':1}])
+    call add(g:plugins, ['Valloric/YouCompleteMe', {'loadconf':1}])
 else
     if has('lua')
-      call add(s:plugins, ['Shougo/neocomplete', {'loadconf':1}])
-      call add(s:plugins, ['Shougo/neoinclude.vim'])
-      call add(s:plugins, ['Shougo/neco-syntax'])
-      call add(s:plugins, ['Shougo/neco-vim', {'loadconf':0}])
+      call add(g:plugins, ['Shougo/neocomplete', {'loadconf':1}])
+      call add(g:plugins, ['Shougo/neoinclude.vim'])
+      call add(g:plugins, ['Shougo/neco-syntax'])
+      call add(g:plugins, ['Shougo/neco-vim', {'loadconf':0}])
     endif
 endif
 
-call add(s:plugins, ['nsf/gocode', {'do':function('GetGoCode'), 'for':'go', 'loadconf':1}])
-call add(s:plugins, ['dgryski/vim-godef', {'for':'go'}])
-call add(s:plugins, ['vim-scripts/autohotkey-ahk', {'for':'autohotkey'}])
-call add(s:plugins, ['huleiak47/vim-AHKcomplete', {'for':'autohotkey'}])
-call add(s:plugins, ['godlygeek/tabular', {'for':'markdown'}])
-call add(s:plugins, ['plasticboy/vim-markdown', {'for':'markdown'}])
+call add(g:plugins, ['nsf/gocode', {'do':function('GetGoCode'), 'for':'go', 'loadconf':1}])
+call add(g:plugins, ['dgryski/vim-godef', {'for':'go'}])
+call add(g:plugins, ['vim-scripts/autohotkey-ahk', {'for':'autohotkey'}])
+call add(g:plugins, ['huleiak47/vim-AHKcomplete', {'for':'autohotkey'}])
+call add(g:plugins, ['godlygeek/tabular', {'for':'markdown'}])
+call add(g:plugins, ['plasticboy/vim-markdown', {'for':'markdown'}])
 
 "color
-"call add(s:plugins, ['vim-cpp-enhanced-highlight'])
-"call add(s:plugins, ['altercation/vim-colors-solarized'])
-call add(s:plugins, ['fcying/vim-colors-solarized'])
-call add(s:plugins, ['tomasr/molokai'])
-call add(s:plugins, ['icymind/NeoSolarized'])
+"call add(g:plugins, ['vim-cpp-enhanced-highlight'])
+"call add(g:plugins, ['altercation/vim-colors-solarized'])
+call add(g:plugins, ['fcying/vim-colors-solarized'])
+call add(g:plugins, ['tomasr/molokai'])
+call add(g:plugins, ['icymind/NeoSolarized'])
 
 
 
@@ -414,8 +399,8 @@ call plug#end()
 filetype plugin indent on
 syntax enable
 
-call s:load_plugins_conf()
-" }}}
+call Fcy_source_rc('_vimrc.plug.after')
+"}}}
 
 
 
@@ -462,12 +447,11 @@ else
 endif
 
 exec 'colorscheme ' . s:colorscheme
-
 " }}}
 
 
 
-"statusline
+"statusline {{{
 set laststatus=2
 function! Buf_total_num()
     return len(filter(range(1, bufnr('$')), 'buflisted(v:val)'))
@@ -477,3 +461,4 @@ set statusline=[B-%n:%{Buf_total_num()}]
 set statusline+=\ %F%m%r%w
 set statusline+=%=[%{&ff},%{&fenc}]\ [%Y]
 set statusline+=\ [H=\%02.2B]\ [%l,%v,%p%%]
+"}}}

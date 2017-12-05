@@ -1,6 +1,7 @@
 *.pyc
 .cache/
 .neobundle/
+/s.log
 /vim_origin/
 /vim*/
 /plugged/

@@ -1,3 +1,4 @@
+"{{{
 function! BuildVimproc(info)
     " info is a dictionary with 3 fields
     " - name:   name of the plugin
@@ -11,7 +12,10 @@ function! BuildVimproc(info)
         endif
     endif
 endfunction
+"}}}
 
+
+"{{{
 function! GetGoCode(info)
     if a:info.status != 'unchanged' || a:info.force
         if executable('go')
@@ -39,4 +43,4 @@ function! GetGoCode(info)
         endif
   endif
 endfunction
-
+"}}}

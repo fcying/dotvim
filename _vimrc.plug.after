@@ -16,6 +16,54 @@ endif
 
 
 "{{{
+if (s:findplug('gen_tags.vim') != -1)
+    nmap <silent> <Leader>gt :call Fcy_gen_tags(1)<CR>
+    nmap <silent> <Leader>ct :call Fcy_gen_tags(0)<CR>
+    function! Fcy_gen_tags(value)
+        if a:value == 1
+            GenCtags
+            GenGTAGS
+            echon "gen tags end"
+        else
+            let l:cmd = 'ClearCtags!'
+            exe l:cmd
+            echon "clear tags end"
+        endif
+    endfunction
+endif
+"}}}
+
+
+"{{{
+if (s:findplug('lightline') != -1)
+    set showtabline=1 
+    "let g:lightline = {'colorscheme': 'default'}
+    let g:lightline = {'colorscheme': 'solarized'}
+    let g:lightline.enable = {
+        \ 'statusline': 1,
+        \ 'tabline': 1
+        \ }
+    noremap <silent><leader>tc :tabnew<cr>
+    noremap <silent><leader>tq :tabclose<cr>
+    noremap <silent><leader>tn :tabn<cr>
+    noremap <silent><leader>tp :tabp<cr>
+    noremap <silent><leader>1 :tabn 1<cr>
+    noremap <silent><leader>2 :tabn 2<cr>
+    noremap <silent><leader>3 :tabn 3<cr>
+    noremap <silent><leader>4 :tabn 4<cr>
+    noremap <silent><leader>5 :tabn 5<cr>
+    noremap <silent><leader>6 :tabn 6<cr>
+    noremap <silent><leader>7 :tabn 7<cr>
+    noremap <silent><leader>8 :tabn 8<cr>
+    noremap <silent><leader>9 :tabn 9<cr>
+    noremap <silent><leader>0 :tabn 10<cr>
+    noremap <silent><s-tab> :tabnext<CR>
+    inoremap <silent><s-tab> <ESC>:tabnext<CR>
+endif
+"}}}
+
+
+"{{{
 if (s:findplug('vim-expand-region') != -1)
     xmap v <Plug>(expand_region_expand)
     xmap V <Plug>(expand_region_shrink)
@@ -38,16 +86,15 @@ endif
 
 "{{{
 if (s:findplug('gina') != -1)
-    nnoremap <leader>gs     :Gina status<CR>
-    nnoremap <leader>gU     :Gina reset -q %<CR>
-    nnoremap <leader>gc     :Gina commit<CR>
-    nnoremap <leader>gca    :Gina commit --amend<CR>
-    nnoremap <leader>gd     :Gina diff<CR>
-    nnoremap <leader>gp     :Gina push<CR>
-    nnoremap <leader>ga     :Gina add %<CR>
-    nnoremap <leader>gA     :Gina add .<CR>
-    nnoremap <leader>gl     :Gina log<CR>
-    nnoremap <leader>gb     :Gina blame<CR>
+    nnoremap <silent> <leader>gs     :Gina status<CR>
+    nnoremap <silent> <leader>gU     :Gina reset -q %<CR>
+    nnoremap <silent> <leader>gc     :Gina commit<CR>
+    nnoremap <silent> <leader>gd     :Gina diff<CR>
+    nnoremap <silent> <leader>gp     :Gina push<CR>
+    nnoremap <silent> <leader>ga     :Gina add %<CR>
+    nnoremap <silent> <leader>gA     :Gina add .<CR>
+    nnoremap <silent> <leader>gl     :Gina log<CR>
+    nnoremap <silent> <leader>gb     :Gina blame<CR>
 endif
 "}}}
 
@@ -163,15 +210,15 @@ endif
 "{{{
 if (s:findplug('LeaderF') != -1)
     let g:Lf_CommandMap = {'<C-C>': ['<Esc>'],'<Esc>':['<C-I>']}
-    let g:Lf_ShortcutF = 'ff'
-    let g:Lf_ShortcutB = 'fb'
     let g:Lf_PreviewCode = 0
     let g:Lf_DefaultMode = 'FullPath'
     let g:Lf_WildIgnore = {
-            \ 'dir': ['.svn','.git','.hg'],
-            \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
-            \}
+           \ 'dir': ['.svn','.git','.hg'],
+           \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+           \}
 
+    nnoremap ff :<C-u>LeaderfFile<CR>
+    nnoremap fb :<C-u>LeaderfBuffer<CR>
     nnoremap fl :<C-u>LeaderfLine<CR>
     nnoremap fo :<C-u>LeaderfFunction<CR>
     nnoremap ft :<C-u>LeaderfTag<CR>

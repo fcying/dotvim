@@ -20,14 +20,21 @@ fi
 
 if [ "$1" == "all" ] || [ "$1" == "update" ]; then
     if [ ! -d "$vim_home/vim_origin" ]; then
-        git clone https://github.com/vim/vim.git vim_origin --depth 100
+        #git clone https://github.com/vim/vim.git vim_origin --depth 100
+        git clone https://github.com/vim/vim.git vim_origin
         cd $vim_home/vim_origin/
     else
         echo "git fetch"
         cd $vim_home/vim_origin/
         git clean -fxd
-        git fetch -v --progress --depth 100 origin master
-        git reset --hard origin/master
+        #git fetch -v --progress --depth 100 origin master
+        git fetch
+        if [ "$2" != "" ]; then
+            git reset --hard origin/master
+            git reset --hard $2
+        else
+            git reset --hard origin/master
+        fi
     fi
 else
     cd $vim_home/vim_origin/

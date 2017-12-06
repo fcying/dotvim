@@ -53,8 +53,10 @@ if !has('nvim')
     endif
 endif
 
-"set clipboard=exclude:.*
-
+if g:os_linux
+    set clipboard=exclude:.*    "setup clipboard make startup slow
+endif
+ 
 if s:use_gui
     set guioptions -=T
     set guioptions -=m
@@ -90,6 +92,7 @@ nnoremap <leader>dm :%s/\r//g<CR>
 
 "set langmenu=zh_CN.UTF-8
 "set helplang=cn
+let $LANG='en' "zh-cn gina work error
 set encoding=utf-8
 "set fileencoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
@@ -134,6 +137,7 @@ inoremap # X#
 
 set number
 set ruler
+set laststatus=2
 "set noshowmatch
 set nolist
 set wrap
@@ -197,20 +201,6 @@ endif
 nmap <c-]> :tj <c-r><c-w><CR>
 nmap <F3> <c-]>
 nmap <F4> <C-o>
-nmap <Leader>tn :tnext<CR>
-nmap <Leader>tp :tprevious<CR>
-
-" gen tag
-nmap <silent> <Leader>gt :FcyGentags<CR>
-command! -nargs=0 FcyGentags call s:fcy_gen_tags()
-function! s:fcy_gen_tags()
-    "let l:cmd = 'ctags -R --c++-kinds=+p --fields=+iaS --extra=+q'
-    "let l:cmd = 'ctags -R --fields=+iaS --extra=+q'
-    let l:cmd = 'ctags -R'
-    call vimproc#system_bg(l:cmd)
-    call vimproc#system_bg('gtags')
-    echon "gen tags done"
-endfunction
 
 command! -nargs=0 UpdatePlugin call s:fcy_update_plugin()
 function! s:fcy_update_plugin()
@@ -289,60 +279,63 @@ endif
 
 let g:plugins = []
 call Fcy_source_rc('_vimrc.plug.before')
-call add(g:plugins, ['mbbill/fencview', {'loadconf':1}])
+call add(g:plugins, ['mbbill/fencview'])
 call add(g:plugins, ['adah1972/tellenc'])
+call add(g:plugins, ['sheerun/vim-polyglot'])   "A solid language pack for Vim.
 call add(g:plugins, ['bogado/file-line'])
+call add(g:plugins, ['itchyny/lightline.vim'])
 call add(g:plugins, ['roxma/vim-paste-easy'])
-call add(g:plugins, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)', 'loadconf':1}])
-call add(g:plugins, ['moll/vim-bbye', {'on':'Bdelete', 'loadconf':1}])
-call add(g:plugins, ['MattesGroeger/vim-bookmarks', {'loadconf':1}])
-call add(g:plugins, ['thinca/vim-ref', {'loadconf':1}])
-call add(g:plugins, ['terryma/vim-expand-region', {'loadconf':1}])
-call add(g:plugins, ['terryma/vim-multiple-cursors', {'loadconf':1}])
-call add(g:plugins, ['dyng/ctrlsf.vim', {'loadconf':1}])
-call add(g:plugins, ['easymotion/vim-easymotion', {'loadconf':1}])
-call add(g:plugins, ['derekwyatt/vim-fswitch', {'loadconf':1}])
-call add(g:plugins, ['nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle', 'loadconf':1}])
-call add(g:plugins, ['scrooloose/nerdtree', {'on':'NERDTreeToggle', 'loadconf':1}])
-call add(g:plugins, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggle', 'loadconf':1}])
-call add(g:plugins, ['majutsushi/tagbar', {'on':'TagbarToggle', 'loadconf':1}])
-call add(g:plugins, ['xolox/vim-session', {'loadconf':1}])
+call add(g:plugins, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)'}])
+call add(g:plugins, ['moll/vim-bbye', {'on':'Bdelete'}])
+call add(g:plugins, ['MattesGroeger/vim-bookmarks'])
+call add(g:plugins, ['thinca/vim-ref'])
+call add(g:plugins, ['terryma/vim-expand-region'])
+call add(g:plugins, ['terryma/vim-multiple-cursors'])
+call add(g:plugins, ['dyng/ctrlsf.vim'])
+call add(g:plugins, ['easymotion/vim-easymotion'])
+call add(g:plugins, ['derekwyatt/vim-fswitch'])
+call add(g:plugins, ['nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}])
+call add(g:plugins, ['scrooloose/nerdtree', {'on':'NERDTreeToggle'}])
+call add(g:plugins, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggle'}])
+call add(g:plugins, ['majutsushi/tagbar', {'on':'TagbarToggle'}])
+call add(g:plugins, ['xolox/vim-session'])
 call add(g:plugins, ['xolox/vim-misc'])
 
 if g:os_windows 
-    call add(g:plugins, ['Yggdroot/LeaderF', {'do': '.\install.bat', 'loadconf':1}])
+    call add(g:plugins, ['Yggdroot/LeaderF', {'do': '.\install.bat'}])
 else
-    call add(g:plugins, ['Yggdroot/LeaderF', {'do': './install.sh', 'loadconf':1}])
+    call add(g:plugins, ['Yggdroot/LeaderF', {'do': './install.sh'}])
 endif
-"call add(g:plugins, ['Shougo/denite.nvim', {'loadconf':1}])
+"call add(g:plugins, ['Shougo/denite.nvim'])
 "call add(g:plugins, ['nixprime/cpsm', {'do':'./install.sh'}])
-"call add(g:plugins, ['Shougo/unite.vim', {'loadconf':1}])
+"call add(g:plugins, ['Shougo/unite.vim'])
 "call add(g:plugins, ['Shougo/unite-outline'])
 "call add(g:plugins, ['Shougo/neoyank.vim'])
 "call add(g:plugins, ['Shougo/neomru.vim'])
-"call add(g:plugins, ['hewes/unite-gtags', {'loadconf': 1}])
+"call add(g:plugins, ['hewes/unite-gtags'])
 call add(g:plugins, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
-"call add(g:plugins, ['Shougo/vimfiler', {'loadconf': 1}])
-call add(g:plugins, ['Shougo/vimshell', {'on': 'VimShell', 'loadconf': 1}])
-call add(g:plugins, ['lambdalisue/gina.vim', {'on': 'Gina', 'loadconf': 1}])
+"call add(g:plugins, ['Shougo/vimfiler'])
+call add(g:plugins, ['Shougo/vimshell', {'on': 'VimShell'}])
+call add(g:plugins, ['lambdalisue/gina.vim', {'on': 'Gina'}])
 
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
+call add(g:plugins, ['jsfaint/gen_tags.vim', {'on': ['GenCtags', 'ClearCtags!']}])
 if g:complete_func == 'deoplete'
     if has('nvim')
-       call add(g:plugins, ['Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins', 'loadconf':1}])
+       call add(g:plugins, ['Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}])
     else
-       call add(g:plugins, ['Shougo/deoplete.nvim', {'loadconf':1}])
+       call add(g:plugins, ['Shougo/deoplete.nvim'])
        call add(g:plugins, ['roxma/nvim-yarp'])
        call add(g:plugins, ['roxma/vim-hug-neovim-rpc'])
     endif
 elseif g:complete_func == 'ncm'
     if !has('nvim')
-        call add(g:plugins, ['roxma/vim-hug-neovim-rpc', {'loadconf':0}])
+        call add(g:plugins, ['roxma/vim-hug-neovim-rpc'])
     endif
     call add(g:plugins, ['roxma/ncm-clang'])
-    call add(g:plugins, ['roxma/nvim-completion-manager', {'loadconf':0}])
+    call add(g:plugins, ['roxma/nvim-completion-manager'])
     "call add(g:plugins, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
     "let g:LanguageClient_autoStart = 1
     "let g:LanguageClient_serverCommands = {
@@ -350,17 +343,17 @@ elseif g:complete_func == 'ncm'
     "    \ 'c': ['c', 'run', 'nightly', 'c'],
     "    \ }
 elseif g:complete_func == 'ycm'
-    call add(g:plugins, ['Valloric/YouCompleteMe', {'loadconf':1}])
+    call add(g:plugins, ['Valloric/YouCompleteMe'])
 else
     if has('lua')
-      call add(g:plugins, ['Shougo/neocomplete', {'loadconf':1}])
+      call add(g:plugins, ['Shougo/neocomplete'])
       call add(g:plugins, ['Shougo/neoinclude.vim'])
       call add(g:plugins, ['Shougo/neco-syntax'])
-      call add(g:plugins, ['Shougo/neco-vim', {'loadconf':0}])
+      call add(g:plugins, ['Shougo/neco-vim'])
     endif
 endif
 
-call add(g:plugins, ['nsf/gocode', {'do':function('GetGoCode'), 'for':'go', 'loadconf':1}])
+call add(g:plugins, ['nsf/gocode', {'do':function('GetGoCode'), 'for':'go'}])
 call add(g:plugins, ['dgryski/vim-godef', {'for':'go'}])
 call add(g:plugins, ['vim-scripts/autohotkey-ahk', {'for':'autohotkey'}])
 call add(g:plugins, ['huleiak47/vim-AHKcomplete', {'for':'autohotkey'}])
@@ -368,7 +361,6 @@ call add(g:plugins, ['godlygeek/tabular', {'for':'markdown'}])
 call add(g:plugins, ['plasticboy/vim-markdown', {'for':'markdown'}])
 
 "color
-"call add(g:plugins, ['vim-cpp-enhanced-highlight'])
 "call add(g:plugins, ['altercation/vim-colors-solarized'])
 call add(g:plugins, ['fcying/vim-colors-solarized'])
 call add(g:plugins, ['tomasr/molokai'])
@@ -448,17 +440,3 @@ endif
 
 exec 'colorscheme ' . s:colorscheme
 " }}}
-
-
-
-"statusline {{{
-set laststatus=2
-function! Buf_total_num()
-    return len(filter(range(1, bufnr('$')), 'buflisted(v:val)'))
-endfunction
-
-set statusline=[B-%n:%{Buf_total_num()}]
-set statusline+=\ %F%m%r%w
-set statusline+=%=[%{&ff},%{&fenc}]\ [%Y]
-set statusline+=\ [H=\%02.2B]\ [%l,%v,%p%%]
-"}}}

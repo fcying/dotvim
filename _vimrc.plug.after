@@ -86,14 +86,16 @@ endif
 
 "{{{
 if (s:findplug('gina') != -1)
-    nnoremap <silent> <leader>gs     :Gina status<CR>
+    nnoremap <silent> <leader>gst    :Gina status<CR>
     nnoremap <silent> <leader>gU     :Gina reset -q %<CR>
-    nnoremap <silent> <leader>gc     :Gina commit<CR>
+    nnoremap <silent> <leader>gca    :Gina commit -a<CR>
+    nnoremap <silent> <leader>gcam   :Gina commit -a --amend<CR>
     nnoremap <silent> <leader>gd     :Gina diff<CR>
     nnoremap <silent> <leader>gp     :Gina push<CR>
     nnoremap <silent> <leader>ga     :Gina add %<CR>
     nnoremap <silent> <leader>gA     :Gina add .<CR>
-    nnoremap <silent> <leader>gl     :Gina log<CR>
+    nnoremap <silent> <leader>gl     :Gina pull<CR>
+    nnoremap <silent> <leader>glg    :Gina log<CR>
     nnoremap <silent> <leader>gb     :Gina blame<CR>
 endif
 "}}}
@@ -674,10 +676,10 @@ endif
 if (s:findplug('vim-easymotion') != -1)
     let g:EasyMotion_smartcase = 0
     let g:EasyMotion_do_mapping = 0 " Disable default mappings
-    nmap s <Plug>(easymotion-s)
-    nmap S <Plug>(easymotion-s2)
-    map <Leader>j <Plug>(easymotion-j)
-    map <Leader>k <Plug>(easymotion-k)
+    nmap <leader>jj <Plug>(easymotion-s)
+    nmap <leader>jJ <Plug>(easymotion-s2)
+    nmap <leader>jl <Plug>(easymotion-bd-jk)
+    nmap <leader>jw <Plug>(easymotion-bd-w)
 endif
 "}}}
 

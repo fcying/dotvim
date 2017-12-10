@@ -54,7 +54,9 @@ if !has('nvim')
 endif
 
 if g:os_linux
-    set clipboard=exclude:.*    "setup clipboard make startup slow
+    if !has('nvim')
+        set clipboard=exclude:.*    "setup clipboard make startup slow
+    endif
 endif
  
 if s:use_gui
@@ -194,9 +196,9 @@ function! ClosePair(char)
 endf
 
 if g:os_windows
-    set tags=tags
+    set tags+=tags
 else
-    set tags=tags
+    set tags+=tags
 endif
 nmap <c-]> :tj <c-r><c-w><CR>
 nmap <F3> <c-]>
@@ -321,7 +323,7 @@ call add(g:plugins, ['lambdalisue/gina.vim', {'on': 'Gina'}])
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
-call add(g:plugins, ['jsfaint/gen_tags.vim', {'on': ['GenCtags', 'ClearCtags!']}])
+call add(g:plugins, ['jsfaint/gen_tags.vim'])
 if g:complete_func == 'deoplete'
     if has('nvim')
        call add(g:plugins, ['Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}])
@@ -333,10 +335,11 @@ if g:complete_func == 'deoplete'
 elseif g:complete_func == 'ncm'
     if !has('nvim')
         call add(g:plugins, ['roxma/vim-hug-neovim-rpc'])
+    else
+        call add(g:plugins, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
     endif
     call add(g:plugins, ['roxma/ncm-clang'])
     call add(g:plugins, ['roxma/nvim-completion-manager'])
-    "call add(g:plugins, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
     "let g:LanguageClient_autoStart = 1
     "let g:LanguageClient_serverCommands = {
     "    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],

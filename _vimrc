@@ -276,7 +276,7 @@ endfunction
 
 "ncm ycm deoplete neocomplte
 if !exists('g:complete_func')
-    let g:complete_func = 'neocomplte'
+    let g:complete_func = 'neocomplete'
 endif
 
 let g:plugins = []

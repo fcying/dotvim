@@ -44,12 +44,12 @@ fi
 echo "start build vim"
 if [ $(uname | grep MINGW -c) -eq 1 ]; then
     cd src
-    export LUA=/mingw64/bin
-    export LUA_VER=53
+    export LUA=d:/tool/lua
+    export LUA_VER=52
     export DYNAMIC_LUA=yes
-    export PYTHON=/d/tool/python/Python27
+    export PYTHON=d:/tool/python/Python27
     export DYNAMIC_PYTHON=yes
-    export PYTHON3=/d/tool/python/Python35
+    export PYTHON3=d:/tool/python/Python3
     export DYNAMIC_PYTHON3=yes
     export ARCH=x86-64
     export OLE=yes
@@ -57,7 +57,10 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
     export DIRECTX=yes
     export MBYTE=yes
     export IME=yes
+    export GIME=yes
+    export DYNAMIC_IME=yes
     export CSCOPE=yes
+    export DEBUG=no
     export POSTSCRIPT=yes
     export USERNAME=JasonYing
     export USERDOMAIN=JasonYing-PC

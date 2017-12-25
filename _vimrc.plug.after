@@ -102,6 +102,21 @@ endif
 
 
 "{{{
+if (s:findplug('LanguageClient-neovim') != -1)
+    nnoremap <silent> K :call LanguageClient_textDocument_hover()<CR>
+    nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
+    nnoremap <silent> <F2> :call LanguageClient_textDocument_rename()<CR>
+    set hidden
+    let g:LanguageClient_autoStart = 1
+    let g:LanguageClient_serverCommands = {
+                \ 'c': ['clangd'],
+                \ 'cpp': ['clangd']
+                \ }
+endif
+"}}}
+
+
+"{{{
 if (s:findplug('deoplete') != -1)
     let g:deoplete#enable_at_startup = 1
     let g:deoplete#enable_smart_case = 1
@@ -173,7 +188,7 @@ endif
 if (s:findplug('ctrlsf') != -1)
     "let g:ctrlsf_debug_mode = 1
     "redir! > ctrlsf.log
-    let g:ctrlsf_ackprg = 'pt'
+    let g:ctrlsf_ackprg = 'rg'
     let g:ctrlsf_regex_pattern = 1
     let g:ctrlsf_case_sensitive = 'smart'
     let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS', 'obj', 'out', 'Out']

@@ -5,6 +5,7 @@ function! BuildVimproc(info)
     " - status: 'installed', 'updated', or 'unchanged'
     " - force:  set on PlugInstall! or PlugUpdate!
     if a:info.status != 'unchanged' || a:info.force
+        silent !echo "update vimproc"
         if g:os_windows
             silent !Tools\update-dll-mingw.bat
         else
@@ -19,6 +20,7 @@ endfunction
 function! GetGoCode(info)
     if a:info.status != 'unchanged' || a:info.force
         if executable('go')
+            silent !echo "update goimports godef gotags"
             silent !go get -u golang.org/x/tools/cmd/goimports
             silent !go get -u github.com/rogpeppe/godef
             silent !go get -u github.com/jstemmer/gotags

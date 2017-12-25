@@ -340,11 +340,6 @@ elseif g:complete_func == 'ncm'
     endif
     call add(g:plugins, ['roxma/ncm-clang'])
     call add(g:plugins, ['roxma/nvim-completion-manager'])
-    "let g:LanguageClient_autoStart = 1
-    "let g:LanguageClient_serverCommands = {
-    "    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
-    "    \ 'c': ['c', 'run', 'nightly', 'c'],
-    "    \ }
 elseif g:complete_func == 'ycm'
     call add(g:plugins, ['Valloric/YouCompleteMe'])
 else

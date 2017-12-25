@@ -28,7 +28,7 @@ if [ "$1" == "all" ] || [ "$1" == "update" ]; then
         cd $vim_home/vim_origin/
         git clean -fxd
         #git fetch -v --progress --depth 100 origin master
-        git fetch
+        git fetch -p
         if [ "$2" != "" ]; then
             git reset --hard origin/master
             git reset --hard $2
@@ -39,6 +39,7 @@ if [ "$1" == "all" ] || [ "$1" == "update" ]; then
 else
     cd $vim_home/vim_origin/
     git clean -fxd
+    git reset --hard HEAD
 fi
 
 echo "start build vim"

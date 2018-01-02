@@ -716,3 +716,11 @@ if (s:findplug('vimshell') != -1)
 endif
 "}}}
 
+
+
+"{{{
+if (s:findplug('vim-AHKcomplete') != -1)
+    " Enable omni completion.
+    autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete
+endif
+"}}}

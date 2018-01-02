@@ -38,14 +38,6 @@ if filereadable($HOME . '/.vimrc.local')
     execute 'source ' . $HOME .'/.vimrc.local'
 endif
 
-"autocmd! bufwritepost _vimrc source $MYVIMRC
-nnoremap <leader>ee :e $MYVIMRC<CR>
-
-"behave mswin        "set 'selection', 'selectmode', 'mousemodel' and 'keymodel' for MS-Windows
-noremap  <C-S> :update<CR>
-vnoremap <C-S> <C-C>:update<CR>
-inoremap <C-S> <C-O>:update<CR>
-
 if !has('nvim')
     if g:os_windows
         set renderoptions=type:directx,level:0.50,
@@ -66,7 +58,7 @@ if s:use_gui
     set guifont=Consolas:h11
     au GUIEnter * simalt ~x
 else
-    set mouse=n
+    set mouse=nv
 endif
 if &term =~ '^screen'
     " tmux knows the extended mouse mode
@@ -80,13 +72,25 @@ autocmd GUIEnter * set vb t_vb=       "close beep
 set noerrorbells
 autocmd VimEnter * set shellredir=>
 
+"autocmd! bufwritepost _vimrc source $MYVIMRC
+nnoremap <leader>ee :e $MYVIMRC<CR>
+
+" Fast saving
+nnoremap <C-s> :<C-u>w<CR>
+vnoremap <C-s> :<C-u>w<CR>
+cnoremap <C-s> <C-u>w<CR>
+
 " Wrapped lines goes down/up to next row, rather than next line in file
 map j gj
 map k gk
 
-" Visual shifting (does not exit Visual mode)
-vmap < <gv
-vmap > >gv
+xnoremap < <gv
+xnoremap > >gv|
+nnoremap > >>_
+nnoremap < <<_
+
+" Start new line
+inoremap <S-Return> <C-o>o
 
 "delete space, delete ^M
 nnoremap <leader>ds :%s/\s\+$//<CR>
@@ -133,6 +137,7 @@ set shiftwidth=4
 set softtabstop=4
 set autoindent
 set smartindent
+set cindent
 set indentexpr=""
 set cinkeys-=0#
 inoremap # X#
@@ -233,14 +238,6 @@ function! s:fcy_gobuild()
     let l:cmd = 'go build -ldflags "-H windowsgui" ' . expand('%')
     call vimproc#system_bg(l:cmd)
 endfunction
-
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete
 
 au BufNewFile,BufRead *.qml set filetype=qml
 au BufNewFile,BufRead *.conf set filetype=conf

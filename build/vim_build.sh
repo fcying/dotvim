@@ -7,7 +7,25 @@ cd `dirname $0`
 cd ..
 vim_home=$PWD
 
-if [ "$1" == "all" ]; then
+sudo=true
+update=false
+install=false
+for var 
+do
+    if [ "$var" == "prefix" ]; then
+        sudo=false
+    elif [ "$var" == "install" ]; then
+        install=true
+    elif [ "$var" == "update" ]; then
+        update=true
+    fi
+done
+    
+if [ "$sudo" == "true" ]; then
+    sudo echo "start"  #entry sudo passwd
+fi
+
+if [ $install == "true" ]; then
     if [ $(uname | grep MINGW -c) -eq 1 ]; then
         pacman -S mingw-w64-x86_64-lua
         #pacman -S mingw-w64-x86_64-python2
@@ -18,7 +36,7 @@ if [ "$1" == "all" ]; then
     fi
 fi
 
-if [ "$1" == "all" ] || [ "$1" == "update" ]; then
+if [ $install == "true" ] || [ $update == "true" ]; then
     if [ ! -d "$vim_home/vim_origin" ]; then
         #git clone https://github.com/vim/vim.git vim_origin --depth 100
         git clone https://github.com/vim/vim.git vim_origin
@@ -38,9 +56,10 @@ if [ "$1" == "all" ] || [ "$1" == "update" ]; then
     fi
 else
     cd $vim_home/vim_origin/
-    git clean -fxd
-    git reset --hard HEAD
 fi
+
+# for xshell mouse wheel
+sed -i "/^\s*held_button = MOUSE_RELEASE;$/d" src/term.c
 
 echo "start build vim"
 if [ $(uname | grep MINGW -c) -eq 1 ]; then
@@ -78,7 +97,13 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
     cd $vim_home/$vim_version
     ./gvim.exe --version
 else
-    sudo make distclean
+    make distclean
+    if [ $sudo == "true" ]; then
+        prefix=/usr/local
+    else
+        prefix=$HOME/tool/vim
+    fi
+    mkdir -p $prefix
     ./configure \
                 --enable-gui=no \
                 --with-features=huge \
@@ -89,9 +114,15 @@ else
                 --enable-python3interp=dynamic \
                 --enable-perlinterp=dynamic \
                 --enable-luainterp=dynamic \
-                --with-compiledby=JasonYing 2>&1 |tee build.log
+                --prefix=$prefix \
+                --with-compiledby=fcying 2>&1 |tee build.log
                 
-    sudo make
-    sudo make install
+    make
+    if [ $sudo == "true" ]; then
+        sudo make install
+    else
+        make install
+    fi
+    echo prefix: $prefix
     vim --version
 fi

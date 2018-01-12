@@ -20,11 +20,8 @@ else
     let s:use_gui = 0
 endif
 
-if g:os_windows
-    let g:config_dir = $HOME . '/.vim'
-else
-    let g:config_dir = '~/.vim'
-endif
+let g:config_dir = $HOME . '/.vim'
+
 "}}}
 
 
@@ -36,9 +33,7 @@ if filereadable($HOME . '/.vimrc.before')
     execute 'source ' . $HOME .'/.vimrc.before'
 endif
 
-if !exists('mapleader')
-    let mapleader = ";"
-endif
+let mapleader = get(g:,'mapleader',';')
 
 if !has('nvim')
     if g:os_windows
@@ -157,8 +152,9 @@ set iskeyword -=-
 set iskeyword -=.
 set iskeyword -=#
 set virtualedit=onemore        "onemore all
-"set paste
 set lazyredraw
+"set paste
+set pastetoggle=<F5>
 
 set foldmethod=manual
 set nofoldenable
@@ -249,7 +245,7 @@ inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
 " plugin {{{
 " ============================================================================
 function! s:load_plugins() abort
-    for plugin in g:plugins
+    for plugin in g:plug_list
         if len(plugin) == 2
             exec "Plug " . "'" . plugin[0] . "', " . string(plugin[1])
         else
@@ -260,115 +256,113 @@ endfunction
 
 
 "ncm ycm deoplete neocomplte
-if !exists('g:complete_func')
-    let g:complete_func = 'neocomplete'
-endif
+let g:complete_func = get(g:, 'complete_func', 'neocomplete')
 
-let g:plugins = []
+let g:plug_list = []
 execute 'source ' . g:config_dir . '/_vimrc.plug.before'
-call add(g:plugins, ['mbbill/fencview'])
-call add(g:plugins, ['adah1972/tellenc'])
-call add(g:plugins, ['sheerun/vim-polyglot'])   "A solid language pack for Vim.
-call add(g:plugins, ['bogado/file-line'])
-call add(g:plugins, ['Raimondi/delimitMate'])
-call add(g:plugins, ['itchyny/lightline.vim'])
-call add(g:plugins, ['roxma/vim-paste-easy'])
-call add(g:plugins, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)'}])
-call add(g:plugins, ['moll/vim-bbye', {'on':'Bdelete'}])
-call add(g:plugins, ['MattesGroeger/vim-bookmarks'])
-call add(g:plugins, ['thinca/vim-ref'])
-call add(g:plugins, ['terryma/vim-expand-region'])
-call add(g:plugins, ['terryma/vim-multiple-cursors'])
-call add(g:plugins, ['dyng/ctrlsf.vim'])
-call add(g:plugins, ['easymotion/vim-easymotion'])
-call add(g:plugins, ['derekwyatt/vim-fswitch'])
-call add(g:plugins, ['nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}])
-call add(g:plugins, ['scrooloose/nerdtree', {'on':'NERDTreeToggle'}])
-call add(g:plugins, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggle'}])
-call add(g:plugins, ['majutsushi/tagbar', {'on':'TagbarToggle'}])
-call add(g:plugins, ['xolox/vim-session'])
-call add(g:plugins, ['xolox/vim-misc'])
+call add(g:plug_list, ['mbbill/fencview'])
+call add(g:plug_list, ['adah1972/tellenc'])
+call add(g:plug_list, ['sheerun/vim-polyglot'])   "A solid language pack for Vim.
+call add(g:plug_list, ['bogado/file-line'])
+call add(g:plug_list, ['Raimondi/delimitMate'])
+call add(g:plug_list, ['itchyny/lightline.vim'])
+"call add(g:plug_list, ['roxma/vim-paste-easy'])
+call add(g:plug_list, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)'}])
+call add(g:plug_list, ['moll/vim-bbye', {'on':'Bdelete'}])
+call add(g:plug_list, ['MattesGroeger/vim-bookmarks'])
+call add(g:plug_list, ['thinca/vim-ref'])
+call add(g:plug_list, ['terryma/vim-expand-region'])
+call add(g:plug_list, ['terryma/vim-multiple-cursors'])
+call add(g:plug_list, ['dyng/ctrlsf.vim'])
+call add(g:plug_list, ['easymotion/vim-easymotion'])
+call add(g:plug_list, ['derekwyatt/vim-fswitch'])
+call add(g:plug_list, ['nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}])
+call add(g:plug_list, ['scrooloose/nerdtree', {'on':'NERDTreeToggle'}])
+call add(g:plug_list, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggle'}])
+call add(g:plug_list, ['majutsushi/tagbar', {'on':'TagbarToggle'}])
+call add(g:plug_list, ['xolox/vim-session'])
+call add(g:plug_list, ['xolox/vim-misc'])
 
 if g:os_windows 
-    call add(g:plugins, ['Yggdroot/LeaderF', {'do': '.\install.bat'}])
+    call add(g:plug_list, ['Yggdroot/LeaderF', {'do': '.\install.bat'}])
 else
-    call add(g:plugins, ['Yggdroot/LeaderF', {'do': './install.sh'}])
+    call add(g:plug_list, ['Yggdroot/LeaderF', {'do': './install.sh'}])
 endif
-"call add(g:plugins, ['Shougo/denite.nvim'])
-"call add(g:plugins, ['nixprime/cpsm', {'do':'./install.sh'}])
-"call add(g:plugins, ['Shougo/unite.vim'])
-"call add(g:plugins, ['Shougo/unite-outline'])
-"call add(g:plugins, ['Shougo/neoyank.vim'])
-"call add(g:plugins, ['Shougo/neomru.vim'])
-"call add(g:plugins, ['hewes/unite-gtags'])
-call add(g:plugins, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
-"call add(g:plugins, ['Shougo/vimfiler'])
-call add(g:plugins, ['Shougo/vimshell', {'on': 'VimShell'}])
-call add(g:plugins, ['lambdalisue/gina.vim', {'on': 'Gina'}])
+"call add(g:plug_list, ['Shougo/denite.nvim'])
+"call add(g:plug_list, ['nixprime/cpsm', {'do':'./install.sh'}])
+"call add(g:plug_list, ['Shougo/unite.vim'])
+"call add(g:plug_list, ['Shougo/unite-outline'])
+"call add(g:plug_list, ['Shougo/neoyank.vim'])
+"call add(g:plug_list, ['Shougo/neomru.vim'])
+"call add(g:plug_list, ['hewes/unite-gtags'])
+call add(g:plug_list, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
+"call add(g:plug_list, ['Shougo/vimfiler'])
+call add(g:plug_list, ['Shougo/vimshell', {'on': 'VimShell'}])
+call add(g:plug_list, ['lambdalisue/gina.vim', {'on': 'Gina'}])
 
 if executable('ctags') && executable('global')
-    call add(g:plugins, ['jsfaint/gen_tags.vim'])
+    call add(g:plug_list, ['jsfaint/gen_tags.vim'])
 endif
 if g:complete_func == 'deoplete'
     if has('nvim')
-       call add(g:plugins, ['Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}])
+       call add(g:plug_list, ['Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}])
     else
-       call add(g:plugins, ['Shougo/deoplete.nvim'])
-       call add(g:plugins, ['roxma/nvim-yarp'])
-       call add(g:plugins, ['roxma/vim-hug-neovim-rpc'])
+       call add(g:plug_list, ['Shougo/deoplete.nvim'])
+       call add(g:plug_list, ['roxma/nvim-yarp'])
+       call add(g:plug_list, ['roxma/vim-hug-neovim-rpc'])
     endif
 elseif g:complete_func == 'ncm'
     if !has('nvim')
-        call add(g:plugins, ['roxma/vim-hug-neovim-rpc'])
+        call add(g:plug_list, ['roxma/vim-hug-neovim-rpc'])
     else
-        call add(g:plugins, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
+        call add(g:plug_list, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
     endif
-    call add(g:plugins, ['roxma/ncm-clang'])
-    call add(g:plugins, ['roxma/nvim-completion-manager'])
+    call add(g:plug_list, ['roxma/ncm-clang'])
+    call add(g:plug_list, ['roxma/nvim-completion-manager'])
 elseif g:complete_func == 'ycm'
-    call add(g:plugins, ['Valloric/YouCompleteMe'])
+    call add(g:plug_list, ['Valloric/YouCompleteMe'])
 else
     if has('lua')
-      call add(g:plugins, ['Shougo/neocomplete'])
-      call add(g:plugins, ['Shougo/neoinclude.vim'])
-      call add(g:plugins, ['Shougo/neco-syntax'])
-      call add(g:plugins, ['Shougo/neco-vim'])
+      call add(g:plug_list, ['Shougo/neocomplete'])
+      call add(g:plug_list, ['Shougo/neoinclude.vim'])
+      call add(g:plug_list, ['Shougo/neco-syntax'])
+      call add(g:plug_list, ['Shougo/neco-vim'])
     endif
 endif
 
-call add(g:plugins, ['nsf/gocode', {'do':function('GetGoCode'), 'for':'go'}])
-call add(g:plugins, ['dgryski/vim-godef', {'for':'go'}])
-call add(g:plugins, ['vim-scripts/autohotkey-ahk', {'for':'autohotkey'}])
-call add(g:plugins, ['huleiak47/vim-AHKcomplete', {'for':'autohotkey'}])
-call add(g:plugins, ['godlygeek/tabular', {'for':'markdown'}])
-call add(g:plugins, ['plasticboy/vim-markdown', {'for':'markdown'}])
+call add(g:plug_list, ['nsf/gocode', {'do':function('GetGoCode'), 'for':'go'}])
+call add(g:plug_list, ['dgryski/vim-godef', {'for':'go'}])
+call add(g:plug_list, ['vim-scripts/autohotkey-ahk', {'for':'autohotkey'}])
+call add(g:plug_list, ['huleiak47/vim-AHKcomplete', {'for':'autohotkey'}])
+call add(g:plug_list, ['godlygeek/tabular', {'for':'markdown'}])
+call add(g:plug_list, ['plasticboy/vim-markdown', {'for':'markdown'}])
 
 "color
-"call add(g:plugins, ['altercation/vim-colors-solarized'])
-call add(g:plugins, ['fcying/vim-colors-solarized'])
-call add(g:plugins, ['tomasr/molokai'])
-call add(g:plugins, ['icymind/NeoSolarized'])
+"call add(g:plug_list, ['altercation/vim-colors-solarized'])
+call add(g:plug_list, ['fcying/vim-colors-solarized'])
+call add(g:plug_list, ['tomasr/molokai'])
+call add(g:plug_list, ['icymind/NeoSolarized'])
 
 
 
-let g:plugin_dir = g:config_dir . '/plugged'
-let g:plugin_manager_dir = g:config_dir . '/.cache/vim-plug'
-if filereadable(expand(g:plugin_manager_dir . '/autoload/plug.vim')) == 0
+let g:plug_dir = g:config_dir . '/plugged'
+let g:plug_manager_dir = g:config_dir . '/.cache/vim-plug'
+if filereadable(expand(g:plug_manager_dir . '/autoload/plug.vim')) == 0
     if executable('curl')
+        let s:first_install=1
         silent exec '!curl -fLo '
-                    \ . g:plugin_manager_dir . '/autoload/plug.vim'
+                    \ . g:plug_manager_dir . '/autoload/plug.vim'
                     \ . ' --create-dirs '
                     \ . 'https://raw.githubusercontent.com/'
                     \ . 'junegunn/vim-plug/master/plug.vim'
-        let s:plug_first_install=1
     else
         echohl WarningMsg
         echom 'You need install curl!'
         echohl None
     endif
 endif
-exec 'set runtimepath+=' . g:plugin_manager_dir
-call plug#begin(expand(g:plugin_dir))
+exec 'set runtimepath+=' . g:plug_manager_dir
+call plug#begin(expand(g:plug_dir))
 call s:load_plugins()
 call plug#end()
 
@@ -376,28 +370,37 @@ call plug#end()
 filetype plugin indent on
 syntax enable
 
-execute 'source ' . g:config_dir . '/_vimrc.plug.after'
-"}}}
 
-
-if exists('s:plug_first_install')
-    if g:os_linux
-        silent !mv ~/.vimrc ~/.vimrc.bak
-        silent !ln -s ~/.vim/_vimrc ~/.vimrc
-        silent !touch ~/.vimrc.before
-        silent !touch ~/.vimrc.after
+" auto install
+let g:plug_auto_install = get(g:, 'plug_auto_install', 'false')
+if g:plug_auto_install == 'true' || exists("s:first_install")
+    let s:plug_list_cache=g:config_dir . '/.cache/plug_list_cache'
+    if filereadable(s:plug_list_cache)
+        let s:last_plug_list=readfile(s:plug_list_cache, "b")
+    else
+        let s:last_plug_list=[]
+        echom "no plug_list_cache"
     endif
-    
-    PlugInstall
+    let s:plug_string=[string(g:plug_list)]
+    if s:last_plug_list != s:plug_string
+        call writefile(s:plug_string, s:plug_list_cache, "b")
+        "call writefile(g:plug_list, s:plug_list_cache, "b")
+        echom "update plug_list_cache"
+        silent PlugInstall
+    endif
 endif
+
+execute 'source ' . g:config_dir . '/_vimrc.plug.after'
+
+"}}}
 
 " ============================================================================
 " color {{{
 " ============================================================================
 if g:os_windows
-    let s:colorscheme = 'NeoSolarized'
+    let g:colorscheme = get(g:, 'colorscheme', 'NeoSolarized')
 else
-    let s:colorscheme = 'solarized'
+    let g:colorscheme = get(g:, 'colorscheme', 'solarized')
 endif    
 
 if &term =~ '256color' 
@@ -412,28 +415,31 @@ if !has('nvim')
     endif
 endif
 
-if s:colorscheme == 'solarized'
+if g:colorscheme == 'solarized'
     let g:solarized_termcolors=256
     set t_Co=256
-    set background=light
+    let g:background=get(g:, 'background', 'light')
     if g:os_windows && !has('gui_running') && !empty($CONEMUBUILD)
         let &t_AB="\e[48;5;%dm"
         let &t_AF="\e[38;5;%dm"
     endif
-elseif s:colorscheme == 'molokai'
+elseif g:colorscheme == 'molokai'
     let g:rehash256 = 1
     let g:molokai_original = 1
-    set background=dark
-elseif s:colorscheme == 'NeoSolarized'    
+    let g:background=get(g:, 'background', 'dark')
+elseif g:colorscheme == 'NeoSolarized'    
     set termguicolors
     let g:neosolarized_vertSplitBgTrans = 0
-    set background=light
+    let g:background=get(g:, 'background', 'light')
     set t_8b=[48;2;%lu;%lu;%lum    
     set t_8f=[38;2;%lu;%lu;%lum
 else    
+    let g:background=get(g:, 'background', 'dark')
+    set t_Co=256
 endif
 
-exec 'colorscheme ' . s:colorscheme
+exec 'colorscheme ' . g:colorscheme
+exec 'set background=' . g:background
 " }}}
 
 
@@ -446,3 +452,4 @@ let s:vimconf_path = findfile(".vimconf", ".;")
 if s:vimconf_path != ""
     exec 'source ' . s:vimconf_path
 endif
+

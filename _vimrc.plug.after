@@ -1,7 +1,7 @@
-let s:pluglist = string(g:plugins)
+let s:plug_list_string = string(g:plug_list)
 
 function! s:findplug(plugname)
-    return stridx(s:pluglist, a:plugname)
+    return stridx(s:plug_list_string, a:plugname)
 endfunction
 
 

@@ -40,7 +40,7 @@ function! GetGoCode(info)
                 silent !go get -u github.com/nsf/gocode
                 let l:cmd = 'sh ' . g:config_dir . '/plugged/gocode/vim/update.sh'
                 call system(l:cmd)
-                silent !gocode set lib-path $GOPATH/pkg/linux_386
+                silent !gocode set lib-path $GOPATH/pkg/linux_amd64
             endif
         endif
   endif

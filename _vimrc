@@ -32,10 +32,12 @@ endif
 " ============================================================================
 " basic settings {{{
 " ============================================================================
-let mapleader = ";"
+if filereadable($HOME . '/.vimrc.before')
+    execute 'source ' . $HOME .'/.vimrc.before'
+endif
 
-if filereadable($HOME . '/.vimrc.local')
-    execute 'source ' . $HOME .'/.vimrc.local'
+if !exists('mapleader')
+    let mapleader = ";"
 endif
 
 if !has('nvim')
@@ -93,8 +95,8 @@ nnoremap < <<_
 inoremap <S-Return> <C-o>o
 
 "delete space, delete ^M
-nnoremap <leader>ds :%s/\s\+$//<CR>
-nnoremap <leader>dm :%s/\r//g<CR>
+nnoremap <leader>ds :%s/\s\+$//g<CR>:noh<CR>
+nnoremap <leader>dm :%s/\r$//g<CR>:noh<CR>
 
 "set langmenu=zh_CN.UTF-8
 "set helplang=cn
@@ -173,41 +175,34 @@ vnoremap <silent> # :<C-U>
     \escape(@", '?\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
     \gV:call setreg('"', old_reg, old_regtype)<CR>
 
-" auto pairs
-inoremap ( ()<ESC>i
-inoremap ) <c-r>=ClosePair(')')<CR>
-inoremap {<CR> {}<ESC>i<CR><c-o><s-o>
-inoremap } <c-r>=ClosePair('}')<CR>
-inoremap [ []<ESC>i
-inoremap ] <c-r>=ClosePair(']')<CR>
-"inoremap " <c-r>=CloseSamePair('"')<CR>
-"inoremap ' <c-r>=CloseSamePair('''')<CR>
+"" auto pairs
+"inoremap ( ()<ESC>i
+"inoremap ) <c-r>=ClosePair(')')<CR>
+"inoremap {<CR> {}<ESC>i<CR><c-o><s-o>
+"inoremap } <c-r>=ClosePair('}')<CR>
+"inoremap [ []<ESC>i
+"inoremap ] <c-r>=ClosePair(']')<CR>
+""inoremap " <c-r>=CloseSamePair('"')<CR>
+""inoremap ' <c-r>=CloseSamePair('''')<CR>
+"
+"function! CloseSamePair(char)
+"    if getline('.')[col('.') - 1] == a:char
+"        return "\<Right>"
+"    else
+"        let l:char=a:char . a:char . "\<Left>"
+"        return l:char
+"    endif
+"endf
+"
+"function! ClosePair(char)
+"    if getline('.')[col('.') - 1] == a:char
+"        return "\<Right>"
+"    else
+"        return a:char
+"    endif
+"endf
 
-function! CloseSamePair(char)
-    if getline('.')[col('.') - 1] == a:char
-        return "\<Right>"
-    else
-        let l:char=a:char . a:char . "\<Left>"
-        return l:char
-    endif
-endf
-
-function! ClosePair(char)
-    if getline('.')[col('.') - 1] == a:char
-        return "\<Right>"
-    else
-        return a:char
-    endif
-endf
-
-if g:os_windows
-    set tags+=tags
-else
-    set tags+=tags
-endif
 nmap <c-]> :tj <c-r><c-w><CR>
-nmap <F3> <c-]>
-nmap <F4> <C-o>
 
 command! -nargs=0 UpdatePlugin call s:fcy_update_plugin()
 function! s:fcy_update_plugin()
@@ -242,11 +237,10 @@ endfunction
 au BufNewFile,BufRead *.qml set filetype=qml
 au BufNewFile,BufRead *.conf set filetype=conf
 
-" find project file
-let s:vimconf_path = findfile(".vimconf", ".;")
-if s:vimconf_path != ""
-    exec 'source ' . s:vimconf_path
-endif
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
+
 " }}}
 
 
@@ -254,12 +248,6 @@ endif
 " ============================================================================
 " plugin {{{
 " ============================================================================
-function! Fcy_source_rc(file) abort
-    "if filereadable(g:config_dir . '/' . a:file)
-        execute 'source ' . g:config_dir . '/' . a:file
-    "endif
-endf
-
 function! s:load_plugins() abort
     for plugin in g:plugins
         if len(plugin) == 2
@@ -277,11 +265,12 @@ if !exists('g:complete_func')
 endif
 
 let g:plugins = []
-call Fcy_source_rc('_vimrc.plug.before')
+execute 'source ' . g:config_dir . '/_vimrc.plug.before'
 call add(g:plugins, ['mbbill/fencview'])
 call add(g:plugins, ['adah1972/tellenc'])
 call add(g:plugins, ['sheerun/vim-polyglot'])   "A solid language pack for Vim.
 call add(g:plugins, ['bogado/file-line'])
+call add(g:plugins, ['Raimondi/delimitMate'])
 call add(g:plugins, ['itchyny/lightline.vim'])
 call add(g:plugins, ['roxma/vim-paste-easy'])
 call add(g:plugins, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)'}])
@@ -317,10 +306,9 @@ call add(g:plugins, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
 call add(g:plugins, ['Shougo/vimshell', {'on': 'VimShell'}])
 call add(g:plugins, ['lambdalisue/gina.vim', {'on': 'Gina'}])
 
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
-call add(g:plugins, ['jsfaint/gen_tags.vim'])
+if executable('ctags') && executable('global')
+    call add(g:plugins, ['jsfaint/gen_tags.vim'])
+endif
 if g:complete_func == 'deoplete'
     if has('nvim')
        call add(g:plugins, ['Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}])
@@ -372,6 +360,7 @@ if filereadable(expand(g:plugin_manager_dir . '/autoload/plug.vim')) == 0
                     \ . ' --create-dirs '
                     \ . 'https://raw.githubusercontent.com/'
                     \ . 'junegunn/vim-plug/master/plug.vim'
+        let s:plug_first_install=1
     else
         echohl WarningMsg
         echom 'You need install curl!'
@@ -383,13 +372,24 @@ call plug#begin(expand(g:plugin_dir))
 call s:load_plugins()
 call plug#end()
 
+
 filetype plugin indent on
 syntax enable
 
-call Fcy_source_rc('_vimrc.plug.after')
+execute 'source ' . g:config_dir . '/_vimrc.plug.after'
 "}}}
 
 
+if exists('s:plug_first_install')
+    if g:os_linux
+        silent !mv ~/.vimrc ~/.vimrc.bak
+        silent !ln -s ~/.vim/_vimrc ~/.vimrc
+        silent !touch ~/.vimrc.before
+        silent !touch ~/.vimrc.after
+    endif
+    
+    PlugInstall
+endif
 
 " ============================================================================
 " color {{{
@@ -435,3 +435,14 @@ endif
 
 exec 'colorscheme ' . s:colorscheme
 " }}}
+
+
+if filereadable($HOME . '/.vimrc.after')
+    execute 'source ' . $HOME .'/.vimrc.after'
+endif
+
+" find project file
+let s:vimconf_path = findfile(".vimconf", ".;")
+if s:vimconf_path != ""
+    exec 'source ' . s:vimconf_path
+endif

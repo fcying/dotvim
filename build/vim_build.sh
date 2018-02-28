@@ -32,6 +32,8 @@ if [ $install == "true" ]; then
         #pacman -S mingw-w64-x86_64-python3
     else
         sudo apt install libncurses5-dev
+        sudo apt install libxt-dev
+        #sudo apt install libgnome2-dev libgnomeui-dev libgtk2.0-dev libcairo2-dev libx11-dev libxpm-dev libatk1.0-dev
         sudo apt install python3-dev python2.7-dev lua5.2 liblua5.2-dev
     fi
 fi
@@ -105,18 +107,19 @@ else
     fi
     mkdir -p $prefix
     ./configure \
-                --enable-gui=no \
                 --with-features=huge \
+                --enable-gui=no \
+                --with-x \
+                --enable-xterm_clipboard \
                 --enable-multibyte \
                 --enable-cscope \
                 --enable-rubyinterp=dynamic \
                 --enable-pythoninterp=dynamic \
                 --enable-python3interp=dynamic \
-                --enable-perlinterp=dynamic \
                 --enable-luainterp=dynamic \
+                --enable-perlinterp=dynamic \
                 --prefix=$prefix \
                 --with-compiledby=fcying 2>&1 |tee build.log
-                
     make
     if [ $sudo == "true" ]; then
         sudo make install

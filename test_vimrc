@@ -2,11 +2,10 @@ set nocompatible
 set guioptions=
 set mouse=n
 
-if exists("$TMUX")
-    set term=screen-256color
-endif
-
-set runtimepath+=~/.vim/plugged/LeaderF
+set runtimepath+=~/.vim/plugged/delimitMate
+set runtimepath+=~/.vim/plugged/vim-paste-easy
+"set runtimepath+=~/.vim/plugged/nvim-completion-manager
+"set runtimepath+=~/.vim/plugged/vim-hug-neovim-rpc
 
 filetype plugin indent on
 syntax enable

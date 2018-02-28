@@ -265,8 +265,11 @@ call add(g:plug_list, ['adah1972/tellenc'])
 call add(g:plug_list, ['sheerun/vim-polyglot'])   "A solid language pack for Vim.
 call add(g:plug_list, ['bogado/file-line'])
 call add(g:plug_list, ['Raimondi/delimitMate'])
+"call add(g:plug_list, ['jiangmiao/auto-pairs'])
+call add(g:plug_list, ['tpope/vim-surround'])
 call add(g:plug_list, ['itchyny/lightline.vim'])
-"call add(g:plug_list, ['roxma/vim-paste-easy'])
+call add(g:plug_list, ['roxma/vim-paste-easy'])
+"let g:paste_easy_enable = 0
 call add(g:plug_list, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)'}])
 call add(g:plug_list, ['moll/vim-bbye', {'on':'Bdelete'}])
 call add(g:plug_list, ['MattesGroeger/vim-bookmarks'])
@@ -311,6 +314,8 @@ if g:complete_func == 'deoplete'
        call add(g:plug_list, ['roxma/nvim-yarp'])
        call add(g:plug_list, ['roxma/vim-hug-neovim-rpc'])
     endif
+   call add(g:plug_list, ['SpaceVim/deoplete-clang2'])
+   call add(g:plug_list, ['zchee/deoplete-jedi', {'for':'python'}])
 elseif g:complete_func == 'ncm'
     if !has('nvim')
         call add(g:plug_list, ['roxma/vim-hug-neovim-rpc'])

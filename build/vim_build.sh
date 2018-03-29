@@ -10,17 +10,33 @@ vim_home=$PWD
 sudo=true
 update=false
 install=false
-for var 
-do
-    if [ "$var" == "prefix" ]; then
-        sudo=false
-    elif [ "$var" == "install" ]; then
-        install=true
-    elif [ "$var" == "update" ]; then
-        update=true
-    fi
+branch=""
+prefix=/usr/local
+
+TEMP=`getopt -o "ip::u::" -- "$@"`
+eval set -- "$TEMP"
+while true; do
+    case "$1" in
+        -i) install=true; shift;;
+        -u) if [ "$2" != "" ]; then
+                branch=$2
+            fi
+            update=true
+            shift 2;;
+        -p) if [ "$2" != "" ]; then
+                prefix="$2"
+            else
+                prefix=$HOME/tool/vim
+            fi
+            mkdir -p $prefix
+            sudo=false
+            shift 2;;
+        --) break;
+    esac
 done
-    
+
+#exit 0
+
 if [ "$sudo" == "true" ]; then
     sudo echo "start"  #entry sudo passwd
 fi
@@ -49,9 +65,9 @@ if [ $install == "true" ] || [ $update == "true" ]; then
         git clean -fxd
         #git fetch -v --progress --depth 100 origin master
         git fetch -p
-        if [ "$2" != "" ]; then
+        if [ "$branch" != "" ]; then
             git reset --hard origin/master
-            git reset --hard $2
+            git reset --hard "$branch"
         else
             git reset --hard origin/master
         fi
@@ -100,12 +116,6 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
     ./gvim.exe --version
 else
     make distclean
-    if [ $sudo == "true" ]; then
-        prefix=/usr/local
-    else
-        prefix=$HOME/tool/vim
-    fi
-    mkdir -p $prefix
     ./configure \
                 --with-features=huge \
                 --enable-gui=no \

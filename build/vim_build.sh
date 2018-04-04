@@ -130,7 +130,9 @@ else
                 --enable-perlinterp=dynamic \
                 --prefix=$prefix \
                 --with-compiledby=fcying 2>&1 |tee build.log
-    make
+    p=`cat /proc/cpuinfo | grep -c processor`
+    make -j$[p/2]
+
     if [ $sudo == "true" ]; then
         sudo make install
     else

@@ -200,12 +200,6 @@ vnoremap <silent> # :<C-U>
 
 nmap <c-]> :tj <c-r><c-w><CR>
 
-command! -nargs=0 UpdatePlugin call s:fcy_update_plugin()
-function! s:fcy_update_plugin()
-    PlugUpgrade
-    PlugUpdate
-endfunction
-
 " golang
 autocmd! BufWritePost *.go call s:fcy_goimports()
 command! -nargs=0 GoImports call s:fcy_goimports()
@@ -260,6 +254,7 @@ let g:complete_func = get(g:, 'complete_func', 'neocomplete')
 
 let g:plug_list = []
 execute 'source ' . g:config_dir . '/_vimrc.plug.before'
+call add(g:plug_list, ['junegunn/vim-plug'])
 call add(g:plug_list, ['mbbill/fencview'])
 call add(g:plug_list, ['adah1972/tellenc'])
 call add(g:plug_list, ['sheerun/vim-polyglot'])   "A solid language pack for Vim.
@@ -351,22 +346,18 @@ call add(g:plug_list, ['icymind/NeoSolarized'])
 
 
 let g:plug_dir = g:config_dir . '/plugged'
-let g:plug_manager_dir = g:config_dir . '/.cache/vim-plug'
-if filereadable(expand(g:plug_manager_dir . '/autoload/plug.vim')) == 0
-    if executable('curl')
+if filereadable(expand(g:plug_dir . '/vim-plug/plug.vim')) == 0
+    if executable('git')
         let s:first_install=1
-        silent exec '!curl -fLo '
-                    \ . g:plug_manager_dir . '/autoload/plug.vim'
-                    \ . ' --create-dirs '
-                    \ . 'https://raw.githubusercontent.com/'
-                    \ . 'junegunn/vim-plug/master/plug.vim'
+        silent exec '!git clone --depth 1 https://github.com/junegunn/vim-plug '
+                    \ . g:plug_dir . '/vim-plug'
     else
         echohl WarningMsg
-        echom 'You need install curl!'
+        echom 'You need install git!'
         echohl None
     endif
 endif
-exec 'set runtimepath+=' . g:plug_manager_dir
+exec 'source '. g:plug_dir . '/vim-plug/plug.vim'
 call plug#begin(expand(g:plug_dir))
 call s:load_plugins()
 call plug#end()

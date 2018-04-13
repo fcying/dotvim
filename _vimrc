@@ -39,13 +39,11 @@ if !has('nvim')
     if g:os_windows
         set renderoptions=type:directx,level:0.50,
                 \gamma:1.0,contrast:0.0,geom:1,renmode:5,taamode:1
-    endif
-endif
-
-if g:os_linux
-    if !has('nvim')
+    else
         set clipboard=exclude:.*    "setup clipboard make startup slow
     endif
+else
+    set guicursor=
 endif
  
 if s:use_gui
@@ -263,7 +261,9 @@ call add(g:plug_list, ['bogado/file-line'])
 call add(g:plug_list, ['jiangmiao/auto-pairs'])
 call add(g:plug_list, ['tpope/vim-surround'])
 call add(g:plug_list, ['itchyny/lightline.vim'])
-call add(g:plug_list, ['roxma/vim-paste-easy'])
+if exists("g:vim-paste-easy")
+    call add(g:plug_list, ['roxma/vim-paste-easy'])
+endif
 "let g:paste_easy_enable = 0
 call add(g:plug_list, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)'}])
 call add(g:plug_list, ['moll/vim-bbye', {'on':'Bdelete'}])
@@ -371,6 +371,9 @@ syntax enable
 let g:plug_auto_install = get(g:, 'plug_auto_install', 'false')
 if g:plug_auto_install == 'true' || exists("s:first_install")
     let s:plug_list_cache=g:config_dir . '/.cache/plug_list_cache'
+    if !isdirectory(g:config_dir . "/.cache")
+        call mkdir(g:config_dir . "/.cache")
+    endif
     if filereadable(s:plug_list_cache)
         let s:last_plug_list=readfile(s:plug_list_cache, "b")
     else
@@ -380,7 +383,6 @@ if g:plug_auto_install == 'true' || exists("s:first_install")
     let s:plug_string=[string(g:plug_list)]
     if s:last_plug_list != s:plug_string
         call writefile(s:plug_string, s:plug_list_cache, "b")
-        "call writefile(g:plug_list, s:plug_list_cache, "b")
         echom "update plug_list_cache"
         silent PlugInstall
     endif

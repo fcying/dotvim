@@ -228,6 +228,8 @@ au BufNewFile,BufRead *.conf set filetype=conf
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
+inoremap <expr><cr> pumvisible() ? "\<C-y>" : "\<cr>"
+set completeopt-=preview
 
 " }}}
 
@@ -251,7 +253,7 @@ endfunction
 let g:complete_func = get(g:, 'complete_func', 'neocomplete')
 
 let g:plug_list = []
-execute 'source ' . g:config_dir . '/_vimrc.plug.before'
+execute 'source ' . g:config_dir . '/vimrc.plug.before'
 call add(g:plug_list, ['junegunn/vim-plug'])
 call add(g:plug_list, ['mbbill/fencview'])
 call add(g:plug_list, ['adah1972/tellenc'])
@@ -310,7 +312,20 @@ if g:complete_func == 'deoplete'
        call add(g:plug_list, ['roxma/vim-hug-neovim-rpc'])
     endif
    call add(g:plug_list, ['SpaceVim/deoplete-clang2'])
-   call add(g:plug_list, ['zchee/deoplete-jedi', {'for':'python'}])
+   "call add(g:plug_list, ['zchee/deoplete-jedi', {'for':'python'}])
+   "call add(g:plug_list, ['davidhalter/jedi-vim', {'for':'python'}])
+    call add(g:plug_list, ['prabirshrestha/async.vim'])
+    call add(g:plug_list, ['prabirshrestha/vim-lsp'])   
+elseif g:complete_func == 'async'
+    call add(g:plug_list, ['prabirshrestha/async.vim'])
+    call add(g:plug_list, ['prabirshrestha/vim-lsp'])
+    call add(g:plug_list, ['prabirshrestha/asyncomplete.vim'])
+    call add(g:plug_list, ['prabirshrestha/asyncomplete-lsp.vim'])
+    call add(g:plug_list, ['prabirshrestha/asyncomplete-necosyntax.vim'])
+    call add(g:plug_list, ['prabirshrestha/asyncomplete-tags.vim'])
+    "call add(g:plug_list, ['prabirshrestha/asyncomplete-buffer.vim'])
+    "call add(g:plug_list, ['prabirshrestha/asyncomplete-file.vim'])
+    "call add(g:plug_list, ['wellle/tmux-complete.vim'])
 elseif g:complete_func == 'ncm'
     if !has('nvim')
         call add(g:plug_list, ['roxma/vim-hug-neovim-rpc'])
@@ -318,7 +333,8 @@ elseif g:complete_func == 'ncm'
         call add(g:plug_list, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
     endif
     call add(g:plug_list, ['roxma/ncm-clang'])
-    call add(g:plug_list, ['roxma/nvim-completion-manager'])
+    "call add(g:plug_list, ['roxma/nvim-completion-manager'])
+    call add(g:plug_list, ['fcying/nvim-completion-manager'])
 elseif g:complete_func == 'ycm'
     call add(g:plug_list, ['Valloric/YouCompleteMe'])
 else
@@ -388,7 +404,7 @@ if g:plug_auto_install == 'true' || exists("s:first_install")
     endif
 endif
 
-execute 'source ' . g:config_dir . '/_vimrc.plug.after'
+execute 'source ' . g:config_dir . '/vimrc.plug.after'
 
 "}}}
 

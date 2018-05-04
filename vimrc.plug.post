@@ -309,7 +309,6 @@ endif
 
 "{{{
 if (s:findplug('LeaderF') != -1)
-    let g:Lf_CommandMap = {'<C-C>': ['<Esc>'],'<Esc>':['<C-I>']}
     let g:Lf_PreviewCode = 0
     let g:Lf_DefaultMode = 'FullPath'
     let g:Lf_WildIgnore = {

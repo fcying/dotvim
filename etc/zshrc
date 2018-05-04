@@ -1,0 +1,352 @@
+# screen-256color xterm-256color
+export TERM=${ZSH_TERM:-"xterm-256color"}
+
+# zh_CN.UTF-8 en_US.UTF-8
+export LANG=${ZSH_LANG:-"en_US.UTF-8"}
+
+autoload -Uz compinit && compinit
+
+if [ -f "$HOME/.zshrc.pre" ]; then
+    source $HOME/.zshrc.pre
+fi
+
+
+install_antigen() {
+	URL="https://git.io/antigen"
+    TMPFILE="/tmp/antigen.zsh"
+    if [ -x "$(which curl)" ]; then
+		curl -L "$URL" > $TMPFILE
+	elif [ -x "$(which wget)" ]; then
+		wget "$URL" -O $TMPFILE
+	else
+		echo "ERROR: please install curl or wget before installation"
+		exit
+	fi
+    if [ ! $? -eq 0 ]; then
+		echo ""
+		echo "ERROR: downloading antigen.zsh ($URL) failed !!"
+		exit
+	fi;
+	mv "$TMPFILE" "$antigen_file"    
+}
+antigen_file="$HOME/.local/bin/antigen.zsh"
+if [ ! -f "$antigen_file" ]; then
+    [ ! -d "$HOME/.local/bin" ] && mkdir -p "$HOME/.local/bin" 2> /dev/null
+    install_antigen
+fi
+source "$antigen_file"
+antigen init $HOME/.vim/etc/antigen.rc
+typeset -a ANTIGEN_CHECK_FILES=($HOME/.vim/etc/antigenrc $HOME/.zshrc $HOME/.zshrc.pre $HOME/.zshrc.post)
+
+
+export EDITOR='vim'
+export VISUAL='vim'
+export PAGER='less'
+# Set the default Less options.
+# Mouse-wheel scrolling has been disabled by -X (disable screen clearing).
+# Remove -X and -F (exit if the content fits on one screen) to enable it.
+export LESS='-F -g -i -M -R -S -w -X -z-4'
+# Set the Less input preprocessor.
+# Try both `lesspipe` and `lesspipe.sh` as either might exist on a system.
+if (( $#commands[(i)lesspipe(|.sh)] )); then
+  export LESSOPEN="| /usr/bin/env $commands[(i)lesspipe(|.sh)] %s 2>&-"
+fi
+
+# Ensure path arrays do not contain duplicates.
+typeset -gU cdpath fpath mailpath PATH 
+
+# Set the list of directories that Zsh searches for programs.
+export GOPATH=$HOME/go
+export QT_VERSION=5.10.1
+export QT_DIR=$HOME/qt
+#export QT_WEBKIT=true
+export CGO_CXXFLAGS_ALLOW=".*" 
+export CGO_LDFLAGS_ALLOW=".*" 
+export CGO_CFLAGS_ALLOW=".*" 
+export LD_LIBRARY_PATH=$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=$PYTHONPATH:$HOME/tool/python_script
+
+path=(
+    $HOME/bin
+    $HOME/qt/$QT_VERSION/gcc_64/bin
+    $GOPATH/bin
+    /snap/bin
+    /usr/local/{bin,sbin}
+    $path
+)
+if [ -d "$HOME/.linuxbrew/bin" ]; then
+   export PATH=$HOME/.linuxbrew/bin:$PATH
+elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
+   export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
+fi
+export PATH=$(brew --prefix)/sbin:$PATH
+MANPATH="$(brew --prefix)/share/man:$MANPATH"
+INFOPATH="$(brew --prefix)/share/info:$INFOPATH"
+
+
+ZSH_HIDE_DIRTY=${ZSH_HIDE_DIRTY:-1}
+ZSH_GIT_PROMPT_PREFIX=${ZSH_GIT_PROMPT_PREFIX:-"‹"}
+ZSH_GIT_PROMPT_SUFFIX=${ZSH_GIT_PROMPT_SUFFIX:-"›"}
+ZSH_GIT_PROMPT_DIRTY=${ZSH_GIT_PROMPT_DIRTY:-"*"}
+ZSH_GIT_PROMPT_CLEAN=${ZSH_GIT_PROMPT_CLEAN:-""}
+function _parse_git_dirty() {
+    local STATUS=''
+    local -a FLAGS
+    if [ $ZSH_HIDE_DIRTY == 0 ]; then
+        FLAGS=('--porcelain')
+        if [[ $POST_1_7_2_GIT -gt 0 ]]; then
+            FLAGS+='--ignore-submodules=dirty'
+        fi
+        if [[ "$DISABLE_UNTRACKED_FILES_DIRTY" == "true" ]]; then
+            FLAGS+='--untracked-files=no'
+        fi
+        STATUS=$(command git status ${FLAGS} 2> /dev/null | tail -n1)
+        if [[ -n $STATUS ]]; then
+            echo "$ZSH_GIT_PROMPT_DIRTY"
+        else
+            echo "$ZSH_GIT_PROMPT_CLEAN"
+        fi
+    fi
+}
+function _git_prompt_info() {
+    local ref
+    ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
+    ref=$(command git rev-parse --short HEAD 2> /dev/null) || return 0
+    echo "$ZSH_GIT_PROMPT_PREFIX${ref#refs/heads/}$(_parse_git_dirty)$ZSH_GIT_PROMPT_SUFFIX"
+}
+
+PROMPT='%F{green}%n@%m%f:%B%F{blue}%~%b%f %F{red}$(_git_prompt_info)%f%(!.#.$) '
+#RPROMPT='%F{blue}$(date +%H:%M:%S)'
+
+
+# Save dirstack history to .zdirs
+DIRSTACKSIZE=${DIRSTACKSIZE:-10}
+dirstack_file_dir=${dirstack_file_dir:-${HOME}/.cache}
+dirstack_file=${dirstack_file:-${dirstack_file_dir}/zdirs}
+if [ ! -d ${dirstack_file_dir} ]; then
+    mkdir -p ${dirstack_file_dir}
+fi
+if [[ -f ${dirstack_file} ]] && [[ ${#dirstack[*]} -eq 0 ]]; then
+    sed -i "\|^${PWD}$|d" $dirstack_file
+    dirstack=( ${(f)"$(< $dirstack_file)"} )
+    #"cd -" won't work after login by just setting $OLDPWD, so
+    [[ -d $dirstack[1] ]] && cd $dirstack[1] && cd $OLDPWD
+fi
+chpwd_functions+=(chpwd_dirpersist)
+chpwd_dirpersist() {
+    if (( $DIRSTACKSIZE <= 0 )) || [[ -z $dirstack_file ]]; then return; fi
+    local -ax my_stack
+    my_stack=( ${PWD} ${dirstack} )
+    builtin print -l ${(u)my_stack} >! ${dirstack_file}
+}
+
+
+# key bindings  
+bindkey -- "\e[1~" beginning-of-line  
+bindkey -- "\e[4~" end-of-line  
+
+
+HISTFILE="$HOME/.zhistory"
+HISTSIZE=10000
+SAVEHIST=10000
+setopt BANG_HIST                 # Treat the '!' character specially during expansion.
+setopt EXTENDED_HISTORY          # Write the history file in the ':start:elapsed;command' format.
+unsetopt INC_APPEND_HISTORY      # Write to the history file immediately, not when the shell exits.
+unsetopt SHARE_HISTORY           # Share history between all sessions.
+setopt HIST_EXPIRE_DUPS_FIRST    # Expire a duplicate event first when trimming history.
+setopt HIST_IGNORE_DUPS          # Do not record an event that was just recorded again.
+setopt HIST_IGNORE_ALL_DUPS      # Delete an old recorded event if a new event is a duplicate.
+setopt HIST_FIND_NO_DUPS         # Do not display a previously found event.
+setopt HIST_IGNORE_SPACE         # Do not record an event starting with a space.
+setopt HIST_SAVE_NO_DUPS         # Do not write a duplicate event to the history file.
+setopt HIST_VERIFY               # Do not execute immediately upon history expansion.
+unsetopt HIST_BEEP               # Beep when accessing non-existent history.
+unsetopt CDABLE_VARS             # Change directory to a path stored in a variable.
+
+# autosuggest
+bindkey '^k' autosuggest-accept
+
+# bind P and N for EMACS mode
+bindkey -M emacs '^P' history-substring-search-up
+bindkey -M emacs '^N' history-substring-search-down
+
+
+# zsh-completions
+setopt COMPLETE_IN_WORD    # Complete from both ends of a word.
+setopt ALWAYS_TO_END       # Move cursor to the end of a completed word.
+setopt PATH_DIRS           # Perform path search even on command names with slashes.
+setopt AUTO_MENU           # Show completion menu on a successive tab press.
+setopt AUTO_LIST           # Automatically list choices on ambiguous completion.
+setopt AUTO_PARAM_SLASH    # If completed parameter is a directory, add a trailing slash.
+setopt EXTENDED_GLOB       # Needed for file modification glob modifiers with compinit
+unsetopt MENU_COMPLETE     # Do not autoselect the first completion entry.
+unsetopt FLOW_CONTROL      # Disable start/stop characters in shell editor.
+
+# Use caching to make completion for commands such as dpkg and apt usable.
+zstyle ':completion::complete:*' use-cache on
+zstyle ':completion::complete:*' cache-path "$HOME/.antigen/.zcompcache"
+
+# Case-insensitive (all), partial-word, and then substring completion.
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+setopt CASE_GLOB
+
+# Group matches and describe.
+zstyle ':completion:*:*:*:*:*' menu select
+zstyle ':completion:*:matches' group 'yes'
+zstyle ':completion:*:options' description 'yes'
+zstyle ':completion:*:options' auto-description '%d'
+zstyle ':completion:*:corrections' format ' %F{green}-- %d (errors: %e) --%f'
+zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
+zstyle ':completion:*:messages' format ' %F{purple} -- %d --%f'
+zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
+zstyle ':completion:*:default' list-prompt '%S%M matches%s'
+zstyle ':completion:*' format ' %F{yellow}-- %d --%f'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' verbose yes
+
+# Fuzzy match mistyped completions.
+zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*:match:*' original only
+zstyle ':completion:*:approximate:*' max-errors 1 numeric
+
+# Increase the number of errors based on the length of the typed word. But make
+# sure to cap (at 7) the max-errors to avoid hanging.
+zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
+
+# Don't complete unavailable commands.
+zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
+
+# Array completion element sorting.
+zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
+
+# Directories
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-directories
+zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
+zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'users' 'expand'
+zstyle ':completion:*' squeeze-slashes true
+
+# History
+zstyle ':completion:*:history-words' stop yes
+zstyle ':completion:*:history-words' remove-all-dups yes
+zstyle ':completion:*:history-words' list false
+zstyle ':completion:*:history-words' menu yes
+
+# Environmental Variables
+zstyle ':completion::*:(-command-|export):*' fake-parameters ${${${_comps[(I)-value-*]#*,}%%,*}:#-*-}
+
+# Populate hostname completion. But allow ignoring custom entries from static
+# */etc/hosts* which might be uninteresting.
+#zstyle -a ':prezto:module:completion:*:hosts' etc-host-ignores '_etc_host_ignores'
+
+zstyle -e ':completion:*:hosts' hosts 'reply=(
+  ${=${=${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) 2> /dev/null)"}%%[#| ]*}//\]:[0-9]*/ }//,/ }//\[/ }
+  ${=${(f)"$(cat /etc/hosts(|)(N) <<(ypcat hosts 2> /dev/null))"}%%(\#${_etc_host_ignores:+|${(j:|:)~_etc_host_ignores}})*}
+  ${=${${${${(@M)${(f)"$(cat ~/.ssh/config 2> /dev/null)"}:#Host *}#Host }:#*\**}:#*\?*}}
+)'
+
+# Don't complete uninteresting users...
+zstyle ':completion:*:*:*:users' ignored-patterns \
+  adm amanda apache avahi beaglidx bin cacti canna clamav daemon \
+  dbus distcache dovecot fax ftp games gdm gkrellmd gopher \
+  hacluster haldaemon halt hsqldb ident junkbust ldap lp mail \
+  mailman mailnull mldonkey mysql nagios \
+  named netdump news nfsnobody nobody nscd ntp nut nx openvpn \
+  operator pcap postfix postgres privoxy pulse pvm quagga radvd \
+  rpc rpcuser rpm shutdown squid sshd sync uucp vcsa xfs '_*'
+
+# ... unless we really want to.
+zstyle '*' single-ignored show
+
+# Ignore multiple entries.
+zstyle ':completion:*:(rm|kill|diff):*' ignore-line other
+zstyle ':completion:*:rm:*' file-patterns '*:all-files'
+
+# Kill
+zstyle ':completion:*:*:*:*:processes' command 'ps -u $LOGNAME -o pid,user,command -w'
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:*:kill:*' force-list always
+zstyle ':completion:*:*:kill:*' insert-ids single
+
+# Man
+zstyle ':completion:*:manuals' separate-sections true
+zstyle ':completion:*:manuals.(^1*)' insert-sections true
+
+# Media Players
+zstyle ':completion:*:*:mpg123:*' file-patterns '*.(mp3|MP3):mp3\ files *(-/):directories'
+zstyle ':completion:*:*:mpg321:*' file-patterns '*.(mp3|MP3):mp3\ files *(-/):directories'
+zstyle ':completion:*:*:ogg123:*' file-patterns '*.(ogg|OGG|flac):ogg\ files *(-/):directories'
+zstyle ':completion:*:*:mocp:*' file-patterns '*.(wav|WAV|mp3|MP3|ogg|OGG|flac):ogg\ files *(-/):directories'
+
+# Mutt
+if [[ -s "$HOME/.mutt/aliases" ]]; then
+  zstyle ':completion:*:*:mutt:*' menu yes select
+  zstyle ':completion:*:mutt:*' users ${${${(f)"$(<"$HOME/.mutt/aliases")"}#alias[[:space:]]}%%[[:space:]]*}
+fi
+
+# SSH/SCP/RSYNC
+zstyle ':completion:*:(ssh|scp|rsync):*' tag-order 'hosts:-host:host hosts:-domain:domain hosts:-ipaddr:ip\ address *'
+zstyle ':completion:*:(scp|rsync):*' group-order users files all-files hosts-domain hosts-host hosts-ipaddr
+zstyle ':completion:*:ssh:*' group-order users hosts-domain hosts-host users hosts-ipaddr
+zstyle ':completion:*:(ssh|scp|rsync):*:hosts-host' ignored-patterns '*(.|:)*' loopback ip6-loopback localhost ip6-localhost broadcasthost
+zstyle ':completion:*:(ssh|scp|rsync):*:hosts-domain' ignored-patterns '<->.<->.<->.<->' '^[-[:alnum:]]##(.[-[:alnum:]]##)##' '*@*'
+zstyle ':completion:*:(ssh|scp|rsync):*:hosts-ipaddr' ignored-patterns '^(<->.<->.<->.<->|(|::)([[:xdigit:].]##:(#c,2))##(|%*))' '127.0.0.<->' '255.255.255.255' '::1' 'fe80::*'
+
+
+# bash like
+setopt nonomatch
+autoload -Uz +X bashcompinit && bashcompinit
+autoload -Uz select-word-style 
+select-word-style bash
+
+# WSL (aka Bash for Windows) doesn't work well with BG_NICE
+[ -d "/mnt/c" ] && [[ "$(uname -a)" == *Microsoft* ]] && unsetopt BG_NICE
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+alias zsh_update='install_antigen && antigen update'
+alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_history'
+
+alias vi="vim"
+alias py="python3"
+alias py2="python2"
+alias py3="python3"
+alias ls="ls --color=auto"
+alias ll='ls -alh'
+alias la='ls -Alh'
+alias sudo='sudo -E'
+alias tmux=" tmux -2"
+alias ta=' tmux a || tmux'
+alias tl=' tmux list-sessions'
+alias rs='rsync -rvaz --partial --delete --progress '
+alias free_memory='sudo sync && sudo sync && sudo sh -c "echo 3 > /proc/sys/vm/drop_caches"'
+alias cpu_bench='time echo "scale=5000; 4*a(1)" | bc -l -q'
+alias pacman_autoremove='sudo pacman -Qdtq | sudo pacman -Rs -'
+
+alias brew_install='sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
+alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
+alias brew_disable='export PATH=${PATH##*"linuxbrew/bin:"}'
+alias brew_install_ruby='brew vendor-install ruby'
+
+export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
+#export REPO_URL='https://gerrit-googlesource.proxy.ustclug.org/git-repo'
+alias repo_sync='while true; do; repo sync; if [ $? -eq 0 ]; then; echo "sync ok"; break; fi; done;'
+
+alias gms='git merge --squash'
+alias grv='git-review'
+
+function jack_server() {
+    if [ "$1" == "restart" ]; then
+        ./out/host/linux-x86/bin/jack-admin kill-server && ./out/host/linux-x86/bin/jack-admin start-server
+    else
+        export JACK_SERVER_VM_ARGUMENTS="-Dfile.encoding=UTF-8 -XX:+TieredCompilation -Xmx$1"
+    fi
+}
+alias kmsg='adb wait-for-device && adb root && adb wait-for-device && adb shell "while true; do (cat proc/kmsg); done;"'
+export USE_CCACHE=1
+
+
+if [ -f "$HOME/.zshrc.post" ]; then
+    source $HOME/.zshrc.post
+fi

@@ -43,10 +43,14 @@ fi
 
 if [ $install == "true" ]; then
     if [ $(uname | grep MINGW -c) -eq 1 ]; then
+        echo "os MSYS2"
         pacman -S mingw-w64-x86_64-lua
         #pacman -S mingw-w64-x86_64-python2
         #pacman -S mingw-w64-x86_64-python3
+    elif [ $(uname -a | grep MANJARO -c) -eq 1 ]; then
+        echo "os MANJARO"
     else
+        echo "os Ubuntu"
         sudo apt install libncurses5-dev
         sudo apt install libxt-dev
         #sudo apt install libgnome2-dev libgnomeui-dev libgtk2.0-dev libcairo2-dev libx11-dev libxpm-dev libatk1.0-dev
@@ -56,15 +60,13 @@ fi
 
 if [ $install == "true" ] || [ $update == "true" ]; then
     if [ ! -d "$vim_home/vim_origin" ]; then
-        #git clone https://github.com/vim/vim.git vim_origin --depth 100
-        git clone https://github.com/vim/vim.git vim_origin
+        git clone https://github.com/vim/vim.git vim_origin --depth=1
         cd $vim_home/vim_origin/
     else
         echo "git fetch"
         cd $vim_home/vim_origin/
         git clean -fxd
-        #git fetch -v --progress --depth 100 origin master
-        git fetch -p
+        git fetch -p -v --progress --depth=1 origin master
         if [ "$branch" != "" ]; then
             git reset --hard origin/master
             git reset --hard "$branch"

@@ -29,8 +29,8 @@ let g:config_dir = $HOME . '/.vim'
 " ============================================================================
 " basic settings {{{
 " ============================================================================
-if filereadable($HOME . '/.vimrc.before')
-    execute 'source ' . $HOME .'/.vimrc.before'
+if filereadable($HOME . '/.vimrc.pre')
+    execute 'source ' . $HOME .'/.vimrc.pre'
 endif
 
 let mapleader = get(g:,'mapleader',';')
@@ -134,8 +134,8 @@ set autoindent
 set smartindent
 set cindent
 set indentexpr=""
-set cinkeys-=0#
-inoremap # X#
+"set cinkeys-=0#
+"inoremap # X#        " aligin #
 
 set number
 set ruler
@@ -253,7 +253,7 @@ endfunction
 let g:complete_func = get(g:, 'complete_func', 'neocomplete')
 
 let g:plug_list = []
-execute 'source ' . g:config_dir . '/vimrc.plug.before'
+execute 'source ' . g:config_dir . '/vimrc.plug.pre'
 call add(g:plug_list, ['junegunn/vim-plug'])
 call add(g:plug_list, ['mbbill/fencview'])
 call add(g:plug_list, ['adah1972/tellenc'])
@@ -404,7 +404,7 @@ if g:plug_auto_install == 'true' || exists("s:first_install")
     endif
 endif
 
-execute 'source ' . g:config_dir . '/vimrc.plug.after'
+execute 'source ' . g:config_dir . '/vimrc.plug.post'
 
 "}}}
 
@@ -457,8 +457,8 @@ exec 'set background=' . g:background
 " }}}
 
 
-if filereadable($HOME . '/.vimrc.after')
-    execute 'source ' . $HOME .'/.vimrc.after'
+if filereadable($HOME . '/.vimrc.post')
+    execute 'source ' . $HOME .'/.vimrc.post'
 endif
 
 " find project file

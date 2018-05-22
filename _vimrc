@@ -21,6 +21,7 @@ else
 endif
 
 let g:config_dir = $HOME . '/.vim'
+let g:file_plug = g:config_dir . '/plug.vim'
 
 "}}}
 
@@ -34,6 +35,12 @@ if filereadable($HOME . '/.vimrc.pre')
 endif
 
 let mapleader = get(g:,'mapleader',';')
+
+"autocmd! bufwritepost _vimrc source $MYVIMRC
+nnoremap <leader>ev :e $MYVIMRC<CR>
+nnoremap <leader>ep :execute 'e ' . g:file_plug<CR>
+nnoremap <leader>sv :source $MYVIMRC<CR>
+nnoremap <leader>ez :e ~/.zshrc<CR>
 
 if !has('nvim')
     if g:os_windows
@@ -59,37 +66,12 @@ if &term =~ '^screen'
     " tmux knows the extended mouse mode
     set ttymouse=xterm2
 endif
-set wildmenu
-set wildmode=longest:full,full
-set wildignore=*.bak,*.o,*.e,*~,*.swp
-set ttyfast     " when will this cause problems?
-autocmd GUIEnter * set vb t_vb=       "close beep
+"close beep
+set vb t_vb=       
+set novisualbell
 set noerrorbells
 autocmd VimEnter * set shellredir=>
-
-"autocmd! bufwritepost _vimrc source $MYVIMRC
-nnoremap <leader>ee :e $MYVIMRC<CR>
-
-" Fast saving
-nnoremap <C-s> :<C-u>w<CR>
-vnoremap <C-s> :<C-u>w<CR>
-cnoremap <C-s> <C-u>w<CR>
-
-" Wrapped lines goes down/up to next row, rather than next line in file
-map j gj
-map k gk
-
-xnoremap < <gv
-xnoremap > >gv|
-nnoremap > >>_
-nnoremap < <<_
-
-" Start new line
-inoremap <S-Return> <C-o>o
-
-"delete space, delete ^M
-nnoremap <leader>ds :%s/\s\+$//g<CR>:noh<CR>
-nnoremap <leader>dm :%s/\r$//g<CR>:noh<CR>
+set ttyfast     " when will this cause problems?
 
 "set langmenu=zh_CN.UTF-8
 "set helplang=cn
@@ -104,6 +86,8 @@ else
     set ffs=unix,dos,mac
 endif
 
+set history=2000
+"set autoread
 set updatetime=1000
 set scrolloff=3
 set hidden
@@ -112,13 +96,21 @@ set nobackup
 set nowritebackup
 set splitright
 set splitbelow
+set noautochdir
 
+set wildmenu
+set wildmode=longest:full,full
+set wildignore=*.bak,*.o,*.e,*.swp,.git,.svn,*.pyc,*.class
+
+"set cursorcolumn
+set cursorline
+
+set magic
 set incsearch
 set hlsearch
 set wrapscan    "search loop
 set ignorecase
 set smartcase
-set noautochdir
 set path+=../inc,../src,
 if g:os_windows
     let $PATH = g:config_dir . '\lib' . ';' . $PATH
@@ -136,6 +128,11 @@ set cindent
 set indentexpr=""
 "set cinkeys-=0#
 "inoremap # X#        " aligin #
+set backspace=indent,eol,start 
+set whichwrap+=<,>,[,],h,l
+set iskeyword -=-
+set iskeyword -=.
+"set iskeyword -=#
 
 set number
 set ruler
@@ -145,17 +142,56 @@ set nolist
 set wrap
 set showcmd
 "set cmdheight=1
-set backspace=indent,eol,start whichwrap+=<,>,[,]
-set iskeyword -=-
-set iskeyword -=.
-set iskeyword -=#
 set virtualedit=onemore        "onemore all
 set lazyredraw
-"set paste
-set pastetoggle=<F5>
 
 set foldmethod=manual
 set nofoldenable
+
+" hide number
+function! HideNumber()
+    if(&relativenumber == &number)
+        set relativenumber! number!
+    elseif(&number)
+        set number!
+    else
+        set relativenumber!
+    endif
+    set number?
+endfunc
+nnoremap <F2> :call HideNumber()<CR>
+
+nnoremap <F3> :set list! list?<CR>
+nnoremap <F4> :set wrap! wrap?<CR>
+
+set pastetoggle=<F5>
+" disbale paste mode when leaving insert mode
+au InsertLeave * set nopaste
+" Automatically set paste mode in Vim when pasting in insert mode
+function! XTermPasteBegin()
+    set pastetoggle=<Esc>[201~
+    set paste
+    return ""
+endfunction
+inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+
+" Wrapped lines goes down/up to next row, rather than next line in file
+nnoremap k gk
+nnoremap gk k
+nnoremap j gj
+nnoremap gj j
+
+xnoremap < <gv
+xnoremap > >gv|
+nnoremap > >>_
+nnoremap < <<_
+
+" Start new line
+inoremap <S-Return> <C-o>o
+
+"delete space, delete ^M
+nnoremap <leader>ds :%s/\s\+$//g<CR>:noh<CR>
+nnoremap <leader>dm :%s/\r$//g<CR>:noh<CR>
 
 " virtual mode search
 vnoremap <silent> * :<C-U>
@@ -168,33 +204,6 @@ vnoremap <silent> # :<C-U>
     \gvy?<C-R><C-R>=substitute(
     \escape(@", '?\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
     \gV:call setreg('"', old_reg, old_regtype)<CR>
-
-"" auto pairs
-"inoremap ( ()<ESC>i
-"inoremap ) <c-r>=ClosePair(')')<CR>
-"inoremap {<CR> {}<ESC>i<CR><c-o><s-o>
-"inoremap } <c-r>=ClosePair('}')<CR>
-"inoremap [ []<ESC>i
-"inoremap ] <c-r>=ClosePair(']')<CR>
-""inoremap " <c-r>=CloseSamePair('"')<CR>
-""inoremap ' <c-r>=CloseSamePair('''')<CR>
-"
-"function! CloseSamePair(char)
-"    if getline('.')[col('.') - 1] == a:char
-"        return "\<Right>"
-"    else
-"        let l:char=a:char . a:char . "\<Left>"
-"        return l:char
-"    endif
-"endf
-"
-"function! ClosePair(char)
-"    if getline('.')[col('.') - 1] == a:char
-"        return "\<Right>"
-"    else
-"        return a:char
-"    endif
-"endf
 
 nmap <c-]> :tj <c-r><c-w><CR>
 
@@ -229,184 +238,17 @@ au BufNewFile,BufRead *.conf set filetype=conf
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
 inoremap <expr><cr> pumvisible() ? "\<C-y>" : "\<cr>"
-set completeopt-=preview
+set completeopt=menu,longest       "menu longest noinsert preview
+
+if filereadable(g:file_plug)
+    execute 'source ' . g:file_plug
+endif
+filetype plugin indent on
+syntax enable
 
 " }}}
 
 
-
-" ============================================================================
-" plugin {{{
-" ============================================================================
-function! s:load_plugins() abort
-    for plugin in g:plug_list
-        if len(plugin) == 2
-            exec "Plug " . "'" . plugin[0] . "', " . string(plugin[1])
-        else
-            exec "Plug " . "'" . plugin[0] . "'"
-        endif
-    endfor
-endfunction
-
-
-"ncm ycm deoplete neocomplte
-let g:complete_func = get(g:, 'complete_func', 'neocomplete')
-
-let g:plug_list = []
-execute 'source ' . g:config_dir . '/vimrc.plug.pre'
-call add(g:plug_list, ['junegunn/vim-plug'])
-call add(g:plug_list, ['mbbill/fencview'])
-call add(g:plug_list, ['adah1972/tellenc'])
-call add(g:plug_list, ['sheerun/vim-polyglot'])   "A solid language pack for Vim.
-call add(g:plug_list, ['bogado/file-line'])
-"call add(g:plug_list, ['Raimondi/delimitMate'])
-call add(g:plug_list, ['jiangmiao/auto-pairs'])
-call add(g:plug_list, ['tpope/vim-surround'])
-call add(g:plug_list, ['itchyny/lightline.vim'])
-if exists("g:vim-paste-easy")
-    call add(g:plug_list, ['roxma/vim-paste-easy'])
-endif
-"let g:paste_easy_enable = 0
-call add(g:plug_list, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)'}])
-call add(g:plug_list, ['moll/vim-bbye', {'on':'Bdelete'}])
-call add(g:plug_list, ['MattesGroeger/vim-bookmarks'])
-call add(g:plug_list, ['thinca/vim-ref'])
-call add(g:plug_list, ['terryma/vim-expand-region'])
-call add(g:plug_list, ['terryma/vim-multiple-cursors'])
-call add(g:plug_list, ['dyng/ctrlsf.vim'])
-call add(g:plug_list, ['easymotion/vim-easymotion'])
-call add(g:plug_list, ['derekwyatt/vim-fswitch'])
-call add(g:plug_list, ['nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}])
-call add(g:plug_list, ['scrooloose/nerdtree', {'on':'NERDTreeToggle'}])
-call add(g:plug_list, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggle'}])
-call add(g:plug_list, ['majutsushi/tagbar', {'on':'TagbarToggle'}])
-call add(g:plug_list, ['xolox/vim-session'])
-call add(g:plug_list, ['xolox/vim-misc'])
-
-if g:os_windows 
-    call add(g:plug_list, ['Yggdroot/LeaderF', {'do': '.\install.bat'}])
-else
-    call add(g:plug_list, ['Yggdroot/LeaderF', {'do': './install.sh'}])
-endif
-"call add(g:plug_list, ['Shougo/denite.nvim'])
-"call add(g:plug_list, ['nixprime/cpsm', {'do':'./install.sh'}])
-"call add(g:plug_list, ['Shougo/unite.vim'])
-"call add(g:plug_list, ['Shougo/unite-outline'])
-"call add(g:plug_list, ['Shougo/neoyank.vim'])
-"call add(g:plug_list, ['Shougo/neomru.vim'])
-"call add(g:plug_list, ['hewes/unite-gtags'])
-call add(g:plug_list, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
-"call add(g:plug_list, ['Shougo/vimfiler'])
-call add(g:plug_list, ['Shougo/vimshell', {'on': 'VimShell'}])
-call add(g:plug_list, ['lambdalisue/gina.vim', {'on': 'Gina'}])
-
-if executable('ctags') && executable('global')
-    call add(g:plug_list, ['jsfaint/gen_tags.vim'])
-endif
-if g:complete_func == 'deoplete'
-    if has('nvim')
-       call add(g:plug_list, ['Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}])
-    else
-       call add(g:plug_list, ['Shougo/deoplete.nvim'])
-       call add(g:plug_list, ['roxma/nvim-yarp'])
-       call add(g:plug_list, ['roxma/vim-hug-neovim-rpc'])
-    endif
-   call add(g:plug_list, ['SpaceVim/deoplete-clang2'])
-   "call add(g:plug_list, ['zchee/deoplete-jedi', {'for':'python'}])
-   "call add(g:plug_list, ['davidhalter/jedi-vim', {'for':'python'}])
-    call add(g:plug_list, ['prabirshrestha/async.vim'])
-    call add(g:plug_list, ['prabirshrestha/vim-lsp'])   
-elseif g:complete_func == 'async'
-    call add(g:plug_list, ['prabirshrestha/async.vim'])
-    call add(g:plug_list, ['prabirshrestha/vim-lsp'])
-    call add(g:plug_list, ['prabirshrestha/asyncomplete.vim'])
-    call add(g:plug_list, ['prabirshrestha/asyncomplete-lsp.vim'])
-    call add(g:plug_list, ['prabirshrestha/asyncomplete-necosyntax.vim'])
-    call add(g:plug_list, ['prabirshrestha/asyncomplete-tags.vim'])
-    "call add(g:plug_list, ['prabirshrestha/asyncomplete-buffer.vim'])
-    "call add(g:plug_list, ['prabirshrestha/asyncomplete-file.vim'])
-    "call add(g:plug_list, ['wellle/tmux-complete.vim'])
-elseif g:complete_func == 'ncm'
-    if !has('nvim')
-        call add(g:plug_list, ['roxma/vim-hug-neovim-rpc'])
-    else
-        call add(g:plug_list, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
-    endif
-    call add(g:plug_list, ['roxma/ncm-clang'])
-    "call add(g:plug_list, ['roxma/nvim-completion-manager'])
-    call add(g:plug_list, ['fcying/nvim-completion-manager'])
-elseif g:complete_func == 'ycm'
-    call add(g:plug_list, ['Valloric/YouCompleteMe'])
-else
-    if has('lua')
-      call add(g:plug_list, ['Shougo/neocomplete'])
-      call add(g:plug_list, ['Shougo/neoinclude.vim'])
-      call add(g:plug_list, ['Shougo/neco-syntax'])
-      call add(g:plug_list, ['Shougo/neco-vim'])
-    endif
-endif
-
-call add(g:plug_list, ['nsf/gocode', {'do':function('GetGoCode'), 'for':'go'}])
-call add(g:plug_list, ['dgryski/vim-godef', {'for':'go'}])
-call add(g:plug_list, ['vim-scripts/autohotkey-ahk', {'for':'autohotkey'}])
-call add(g:plug_list, ['huleiak47/vim-AHKcomplete', {'for':'autohotkey'}])
-call add(g:plug_list, ['godlygeek/tabular', {'for':'markdown'}])
-call add(g:plug_list, ['plasticboy/vim-markdown', {'for':'markdown'}])
-
-"color
-"call add(g:plug_list, ['altercation/vim-colors-solarized'])
-call add(g:plug_list, ['fcying/vim-colors-solarized'])
-call add(g:plug_list, ['tomasr/molokai'])
-call add(g:plug_list, ['icymind/NeoSolarized'])
-
-
-
-let g:plug_dir = g:config_dir . '/plugged'
-if filereadable(expand(g:plug_dir . '/vim-plug/plug.vim')) == 0
-    if executable('git')
-        let s:first_install=1
-        silent exec '!git clone --depth 1 https://github.com/junegunn/vim-plug '
-                    \ . g:plug_dir . '/vim-plug'
-    else
-        echohl WarningMsg
-        echom 'You need install git!'
-        echohl None
-    endif
-endif
-exec 'source '. g:plug_dir . '/vim-plug/plug.vim'
-call plug#begin(expand(g:plug_dir))
-call s:load_plugins()
-call plug#end()
-
-
-filetype plugin indent on
-syntax enable
-
-
-" auto install
-let g:plug_auto_install = get(g:, 'plug_auto_install', 'false')
-if g:plug_auto_install == 'true' || exists("s:first_install")
-    let s:plug_list_cache=g:config_dir . '/.cache/plug_list_cache'
-    if !isdirectory(g:config_dir . "/.cache")
-        call mkdir(g:config_dir . "/.cache")
-    endif
-    if filereadable(s:plug_list_cache)
-        let s:last_plug_list=readfile(s:plug_list_cache, "b")
-    else
-        let s:last_plug_list=[]
-        echom "no plug_list_cache"
-    endif
-    let s:plug_string=[string(g:plug_list)]
-    if s:last_plug_list != s:plug_string
-        call writefile(s:plug_string, s:plug_list_cache, "b")
-        echom "update plug_list_cache"
-        silent PlugInstall
-    endif
-endif
-
-execute 'source ' . g:config_dir . '/vimrc.plug.post'
-
-"}}}
 
 " ============================================================================
 " color {{{

@@ -1,13 +1,19 @@
 set nocompatible
-set guioptions=
 set mouse=n
 
 set runtimepath+=~/.vim/plugged/deoplete.nvim
 set runtimepath+=~/.vim/plugged/nvim-yarp
 set runtimepath+=~/.vim/plugged/vim-hug-neovim-rpc
-
-let g:deoplete#enable_at_startup = 1
+set runtimepath+=~/.vim/plugged/deoplete-jedi/
 
 filetype plugin indent on
 syntax enable
+
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#sources#jedi#debug_server = "jedi.log"
+"let g:deoplete#sources#jedi#extra_path=["/home/linuxbrew/.linuxbrew/lib/python3.6/site-packages"]
+
+call deoplete#custom#option('profile', v:true)
+call deoplete#enable_logging('DEBUG', 'deoplete.log')
+call deoplete#custom#source('jedi', 'is_debug_enabled', 1)
 

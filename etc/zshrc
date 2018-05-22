@@ -35,8 +35,8 @@ if [ ! -f "$antigen_file" ]; then
     install_antigen
 fi
 source "$antigen_file"
-antigen init $HOME/.vim/etc/antigen.rc
-typeset -a ANTIGEN_CHECK_FILES=($HOME/.vim/etc/antigenrc $HOME/.zshrc $HOME/.zshrc.pre $HOME/.zshrc.post)
+antigen init $HOME/.antigen.rc
+typeset -a ANTIGEN_CHECK_FILES=($HOME/.antigenrc $HOME/.zshrc $HOME/.zshrc.pre $HOME/.zshrc.post)
 
 
 export EDITOR='vim'

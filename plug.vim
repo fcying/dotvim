@@ -89,22 +89,13 @@ call add(g:plug_list, ['mbbill/fencview'])
 call add(g:plug_list, ['adah1972/tellenc'])
 call add(g:plug_list, ['sheerun/vim-polyglot'])   "A solid language pack for Vim.
 call add(g:plug_list, ['bogado/file-line'])
-"call add(g:plug_list, ['Raimondi/delimitMate'])
-call add(g:plug_list, ['jiangmiao/auto-pairs'])
-call add(g:plug_list, ['tpope/vim-surround'])
 call add(g:plug_list, ['itchyny/lightline.vim'])
-if exists("g:vim-paste-easy")
-    call add(g:plug_list, ['roxma/vim-paste-easy'])
-endif
-"let g:paste_easy_enable = 0
-call add(g:plug_list, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)'}])
 call add(g:plug_list, ['moll/vim-bbye', {'on':'Bdelete'}])
 call add(g:plug_list, ['MattesGroeger/vim-bookmarks'])
 call add(g:plug_list, ['thinca/vim-ref'])
+call add(g:plug_list, ['tpope/vim-surround'])
 call add(g:plug_list, ['terryma/vim-expand-region'])
 call add(g:plug_list, ['terryma/vim-multiple-cursors'])
-call add(g:plug_list, ['dyng/ctrlsf.vim'])
-call add(g:plug_list, ['easymotion/vim-easymotion'])
 call add(g:plug_list, ['derekwyatt/vim-fswitch'])
 call add(g:plug_list, ['nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}])
 call add(g:plug_list, ['scrooloose/nerdtree', {'on':'NERDTreeToggle'}])
@@ -112,6 +103,16 @@ call add(g:plug_list, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterTog
 call add(g:plug_list, ['majutsushi/tagbar', {'on':'TagbarToggle'}])
 call add(g:plug_list, ['xolox/vim-session'])
 call add(g:plug_list, ['xolox/vim-misc'])
+call add(g:plug_list, ['vim-scripts/autohotkey-ahk', {'for':'autohotkey'}])
+call add(g:plug_list, ['huleiak47/vim-AHKcomplete', {'for':'autohotkey'}])
+call add(g:plug_list, ['godlygeek/tabular', {'for':'markdown'}])
+call add(g:plug_list, ['plasticboy/vim-markdown', {'for':'markdown'}])
+call add(g:plug_list, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)'}])
+"call add(g:plug_list, ['Raimondi/delimitMate'])
+call add(g:plug_list, ['jiangmiao/auto-pairs'])
+call add(g:plug_list, ['dyng/ctrlsf.vim'])
+call add(g:plug_list, ['easymotion/vim-easymotion'])
+call add(g:plug_list, ['wsdjeg/FlyGrep.vim', {'on': 'FlyGrep'}])
 
 if g:os_windows 
     call add(g:plug_list, ['Yggdroot/LeaderF', {'do': '.\install.bat'}])
@@ -174,11 +175,6 @@ else
     endif
 endif
 
-call add(g:plug_list, ['vim-scripts/autohotkey-ahk', {'for':'autohotkey'}])
-call add(g:plug_list, ['huleiak47/vim-AHKcomplete', {'for':'autohotkey'}])
-call add(g:plug_list, ['godlygeek/tabular', {'for':'markdown'}])
-call add(g:plug_list, ['plasticboy/vim-markdown', {'for':'markdown'}])
-
 "color
 "call add(g:plug_list, ['altercation/vim-colors-solarized'])
 call add(g:plug_list, ['fcying/vim-colors-solarized'])
@@ -207,8 +203,8 @@ call plug#end()
 
 
 " auto install
-let g:plug_auto_install = get(g:, 'plug_auto_install', 'false')
-if g:plug_auto_install == 'true' || exists("s:first_install")
+let g:plug_auto_install = get(g:, 'plug_auto_install', 0)
+if g:plug_auto_install == 1 || exists("s:first_install")
     let s:plug_list_cache=g:config_dir . '/.cache/plug_list_cache'
     if !isdirectory(g:config_dir . "/.cache")
         call mkdir(g:config_dir . "/.cache")
@@ -465,8 +461,15 @@ endif
 if (s:findplug('deoplete') != -1) "{{{
     " deoplete options
     let g:deoplete#enable_at_startup = 1
-    let g:deoplete#enable_smart_case = 1
-    let g:deoplete#ignore_sources = {}
+    
+    call deoplete#custom#option({
+        \ 'smart_case': v:true,
+        \ 'camel_case': v:true,
+        \ 'ignore_sources': {},
+        \ })    
+    
+    call deoplete#custom#source('_',
+        \ 'matchers', ['matcher_full_fuzzy'])    
 
     call deoplete#custom#option('keyword_patterns', {
         \ '_': '[a-zA-Z_]\k*',
@@ -934,6 +937,16 @@ endif
 if (s:findplug('vim-AHKcomplete') != -1)
     " Enable omni completion.
     autocmd FileType autohotkey setl omnifunc=ahkcomplete#Complete
+endif
+
+if (s:findplug('FlyGrep') != -1)
+    nnoremap <leader>s/ :FlyGrep<cr>
+endif
+
+if (s:findplug('delimitMate') != -1)
+    let delimitMate_expand_cr = 2
+    let delimitMate_expand_space = 1
+    let delimitMate_jump_expansion = 1
 endif
 
 "}}}

@@ -75,13 +75,16 @@ path=(
     $path
 )
 if [ -d "$HOME/.linuxbrew/bin" ]; then
-   export PATH=$HOME/.linuxbrew/bin:$PATH
+    export PATH=$HOME/.linuxbrew/bin:$PATH
+    export PATH=$(brew --prefix)/sbin:$PATH
+    MANPATH="$(brew --prefix)/share/man:$MANPATH"
+    INFOPATH="$(brew --prefix)/share/info:$INFOPATH"
 elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
-   export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
+    export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
+    export PATH=$(brew --prefix)/sbin:$PATH
+    MANPATH="$(brew --prefix)/share/man:$MANPATH"
+    INFOPATH="$(brew --prefix)/share/info:$INFOPATH"
 fi
-export PATH=$(brew --prefix)/sbin:$PATH
-MANPATH="$(brew --prefix)/share/man:$MANPATH"
-INFOPATH="$(brew --prefix)/share/info:$INFOPATH"
 
 
 ZSH_HIDE_DIRTY=${ZSH_HIDE_DIRTY:-1}

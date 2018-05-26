@@ -7,11 +7,8 @@ let g:complete_func = get(g:, 'complete_func', 'neocomplete')
 " ============================================================================
 function! s:load_plugins() abort
     for plugin in g:plug_list
-        if len(plugin) == 2
-            exec "Plug " . "'" . plugin[0] . "', " . string(plugin[1])
-        else
-            exec "Plug " . "'" . plugin[0] . "'"
-        endif
+        "echo plugin
+        exec plugin
     endfor
 endfunction
 
@@ -84,102 +81,102 @@ endfunction
 " plugin {{{
 " ============================================================================
 let g:plug_list = []
-call add(g:plug_list, ['junegunn/vim-plug'])
-call add(g:plug_list, ['mbbill/fencview'])
-call add(g:plug_list, ['adah1972/tellenc'])
-call add(g:plug_list, ['sheerun/vim-polyglot'])   "A solid language pack for Vim.
-call add(g:plug_list, ['bogado/file-line'])
-call add(g:plug_list, ['itchyny/lightline.vim'])
-call add(g:plug_list, ['moll/vim-bbye', {'on':'Bdelete'}])
-call add(g:plug_list, ['MattesGroeger/vim-bookmarks'])
-call add(g:plug_list, ['thinca/vim-ref'])
-call add(g:plug_list, ['tpope/vim-surround'])
-call add(g:plug_list, ['terryma/vim-expand-region'])
-call add(g:plug_list, ['terryma/vim-multiple-cursors'])
-call add(g:plug_list, ['derekwyatt/vim-fswitch'])
-call add(g:plug_list, ['nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}])
-call add(g:plug_list, ['scrooloose/nerdtree', {'on':'NERDTreeToggle'}])
-call add(g:plug_list, ['scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggle'}])
-call add(g:plug_list, ['majutsushi/tagbar', {'on':'TagbarToggle'}])
-call add(g:plug_list, ['xolox/vim-session'])
-call add(g:plug_list, ['xolox/vim-misc'])
-call add(g:plug_list, ['vim-scripts/autohotkey-ahk', {'for':'autohotkey'}])
-call add(g:plug_list, ['huleiak47/vim-AHKcomplete', {'for':'autohotkey'}])
-call add(g:plug_list, ['godlygeek/tabular', {'for':'markdown'}])
-call add(g:plug_list, ['plasticboy/vim-markdown', {'for':'markdown'}])
-call add(g:plug_list, ['t9md/vim-choosewin', {'on':'<Plug>(choosewin)'}])
-"call add(g:plug_list, ['Raimondi/delimitMate'])
-call add(g:plug_list, ['jiangmiao/auto-pairs'])
-call add(g:plug_list, ['dyng/ctrlsf.vim'])
-call add(g:plug_list, ['easymotion/vim-easymotion'])
-call add(g:plug_list, ['wsdjeg/FlyGrep.vim', {'on': 'FlyGrep'}])
+call add(g:plug_list, "Plug 'junegunn/vim-plug'")
+call add(g:plug_list, "Plug 'mbbill/fencview'")
+call add(g:plug_list, "Plug 'adah1972/tellenc'")
+call add(g:plug_list, "Plug 'sheerun/vim-polyglot'")   "A solid language pack for Vim.
+call add(g:plug_list, "Plug 'bogado/file-line'")
+call add(g:plug_list, "Plug 'itchyny/lightline.vim'")
+call add(g:plug_list, "Plug 'moll/vim-bbye', {'on':'Bdelete'}")
+call add(g:plug_list, "Plug 'MattesGroeger/vim-bookmarks'")
+call add(g:plug_list, "Plug 'thinca/vim-ref'")
+call add(g:plug_list, "Plug 'tpope/vim-surround'")
+call add(g:plug_list, "Plug 'terryma/vim-expand-region'")
+call add(g:plug_list, "Plug 'terryma/vim-multiple-cursors'")
+call add(g:plug_list, "Plug 'derekwyatt/vim-fswitch'")
+call add(g:plug_list, "Plug 'nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}")
+call add(g:plug_list, "Plug 'scrooloose/nerdtree', {'on':'NERDTreeToggle'}")
+call add(g:plug_list, "Plug 'scrooloose/nerdcommenter', {'on':'<Plug>NERDCommenterToggle'}")
+call add(g:plug_list, "Plug 'majutsushi/tagbar', {'on':'TagbarToggle'}")
+call add(g:plug_list, "Plug 'xolox/vim-session'")
+call add(g:plug_list, "Plug 'xolox/vim-misc'")
+call add(g:plug_list, "Plug 'vim-scripts/autohotkey-ahk', {'for':'autohotkey'}")
+call add(g:plug_list, "Plug 'huleiak47/vim-AHKcomplete', {'for':'autohotkey'}")
+call add(g:plug_list, "Plug 'godlygeek/tabular', {'for':'markdown'}")
+call add(g:plug_list, "Plug 'plasticboy/vim-markdown', {'for':'markdown'}")
+call add(g:plug_list, "Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}")
+call add(g:plug_list, "Plug 'Raimondi/delimitMate'")
+"call add(g:plug_list, "Plug 'jiangmiao/auto-pairs'")
+call add(g:plug_list, "Plug 'dyng/ctrlsf.vim'")
+call add(g:plug_list, "Plug 'easymotion/vim-easymotion'")
+call add(g:plug_list, "Plug 'wsdjeg/FlyGrep.vim', {'on': 'FlyGrep'}")
 
-if g:os_windows 
-    call add(g:plug_list, ['Yggdroot/LeaderF', {'do': '.\install.bat'}])
+if g:os_windows
+    call add(g:plug_list, "Plug 'Yggdroot/LeaderF', {'do': '.\install.bat'}")
 else
-    call add(g:plug_list, ['Yggdroot/LeaderF', {'do': './install.sh'}])
+    call add(g:plug_list, "Plug 'Yggdroot/LeaderF', {'do': './install.sh'}")
 endif
-call add(g:plug_list, ['Shougo/vimproc.vim', {'do':function('BuildVimproc')}])
-"call add(g:plug_list, ['Shougo/vimshell', {'on': 'VimShell'}])
-"call add(g:plug_list, ['lambdalisue/gina.vim', {'on': 'Gina'}])
+call add(g:plug_list, "Plug 'Shougo/vimproc.vim', {'do':function('BuildVimproc')}")
+"call add(g:plug_list, "Plug 'Shougo/vimshell', {'on': 'VimShell'}")
+"call add(g:plug_list, "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}")
 
-call add(g:plug_list, ['ludovicchabant/vim-gutentags'])
-call add(g:plug_list, ['skywind3000/gutentags_plus'])
-call add(g:plug_list, ['skywind3000/vim-preview'])
+call add(g:plug_list, "Plug 'ludovicchabant/vim-gutentags'")
+call add(g:plug_list, "Plug 'skywind3000/gutentags_plus'")
+call add(g:plug_list, "Plug 'skywind3000/vim-preview'")
 
 if g:complete_func == 'deoplete'
     if has('nvim')
-       call add(g:plug_list, ['Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}])
+       call add(g:plug_list, "Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}")
     else
-       call add(g:plug_list, ['Shougo/deoplete.nvim'])
-       call add(g:plug_list, ['zchee/deoplete-clang'])
-       call add(g:plug_list, ['roxma/nvim-yarp'])
-       call add(g:plug_list, ['roxma/vim-hug-neovim-rpc'])
+       call add(g:plug_list, "Plug 'Shougo/deoplete.nvim'")
+       call add(g:plug_list, "Plug 'zchee/deoplete-clang'")
+       call add(g:plug_list, "Plug 'roxma/nvim-yarp'")
+       call add(g:plug_list, "Plug 'roxma/vim-hug-neovim-rpc'")
     endif
-    call add(g:plug_list, ['Shougo/neco-syntax'])
-    call add(g:plug_list, ['zchee/deoplete-jedi', {'for':'python'}])
-    call add(g:plug_list, ['zchee/deoplete-go', {'for':'go', 'do':function('MakeDeopleteGo')}])
+    call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
+    call add(g:plug_list, "Plug 'zchee/deoplete-jedi', {'for':'python'}")
+    call add(g:plug_list, "Plug 'zchee/deoplete-go', {'for':'go', 'do':function('MakeDeopleteGo')}")
 elseif g:complete_func == 'async'
-    call add(g:plug_list, ['prabirshrestha/async.vim'])
-    call add(g:plug_list, ['prabirshrestha/asyncomplete.vim'])
-    call add(g:plug_list, ['prabirshrestha/vim-lsp'])
-    call add(g:plug_list, ['prabirshrestha/asyncomplete-lsp.vim'])
-    call add(g:plug_list, ['prabirshrestha/asyncomplete-tags.vim'])
-    call add(g:plug_list, ['prabirshrestha/asyncomplete-buffer.vim'])
-    call add(g:plug_list, ['prabirshrestha/asyncomplete-file.vim'])
-    call add(g:plug_list, ['yami-beta/asyncomplete-omni.vim'])
-    call add(g:plug_list, ['prabirshrestha/asyncomplete-necosyntax.vim'])
-    call add(g:plug_list, ['prabirshrestha/asyncomplete-necovim.vim'])
-    call add(g:plug_list, ['prabirshrestha/asyncomplete-gocode.vim'])
-    "call add(g:plug_list, ['wellle/tmux-complete.vim'])
+    call add(g:plug_list, "Plug 'prabirshrestha/async.vim'")
+    call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete.vim'")
+    call add(g:plug_list, "Plug 'prabirshrestha/vim-lsp'")
+    call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-lsp.vim'")
+    call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-tags.vim'")
+    call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-buffer.vim'")
+    call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-file.vim'")
+    call add(g:plug_list, "Plug 'yami-beta/asyncomplete-omni.vim'")
+    call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-necosyntax.vim'")
+    call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-necovim.vim'")
+    call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-gocode.vim'")
+    "call add(g:plug_list, "Plug 'wellle/tmux-complete.vim'")
 elseif g:complete_func == 'ncm'
     if !has('nvim')
-        call add(g:plug_list, ['roxma/vim-hug-neovim-rpc'])
+        call add(g:plug_list, "Plug 'roxma/vim-hug-neovim-rpc'")
     else
-        call add(g:plug_list, ['autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}])
+        call add(g:plug_list, "Plug 'autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}")
     endif
-    call add(g:plug_list, ['roxma/ncm-clang'])
-    "call add(g:plug_list, ['roxma/nvim-completion-manager'])
-    call add(g:plug_list, ['fcying/nvim-completion-manager'])
+    call add(g:plug_list, "Plug 'roxma/ncm-clang'")
+    "call add(g:plug_list, "Plug 'roxma/nvim-completion-manager'")
+    call add(g:plug_list, "Plug 'fcying/nvim-completion-manager'")
 elseif g:complete_func == 'ycm'
-    call add(g:plug_list, ['Valloric/YouCompleteMe'])
+    call add(g:plug_list, "Plug 'Valloric/YouCompleteMe'")
 else
     if has('lua')
-        call add(g:plug_list, ['Shougo/neocomplete'])
-        call add(g:plug_list, ['davidhalter/jedi-vim', {'for':'python'}])
-        call add(g:plug_list, ['Shougo/neoinclude.vim'])
-        call add(g:plug_list, ['Shougo/neco-syntax'])
-        call add(g:plug_list, ['Shougo/neco-vim'])
-        call add(g:plug_list, ['nsf/gocode', {'do':function('GetGoCode'), 'for':'go'}])
-        call add(g:plug_list, ['dgryski/vim-godef', {'for':'go'}])
+        call add(g:plug_list, "Plug 'Shougo/neocomplete'")
+        call add(g:plug_list, "Plug 'davidhalter/jedi-vim', {'for':'python'}")
+        call add(g:plug_list, "Plug 'Shougo/neoinclude.vim'")
+        call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
+        call add(g:plug_list, "Plug 'Shougo/neco-vim'")
+        call add(g:plug_list, "Plug 'nsf/gocode', {'do':function('GetGoCode'), 'for':'go'}")
+        call add(g:plug_list, "Plug 'dgryski/vim-godef', {'for':'go'}")
     endif
 endif
 
 "color
-"call add(g:plug_list, ['altercation/vim-colors-solarized'])
-call add(g:plug_list, ['fcying/vim-colors-solarized'])
-call add(g:plug_list, ['tomasr/molokai'])
-call add(g:plug_list, ['icymind/NeoSolarized'])
+"call add(g:plug_list, "Plug 'altercation/vim-colors-solarized'")
+call add(g:plug_list, "Plug 'fcying/vim-colors-solarized'")
+call add(g:plug_list, "Plug 'tomasr/molokai'")
+call add(g:plug_list, "Plug 'icymind/NeoSolarized'")
 "}}}
 
 
@@ -399,7 +396,7 @@ if (s:findplug('asyncomplete.vim') != -1) "{{{
             \    'gocode_path': expand('~/go/bin/gocode')
             \  },
             \ }))
-    endif    
+    endif
     if (s:findplug('asyncomplete-omni.vim') != -1)
         call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
         \ 'name': 'omni',
@@ -407,7 +404,7 @@ if (s:findplug('asyncomplete.vim') != -1) "{{{
         \ 'blacklist': ['c', 'cpp', 'html'],
         \ 'completor': function('asyncomplete#sources#omni#completor')
         \  }))
-    endif     
+    endif
     let g:asyncomplete_remove_duplicates = 1
     "let g:lsp_log_verbose = 1
     "let g:lsp_log_file = expand('~/vim-lsp.log')
@@ -432,7 +429,7 @@ if (s:findplug('YouCompleteMe') != -1) "{{{
     "let g:ycm_key_list_previous_completion=['<c-p>']
     let g:ycm_key_list_previous_completion = ['<Up>']
     let g:ycm_complete_in_comments = 1
-    let g:ycm_complete_in_strings = 1 
+    let g:ycm_complete_in_strings = 1
     let g:ycm_use_ultisnips_completer = 0
     let g:ycm_collect_identifiers_from_comments_and_strings = 1
     let g:ycm_collect_identifiers_from_tags_files = 1
@@ -455,54 +452,54 @@ if (s:findplug('YouCompleteMe') != -1) "{{{
         \ 'tagbar' : 1,
         \ 'gitcommit' : 1,
         \}
-endif 
+endif
 "}}}
 
 if (s:findplug('deoplete') != -1) "{{{
     " deoplete options
     let g:deoplete#enable_at_startup = 1
-    
+
     call deoplete#custom#option({
         \ 'smart_case': v:true,
         \ 'camel_case': v:true,
         \ 'ignore_sources': {},
-        \ })    
-    
+        \ })
+
     call deoplete#custom#source('_',
-        \ 'matchers', ['matcher_full_fuzzy'])    
+        \ 'matchers', ['matcher_full_fuzzy'])
 
     call deoplete#custom#option('keyword_patterns', {
         \ '_': '[a-zA-Z_]\k*',
         \ 'tex': '\\?[a-zA-Z_]\w*',
         \ 'ruby': '[a-zA-Z_]\w*[!?]?',
         \})
-    
+
     call deoplete#custom#option('omni_patterns', {
         \ 'java': '[^. *\t]\.\w*',
         \ 'c': '[^. *\t]\(\.\|->\)\w*',
         \ 'cpp': '[^. *\t]\(\.\|->\)\w*',
         \})
-    
+
     let g:deoplete#sources#jedi#server_timeout = 10
     if !exists('g:deoplete#sources#jedi#extra_path')
         let g:deoplete#sources#jedi#extra_path=[
             \ "/home/linuxbrew/.linuxbrew/lib/python3.6/site-packages",
-            \ ]  
+            \ ]
     endif
 
     "call deoplete#custom#option('profile', v:true)
     "call deoplete#enable_logging('DEBUG', 'deoplete.log')
-    "call deoplete#custom#source('jedi', 'is_debug_enabled', 1)        
+    "call deoplete#custom#source('jedi', 'is_debug_enabled', 1)
     "let g:deoplete#sources#jedi#debug_server = "jedi.log"
-    
+
     inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
     inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
     set isfname-==
 
     " <CR>: close popup and save indent.
-    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    imap <silent> <CR> <C-r>=<SID>my_cr_function()<CR><Plug>delimitMateCR
     function! s:my_cr_function() abort
-        return deoplete#close_popup() . "\<CR>"
+        return deoplete#close_popup()
     endfunction
 endif
 "}}}
@@ -944,9 +941,7 @@ if (s:findplug('FlyGrep') != -1)
 endif
 
 if (s:findplug('delimitMate') != -1)
-    let delimitMate_expand_cr = 2
-    let delimitMate_expand_space = 1
-    let delimitMate_jump_expansion = 1
+    au FileType python let b:delimitMate_nesting_quotes = ['"']
 endif
 
 "}}}

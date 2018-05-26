@@ -169,6 +169,17 @@ unsetopt CDABLE_VARS             # Change directory to a path stored in a variab
 # autosuggest
 bindkey '^k' autosuggest-accept
 
+# fasd
+function fasd_cd {
+  local fasd_ret="$(fasd -d "$@")"
+  if [[ -d "$fasd_ret" ]]; then
+    cd "$fasd_ret"
+  else
+    print "$fasd_ret"
+  fi
+}
+alias j='fasd_cd -i'
+
 # bind P and N for EMACS mode
 bindkey -M emacs '^P' history-substring-search-up
 bindkey -M emacs '^N' history-substring-search-down
@@ -326,6 +337,21 @@ alias rs='rsync -rvaz --partial --delete --progress '
 alias free_memory='sudo sync && sudo sync && sudo sh -c "echo 3 > /proc/sys/vm/drop_caches"'
 alias cpu_bench='time echo "scale=5000; 4*a(1)" | bc -l -q'
 alias pacman_autoremove='sudo pacman -Qdtq | sudo pacman -Rs -'
+test_true_color() {
+    awk 'BEGIN{
+        s="/\\/\\/\\/\\/\\"; s=s s s s s s s s;
+        for (colnum = 0; colnum<77; colnum++) {
+            r = 255-(colnum*255/76);
+            g = (colnum*510/76);
+            b = (colnum*255/76);
+            if (g>255) g = 510-g;
+            printf "\033[48;2;%d;%d;%dm", r,g,b;
+            printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
+            printf "%s\033[0m", substr(s,colnum+1,1);
+        }
+        printf "\n";
+    }'
+}
 
 alias brew_install='sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
 alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'

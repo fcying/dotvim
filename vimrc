@@ -175,6 +175,11 @@ function! XTermPasteBegin()
 endfunction
 inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 
+" fast save
+nnoremap <C-s> :<C-u>w<CR>
+vnoremap <C-s> :<C-u>w<CR>
+cnoremap <C-s> <C-u>w<CR>
+
 " Wrapped lines goes down/up to next row, rather than next line in file
 nnoremap k gk
 nnoremap gk k
@@ -237,7 +242,8 @@ au BufNewFile,BufRead *.conf set filetype=conf
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
-inoremap <expr><cr> pumvisible() ? "\<C-y>" : "\<cr>"
+imap <expr><cr> pumvisible() ? "\<C-y>" : "<Plug>delimitMateCR"
+
 set completeopt=menu,longest       "menu longest noinsert preview
 
 if filereadable(g:file_plug)

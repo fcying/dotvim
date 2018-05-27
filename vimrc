@@ -174,6 +174,7 @@ function! XTermPasteBegin()
     return ""
 endfunction
 inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+nnoremap <F6> :exec exists('syntax_on') ? 'syn off' : 'syn on'<CR>
 
 " fast save
 nnoremap <C-s> :<C-u>w<CR>

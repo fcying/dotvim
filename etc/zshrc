@@ -27,7 +27,7 @@ install_antigen() {
 		echo "ERROR: downloading antigen.zsh ($URL) failed !!"
 		exit
 	fi;
-	mv "$TMPFILE" "$antigen_file"    
+	mv "$TMPFILE" "$antigen_file"
 }
 antigen_file="$HOME/.local/bin/antigen.zsh"
 if [ ! -f "$antigen_file" ]; then
@@ -53,16 +53,16 @@ if (( $#commands[(i)lesspipe(|.sh)] )); then
 fi
 
 # Ensure path arrays do not contain duplicates.
-typeset -gU cdpath fpath mailpath PATH 
+typeset -gU cdpath fpath mailpath PATH
 
 # Set the list of directories that Zsh searches for programs.
 export GOPATH=$HOME/go
 export QT_VERSION=5.10.1
 export QT_DIR=$HOME/qt
 #export QT_WEBKIT=true
-export CGO_CXXFLAGS_ALLOW=".*" 
-export CGO_LDFLAGS_ALLOW=".*" 
-export CGO_CFLAGS_ALLOW=".*" 
+export CGO_CXXFLAGS_ALLOW=".*"
+export CGO_LDFLAGS_ALLOW=".*"
+export CGO_CFLAGS_ALLOW=".*"
 export LD_LIBRARY_PATH=$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=$PYTHONPATH:$HOME/tool/python_script
 
@@ -144,9 +144,9 @@ chpwd_dirpersist() {
 }
 
 
-# key bindings  
-bindkey -- "\e[1~" beginning-of-line  
-bindkey -- "\e[4~" end-of-line  
+# key bindings
+bindkey -- "\e[1~" beginning-of-line
+bindkey -- "\e[4~" end-of-line
 
 
 HISTFILE="$HOME/.zhistory"
@@ -170,6 +170,14 @@ unsetopt CDABLE_VARS             # Change directory to a path stored in a variab
 bindkey '^k' autosuggest-accept
 
 # fasd
+fasd_cache="$HOME/.cache/.fasd-cache.zsh"
+if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
+    init_args=(zsh-hook)
+    init_args+=(zsh-ccomp zsh-ccomp-install zsh-wcomp zsh-wcomp-install)
+    fasd --init "$init_args[@]" >! "$fasd_cache" 2> /dev/null
+fi
+source "$fasd_cache"
+unset fasd_cache init_args
 function fasd_cd {
   local fasd_ret="$(fasd -d "$@")"
   if [[ -d "$fasd_ret" ]]; then
@@ -311,7 +319,7 @@ zstyle ':completion:*:(ssh|scp|rsync):*:hosts-ipaddr' ignored-patterns '^(<->.<-
 # bash like
 setopt nonomatch
 autoload -Uz +X bashcompinit && bashcompinit
-autoload -Uz select-word-style 
+autoload -Uz select-word-style
 select-word-style bash
 
 # WSL (aka Bash for Windows) doesn't work well with BG_NICE

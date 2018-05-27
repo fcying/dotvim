@@ -120,20 +120,27 @@ call add(g:plug_list, "Plug 'Shougo/vimproc.vim', {'do':function('BuildVimproc')
 "call add(g:plug_list, "Plug 'Shougo/vimshell', {'on': 'VimShell'}")
 "call add(g:plug_list, "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}")
 
-call add(g:plug_list, "Plug 'ludovicchabant/vim-gutentags'")
-call add(g:plug_list, "Plug 'skywind3000/gutentags_plus'")
-call add(g:plug_list, "Plug 'skywind3000/vim-preview'")
+"call add(g:plug_list, "Plug 'ludovicchabant/vim-gutentags'")
+"call add(g:plug_list, "Plug 'skywind3000/gutentags_plus'")
+"call add(g:plug_list, "Plug 'skywind3000/vim-preview'")
+call add(g:plug_list, "Plug 'jsfaint/gen_tags.vim'")
+
+
+call add(g:plug_list, "Plug 'Shougo/neosnippet.vim'")
+call add(g:plug_list, "Plug 'Shougo/neosnippet-snippets'")
+
 
 if g:complete_func == 'deoplete'
     if has('nvim')
        call add(g:plug_list, "Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}")
     else
        call add(g:plug_list, "Plug 'Shougo/deoplete.nvim'")
-       call add(g:plug_list, "Plug 'zchee/deoplete-clang'")
        call add(g:plug_list, "Plug 'roxma/nvim-yarp'")
        call add(g:plug_list, "Plug 'roxma/vim-hug-neovim-rpc'")
     endif
     call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
+    call add(g:plug_list, "Plug 'Shougo/neco-vim', {'for':'vim'}")
+    "call add(g:plug_list, "Plug 'zchee/deoplete-clang', {'for':'c,cpp'}")
     call add(g:plug_list, "Plug 'zchee/deoplete-jedi', {'for':'python'}")
     call add(g:plug_list, "Plug 'zchee/deoplete-go', {'for':'go', 'do':function('MakeDeopleteGo')}")
 elseif g:complete_func == 'async'
@@ -156,8 +163,7 @@ elseif g:complete_func == 'ncm'
         call add(g:plug_list, "Plug 'autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}")
     endif
     call add(g:plug_list, "Plug 'roxma/ncm-clang'")
-    "call add(g:plug_list, "Plug 'roxma/nvim-completion-manager'")
-    call add(g:plug_list, "Plug 'fcying/nvim-completion-manager'")
+    call add(g:plug_list, "Plug 'roxma/nvim-completion-manager'")
 elseif g:complete_func == 'ycm'
     call add(g:plug_list, "Plug 'Valloric/YouCompleteMe'")
 else
@@ -166,7 +172,7 @@ else
         call add(g:plug_list, "Plug 'davidhalter/jedi-vim', {'for':'python'}")
         call add(g:plug_list, "Plug 'Shougo/neoinclude.vim'")
         call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
-        call add(g:plug_list, "Plug 'Shougo/neco-vim'")
+        call add(g:plug_list, "Plug 'Shougo/neco-vim', {'for':'vim'}")
         call add(g:plug_list, "Plug 'nsf/gocode', {'do':function('GetGoCode'), 'for':'go'}")
         call add(g:plug_list, "Plug 'dgryski/vim-godef', {'for':'go'}")
     endif
@@ -239,6 +245,29 @@ if (s:findplug('vim-indent-guides') != -1)
     :nmap <silent> <Leader>i <Plug>IndentGuidesToggle
 endif
 
+if (s:findplug('gen_tags') != -1)
+    command! -nargs=0 Genall call s:my_gentags()
+    command! -nargs=0 Genclear call s:my_cleartags()
+    let g:gen_tags#ctags_auto_gen = 1
+    let g:gen_tags#gtags_auto_gen = 1
+    noremap  <leader>gt :cs find t <C-R>=expand('<cword>')<CR><CR>
+    noremap  <leader>gs :cs find s <C-R>=expand('<cword>')<CR><CR>
+    noremap  <leader>gi :cs find i <C-R>=expand('<cfile>')<CR><CR>
+    noremap  <leader>gg :cs find g <C-R>=expand('<cword>')<CR><CR>
+    noremap  <leader>gf :cs find f <C-R>=expand('<cfile>')<CR><CR>
+    noremap  <leader>ge :cs find e <C-R>=expand('<cword>')<CR><CR>
+    noremap  <leader>gd :cs find d <C-R>=expand('<cword>')<CR><CR>
+    noremap  <leader>gc :cs find c <C-R>=expand('<cword>')<CR><CR>
+    function! s:my_gentags() abort
+        GenCtags
+        GenGTAGS
+    endfunction
+    function! s:my_cleartags() abort
+        ClearCtags
+        ClearGTAGS!
+    endfunction
+endif
+
 if (s:findplug('gutentags_plus') != -1)
     " enable gtags module
     let g:gutentags_modules = ['ctags', 'gtags_cscope']
@@ -260,6 +289,11 @@ if (s:findplug('gutentags_plus') != -1)
     noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><cr>
     autocmd FileType qf nnoremap <silent><buffer> p :PreviewQuickfix<cr>
     autocmd FileType qf nnoremap <silent><buffer> P :PreviewClose<cr>
+
+    let g:gutentags_generate_on_missing = 1
+    let g:gutentags_generate_on_new = 0
+    let g:gutentags_generate_on_write = 1
+    nnoremap <leader>gt :GutentagsUpdate<CR>
 endif
 
 if (s:findplug('lightline') != -1)
@@ -331,6 +365,27 @@ if (s:findplug('LanguageClient-neovim') != -1)
                 \ 'cpp': ['clangd']
                 \ }
 endif
+
+if (s:findplug('neosnippet.vim') != -1)
+    imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+    smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+    xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+    " SuperTab like snippets behavior.
+    " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+    "imap <expr><TAB>
+    " \ pumvisible() ? "\<C-n>" :
+    " \ neosnippet#expandable_or_jumpable() ?
+    " \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+    smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+    \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+    " For conceal markers.
+    if has('conceal')
+      set conceallevel=2 concealcursor=niv
+    endif
+endif
+
 
 if (s:findplug('asyncomplete.vim') != -1) "{{{
     if (s:findplug('tmux-complete.vim') != -1)
@@ -632,8 +687,6 @@ if (s:findplug('nerdtree') != -1)
     let NERDTreeShowBookmarks=1
     let NERDTreeShowLineNumbers=1
     let NERDTreeShowHidden=1
-
-    let NERDTreeIgnore=['GPATH', 'tags', 'GRTAGS', 'GTAGS', 'GSYMS', '\~$']
 endif
 
 if (s:findplug('ctrlsf') != -1)

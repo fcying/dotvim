@@ -37,6 +37,10 @@ done
 
 #exit 0
 
+if [ $(uname | grep MINGW -c) -eq 1 ]; then
+    sudo=false
+fi
+
 if [ "$sudo" == "true" ]; then
     sudo echo "start"  #entry sudo passwd
 fi
@@ -108,7 +112,7 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
     mingw32-make.exe -f Make_ming.mak GUI=yes
     mingw32-make.exe -f Make_ming.mak GUI=no
                      
-    vim_version=vim80
+    vim_version=vim81
     mkdir -p $vim_home/$vim_version                
     cp -vR ../runtime/* ../../$vim_version/
     cp -v *.exe $vim_home/$vim_version  

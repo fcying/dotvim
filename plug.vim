@@ -12,21 +12,6 @@ function! s:load_plugins() abort
     endfor
 endfunction
 
-function! BuildVimproc(info)
-    " info is a dictionary with 3 fields
-    " - name:   name of the plugin
-    " - status: 'installed', 'updated', or 'unchanged'
-    " - force:  set on PlugInstall! or PlugUpdate!
-    if a:info.status != 'unchanged' || a:info.force
-        silent !echo "update vimproc"
-        if g:os_windows
-            silent !Tools\update-dll-mingw.bat
-        else
-            silent !make
-        endif
-    endif
-endfunction
-
 function! MakeDeopleteGo(info)
     if a:info.status != 'unchanged' || a:info.force
         silent !echo "update goimports godef gotags"
@@ -113,17 +98,19 @@ call add(g:plug_list, "Plug 'wsdjeg/FlyGrep.vim', {'on': 'FlyGrep'}")
 
 if g:os_windows
     call add(g:plug_list, "Plug 'Yggdroot/LeaderF', {'do': '.\install.bat'}")
+    call add(g:plug_list, "Plug 'Shougo/vimproc.vim', {'do':'.\Tools\update-dll-mingw.bat'}")
 else
     call add(g:plug_list, "Plug 'Yggdroot/LeaderF', {'do': './install.sh'}")
+    call add(g:plug_list, "Plug 'Shougo/vimproc.vim', {'do':'make'}")
 endif
-call add(g:plug_list, "Plug 'Shougo/vimproc.vim', {'do':function('BuildVimproc')}")
+
 "call add(g:plug_list, "Plug 'Shougo/vimshell', {'on': 'VimShell'}")
 "call add(g:plug_list, "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}")
 
-"call add(g:plug_list, "Plug 'ludovicchabant/vim-gutentags'")
-"call add(g:plug_list, "Plug 'skywind3000/gutentags_plus'")
-"call add(g:plug_list, "Plug 'skywind3000/vim-preview'")
-call add(g:plug_list, "Plug 'jsfaint/gen_tags.vim'")
+call add(g:plug_list, "Plug 'ludovicchabant/vim-gutentags'")
+call add(g:plug_list, "Plug 'skywind3000/gutentags_plus'")
+call add(g:plug_list, "Plug 'skywind3000/vim-preview'")
+"call add(g:plug_list, "Plug 'jsfaint/gen_tags.vim'")
 
 
 call add(g:plug_list, "Plug 'Shougo/neosnippet.vim'")
@@ -246,6 +233,8 @@ if (s:findplug('vim-indent-guides') != -1)
 endif
 
 if (s:findplug('gen_tags') != -1)
+    nnoremap <leader>tg :Genall<CR>
+    nnoremap <leader>tc :Genclear<CR>
     command! -nargs=0 Genall call s:my_gentags()
     command! -nargs=0 Genclear call s:my_cleartags()
     let g:gen_tags#ctags_auto_gen = 1
@@ -290,10 +279,10 @@ if (s:findplug('gutentags_plus') != -1)
     autocmd FileType qf nnoremap <silent><buffer> p :PreviewQuickfix<cr>
     autocmd FileType qf nnoremap <silent><buffer> P :PreviewClose<cr>
 
-    let g:gutentags_generate_on_missing = 1
+    let g:gutentags_generate_on_missing = 0
     let g:gutentags_generate_on_new = 0
     let g:gutentags_generate_on_write = 1
-    nnoremap <leader>gt :GutentagsUpdate<CR>
+    nnoremap <leader>tg :GutentagsUpdate<CR>
 endif
 
 if (s:findplug('lightline') != -1)

@@ -20,7 +20,11 @@ else
     let s:use_gui = 0
 endif
 
-let g:config_dir = $HOME . '/.vim'
+if g:os_windows
+    let g:config_dir = $HOME . '/vimfiles'
+else
+    let g:config_dir = $HOME . '/.vim'
+endif
 let g:file_plug = g:config_dir . '/plug.vim'
 
 "}}}
@@ -97,6 +101,7 @@ set nowritebackup
 set splitright
 set splitbelow
 set noautochdir
+set re=1        " use old re, for speed syntax 
 
 set wildmenu
 set wildmode=longest:full,full
@@ -211,8 +216,6 @@ vnoremap <silent> # :<C-U>
     \escape(@", '?\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
     \gV:call setreg('"', old_reg, old_regtype)<CR>
 
-nmap <c-]> :tj <c-r><c-w><CR>
-
 " golang
 autocmd! BufWritePost *.go call s:fcy_goimports()
 command! -nargs=0 GoImports call s:fcy_goimports()
@@ -245,6 +248,8 @@ inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
 imap <expr><cr> pumvisible() ? "\<C-y>" : "<Plug>delimitMateCR"
 
+nmap <c-]> :tj <c-r><c-w><CR>
+
 set completeopt=menu,longest       "menu longest noinsert preview
 
 if filereadable(g:file_plug)
@@ -252,6 +257,20 @@ if filereadable(g:file_plug)
 endif
 filetype plugin indent on
 syntax enable
+
+" large file
+let g:LargeFile = 1024 * 1024 * 50
+augroup LargeFile 
+    autocmd BufReadPre * let f=getfsize(expand("<afile>")) | if f > g:LargeFile || f == -2 | call LargeFile() | endif
+augroup END
+function! LargeFile()
+    set binary
+    " no syntax highlighting etc
+    set eventignore+=FileType
+    "syntax off
+    " display message
+    autocmd VimEnter *  echo "The file is larger than " . (g:LargeFile / 1024 / 1024) . " MB, so some options are changed (see .vimrc for details)."
+endfunction
 
 " }}}
 

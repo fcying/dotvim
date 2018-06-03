@@ -85,6 +85,7 @@ call add(g:plug_list, "Plug 'scrooloose/nerdcommenter', {'on':'<Plug>NERDComment
 call add(g:plug_list, "Plug 'majutsushi/tagbar', {'on':'TagbarToggle'}")
 call add(g:plug_list, "Plug 'xolox/vim-session'")
 call add(g:plug_list, "Plug 'xolox/vim-misc'")
+call add(g:plug_list, "Plug 'Vimjas/vim-python-pep8-indent', {'for':'python'}")
 call add(g:plug_list, "Plug 'vim-scripts/autohotkey-ahk', {'for':'autohotkey'}")
 call add(g:plug_list, "Plug 'huleiak47/vim-AHKcomplete', {'for':'autohotkey'}")
 call add(g:plug_list, "Plug 'godlygeek/tabular', {'for':'markdown'}")

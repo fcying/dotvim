@@ -10,7 +10,6 @@ if [ -f "$HOME/.zshrc.pre" ]; then
     source $HOME/.zshrc.pre
 fi
 
-
 install_antigen() {
 	URL="https://git.io/antigen"
     TMPFILE="/tmp/antigen.zsh"
@@ -74,16 +73,26 @@ path=(
     /usr/local/{bin,sbin}
     $path
 )
+
+# linuxbrew
+BREW_PATH=""
 if [ -d "$HOME/.linuxbrew/bin" ]; then
-    export PATH=$HOME/.linuxbrew/bin:$PATH
-    export PATH=$(brew --prefix)/sbin:$PATH
-    MANPATH="$(brew --prefix)/share/man:$MANPATH"
-    INFOPATH="$(brew --prefix)/share/info:$INFOPATH"
+    BREW_PREFIX=$HOME/.linuxbrew
 elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
-    export PATH=/home/linuxbrew/.linuxbrew/bin:$PATH
-    export PATH=$(brew --prefix)/sbin:$PATH
-    MANPATH="$(brew --prefix)/share/man:$MANPATH"
-    INFOPATH="$(brew --prefix)/share/info:$INFOPATH"
+    BREW_PREFIX=/home/linuxbrew/.linuxbrew
+fi
+function brew_enable(){
+    export PATH=$BREW_PREFIX/sbin:$BREW_PREFIX/bin:$PATH
+    MANPATH="$BREW_PREFIX/share/man:$MANPATH"
+    INFOPATH="$BREW_PREFIX/share/info:$INFOPATH"
+}
+function brew_disable(){
+    export PATH=${PATH##*"linuxbrew/bin:"}
+    MANPATH=${MANPATH##*"linuxbrew/share/man:"}
+    INFOPATH=${INFOPATH##*"linuxbrew/share/info:"}
+}
+if [ ! -z "$BREW_PREFIX" ]; then
+    brew_enable
 fi
 
 
@@ -363,7 +372,6 @@ test_true_color() {
 
 alias brew_install='sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
 alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
-alias brew_disable='export PATH=${PATH##*"linuxbrew/bin:"}'
 alias brew_install_ruby='brew vendor-install ruby'
 
 export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'

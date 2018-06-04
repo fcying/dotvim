@@ -108,15 +108,13 @@ endif
 "call add(g:plug_list, "Plug 'Shougo/vimshell', {'on': 'VimShell'}")
 "call add(g:plug_list, "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}")
 
-call add(g:plug_list, "Plug 'ludovicchabant/vim-gutentags'")
-call add(g:plug_list, "Plug 'skywind3000/gutentags_plus'")
+"call add(g:plug_list, "Plug 'ludovicchabant/vim-gutentags'")
+"call add(g:plug_list, "Plug 'skywind3000/gutentags_plus'")
 call add(g:plug_list, "Plug 'skywind3000/vim-preview'")
-"call add(g:plug_list, "Plug 'jsfaint/gen_tags.vim'")
-
+call add(g:plug_list, "Plug 'jsfaint/gen_tags.vim'")
 
 call add(g:plug_list, "Plug 'Shougo/neosnippet.vim'")
 call add(g:plug_list, "Plug 'Shougo/neosnippet-snippets'")
-
 
 if g:complete_func == 'deoplete'
     if has('nvim')
@@ -190,6 +188,7 @@ exec 'source '. g:plug_dir . '/vim-plug/plug.vim'
 call plug#begin(expand(g:plug_dir))
 call s:load_plugins()
 call plug#end()
+nnoremap <leader>pu :PlugUpdate<CR>
 
 
 
@@ -238,16 +237,6 @@ if (s:findplug('gen_tags') != -1)
     nnoremap <leader>tc :Genclear<CR>
     command! -nargs=0 Genall call s:my_gentags()
     command! -nargs=0 Genclear call s:my_cleartags()
-    let g:gen_tags#ctags_auto_gen = 1
-    let g:gen_tags#gtags_auto_gen = 1
-    noremap  <leader>gt :cs find t <C-R>=expand('<cword>')<CR><CR>
-    noremap  <leader>gs :cs find s <C-R>=expand('<cword>')<CR><CR>
-    noremap  <leader>gi :cs find i <C-R>=expand('<cfile>')<CR><CR>
-    noremap  <leader>gg :cs find g <C-R>=expand('<cword>')<CR><CR>
-    noremap  <leader>gf :cs find f <C-R>=expand('<cfile>')<CR><CR>
-    noremap  <leader>ge :cs find e <C-R>=expand('<cword>')<CR><CR>
-    noremap  <leader>gd :cs find d <C-R>=expand('<cword>')<CR><CR>
-    noremap  <leader>gc :cs find c <C-R>=expand('<cword>')<CR><CR>
     function! s:my_gentags() abort
         GenCtags
         GenGTAGS
@@ -256,9 +245,27 @@ if (s:findplug('gen_tags') != -1)
         ClearCtags
         ClearGTAGS!
     endfunction
+
+    let g:gen_tags#ctags_auto_gen = 0
+    let g:gen_tags#gtags_auto_gen = 0
+    let g:gen_tags#gtags_default_map = 0
+
+    set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
+    noremap  <leader>gt :cs find t <C-R>=expand('<cword>')<CR><CR>:copen<CR>
+    noremap  <leader>gs :cs find s <C-R>=expand('<cword>')<CR><CR>:copen<CR>
+    noremap  <leader>gi :cs find i <C-R>=expand('<cfile>')<CR><CR>:copen<CR>
+    noremap  <leader>gg :cs find g <C-R>=expand('<cword>')<CR><CR>:copen<CR>
+    noremap  <leader>gf :cs find f <C-R>=expand('<cfile>')<CR><CR>:copen<CR>
+    noremap  <leader>ge :cs find e <C-R>=expand('<cword>')<CR><CR>:copen<CR>
+    noremap  <leader>gd :cs find d <C-R>=expand('<cword>')<CR><CR>:copen<CR>
+    noremap  <leader>gc :cs find c <C-R>=expand('<cword>')<CR><CR>:copen<CR>
+
+    autocmd FileType qf nnoremap <silent><buffer> p :PreviewQuickfix<cr>
+    autocmd FileType qf nnoremap <silent><buffer> P :PreviewClose<cr>
 endif
 
 if (s:findplug('gutentags_plus') != -1)
+    nnoremap <leader>tg :GutentagsUpdate<CR>
     " enable gtags module
     let g:gutentags_modules = ['ctags', 'gtags_cscope']
     " config project root markers.
@@ -282,8 +289,7 @@ if (s:findplug('gutentags_plus') != -1)
 
     let g:gutentags_generate_on_missing = 0
     let g:gutentags_generate_on_new = 0
-    let g:gutentags_generate_on_write = 1
-    nnoremap <leader>tg :GutentagsUpdate<CR>
+    let g:gutentags_generate_on_write = 0
 endif
 
 if (s:findplug('lightline') != -1)
@@ -294,8 +300,6 @@ if (s:findplug('lightline') != -1)
         \ 'statusline': 1,
         \ 'tabline': 1
         \ }
-    noremap <silent><leader>tc :tabnew<cr>
-    noremap <silent><leader>tq :tabclose<cr>
     noremap <silent><leader>tn :tabn<cr>
     noremap <silent><leader>tp :tabp<cr>
     noremap <silent><leader>1 :tabn 1<cr>

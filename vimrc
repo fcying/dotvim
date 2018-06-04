@@ -131,12 +131,13 @@ set autoindent
 set smartindent
 set cindent
 set indentexpr=""
-"set cinkeys-=0#
-"inoremap # X#        " aligin #
 set backspace=indent,eol,start 
 set whichwrap+=<,>,[,],h,l
 set iskeyword -=-
 set iskeyword -=.
+"aligin #
+set cinkeys-=0#
+"inoremap # X#        
 "set iskeyword -=#
 
 set number

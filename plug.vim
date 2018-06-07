@@ -727,12 +727,27 @@ if (s:findplug('LeaderF') != -1)
 
     nnoremap ff :<C-u>LeaderfFile<CR>
     nnoremap fb :<C-u>LeaderfBuffer<CR>
-    nnoremap fl :<C-u>LeaderfLine<CR>
     nnoremap fo :<C-u>LeaderfFunction<CR>
     nnoremap ft :<C-u>LeaderfTag<CR>
     nnoremap fm :<C-u>LeaderfMru<CR>
     nnoremap fh :<C-u>LeaderfHistorySearch<CR>
     nnoremap fg :<C-u>CtrlSF
+
+    nnoremap fl :<C-u>call <SID>my_leaderfline()<CR><C-R>
+    function! s:my_leaderfline()
+        LeaderfLine
+        nnoremap fl :<C-u>LeaderfLine<CR>
+    endfunction
+
+    nnoremap fi :call <SID>my_leaderf_searchinclude()<CR><C-R>
+    function! s:my_leaderf_searchinclude()
+        exec "LeaderfFilePattern " . <SID>StripInclude(getline("."))
+        nnoremap fi :exec "LeaderfFilePattern " . <SID>StripInclude(getline("."))<CR>
+    endfunction
+    function! s:StripInclude(line)
+        let strip_include = substitute(a:line, '\v.*[\<"]([a-zA-Z0-9_/\.]+)[\>"]', '\1', 'g')
+        return strip_include
+    endfunction
 endif
 
 if (s:findplug('denite') != -1) "{{{

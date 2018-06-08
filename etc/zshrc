@@ -96,6 +96,7 @@ if [ ! -z "$BREW_PREFIX" ]; then
 fi
 
 
+# PROMPT
 ZSH_HIDE_DIRTY=${ZSH_HIDE_DIRTY:-1}
 ZSH_GIT_PROMPT_PREFIX=${ZSH_GIT_PROMPT_PREFIX:-"‹"}
 ZSH_GIT_PROMPT_SUFFIX=${ZSH_GIT_PROMPT_SUFFIX:-"›"}
@@ -152,6 +153,26 @@ chpwd_dirpersist() {
     builtin print -l ${(u)my_stack} >! ${dirstack_file}
 }
 
+# check updates
+type pacman 2>&1 > /dev/null && {
+    # checkupdates | wc -c > $HOME/.cache/checkupdates.log
+    if [ -f $HOME/.cache/checkupdates.log ]; then
+        count=`cat $HOME/.cache/checkupdates.log`
+        if [ "$count" != 0 ]; then
+            echo $count packages can be upgraded.
+        fi
+        unset count
+    fi
+    alias pacsyu='sudo pacman -Syu && rm -f $HOME/.cache/checkupdates.log'
+    alias pacsy='sudo pacman -Sy'
+    alias pacfs='pacman -Fs'
+    alias pacfy='sudo pacman -Fy'
+    alias pacql='pacman -Ql'
+    alias pacs='sudo pacman -S'
+    alias pacu='sudo pacman -U'
+    alias pacautoremove='sudo pacman -Rs $(pacman -Qtdq)'
+    alias pacrns='sudo pacman -Rns'
+}
 
 # key bindings
 bindkey -- "\e[1~" beginning-of-line
@@ -353,7 +374,6 @@ alias tl=' tmux list-sessions'
 alias rs='rsync -rvaz --partial --delete --progress '
 alias free_memory='sudo sync && sudo sync && sudo sh -c "echo 3 > /proc/sys/vm/drop_caches"'
 alias cpu_bench='time echo "scale=5000; 4*a(1)" | bc -l -q'
-alias pacman_autoremove='sudo pacman -Qdtq | sudo pacman -Rs -'
 test_true_color() {
     awk 'BEGIN{
         s="/\\/\\/\\/\\/\\"; s=s s s s s s s s;

@@ -45,20 +45,23 @@ if [ "$sudo" == "true" ]; then
     sudo echo "start"  #entry sudo passwd
 fi
 
+if [ ! -d "$vim_home/vim_origin" ]; then
+    update=true
+fi
+
 if [ $install == "true" ]; then
     if [ $(uname | grep MINGW -c) -eq 1 ]; then
         echo "os MSYS2"
-        pacman -S mingw-w64-x86_64-lua
-        #pacman -S mingw-w64-x86_64-python2
-        #pacman -S mingw-w64-x86_64-python3
+        pacman -S --noconfirm mingw-w64-x86_64-lua
+        #pacman -S --noconfirm mingw-w64-x86_64-python2
+        #pacman -S --noconfirm mingw-w64-x86_64-python3
     elif [ $(uname -a | grep MANJARO -c) -eq 1 ]; then
         echo "os MANJARO"
     else
-        echo "os Ubuntu"
-        sudo apt install libncurses5-dev
-        sudo apt install libxt-dev
+        echo "os Ubuntu/debian"
+        sudo apt install build-essential libncurses5-dev libxt-dev \
+            python3-dev python2.7-dev lua5.2 liblua5.2-dev
         #sudo apt install libgnome2-dev libgnomeui-dev libgtk2.0-dev libcairo2-dev libx11-dev libxpm-dev libatk1.0-dev
-        sudo apt install python3-dev python2.7-dev lua5.2 liblua5.2-dev
     fi
 fi
 
@@ -136,8 +139,7 @@ else
                 --enable-perlinterp=dynamic \
                 --prefix=$prefix \
                 --with-compiledby=fcying 2>&1 |tee build.log
-    p=`cat /proc/cpuinfo | grep -c processor`
-    make -j$[p/2]
+    make
 
     if [ $sudo == "true" ]; then
         sudo make install

@@ -1,16 +1,12 @@
 set wrap-lines = yes
 set ignore-case = smart-case
 
-
 set commit-order = default
 set main-options = -n 1000
 set show-changes = yes
 
-
-bind main [1~ move-first-line
-bind main [4~ move-last-line
-bind generic [1~ move-first-line
-bind generic [4~ move-last-line
+bind generic <Esc>[1~ move-first-line
+bind generic <Esc>[4~ move-last-line
 
 
 # Vim-style keybindings

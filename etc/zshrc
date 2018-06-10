@@ -2,7 +2,9 @@
 export TERM=${ZSH_TERM:-"xterm-256color"}
 
 # zh_CN.UTF-8 en_US.UTF-8
-export LANG=${ZSH_LANG:-"en_US.UTF-8"}
+#export LANG=${ZSH_LANG:-"en_US.UTF-8"}
+#export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
+export LC_ALL=${ZSH_LC_ALL:-"C"}
 
 autoload -Uz compinit && compinit
 
@@ -95,6 +97,11 @@ if [ ! -z "$BREW_PREFIX" ]; then
     brew_enable
 fi
 
+# tmux
+if [ ! -d "$HOME/.tmux/tmux-resurrect" ]; then
+    mkdir -p $HOME/.tmux
+    git clone https://github.com/tmux-plugins/tmux-resurrect.git $HOME/.tmux/tmux-resurrect --depth=1
+fi
 
 # PROMPT
 ZSH_HIDE_DIRTY=${ZSH_HIDE_DIRTY:-1}
@@ -152,6 +159,14 @@ chpwd_dirpersist() {
     my_stack=( ${PWD} ${dirstack} )
     builtin print -l ${(u)my_stack} >! ${dirstack_file}
 }
+
+# Predictable SSH authentication socket location.
+SOCK="/tmp/ssh-agent-$USER-screen"
+if test $SSH_AUTH_SOCK && [ $SSH_AUTH_SOCK != $SOCK ]; then
+    rm -f /tmp/ssh-agent-$USER-screen
+    ln -sf $SSH_AUTH_SOCK $SOCK
+    export SSH_AUTH_SOCK=$SOCK
+fi
 
 # check updates
 type pacman 2>&1 > /dev/null && {
@@ -367,11 +382,10 @@ alias py3="python3"
 alias ls="ls --color=auto"
 alias ll='ls -alh'
 alias la='ls -Alh'
-alias sudo='sudo -E'
 alias tmux=" tmux -2"
 alias ta=' tmux a || tmux'
-alias tl=' tmux list-sessions'
-alias rs='rsync -rvaz --partial --delete --progress '
+alias tl=' tmux ls'
+alias rs='rsync -rvazl --partial --delete --progress '
 alias free_memory='sudo sync && sudo sync && sudo sh -c "echo 3 > /proc/sys/vm/drop_caches"'
 alias cpu_bench='time echo "scale=5000; 4*a(1)" | bc -l -q'
 test_true_color() {

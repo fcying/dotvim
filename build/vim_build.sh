@@ -47,6 +47,7 @@ fi
 
 if [ ! -d "$vim_home/vim_origin" ]; then
     update=true
+    install=true
 fi
 
 if [ $install == "true" ]; then
@@ -133,13 +134,17 @@ else
                 --enable-multibyte \
                 --enable-cscope \
                 --enable-rubyinterp=dynamic \
-                --enable-pythoninterp=dynamic \
-                --enable-python3interp=dynamic \
+                --enable-python3interp --with-python3-command=python3 \
                 --enable-luainterp=dynamic \
                 --enable-perlinterp=dynamic \
                 --prefix=$prefix \
                 --with-compiledby=fcying 2>&1 |tee build.log
-    make
+    p=`cat /proc/cpuinfo | grep -c processor`
+    p=$[p/2]
+    if [ $p == 0 ]; then
+        p=1
+    fi
+    make -j$p
 
     if [ $sudo == "true" ]; then
         sudo make install

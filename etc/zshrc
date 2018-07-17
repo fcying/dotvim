@@ -2,9 +2,9 @@
 export TERM=${ZSH_TERM:-"xterm-256color"}
 
 # zh_CN.UTF-8 en_US.UTF-8
-#export LANG=${ZSH_LANG:-"en_US.UTF-8"}
-#export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
-export LC_ALL=${ZSH_LC_ALL:-"C"}
+export LANG=${ZSH_LANG:-"en_US.UTF-8"}
+export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
+export LC_ALL=${ZSH_LC_ALL:-"en_US.UTF-8"}
 
 autoload -Uz compinit && compinit
 
@@ -66,15 +66,27 @@ export CGO_LDFLAGS_ALLOW=".*"
 export CGO_CFLAGS_ALLOW=".*"
 export LD_LIBRARY_PATH=$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=$PYTHONPATH:$HOME/tool/python_script
+export RIPGREP_CONFIG_PATH=$HOME/.vim/etc/ripgreprc
 
 path=(
     $HOME/bin
     $HOME/qt/$QT_VERSION/gcc_64/bin
     $GOPATH/bin
     /snap/bin
-    /usr/local/{bin,sbin}
+    /usr/local/{sbin,bin}
+    /usr/{sbin,bin}
+    /{sbin,bin}
     $path
 )
+fpath=(
+    $HOME/.vim/etc/fpath
+    $fpath
+)
+
+if [ ! -d "$HOME/.pyenv" ]; then
+    git clone https://github.com/pyenv/pyenv.git ~/.pyenv --depth 1
+fi
+export PYENV_ROOT="$HOME/.pyenv"
 
 # linuxbrew
 BREW_PATH=""
@@ -87,20 +99,25 @@ function brew_enable(){
     export PATH=$BREW_PREFIX/sbin:$BREW_PREFIX/bin:$PATH
     MANPATH="$BREW_PREFIX/share/man:$MANPATH"
     INFOPATH="$BREW_PREFIX/share/info:$INFOPATH"
+    export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
+    export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
 }
 function brew_disable(){
     export PATH=${PATH##*"linuxbrew/bin:"}
     MANPATH=${MANPATH##*"linuxbrew/share/man:"}
     INFOPATH=${INFOPATH##*"linuxbrew/share/info:"}
+    export FPATH=${PATH##*"$BREW_PREFIX/share/zsh/site-functions:"}
+    export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
 }
 if [ ! -z "$BREW_PREFIX" ]; then
     brew_enable
 fi
 
+
 # tmux
 if [ ! -d "$HOME/.tmux/tmux-resurrect" ]; then
     mkdir -p $HOME/.tmux
-    git clone https://github.com/tmux-plugins/tmux-resurrect.git $HOME/.tmux/tmux-resurrect --depth=1
+    git clone https://github.com/fcying/tmux-resurrect $HOME/.tmux/tmux-resurrect --depth=1
 fi
 
 # PROMPT
@@ -160,6 +177,12 @@ chpwd_dirpersist() {
     builtin print -l ${(u)my_stack} >! ${dirstack_file}
 }
 
+# after cd, run ls
+function chpwd() {
+    emulate -L zsh
+    ls -A --color=auto
+}
+
 # Predictable SSH authentication socket location.
 SOCK="/tmp/ssh-agent-$USER-screen"
 if test $SSH_AUTH_SOCK && [ $SSH_AUTH_SOCK != $SOCK ]; then
@@ -167,27 +190,6 @@ if test $SSH_AUTH_SOCK && [ $SSH_AUTH_SOCK != $SOCK ]; then
     ln -sf $SSH_AUTH_SOCK $SOCK
     export SSH_AUTH_SOCK=$SOCK
 fi
-
-# check updates
-type pacman 2>&1 > /dev/null && {
-    # checkupdates | wc -c > $HOME/.cache/checkupdates.log
-    if [ -f $HOME/.cache/checkupdates.log ]; then
-        count=`cat $HOME/.cache/checkupdates.log`
-        if [ "$count" != 0 ]; then
-            echo $count packages can be upgraded.
-        fi
-        unset count
-    fi
-    alias pacsyu='sudo pacman -Syu && rm -f $HOME/.cache/checkupdates.log'
-    alias pacsy='sudo pacman -Sy'
-    alias pacfs='pacman -Fs'
-    alias pacfy='sudo pacman -Fy'
-    alias pacql='pacman -Ql'
-    alias pacs='sudo pacman -S'
-    alias pacu='sudo pacman -U'
-    alias pacautoremove='sudo pacman -Rs $(pacman -Qtdq)'
-    alias pacrns='sudo pacman -Rns'
-}
 
 # key bindings
 bindkey -- "\e[1~" beginning-of-line
@@ -375,17 +377,28 @@ select-word-style bash
 alias zsh_update='install_antigen && antigen update'
 alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_history'
 
-alias vi="vim"
-alias py="python3"
-alias py2="python2"
-alias py3="python3"
-alias ls="ls --color=auto"
+# pacman
+alias pacsyu='sudo pacman -Syu'
+alias pacsy='sudo pacman -Sy'
+alias pacfs='pacman -Fs'
+alias pacfy='sudo pacman -Fy'
+alias pacql='pacman -Ql'
+alias pacs='sudo pacman -S'
+alias pacu='sudo pacman -U'
+alias pacautoremove='sudo pacman -Rs $(pacman -Qtdq)'
+alias pacrns='sudo pacman -Rns'
+
+alias vi='vim'
+alias py='python3'
+alias py2='python2'
+alias py3='python3'
+alias ls='ls --color=auto'
 alias ll='ls -alh'
-alias la='ls -Alh'
 alias tmux=" tmux -2"
 alias ta=' tmux a || tmux'
 alias tl=' tmux ls'
 alias rs='rsync -rvazl --partial --delete --progress '
+alias rgn='rg --no-ignore '
 alias free_memory='sudo sync && sudo sync && sudo sh -c "echo 3 > /proc/sys/vm/drop_caches"'
 alias cpu_bench='time echo "scale=5000; 4*a(1)" | bc -l -q'
 test_true_color() {
@@ -415,13 +428,6 @@ alias repo_sync='while true; do; repo sync; if [ $? -eq 0 ]; then; echo "sync ok
 alias gms='git merge --squash'
 alias grv='git-review'
 
-function jack_server() {
-    if [ "$1" == "restart" ]; then
-        ./out/host/linux-x86/bin/jack-admin kill-server && ./out/host/linux-x86/bin/jack-admin start-server
-    else
-        export JACK_SERVER_VM_ARGUMENTS="-Dfile.encoding=UTF-8 -XX:+TieredCompilation -Xmx$1"
-    fi
-}
 alias kmsg='adb wait-for-device && adb root && adb wait-for-device && adb shell "while true; do (cat proc/kmsg); done;"'
 export USE_CCACHE=1
 

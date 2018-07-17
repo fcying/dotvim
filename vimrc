@@ -1,4 +1,4 @@
-"check environment {{{
+" check environment {{{
 if &compatible
   set nocompatible
 endif    
@@ -7,12 +7,19 @@ let g:is_osx = has('macunix')
 let g:is_lin = has('unix') && !has('macunix') && !has('win32unix')
 let g:is_win = has('win32')
 let g:is_nvim = has('nvim')
-let g:is_vim8 = has('patch-8.0.0039') && exists('*job_start')
+let g:is_vim8 = v:version >= 800 ? 1 : 0
 let g:has_go = executable('go') ? 1 : 0
 let s:is_gui = has('gui_running')
 
 let g:config_dir = expand('<sfile>:p:h')
 let g:file_plug = g:config_dir . '/plug.vim'
+let g:file_vimrc = g:config_dir . '/vimrc'
+
+
+" remove  the warning in py3.7: the imp module is deprecated in favour of importlib
+if has('python3')
+  silent! python3 1
+endif
 
 "}}}
 
@@ -41,9 +48,9 @@ syntax enable
 
 
 "autocmd! bufwritepost _vimrc source $MYVIMRC
-nnoremap <leader>ev :e $MYVIMRC<CR>
+nnoremap <leader>ev :execute 'e ' . g:file_vimrc<CR>
 nnoremap <leader>ep :execute 'e ' . g:file_plug<CR>
-nnoremap <leader>sv :source $MYVIMRC<CR>
+nnoremap <leader>sv :execute 'source ' . g:file_vimrc<CR>
 nnoremap <leader>ez :e ~/.zshrc<CR>
 
 if g:is_nvim ==# 0
@@ -126,11 +133,12 @@ set expandtab        "%retab
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
+"autocmd fcying_au FileType make setlocal expandtab softtabstop=4 
 autocmd fcying_au FileType vim,json 
-      \ set shiftwidth=2 
-      \ | set softtabstop=2 
-      \ | set tabstop=2 
-      \ | set expandtab
+      \ setlocal shiftwidth=2 
+      \ softtabstop=2 
+      \ tabstop=2 
+      \ expandtab
 set autoindent
 set smartindent
 set cindent
@@ -159,19 +167,39 @@ set lazyredraw
 set foldmethod=manual
 set nofoldenable
 
-" hide number
-function! HideNumber()
-  if(&relativenumber == &number)
-    set relativenumber! number!
-  elseif(&number)
-    set number!
-  else
-    set relativenumber!
-  endif
-  set number?
-endfunc
-nnoremap <F2> :call HideNumber()<CR>
+" jump to the last position
+augroup vimStartup
+  au!
+  " When editing a file, always jump to the last known cursor position.
+  " Don't do it when the position is invalid, when inside an event handler
+  " (happens when dropping a file on gvim) and for a commit message (it's
+  " likely a different one than last time).
+  autocmd BufReadPost *
+        \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+        \ |   exe "normal! g`\""
+        \ | endif
 
+augroup END
+
+" get file realpath
+function! GetCurFileRealPath()
+  echo expand('%:p')
+endfunc
+nnoremap <leader>f :call GetCurFileRealPath()<CR>
+
+" get visual selection
+func! GetVisualSelection() abort
+    let [lnum1, col1] = getpos("'<")[1:2]
+    let [lnum2, col2] = getpos("'>")[1:2]
+    let lines = getline(lnum1, lnum2)
+    let lines[-1] = lines[-1][: col2 - (&selection ==# 'inclusive' ? 1 : 2)] 
+    let lines[0] = lines[0][col1 - 1:] 
+    "echo join(lines, "\n")
+    return join(lines, "\n")
+endf
+
+
+nnoremap <F2> :set number! number?<CR>
 nnoremap <F3> :set list! list?<CR>
 nnoremap <F4> :set wrap! wrap?<CR>
 
@@ -254,8 +282,19 @@ function! ClosePair(char)
     else
         return a:char
     endif
-endf
+endfunction
 
+" Set Header
+nnoremap <leader>sh :call SetHeader()<CR>
+function! SetHeader()
+  if &filetype ==# 'python'
+    call s:set_python_header()
+  endif
+endfunction
+function! s:set_python_header()
+  call append(0, '# -*- coding: utf-8 -*-')
+  call append(0, '#!/usr/bin/env python3')
+endfunction
 
 " golang
 function! GetGoTools()
@@ -275,11 +314,6 @@ function! GetGoTools()
     silent !go get -u golang.org/x/tools/cmd/goimports
   endif
 endfunction
-
-autocmd fcying_au BufWritePost *.go call s:fcy_goimports()
-command! -nargs=0 GoImports call s:fcy_goimports()
-command! -nargs=0 GoRun call s:fcy_gorun()
-command! -nargs=0 GoBuild call s:fcy_gobuild()
 function! s:fcy_goimports()
   "let l:line = line('.')
   "let l:col = col('.')
@@ -299,6 +333,14 @@ function! s:fcy_gobuild()
   call vimproc#system_bg(l:cmd)
 endfunction
 
+augroup go_lang
+  autocmd!
+  autocmd BufWritePost *.go call s:fcy_goimports()
+  command! -nargs=0 GoImports call s:fcy_goimports()
+  command! -nargs=0 GoRun call s:fcy_gorun()
+  command! -nargs=0 GoBuild call s:fcy_gobuild()
+augroup END
+
 " set filetype
 autocmd fcying_au BufNewFile,BufRead *.qml setl filetype=qml
 autocmd fcying_au BufNewFile,BufRead *.conf setl filetype=conf
@@ -314,7 +356,7 @@ else
   inoremap <expr><CR> pumvisible() ? "\<C-y>\<CR>" : "\<CR>"
 endif
 
-set completeopt=menu,longest       "menu longest noinsert preview
+set completeopt=noinsert,menuone,noselect
 
 " large file
 let g:LargeFile = 1024 * 1024 * 10

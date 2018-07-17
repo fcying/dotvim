@@ -1,14 +1,9 @@
-" deoplete ncm async neocomplete ycm completor
-if g:is_win
-  let g:complete_func = get(g:, 'complete_func', 'ncm')
+" deoplete ncm2 async neocomplete ycm completor
+if g:is_vim8
+  let g:complete_func = get(g:, 'complete_func', 'ncm2')
 else
-  if g:is_vim8
-    let g:complete_func = get(g:, 'complete_func', 'deoplete')
-  else
-    let g:complete_func = get(g:, 'complete_func', 'neocomplete')
-  endif
+  let g:complete_func = get(g:, 'complete_func', 'neocomplete')
 endif
-
 
 " ============================================================================
 " plug func {{{
@@ -20,7 +15,7 @@ function! s:load_plugins() abort
   endfor
 endfunction
 
-function! s:os_do(linux, windows)
+function! s:os_do(linux, windows) abort
   if g:is_win
     return a:windows . "'}"
   else
@@ -28,32 +23,31 @@ function! s:os_do(linux, windows)
   endif
 endfunction
 
-function! InstallDeoplete(info)
+function! InstallDeoplete(info) abort
   if a:info.status !=# 'unchanged' || a:info.force
     silent !echo "InstallDeoplete"
     if g:is_nvim
       silent UpdateRemotePlugins
     else
       " version > 0.4.10 make error in vim8
-      silent !pip3 install --user greenlet==0.4.10
-      silent !pip3 install --user neovim --upgrade
+      "silent !pip3 install greenlet==0.4.10
+      silent !pip3 install neovim --upgrade
     endif
   endif
 endfunction
 
-function! BuildGoCode(info)
+function! BuildGoCode(info) abort
   if a:info.status !=# 'unchanged' || a:info.force
-      if g:is_win
-        let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\ftplugin '
-              \ . $HOME . '\vimfiles'
-        call system(l:cmd)
-        let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\autoload ' . $HOME
-              \ . '\vimfiles'
-        call system(l:cmd)
-      else
-        let l:cmd = 'sh ' . g:config_dir . '/plugged/gocode/vim/update.sh'
-        call system(l:cmd)
-      endif
+    if g:is_win
+      let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\ftplugin '
+            \ . $HOME . '\vimfiles'
+      call system(l:cmd)
+      let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\autoload ' . $HOME
+            \ . '\vimfiles'
+      call system(l:cmd)
+    else
+      let l:cmd = 'sh ' . g:config_dir . '/plugged/gocode/vim/update.sh'
+      call system(l:cmd)
     endif
   endif
 endfunction
@@ -95,14 +89,15 @@ call add(g:plug_list, "Plug 'dyng/ctrlsf.vim'")
 call add(g:plug_list, "Plug 'easymotion/vim-easymotion'")
 call add(g:plug_list, "Plug 'wsdjeg/FlyGrep.vim', {'on': 'FlyGrep'}")
 call add(g:plug_list, "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}")
+"call add(g:plug_list, "Plug 'tpope/vim-fugitive'")
 call add(g:plug_list, "Plug 'Yggdroot/LeaderF', {'do': '" . s:os_do('./install.sh','.\install.bat'))
 call add(g:plug_list, "Plug 'Shougo/vimproc.vim', {'do':'" . s:os_do('make','.\Tools\update-dll-mingw.bat'))
-
 
 "call add(g:plug_list, "Plug 'ludovicchabant/vim-gutentags'")
 "call add(g:plug_list, "Plug 'skywind3000/gutentags_plus'")
 call add(g:plug_list, "Plug 'skywind3000/vim-preview'")
 call add(g:plug_list, "Plug 'jsfaint/gen_tags.vim'")
+call add(g:plug_list, "Plug 'fcying/gen_clang_conf.vim'")
 
 if g:complete_func ==# 'deoplete'
   call add(g:plug_list, "Plug 'Shougo/deoplete.nvim', {'do': function('InstallDeoplete')}")
@@ -115,23 +110,31 @@ if g:complete_func ==# 'deoplete'
   "      \ 'powershell -executionpolicy bypass -File install.ps1'))
   call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
   call add(g:plug_list, "Plug 'Shougo/neoinclude.vim'")
-  call add(g:plug_list, "Plug 'Shougo/neco-vim', {'for':'vim'}")
-  call add(g:plug_list, "Plug 'fcying/gen_clang_conf.vim'")
-  "call add(g:plug_list, "Plug 'Shougo/deoplete-clangx'")
-  call add(g:plug_list, "Plug 'zchee/deoplete-jedi', {'for':'python'}")
+  call add(g:plug_list, "Plug 'Shougo/neco-vim'")
+  call add(g:plug_list, "Plug 'Shougo/deoplete-clangx'")
+  call add(g:plug_list, "Plug 'zchee/deoplete-jedi'")
   " for goto feature
-  call add(g:plug_list, "Plug 'davidhalter/jedi-vim', {'for':'python'}")
+  call add(g:plug_list, "Plug 'davidhalter/jedi-vim'")
   if g:has_go
-    call add(g:plug_list, "Plug 'zchee/deoplete-go', {'for':'go', 'do':'" . s:os_do('make','mingw32-make'))
+    call add(g:plug_list, "Plug 'zchee/deoplete-go', {'do':'" . s:os_do('make','mingw32-make'))
   endif
   call add(g:plug_list, "Plug 'Shougo/neosnippet.vim'")
   call add(g:plug_list, "Plug 'Shougo/neosnippet-snippets'")
-elseif g:complete_func ==# 'ncm'
+elseif g:complete_func ==# 'ncm2'
   if g:is_nvim ==# 0
     call add(g:plug_list, "Plug 'roxma/vim-hug-neovim-rpc'")
   endif
-  call add(g:plug_list, "Plug 'fcying/nvim-completion-manager', {'do': 'pip3 install --user neovim jedi greenlet==0.4.10 --upgrade'}")
-  call add(g:plug_list, "Plug 'fcying/gen_clang_conf.vim'")
+  call add(g:plug_list, "Plug 'roxma/nvim-yarp'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2', {'do': 'pip3 install neovim jedi --upgrade'}")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-bufword'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-tmux'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-path'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-pyclang'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-jedi'")
+  call add(g:plug_list, "Plug 'jsfaint/ncm2-vim'")
+  call add(g:plug_list, "Plug 'Shougo/neco-vim'")
+  call add(g:plug_list, "Plug 'jsfaint/ncm2-syntax'")
+  call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
 elseif g:complete_func ==# 'neocomplete'
   if has('lua')
     call add(g:plug_list, "Plug 'Shougo/neocomplete'")
@@ -218,7 +221,7 @@ endif
 " ============================================================================
 let s:plug_list_string = string(g:plug_list)
 
-function! FindPlug(plugname)
+function! FindPlug(plugname) abort
   return stridx(s:plug_list_string, a:plugname)
 endfunction
 
@@ -231,7 +234,7 @@ if (FindPlug('vim-indent-guides') != -1)
 endif
 
 if (FindPlug('gen_tags.vim') != -1)
-  nnoremap <silent> <leader>tg :GenCtags<CR>:GenGTAGS<CR>
+  nnoremap <silent> <leader>tg :GenCtags<CR>:GenGTAGS<CR>:GenClangConf<CR>
   nnoremap <silent> <leader>tc :ClearGTAGS!<CR>:echo "clear tags end"<CR>
   nnoremap <silent> <leader>te :EditExt<CR>
 
@@ -247,7 +250,18 @@ if (FindPlug('gen_tags.vim') != -1)
 
   if g:is_vim8
     set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
+  else
+    set cscopequickfix=s+,c+,d+,i+,t+,e+
   endif
+
+  function! s:gen_tags_find(cmd, keyword) abort
+    let l:cmd = 'cs find ' . a:cmd . ' ' . a:keyword
+    silent exec 'cexpr l:cmd'
+    call setqflist([], 'a')
+    silent exec l:cmd
+    copen
+  endfunction
+
   "c    Find functions calling this function
   "d    Find functions called by this function
   "e    Find this egrep pattern
@@ -256,14 +270,14 @@ if (FindPlug('gen_tags.vim') != -1)
   "i    Find files #including this file
   "s    Find this C symbol
   "t    Find this text string
-  noremap  <leader>ct :cs find t <C-R>=expand('<cword>')<CR><CR>:copen<CR>
-  noremap  <leader>cs :cs find s <C-R>=expand('<cword>')<CR><CR>:copen<CR>
-  noremap  <leader>ci :cs find i <C-R>=expand('<cfile>')<CR><CR>:copen<CR>
-  noremap  <leader>cg :cs find g <C-R>=expand('<cword>')<CR><CR>:copen<CR>
-  noremap  <leader>cf :cs find f <C-R>=expand('<cfile>')<CR><CR>:copen<CR>
-  noremap  <leader>ce :cs find e <C-R>=expand('<cword>')<CR><CR>:copen<CR>
-  noremap  <leader>cd :cs find d <C-R>=expand('<cword>')<CR><CR>:copen<CR>
-  noremap  <leader>cc :cs find c <C-R>=expand('<cword>')<CR><CR>:copen<CR>
+  noremap  <leader>cc :call <SID>gen_tags_find('c', "<C-R><C-W>")<CR>
+  noremap  <leader>cd :call <SID>gen_tags_find('d', "<C-R><C-W>")<CR>
+  noremap  <leader>ce :call <SID>gen_tags_find('e', "<C-R><C-W>")<CR>
+  noremap  <leader>cf :call <SID>gen_tags_find('f', "<C-R><C-F>")<CR>
+  noremap  <leader>cg :call <SID>gen_tags_find('g', "<C-R><C-W>")<CR>
+  noremap  <leader>ci :call <SID>gen_tags_find('i', "<C-R><C-F>")<CR>
+  noremap  <leader>cs :call <SID>gen_tags_find('s', "<C-R><C-W>")<CR>
+  noremap  <leader>ct :call <SID>gen_tags_find('t', "<C-R><C-W>")<CR>
 
   autocmd fcying_au FileType qf nnoremap <silent><buffer> p :PreviewQuickfix<cr>
   autocmd fcying_au FileType qf nnoremap <silent><buffer> P :PreviewClose<cr>
@@ -340,17 +354,22 @@ if (FindPlug('vim-expand-region') != -1)
 endif
 
 if (FindPlug('gina') != -1)
-  nnoremap <silent> <leader>gst    :Gina status<CR>
+  nnoremap <silent> <leader>gs     :Gina status<CR>
+  nnoremap <silent> <leader>gr     :Gina branch<CR>
   nnoremap <silent> <leader>gU     :Gina reset -q %<CR>
+  nnoremap <silent> <leader>gc     :Gina commit -v<CR>
   nnoremap <silent> <leader>gca    :Gina commit -a<CR>
-  nnoremap <silent> <leader>gcam   :Gina commit -a --amend<CR>
+  nnoremap <silent> <leader>gca!   :Gina commit -a --amend<CR>
   nnoremap <silent> <leader>gd     :Gina diff<CR>
+  nnoremap <silent> <leader>gd.    :Gina diff %<CR>
+  nnoremap <silent> <leader>gds    :Gina diff --staged<CR>
   nnoremap <silent> <leader>gp     :Gina push<CR>
   nnoremap <silent> <leader>ga     :Gina add %<CR>
   nnoremap <silent> <leader>gA     :Gina add .<CR>
   nnoremap <silent> <leader>gl     :Gina pull<CR>
-  nnoremap <silent> <leader>glg    :Gina log<CR>
+  nnoremap <silent> <leader>glo    :Gina log<CR>
   nnoremap <silent> <leader>gb     :Gina blame<CR>
+  nnoremap <silent> <leader>gm     :Gina compare<CR><C-w>L
 endif
 
 if (FindPlug('LanguageClient-neovim') != -1)
@@ -526,11 +545,23 @@ if (FindPlug('jedi-vim') != -1)
   let g:jedi#auto_close_doc = 1
 endif
 
-"if (FindPlug('nvim-completion-manager') != -1)
-"  let $NVIM_PYTHON_LOG_FILE="/home/pub/nvim_log"
-"  let $NVIM_NCM_LOG_LEVEL="DEBUG"
-"  let $NVIM_NCM_MULTI_THREAD=0
-"endif
+if (FindPlug('ncm2') != -1)
+  "let $NVIM_PYTHON_LOG_FILE="/home/pub/ncm2_log"
+  "let $NVIM_NCM_LOG_LEVEL="DEBUG"
+  "let $NVIM_NCM_MULTI_THREAD=0
+
+  "set shortmess+=c
+  " note that must keep noinsert in completeopt, the others is optional
+  "set completeopt=noinsert,menuone,noselect
+
+  autocmd fcying_au InsertEnter * call ncm2#enable_for_buffer()
+  let g:ncm2#matcher = 'abbrfuzzy'
+  let g:ncm2#sorter = 'abbrfuzzy'
+  if (FindPlug('ncm2-pyclang') != -1)
+    let g:ncm2_pyclang#args_file_path = ['.git/.clang_complete', '.clang_complete']
+    autocmd fcying_au FileType c,cpp nnoremap <buffer> gd :<c-u>call ncm2_pyclang#goto_declaration()<cr>
+  endif
+endif
 
 if (FindPlug('deoplete.nvim') != -1) "{{{
   set isfname-==
@@ -562,6 +593,8 @@ if (FindPlug('deoplete.nvim') != -1) "{{{
   "  \ 'c': '\(\.\|->\)',
   "  \ 'cpp': '\(\.\|->\)',
   "  \ })
+
+  call deoplete#custom#var('clangx', 'clang_file_path', ['.git/.clang_complete', '.clang_complete'])
 
   let g:deoplete#sources#jedi#server_timeout = 10
   let g:deoplete#sources#jedi#python_path = 'python3'
@@ -677,6 +710,9 @@ if (FindPlug('vim-multiple-cursors') != -1)
     if (FindPlug('deoplete') != -1)
       call deoplete#custom#buffer_option('auto_complete', v:false)
     endif
+    if (FindPlug('ncm2') != -1)
+      call ncm2#lock('vim-multiple-cursors')
+    endif
   endfunction
 
   " Called once only when the multiple selection is canceled (default <Esc>)
@@ -687,6 +723,9 @@ if (FindPlug('vim-multiple-cursors') != -1)
     endif
     if (FindPlug('deoplete') != -1)
       call deoplete#custom#buffer_option('auto_complete', v:true)
+    endif
+    if (FindPlug('ncm2') != -1)
+      call ncm2#unlock('vim-multiple-cursors')
     endif
   endfunction
 endif
@@ -710,7 +749,13 @@ if (FindPlug('ctrlsf') != -1)
   let g:ctrlsf_ackprg = 'rg'
   let g:ctrlsf_regex_pattern = 1
   let g:ctrlsf_case_sensitive = 'smart'
-  let g:ctrlsf_ignore_dir = ['tags', 'GTAGS', 'GPATH', 'GRTAGS', 'obj', 'out', 'Out']
+  let g:ctrlsf_default_root = 'cwd'
+  let g:ctrlsf_default_view_mode = 'normal'
+  let g:ctrlsf_search_mode = 'async'
+  let g:ctrlsf_auto_focus = {
+        \ 'at': 'done',
+        \ 'duration_less_than': 1000
+        \ }
 
   nmap <leader>sf <Plug>CtrlSFCwordExec
   nmap <leader>sF <Plug>CtrlSFPrompt
@@ -722,14 +767,14 @@ if (FindPlug('ctrlsf') != -1)
   inoremap <leader>st <Esc>:CtrlSFToggle<CR>
 
   let g:ctrlsf_mapping = {
-        \ 'next'    : '<c-w>',
-        \ 'prev'    : '<c-e>',
+        \ 'next'    : 'n',
+        \ 'prev'    : 'N',
         \ }
 
   autocmd fcying_au FileType ctrlsf call s:ctrlsf_settings()
   function! s:ctrlsf_settings()
-    nmap <buffer> <c-j> <c-w>p
-    nmap <buffer> <c-k> <c-e>p
+    nmap <buffer> <c-j> np
+    nmap <buffer> <c-k> Np
   endfunction
 endif
 
@@ -754,12 +799,9 @@ if (FindPlug('LeaderF') != -1)
   nnoremap ft :<C-u>Leaderf tag<CR>
   nnoremap fm :<C-u>Leaderf mru<CR>
   nnoremap fh :<C-u>Leaderf searchHistory<CR>
-  if (FindPlug('FlyGrep') != -1)
-    nnoremap fg :FlyGrep<CR>
-  else
-    nnoremap fg :<C-u>CtrlSF
-  endif
   nnoremap fl :<C-u>Leaderf line --regex<CR>
+  nnoremap fg :FlyGrep<CR>
+  nnoremap fs :<C-u>CtrlSF 
   nnoremap fi :exec "Leaderf file --regex --input " . <SID>StripInclude(getline("."))<CR>
   function! s:StripInclude(line)
     let l:strip_include = substitute(a:line, '\v.*[\<"]([a-zA-Z0-9_/\.]+)[\>"]', '\1', 'g')
@@ -943,6 +985,9 @@ if (FindPlug('nerdcommenter') != -1)
         \ 'go': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
         \ 'qml': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
         \ 'conf': { 'left': '#' },
+        \ 'aptconf': { 'left': '//' },
+        \ 'rc': { 'left': '#' },
+        \ '': { 'left': '#' },
         \ }
   nmap <A-/> <plug>NERDCommenterToggle
   vmap <A-/> <plug>NERDCommenterToggle gv

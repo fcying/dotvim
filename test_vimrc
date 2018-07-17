@@ -1,12 +1,15 @@
 set nocompatible
 set mouse=n
 
-let g:python3_host_prog = '/home/linuxbrew/.linuxbrew/bin/python3'
-set runtimepath+=~/.vim/plugged/deoplete.nvim
-set runtimepath+=~/.vim/plugged/nvim-yarp
 set runtimepath+=~/.vim/plugged/vim-hug-neovim-rpc
+set runtimepath+=~/.vim/plugged/nvim-yarp
+set runtimepath+=~/.vim/plugged/ncm2
+set runtimepath+=~/.vim/plugged/ncm2-jedi
+                                                                                                                                                                                            
+set completeopt=noinsert,menuone,noselect
+"autocmd BufEnter,BufRead * call ncm2#enable_for_buffer()
+autocmd InsertEnter * call ncm2#enable_for_buffer()
+"exec 'call ncm2#enable_for_buffer()'
 
 filetype plugin indent on
 syntax enable
-
-let g:deoplete#enable_at_startup = 1

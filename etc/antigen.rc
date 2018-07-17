@@ -1,4 +1,4 @@
-# oh-my-zsh prezto
+#oh-my-zsh prezto
 antigen use oh-my-zsh
 
 antigen bundle robbyrussell/oh-my-zsh plugins/history-substring-search

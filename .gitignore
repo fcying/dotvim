@@ -3,15 +3,10 @@
 .neobundle/
 /log
 /*.log
-/vim_origin/
 /vim*/
 /plugged/
 /.netrwhist
-/init.vim
-/.init.vim-rplugin~
-/.vim
 /autoload
 /ftplugin
-/neovim-qt
 /sessions
 *.zwc

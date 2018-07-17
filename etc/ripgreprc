@@ -1,0 +1,14 @@
+--no-ignore
+--hidden
+-a
+#--max-columns=150
+--smart-case
+--glob=!**/.git/*
+--glob=!**/.svn/*
+--glob=!**/.hg/*
+--glob=!**/GTAGS
+--glob=!**/GRTAGS
+--glob=!**/GPATH
+--glob=!**/tags
+--iglob=!**/obj/*
+--iglob=!**/out/*

@@ -70,10 +70,11 @@ call add(g:plug_list, "Plug 'MattesGroeger/vim-bookmarks'")
 call add(g:plug_list, "Plug 'thinca/vim-ref'")
 call add(g:plug_list, "Plug 'tpope/vim-surround'")
 call add(g:plug_list, "Plug 'terryma/vim-expand-region'")
-call add(g:plug_list, "Plug 'terryma/vim-multiple-cursors'")
+"call add(g:plug_list, "Plug 'terryma/vim-multiple-cursors'")
+call add(g:plug_list, "Plug 'mg979/vim-visual-multi', {'branch': 'test'}")
 call add(g:plug_list, "Plug 'derekwyatt/vim-fswitch'")
 call add(g:plug_list, "Plug 'nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}")
-call add(g:plug_list, "Plug 'scrooloose/nerdtree', {'on':'NERDTreeToggle'}")
+call add(g:plug_list, "Plug 'scrooloose/nerdtree', {'on':['NERDTreeToggle', 'NERDTreeFind']}")
 call add(g:plug_list, "Plug 'scrooloose/nerdcommenter'")
 call add(g:plug_list, "Plug 'majutsushi/tagbar', {'on':'TagbarToggle'}")
 call add(g:plug_list, "Plug 'xolox/vim-session'")
@@ -131,6 +132,7 @@ elseif g:complete_func ==# 'ncm2'
   call add(g:plug_list, "Plug 'ncm2/ncm2-path'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-pyclang'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-jedi'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-go'")
   call add(g:plug_list, "Plug 'jsfaint/ncm2-vim'")
   call add(g:plug_list, "Plug 'Shougo/neco-vim'")
   call add(g:plug_list, "Plug 'jsfaint/ncm2-syntax'")
@@ -259,7 +261,7 @@ if (FindPlug('gen_tags.vim') != -1)
     silent exec 'cexpr l:cmd'
     call setqflist([], 'a')
     silent exec l:cmd
-    copen
+    belowright copen
   endfunction
 
   "c    Find functions calling this function
@@ -555,7 +557,10 @@ if (FindPlug('ncm2') != -1)
   "set completeopt=noinsert,menuone,noselect
 
   autocmd fcying_au InsertEnter * call ncm2#enable_for_buffer()
-  let g:ncm2#matcher = 'abbrfuzzy'
+  let g:ncm2#matcher = {
+        \ 'name': 'combine',
+        \ 'matchers': ['abbrfuzzy', 'substr']
+        \ }
   let g:ncm2#sorter = 'abbrfuzzy'
   if (FindPlug('ncm2-pyclang') != -1)
     let g:ncm2_pyclang#args_file_path = ['.git/.clang_complete', '.clang_complete']
@@ -695,6 +700,13 @@ if (FindPlug('completor') != -1)
   let g:completor_python_binary = 'python3'
 endif
 
+if (FindPlug('vim-visual-multi') != -1)
+  let g:VM_no_meta_mappings = 1
+  let g:VM_maps = {}
+  let g:VM_maps['Find Under']         = '<C-n>'
+  let g:VM_maps['Find Subword Under'] = '<C-n>'
+endif
+
 if (FindPlug('vim-multiple-cursors') != -1)
   "let g:multi_cursor_next_key='<S-n>'
   "let g:multi_cursor_prev_key='<S-p>'
@@ -732,6 +744,7 @@ endif
 
 if (FindPlug('nerdtree') != -1)
   nmap <leader>nt :NERDTreeToggle<cr>
+  nmap <leader>nf :NERDTreeFind<cr>
   nmap <F12> :NERDTreeToggle<cr>
   let g:NERDTreeWinSize=32
   let g:NERDTreeWinPos='right'
@@ -786,8 +799,9 @@ endif
 if (FindPlug('LeaderF') != -1)
   let g:Lf_PreviewCode = 0
   let g:Lf_DefaultMode = 'FullPath'
+  let g:Lf_RootMarkers = ['.root', '.git']
   let g:Lf_WildIgnore = {
-        \ 'dir': ['.svn','.git','.hg'],
+        \ 'dir': ['.root','.svn','.git','.hg'],
         \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
         \}
 
@@ -1042,11 +1056,18 @@ endif
 
 if (FindPlug('vim-easymotion') != -1)
   let g:EasyMotion_smartcase = 0
-  let g:EasyMotion_do_mapping = 0 " Disable default mappings
-  nmap <leader>jj <Plug>(easymotion-s)
-  nmap <leader>jJ <Plug>(easymotion-s2)
-  nmap <leader>jl <Plug>(easymotion-bd-jk)
-  nmap <leader>jw <Plug>(easymotion-bd-w)
+  let g:EasyMotion_do_mapping = 0   " Disable default mappings
+  " <Leader>f{char} to move to {char}
+  map  <Leader>f <Plug>(easymotion-bd-f)
+  nmap <Leader>f <Plug>(easymotion-overwin-f)
+  " s{char}{char} to move to {char}{char}
+  nmap s <Plug>(easymotion-overwin-f2)
+  " Move to line
+  map <Leader>L <Plug>(easymotion-bd-jk)
+  nmap <Leader>L <Plug>(easymotion-overwin-line)
+  " Move to word
+  map  <Leader>w <Plug>(easymotion-bd-w)
+  nmap <Leader>w <Plug>(easymotion-overwin-w)
 endif
 
 if (FindPlug('vim-fswitch') != -1)

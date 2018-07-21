@@ -2,7 +2,7 @@
 --hidden
 -a
 #--max-columns=150
---smart-case
+#--smart-case
 --glob=!**/.git/*
 --glob=!**/.svn/*
 --glob=!**/.hg/*
@@ -10,5 +10,7 @@
 --glob=!**/GRTAGS
 --glob=!**/GPATH
 --glob=!**/tags
+--glob=!**/prj_tags
+--glob=!**/.clang_complete
 --iglob=!**/obj/*
 --iglob=!**/out/*

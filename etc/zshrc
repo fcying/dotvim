@@ -72,6 +72,7 @@ path=(
     $HOME/bin
     $HOME/qt/$QT_VERSION/gcc_64/bin
     $GOPATH/bin
+    $HOME/.cargo/bin
     /snap/bin
     /usr/local/{sbin,bin}
     /usr/{sbin,bin}

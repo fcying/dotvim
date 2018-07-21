@@ -162,7 +162,7 @@ set wrap
 set showcmd
 "set cmdheight=1
 set virtualedit=onemore        "onemore all
-set lazyredraw
+"set lazyredraw
 
 set foldmethod=manual
 set nofoldenable
@@ -185,7 +185,7 @@ augroup END
 function! GetCurFileRealPath()
   echo expand('%:p')
 endfunc
-nnoremap <leader>f :call GetCurFileRealPath()<CR>
+nnoremap <leader>F :call GetCurFileRealPath()<CR>
 
 " get visual selection
 func! GetVisualSelection() abort

@@ -7,9 +7,7 @@ set runtimepath+=~/.vim/plugged/ncm2
 set runtimepath+=~/.vim/plugged/ncm2-jedi
                                                                                                                                                                                             
 set completeopt=noinsert,menuone,noselect
-"autocmd BufEnter,BufRead * call ncm2#enable_for_buffer()
 autocmd InsertEnter * call ncm2#enable_for_buffer()
-"exec 'call ncm2#enable_for_buffer()'
 
 filetype plugin indent on
 syntax enable

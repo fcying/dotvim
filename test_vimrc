@@ -4,8 +4,12 @@ set mouse=n
 set runtimepath+=~/.vim/plugged/vim-hug-neovim-rpc
 set runtimepath+=~/.vim/plugged/nvim-yarp
 set runtimepath+=~/.vim/plugged/ncm2
-set runtimepath+=~/.vim/plugged/ncm2-jedi
-                                                                                                                                                                                            
+set runtimepath+=~/.vim/plugged/ncm2-path
+
+let $NVIM_PYTHON_LOG_FILE="/home/pub/ncm2_log"
+let $NVIM_NCM_LOG_LEVEL="DEBUG"
+let $NVIM_NCM_MULTI_THREAD=0
+
 set completeopt=noinsert,menuone,noselect
 autocmd InsertEnter * call ncm2#enable_for_buffer()
 

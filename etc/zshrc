@@ -89,6 +89,22 @@ if [ ! -d "$HOME/.pyenv" ]; then
 fi
 export PYENV_ROOT="$HOME/.pyenv"
 
+# tmux
+if [ ! -d "$HOME/.tmux/tmux-resurrect" ]; then
+    mkdir -p $HOME/.tmux
+    git clone https://github.com/fcying/tmux-resurrect $HOME/.tmux/tmux-resurrect --depth=1
+fi
+
+# fzf
+[ ! -d ~/.fzf ] && {
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install <<EOF
+    y
+EOF
+}
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+
 # linuxbrew
 BREW_PATH=""
 if [ -d "$HOME/.linuxbrew/bin" ]; then
@@ -114,12 +130,6 @@ if [ ! -z "$BREW_PREFIX" ]; then
     brew_enable
 fi
 
-
-# tmux
-if [ ! -d "$HOME/.tmux/tmux-resurrect" ]; then
-    mkdir -p $HOME/.tmux
-    git clone https://github.com/fcying/tmux-resurrect $HOME/.tmux/tmux-resurrect --depth=1
-fi
 
 # PROMPT
 ZSH_HIDE_DIRTY=${ZSH_HIDE_DIRTY:-1}
@@ -373,10 +383,15 @@ select-word-style bash
 # WSL (aka Bash for Windows) doesn't work well with BG_NICE
 [ -d "/mnt/c" ] && [[ "$(uname -a)" == *Microsoft* ]] && unsetopt BG_NICE
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-alias zsh_update='install_antigen && antigen update'
-alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_history'
+function soft_update() {
+    install_antigen && antigen update
+    cd ~/.fzf && git pull && ./install <<EOF
+    y
+EOF
+    cd ~/.tmux/tmux-resurrect && git pull
+    cd ~/.pyenv && git pull
+    #brew upgrade
+}
 
 # pacman
 alias pacsyu='sudo pacman -Syu'
@@ -389,6 +404,7 @@ alias pacu='sudo pacman -U'
 alias pacautoremove='sudo pacman -Rs $(pacman -Qtdq)'
 alias pacrns='sudo pacman -Rns'
 
+alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_history'
 alias vi='vim'
 alias py='python3'
 alias py2='python2'

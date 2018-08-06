@@ -42,7 +42,7 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
 fi
 
 if [ "$sudo" == "true" ]; then
-    sudo echo "start"  #entry sudo passwd
+    sudo echo "sudo start"  #entry sudo passwd
 fi
 
 if [ ! -d "$vim_home/vim_origin" ]; then
@@ -51,18 +51,20 @@ if [ ! -d "$vim_home/vim_origin" ]; then
 fi
 
 if [ $install == "true" ]; then
-    if [ $(uname | grep MINGW -c) -eq 1 ]; then
-        echo "os MSYS2"
-        pacman -S --noconfirm mingw-w64-x86_64-lua
-        #pacman -S --noconfirm mingw-w64-x86_64-python2
-        #pacman -S --noconfirm mingw-w64-x86_64-python3
-    elif [ $(uname -a | grep MANJARO -c) -eq 1 ]; then
-        echo "os MANJARO"
-    else
-        echo "os Ubuntu/debian"
-        sudo apt install build-essential libncurses5-dev libxt-dev \
-            python3-dev python2.7-dev lua5.2 liblua5.2-dev
-        #sudo apt install libgnome2-dev libgnomeui-dev libgtk2.0-dev libcairo2-dev libx11-dev libxpm-dev libatk1.0-dev
+    if [ "$sudo" == "true" ]; then
+        if [ $(uname | grep MINGW -c) -eq 1 ]; then
+            echo "os MSYS2"
+            pacman -S --noconfirm mingw-w64-x86_64-lua
+            #pacman -S --noconfirm mingw-w64-x86_64-python2
+            #pacman -S --noconfirm mingw-w64-x86_64-python3
+        elif [ $(uname -a | grep MANJARO -c) -eq 1 ]; then
+            echo "os MANJARO"
+        else
+            echo "os Ubuntu/debian"
+            sudo apt install build-essential libncurses5-dev libxt-dev \
+                python3-dev python2.7-dev lua5.2 liblua5.2-dev
+            #sudo apt install libgnome2-dev libgnomeui-dev libgtk2.0-dev libcairo2-dev libx11-dev libxpm-dev libatk1.0-dev
+        fi
     fi
 fi
 
@@ -134,11 +136,13 @@ else
                 --enable-multibyte \
                 --enable-cscope \
                 --enable-rubyinterp=dynamic \
-                --enable-python3interp --with-python3-command=python3 \
+                --enable-python3interp=dynamic \
                 --enable-luainterp=dynamic \
                 --enable-perlinterp=dynamic \
                 --prefix=$prefix \
                 --with-compiledby=fcying 2>&1 |tee build.log
+                #--enable-python3interp --with-python3-command=python3 \
+                #--enable-python3interp=dynamic \
     p=`cat /proc/cpuinfo | grep -c processor`
     p=$[p/2]
     if [ $p == 0 ]; then

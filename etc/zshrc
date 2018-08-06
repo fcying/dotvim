@@ -66,7 +66,7 @@ export CGO_LDFLAGS_ALLOW=".*"
 export CGO_CFLAGS_ALLOW=".*"
 export LD_LIBRARY_PATH=$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=$PYTHONPATH:$HOME/tool/python_script
-export RIPGREP_CONFIG_PATH=$HOME/.vim/etc/ripgreprc
+export RIPGREP_CONFIG_PATH=$HOME/.ripgreprc
 
 path=(
     $HOME/bin
@@ -74,6 +74,8 @@ path=(
     $GOPATH/bin
     $HOME/.cargo/bin
     /snap/bin
+    $HOME/.yarn/bin
+    $HOME/.config/yarn/global/node_modules/.bin
     /usr/local/{sbin,bin}
     /usr/{sbin,bin}
     /{sbin,bin}
@@ -84,10 +86,10 @@ fpath=(
     $fpath
 )
 
-if [ ! -d "$HOME/.pyenv" ]; then
-    git clone https://github.com/pyenv/pyenv.git ~/.pyenv --depth 1
-fi
+# pyenv
 export PYENV_ROOT="$HOME/.pyenv"
+export PYTHON_CONFIGURE_OPTS="--enable-shared"
+alias pyenv_init='git clone https://github.com/pyenv/pyenv.git ~/.pyenv --depth 1'
 
 # tmux
 if [ ! -d "$HOME/.tmux/tmux-resurrect" ]; then
@@ -106,7 +108,7 @@ EOF
 
 
 # linuxbrew
-BREW_PATH=""
+BREW_PREFIX=""
 if [ -d "$HOME/.linuxbrew/bin" ]; then
     BREW_PREFIX=$HOME/.linuxbrew
 elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
@@ -206,7 +208,7 @@ fi
 bindkey -- "\e[1~" beginning-of-line
 bindkey -- "\e[4~" end-of-line
 
-
+# history
 HISTFILE="$HOME/.zhistory"
 HISTSIZE=10000
 SAVEHIST=10000
@@ -347,23 +349,11 @@ zstyle ':completion:*:*:*:*:processes' command 'ps -u $LOGNAME -o pid,user,comma
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
 zstyle ':completion:*:*:kill:*' menu yes select
 zstyle ':completion:*:*:kill:*' force-list always
-zstyle ':completion:*:*:kill:*' insert-ids single
+#zstyle ':completion:*:*:kill:*' insert-ids single
 
 # Man
 zstyle ':completion:*:manuals' separate-sections true
 zstyle ':completion:*:manuals.(^1*)' insert-sections true
-
-# Media Players
-zstyle ':completion:*:*:mpg123:*' file-patterns '*.(mp3|MP3):mp3\ files *(-/):directories'
-zstyle ':completion:*:*:mpg321:*' file-patterns '*.(mp3|MP3):mp3\ files *(-/):directories'
-zstyle ':completion:*:*:ogg123:*' file-patterns '*.(ogg|OGG|flac):ogg\ files *(-/):directories'
-zstyle ':completion:*:*:mocp:*' file-patterns '*.(wav|WAV|mp3|MP3|ogg|OGG|flac):ogg\ files *(-/):directories'
-
-# Mutt
-if [[ -s "$HOME/.mutt/aliases" ]]; then
-  zstyle ':completion:*:*:mutt:*' menu yes select
-  zstyle ':completion:*:mutt:*' users ${${${(f)"$(<"$HOME/.mutt/aliases")"}#alias[[:space:]]}%%[[:space:]]*}
-fi
 
 # SSH/SCP/RSYNC
 zstyle ':completion:*:(ssh|scp|rsync):*' tag-order 'hosts:-host:host hosts:-domain:domain hosts:-ipaddr:ip\ address *'
@@ -405,6 +395,7 @@ alias pacautoremove='sudo pacman -Rs $(pacman -Qtdq)'
 alias pacrns='sudo pacman -Rns'
 
 alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_history'
+alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
 alias vi='vim'
 alias py='python3'
 alias py2='python2'
@@ -434,7 +425,7 @@ test_true_color() {
     }'
 }
 
-alias brew_install='sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
+alias brew_init='sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
 alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
 alias brew_install_ruby='brew vendor-install ruby'
 

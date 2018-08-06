@@ -1,6 +1,10 @@
 --no-ignore
 --hidden
--a
+--color=auto
+--vimgrep
+--no-column
+#-a
+#--max-filesize=10M
 #--max-columns=150
 #--smart-case
 --glob=!**/.git/*

@@ -8,6 +8,10 @@ case $- in
       *) return;;
 esac
 
+if [ -f "$HOME/.bashrc.pre" ]; then
+    source $HOME/.bashrc.pre
+fi
+
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
@@ -76,10 +80,8 @@ esac
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
 
-    alias grep='grep --color=auto'
+    alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
 fi
@@ -87,18 +89,7 @@ fi
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-# some more ls aliases
-alias ll='ls -l'
-alias la='ls -A'
-
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
+alias ll='ls -alh'
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
@@ -128,3 +119,47 @@ export LC_ALL=C
 export USE_CCACHE=1
 
 
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+
+# tmux
+if [ ! -d "$HOME/.tmux/tmux-resurrect" ]; then
+    mkdir -p $HOME/.tmux
+    git clone https://github.com/fcying/tmux-resurrect $HOME/.tmux/tmux-resurrect --depth=1
+fi
+
+# fzf
+[ ! -d ~/.fzf ] && {
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install <<EOF
+    y
+EOF
+}
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+
+# linuxbrew
+BREW_PREFIX=""
+if [ -d "$HOME/.linuxbrew/bin" ]; then
+    BREW_PREFIX=$HOME/.linuxbrew
+elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
+    BREW_PREFIX=/home/linuxbrew/.linuxbrew
+fi
+function brew_enable(){
+    export PATH=$PYENV_ROOT/bin:$PYENV_ROOT/shims:$BREW_PREFIX/sbin:$BREW_PREFIX/bin:$PATH
+    MANPATH="$BREW_PREFIX/share/man:$MANPATH"
+    INFOPATH="$BREW_PREFIX/share/info:$INFOPATH"
+}
+function brew_disable(){
+    export PATH=${PATH##*"linuxbrew/bin:"}
+    MANPATH=${MANPATH##*"linuxbrew/share/man:"}
+    INFOPATH=${INFOPATH##*"linuxbrew/share/info:"}
+    export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
+}
+if [ ! -z "$BREW_PREFIX" ]; then
+    brew_enable
+fi
+
+if [ -f "$HOME/.bashrc.post" ]; then
+    source $HOME/.bashrc.post
+fi

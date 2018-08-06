@@ -80,8 +80,7 @@ call add(g:plug_list, "Plug 'majutsushi/tagbar', {'on':'TagbarToggle'}")
 call add(g:plug_list, "Plug 'xolox/vim-session'")
 call add(g:plug_list, "Plug 'xolox/vim-misc'")
 call add(g:plug_list, "Plug 'Vimjas/vim-python-pep8-indent', {'for':'python'}")
-call add(g:plug_list, "Plug 'vim-scripts/autohotkey-ahk', {'for':'autohotkey'}")
-call add(g:plug_list, "Plug 'huleiak47/vim-AHKcomplete', {'for':'autohotkey'}")
+call add(g:plug_list, "Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}")
 call add(g:plug_list, "Plug 'godlygeek/tabular', {'for':'markdown'}")
 call add(g:plug_list, "Plug 'plasticboy/vim-markdown', {'for':'markdown'}")
 call add(g:plug_list, "Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}")
@@ -137,6 +136,8 @@ elseif g:complete_func ==# 'ncm2'
   call add(g:plug_list, "Plug 'Shougo/neco-vim'")
   call add(g:plug_list, "Plug 'jsfaint/ncm2-syntax'")
   call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
+elseif g:complete_func ==# 'coc'
+  call add(g:plug_list, "Plug 'neoclide/coc.nvim', {'do': './install.sh'}")
 elseif g:complete_func ==# 'neocomplete'
   if has('lua')
     call add(g:plug_list, "Plug 'Shougo/neocomplete'")
@@ -552,16 +553,21 @@ if (FindPlug('ncm2') != -1)
   "let $NVIM_NCM_LOG_LEVEL="DEBUG"
   "let $NVIM_NCM_MULTI_THREAD=0
 
-  "set shortmess+=c
+  set shortmess+=c
   " note that must keep noinsert in completeopt, the others is optional
-  "set completeopt=noinsert,menuone,noselect
+  set completeopt=noinsert,menuone,noselect
 
   autocmd fcying_au InsertEnter * call ncm2#enable_for_buffer()
-  let g:ncm2#matcher = {
-        \ 'name': 'combine',
-        \ 'matchers': ['abbrfuzzy', 'substr']
-        \ }
-  let g:ncm2#sorter = 'abbrfuzzy'
+  let g:ncm2#matcher = 'substrfuzzy'
+  "let g:ncm2#sorter = 'abbrfuzzy'
+  if !exists('g:ncm2_pyclang#library_path')
+    if g:is_win
+      let g:ncm2_pyclang#library_path = 'D:\tool\LLVM\bin'
+    else
+      let g:ncm2_pyclang#library_path = '/usr/lib/llvm-6.0/lib/libclang.so.1'
+    endif
+  endif
+
   if (FindPlug('ncm2-pyclang') != -1)
     let g:ncm2_pyclang#args_file_path = ['.git/.clang_complete', '.clang_complete']
     autocmd fcying_au FileType c,cpp nnoremap <buffer> gd :<c-u>call ncm2_pyclang#goto_declaration()<cr>
@@ -1082,11 +1088,6 @@ if (FindPlug('vimshell') != -1)
         \ 'escape(fnamemodify(getcwd(), ":~").">", "\\[]()?! ")." "'
   let g:vimshell_prompt_pattern = '^\%(\f\|\\.\)\+> '
   let g:vimshell_no_default_keymappings=0
-endif
-
-if (FindPlug('vim-AHKcomplete') != -1)
-  " Enable omni completion.
-  autocmd fcying_au FileType autohotkey setl omnifunc=ahkcomplete#Complete
 endif
 
 "if (FindPlug('delimitMate') != -1)

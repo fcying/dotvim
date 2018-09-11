@@ -88,10 +88,13 @@ else
     cd $vim_home/vim_origin/
 fi
 
-# for xshell mouse wheel
-sed -i "/^\s*held_button = MOUSE_RELEASE;$/d" src/term.c
+# for xshell mouse wheel; fix in the latest version
+#sed -i "/^\s*held_button = MOUSE_RELEASE;$/d" src/term.c
 
-echo "start build vim"
+echo "======================================================"
+echo "start build vim; prefix: $prefix"
+echo "======================================================"
+
 if [ $(uname | grep MINGW -c) -eq 1 ]; then
     cd src
     export LUA=d:/tool/lua
@@ -114,35 +117,39 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
     export POSTSCRIPT=yes
     export USERNAME=JasonYing
     export USERDOMAIN=JasonYing-PC
-    
+
     mingw32-make.exe -f Make_ming.mak GUI=yes
     mingw32-make.exe -f Make_ming.mak GUI=no
-                     
+
     vim_version=vim81
-    mkdir -p $vim_home/$vim_version                
+    mkdir -p $vim_home/$vim_version
     cp -vR ../runtime/* ../../$vim_version/
-    cp -v *.exe $vim_home/$vim_version  
-    cp -v xxd/xxd.exe $vim_home/$vim_version  
-    cp -vf GvimExt/gvimext.dll $vim_home/$vim_version  
+    cp -v *.exe $vim_home/$vim_version
+    cp -v xxd/xxd.exe $vim_home/$vim_version
+    cp -vf GvimExt/gvimext.dll $vim_home/$vim_version
     cd $vim_home/$vim_version
     ./gvim.exe --version
 else
     make distclean
-    ./configure \
-                --with-features=huge \
-                --enable-gui=no \
-                --with-x \
-                --enable-xterm_clipboard \
-                --enable-multibyte \
-                --enable-cscope \
-                --enable-rubyinterp=dynamic \
-                --enable-python3interp=dynamic \
-                --enable-luainterp=dynamic \
-                --enable-perlinterp=dynamic \
-                --prefix=$prefix \
-                --with-compiledby=fcying 2>&1 |tee build.log
-                #--enable-python3interp --with-python3-command=python3 \
-                #--enable-python3interp=dynamic \
+    config="--with-features=huge \
+--enable-gui=no \
+--enable-multibyte \
+--enable-cscope \
+--enable-rubyinterp=dynamic \
+--enable-python3interp=dynamic \
+--enable-luainterp=dynamic \
+--enable-perlinterp=dynamic \
+--prefix=$prefix \
+--with-compiledby=fcying"
+#--with-x \
+#--enable-python3interp --with-python3-command=python3 \
+#--enable-python3interp=dynamic \
+
+    echo "======================================================"
+    echo "build config: $config"
+    echo "======================================================"
+
+    ./configure $config
     p=`cat /proc/cpuinfo | grep -c processor`
     p=$[p/2]
     if [ $p == 0 ]; then
@@ -155,6 +162,5 @@ else
     else
         make install
     fi
-    echo prefix: $prefix
     vim --version
 fi

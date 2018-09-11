@@ -15,12 +15,6 @@ let g:config_dir = expand('<sfile>:p:h')
 let g:file_plug = g:config_dir . '/plug.vim'
 let g:file_vimrc = g:config_dir . '/vimrc'
 
-
-" remove  the warning in py3.7: the imp module is deprecated in favour of importlib
-if has('python3')
-  silent! python3 1
-endif
-
 "}}}
 
 

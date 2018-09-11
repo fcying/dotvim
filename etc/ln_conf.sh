@@ -2,6 +2,7 @@
 
 cd `dirname $0`
 
+ln -sfv $PWD/zprofile ~/.zprofile
 ln -sfv $PWD/zshrc ~/.zshrc
 ln -sfv $PWD/bashrc ~/.bashrc
 ln -sfv $PWD/tigrc ~/.tigrc

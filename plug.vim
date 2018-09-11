@@ -1,4 +1,4 @@
-" deoplete ncm2 async neocomplete ycm completor
+" deoplete ncm2 async neocomplete ycm completor coc
 if g:is_vim8
   let g:complete_func = get(g:, 'complete_func', 'ncm2')
 else
@@ -806,6 +806,7 @@ endif
 
 if (FindPlug('LeaderF') != -1)
   let g:Lf_PreviewCode = 0
+  let g:Lf_UseVersionControlTool = 0
   let g:Lf_DefaultMode = 'FullPath'
   let g:Lf_RootMarkers = ['.root', '.git']
   let g:Lf_WildIgnore = {

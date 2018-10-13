@@ -101,6 +101,7 @@ set nowritebackup
 set splitright
 set splitbelow
 set noautochdir
+set autoread
 set regexpengine=1        " use old re, for speed syntax 
 
 set wildmenu
@@ -160,6 +161,7 @@ set virtualedit=onemore        "onemore all
 
 set foldmethod=manual
 set nofoldenable
+
 
 " jump to the last position
 augroup vimStartup

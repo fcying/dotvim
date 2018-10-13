@@ -127,7 +127,9 @@ elseif g:complete_func ==# 'ncm2'
   call add(g:plug_list, "Plug 'roxma/nvim-yarp'")
   call add(g:plug_list, "Plug 'ncm2/ncm2', {'do': 'pip3 install neovim jedi --upgrade'}")
   call add(g:plug_list, "Plug 'ncm2/ncm2-bufword'")
-  call add(g:plug_list, "Plug 'ncm2/ncm2-tmux'")
+  if g:is_win ==# 0
+    call add(g:plug_list, "Plug 'ncm2/ncm2-tmux'")
+  endif
   call add(g:plug_list, "Plug 'ncm2/ncm2-path'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-pyclang'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-jedi'")

@@ -572,7 +572,7 @@ if (FindPlug('ncm2') != -1)
 
   if (FindPlug('ncm2-pyclang') != -1)
     let g:ncm2_pyclang#args_file_path = ['.git/.clang_complete', '.clang_complete']
-    autocmd fcying_au FileType c,cpp nnoremap <buffer> gd :<c-u>call ncm2_pyclang#goto_declaration()<cr>
+    "autocmd fcying_au FileType c,cpp nnoremap <buffer> gd :<c-u>call ncm2_pyclang#goto_declaration()<cr>
   endif
 endif
 

@@ -91,8 +91,6 @@ else
 endif
 
 set history=2000
-"set autoread
-set updatetime=1000
 set scrolloff=3
 set hidden
 set noswapfile
@@ -101,8 +99,18 @@ set nowritebackup
 set splitright
 set splitbelow
 set noautochdir
-set autoread
 set regexpengine=1        " use old re, for speed syntax 
+set updatetime=500
+set autoread
+augroup checktime
+  au!
+  if !has("gui_running")
+    "silent! necessary otherwise throws errors when using command line window.
+    autocmd FocusGained,BufEnter        * silent! checktime
+    autocmd CursorHold                  * silent! checktime
+    autocmd CursorHoldI                 * silent! checktime
+  endif
+augroup END
 
 set wildmenu
 set wildmode=longest:full,full

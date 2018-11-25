@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $# >= 1 ]; then
+if [ "$#" -ge "1" ]; then
     ppa_name=`echo "$1" | awk -F ':' '{print $2}'`
     app_name=`echo "$ppa_name" | cut -d '/' -f2-`
 
@@ -10,10 +10,10 @@ if [ $# >= 1 ]; then
         echo "$0 ppa:user/ppa-name"
     else
         echo "$ppa_name" " $app_name"
-        if [ "$2" == "16.04" ]; then
-            version = "xenial"
+        if [ "$2" != "" ]; then
+            version=$2
         else
-            version = "bionic"
+            version="xenial"
         fi
         echo "deb http://ppa.launchpad.net/$ppa_name/ubuntu $version main" > /etc/apt/sources.list.d/$app_name.list
         apt-get update > /dev/null 2> /tmp/apt_add_key.txt                                                     

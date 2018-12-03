@@ -57,6 +57,7 @@ export RIPGREP_CONFIG_PATH=$HOME/.ripgreprc
 
 path=(
     $HOME/bin
+    $HOME/tool/go/bin
     $HOME/qt/$QT_VERSION/gcc_64/bin
     $GOPATH/bin
     $HOME/.cargo/bin

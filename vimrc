@@ -292,12 +292,13 @@ endfunction
 nnoremap <leader>sh :call SetHeader()<CR>
 function! SetHeader()
   if &filetype ==# 'python'
-    call s:set_python_header()
+    call append(0, '# -*- coding: utf-8 -*-')
+    call append(0, '#!/usr/bin/env python3')
+  elseif &filetype ==# 'sh'
+    call append(0, '#!/bin/bash')
   endif
 endfunction
 function! s:set_python_header()
-  call append(0, '# -*- coding: utf-8 -*-')
-  call append(0, '#!/usr/bin/env python3')
 endfunction
 
 " golang

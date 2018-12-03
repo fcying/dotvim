@@ -825,7 +825,7 @@ if (FindPlug('LeaderF') != -1)
   nnoremap fm :<C-u>Leaderf mru<CR>
   nnoremap fh :<C-u>Leaderf searchHistory<CR>
   nnoremap fl :<C-u>Leaderf line --regex<CR>
-  nnoremap fg :FlyGrep<CR>
+  nnoremap fg :<C-u>Leaderf rg -e 
   nnoremap fs :<C-u>CtrlSF 
   nnoremap fi :exec "Leaderf file --regex --input " . <SID>StripInclude(getline("."))<CR>
   function! s:StripInclude(line)

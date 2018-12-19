@@ -16,7 +16,7 @@ install_antigen() {
 	URL="https://git.io/antigen"
     TMPFILE="/tmp/antigen.zsh"
     if [ -x "$(which curl)" ]; then
-		curl -L "$URL" > $TMPFILE
+		curl -sL "$URL" > $TMPFILE
 	elif [ -x "$(which wget)" ]; then
 		wget "$URL" -O $TMPFILE
 	else
@@ -363,12 +363,13 @@ select-word-style bash
 
 function soft_update() {
     install_antigen && antigen update
-    cd ~/.fzf && git pull && ./install <<EOF
+    cp -f ~/.vim/etc/zsh_custom/misc.zsh ~/.antigen/bundles/robbyrussell/oh-my-zsh/lib/
+    pushd ~/.fzf && git pull && ./install <<EOF
     y
 EOF
-    cd ~/.tmux/tmux-resurrect && git pull
-    cd ~/.pyenv && git pull
-    #brew upgrade
+    popd
+    pushd ~/.tmux/tmux-resurrect && git pull && popd
+    pushd ~/.pyenv && git pull && popd
 }
 
 # pacman

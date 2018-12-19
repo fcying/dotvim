@@ -86,6 +86,8 @@ if [ $install == "true" ] || [ $update == "true" ]; then
     fi
 else
     cd $vim_home/vim_origin/
+    git clean -fxd
+    git reset --hard master
 fi
 
 # for xshell mouse wheel; fix in the latest version
@@ -100,9 +102,8 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
     export LUA=d:/tool/lua
     export LUA_VER=52
     export DYNAMIC_LUA=yes
-    export PYTHON=d:/tool/python/Python27
-    export DYNAMIC_PYTHON=yes
     export PYTHON3=d:/tool/python/Python3
+    export PYTHON3_VER=37
     export DYNAMIC_PYTHON3=yes
     export ARCH=x86-64
     export OLE=yes

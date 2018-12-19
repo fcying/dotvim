@@ -17,9 +17,9 @@ echo "source ~/.vim/vimrc" > ~/.config/nvim/init.vim
 # windows: $HOME\AppData\Local\nvim\init.vim
 
 # pip.conf
-mkdir -p ~/.config/pip
-rm -vf ~/.config/pip/pip.conf
-ln -sfv $PWD/pip.conf ~/.config/pip
+#mkdir -p ~/.config/pip
+#rm -vf ~/.config/pip/pip.conf
+#ln -sfv $PWD/pip.conf ~/.config/pip
 
 # windows: $HOME\_vimrc   #use this doesn't load defaults.vim
 

@@ -1,3 +1,9 @@
+autoload -Uz compinit && compinit
+
+if [ -f "$HOME/.zshrc.pre" ]; then
+    source $HOME/.zshrc.pre
+fi
+
 # screen-256color xterm-256color
 export TERM=${ZSH_TERM:-"xterm-256color"}
 
@@ -5,40 +11,6 @@ export TERM=${ZSH_TERM:-"xterm-256color"}
 export LANG=${ZSH_LANG:-"en_US.UTF-8"}
 export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
 export LC_ALL=${ZSH_LC_ALL:-"en_US.UTF-8"}
-
-autoload -Uz compinit && compinit
-
-if [ -f "$HOME/.zshrc.pre" ]; then
-    source $HOME/.zshrc.pre
-fi
-
-install_antigen() {
-	URL="https://git.io/antigen"
-    TMPFILE="/tmp/antigen.zsh"
-    if [ -x "$(which curl)" ]; then
-		curl -sL "$URL" > $TMPFILE
-	elif [ -x "$(which wget)" ]; then
-		wget "$URL" -O $TMPFILE
-	else
-		echo "ERROR: please install curl or wget before installation"
-		exit
-	fi
-    if [ ! $? -eq 0 ]; then
-		echo ""
-		echo "ERROR: downloading antigen.zsh ($URL) failed !!"
-		exit
-	fi;
-	mv "$TMPFILE" "$antigen_file"
-}
-antigen_file="$HOME/.local/bin/antigen.zsh"
-if [ ! -f "$antigen_file" ]; then
-    [ ! -d "$HOME/.local/bin" ] && mkdir -p "$HOME/.local/bin" 2> /dev/null
-    install_antigen
-fi
-source "$antigen_file"
-antigen init $HOME/.antigen.rc
-typeset -a ANTIGEN_CHECK_FILES=($HOME/.antigenrc $HOME/.zshrc $HOME/.zshrc.pre $HOME/.zshrc.post)
-
 
 # Ensure path arrays do not contain duplicates.
 typeset -gU cdpath fpath mailpath PATH
@@ -74,6 +46,34 @@ fpath=(
     $fpath
 )
 
+
+install_antigen() {
+	URL="https://git.io/antigen"
+    TMPFILE="/tmp/antigen.zsh"
+    if [ -x "$(which curl)" ]; then
+		curl -sL "$URL" > $TMPFILE
+	elif [ -x "$(which wget)" ]; then
+		wget "$URL" -O $TMPFILE
+	else
+		echo "ERROR: please install curl or wget before installation"
+		exit
+	fi
+    if [ ! $? -eq 0 ]; then
+		echo ""
+		echo "ERROR: downloading antigen.zsh ($URL) failed !!"
+		exit
+	fi;
+	mv "$TMPFILE" "$antigen_file"
+}
+antigen_file="$HOME/.local/bin/antigen.zsh"
+if [ ! -f "$antigen_file" ]; then
+    [ ! -d "$HOME/.local/bin" ] && mkdir -p "$HOME/.local/bin" 2> /dev/null
+    install_antigen
+fi
+source "$antigen_file"
+antigen init $HOME/.antigen.rc
+typeset -a ANTIGEN_CHECK_FILES=($HOME/.antigenrc $HOME/.zshrc $HOME/.zshrc.pre $HOME/.zshrc.post)
+
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 export PYTHON_CONFIGURE_OPTS="--enable-shared"
@@ -94,6 +94,32 @@ EOF
 }
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# z.lua
+[ ! -f $HOME/bin/z.lua ] && {
+    mkdir -p ~/bin
+    pushd ~/bin > /dev/null && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd > /dev/null
+}
+eval "$(lua $HOME/bin/z.lua --init zsh once)"
+alias zi='_zlua -i'
+
+# fasd
+#fasd_cache="$HOME/.cache/.fasd-cache.zsh"
+#if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
+#    init_args=(zsh-hook)
+#    init_args+=(zsh-ccomp zsh-ccomp-install zsh-wcomp zsh-wcomp-install)
+#    fasd --init "$init_args[@]" >! "$fasd_cache" 2> /dev/null
+#fi
+#source "$fasd_cache"
+#unset fasd_cache init_args
+#function fasd_cd {
+#  local fasd_ret="$(fasd -d "$@")"
+#  if [[ -d "$fasd_ret" ]]; then
+#    cd "$fasd_ret"
+#  else
+#    print "$fasd_ret"
+#  fi
+#}
+#alias z='fasd_cd -i'
 
 # linuxbrew
 BREW_PREFIX=""
@@ -217,25 +243,6 @@ unsetopt CDABLE_VARS             # Change directory to a path stored in a variab
 # autosuggest
 bindkey '^k' autosuggest-accept
 
-# fasd
-fasd_cache="$HOME/.cache/.fasd-cache.zsh"
-if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
-    init_args=(zsh-hook)
-    init_args+=(zsh-ccomp zsh-ccomp-install zsh-wcomp zsh-wcomp-install)
-    fasd --init "$init_args[@]" >! "$fasd_cache" 2> /dev/null
-fi
-source "$fasd_cache"
-unset fasd_cache init_args
-function fasd_cd {
-  local fasd_ret="$(fasd -d "$@")"
-  if [[ -d "$fasd_ret" ]]; then
-    cd "$fasd_ret"
-  else
-    print "$fasd_ret"
-  fi
-}
-alias j='fasd_cd -i'
-
 # bind P and N for EMACS mode
 bindkey -M emacs '^P' history-substring-search-up
 bindkey -M emacs '^N' history-substring-search-down
@@ -358,18 +365,58 @@ autoload -Uz +X bashcompinit && bashcompinit
 autoload -Uz select-word-style
 select-word-style bash
 
-# WSL (aka Bash for Windows) doesn't work well with BG_NICE
-[ -d "/mnt/c" ] && [[ "$(uname -a)" == *Microsoft* ]] && unsetopt BG_NICE
+function test_highlight() {
+    print -zr '
+# Subshell, assignments, math-mode
+echo $(cat /etc/hosts |& grep -i "hello337")
+local param1="text ${+variable[test]} text ${var} text"; typeset param2='"'"'other $variable'"'"'
+math=$(( 10 + HISTSIZ + HISTSIZE + $SAVEHIST )) size=$(( 0 ))
+
+# Programming-like usage, bracket matching - through distinct colors; note the backslash quoting
+for (( ii = 1; ii <= size; ++ ii )); do
+    if [[ "${cmds[ii]} string" = "| string" ]]
+    then
+        sidx=${buffer[(in:ii:)\$\(?#[^\\\\]\)]} # find opening cmd-subst
+        (( sidx <= len + 100 )) && {
+            eidx=${buffer[(b:sidx:ii)[^\\\\]\)]} # find closing cmd-subst
+        }
+    fi
+done
+
+# Regular command-line usage
+repeat 0 {
+    zsh -i -c "cat /etc/shells* | grep -x --line-buffered -i '"'/bin/zsh'"'"
+    builtin exit $return_value
+    fast-theme -tq default
+    fsh-alias -tq default-X # alias '"'"'fsh-alias=fast-theme'"'"' works just like the previous line
+    command -v git | grep ".+git" && echo $'"'"'Git is installed'"'"'
+    git checkout -m --ours /etc/shells && git status-X
+    gem install asciidoctor
+    cat <<<$PATH | tr : \\n > /dev/null 2>/usr/local
+    man -a fopen fopen-X
+    CFLAGS="-g -Wall -O0" ./configure
+}
+'
+}
 
 function soft_update() {
     install_antigen && antigen update
     cp -f ~/.vim/etc/zsh_custom/misc.zsh ~/.antigen/bundles/robbyrussell/oh-my-zsh/lib/
-    pushd ~/.fzf && git pull && ./install <<EOF
+
+    pushd ~/.fzf > /dev/null && git pull && ./install <<EOF
     y
 EOF
-    popd
-    pushd ~/.tmux/tmux-resurrect && git pull && popd
-    pushd ~/.pyenv && git pull && popd
+    popd > /dev/null
+
+    pushd ~/.tmux/tmux-resurrect > /dev/null && git pull && popd > /dev/null
+
+    if [ -d "$HOME/.pyenv" ]; then
+        pushd ~/.pyenv > /dev/null && git pull && popd > /dev/null
+    fi
+
+    if [ -f "$HOME/bin/z.lua" ]; then
+        pushd ~/bin > /dev/null && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd > /dev/null
+    fi
 }
 
 # pacman

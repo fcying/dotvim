@@ -13,3 +13,8 @@ fi
 
 # disable terminal <c-s>
 stty -ixon
+
+# WSL (aka Bash for Windows) doesn't work well with BG_NICE
+[ -d "/mnt/c" ] && [[ "$(uname -a)" == *Microsoft* ]] && unsetopt BG_NICE
+
+

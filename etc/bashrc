@@ -137,6 +137,13 @@ EOF
 }
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
+# z.lua
+[ ! -f $HOME/bin/z.lua ] && {
+    mkdir -p ~/bin
+    pushd ~/bin && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd
+}
+eval "$(lua $HOME/bin/z.lua --init bash once)"
+
 
 # linuxbrew
 BREW_PREFIX=""

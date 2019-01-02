@@ -156,7 +156,7 @@ ZSH_GIT_PROMPT_CLEAN=${ZSH_GIT_PROMPT_CLEAN:-""}
 function _parse_git_dirty() {
     local STATUS=''
     local -a FLAGS
-    if [ $ZSH_HIDE_DIRTY == 0 ]; then
+    if [ "$ZSH_HIDE_DIRTY" -eq "0" ]; then
         FLAGS=('--porcelain')
         if [[ $POST_1_7_2_GIT -gt 0 ]]; then
             FLAGS+='--ignore-submodules=dirty'

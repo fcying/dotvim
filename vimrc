@@ -170,6 +170,10 @@ set virtualedit=onemore        "onemore all
 set foldmethod=manual
 set nofoldenable
 
+if has("patch-8.1.0360")
+  set diffopt+=internal,algorithm:patience
+endif
+
 
 " jump to the last position
 augroup vimStartup

@@ -29,8 +29,6 @@ function! InstallDeoplete(info) abort
     if g:is_nvim
       silent UpdateRemotePlugins
     else
-      " version > 0.4.10 make error in vim8
-      "silent !pip3 install greenlet==0.4.10
       silent !pip3 install neovim --upgrade
     endif
   endif

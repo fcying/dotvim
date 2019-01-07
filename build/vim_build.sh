@@ -62,7 +62,7 @@ if [ $install == "true" ]; then
         else
             echo "os Ubuntu/debian"
             sudo apt install -y build-essential libncurses5-dev libxt-dev \
-                python3-dev python2.7-dev lua5.2 liblua5.2-dev
+                python3-dev lua5.2 liblua5.2-dev
             #sudo apt install libgnome2-dev libgnomeui-dev libgtk2.0-dev libcairo2-dev libx11-dev libxpm-dev libatk1.0-dev
         fi
     fi

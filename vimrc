@@ -137,7 +137,7 @@ set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 "autocmd fcying_au FileType make setlocal expandtab softtabstop=4 
-autocmd fcying_au FileType vim,json 
+autocmd fcying_au FileType vim,json,yaml,toml
       \ setlocal shiftwidth=2 
       \ softtabstop=2 
       \ tabstop=2 

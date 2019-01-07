@@ -26,6 +26,7 @@ export CGO_CFLAGS_ALLOW=".*"
 export LD_LIBRARY_PATH=$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=$PYTHONPATH:$HOME/tool/python_script
 export RIPGREP_CONFIG_PATH=$HOME/.ripgreprc
+export SHELLCHECK_OPTS="-e SC2164"
 
 path=(
     $HOME/bin
@@ -75,9 +76,9 @@ antigen init $HOME/.antigen.rc
 typeset -a ANTIGEN_CHECK_FILES=($HOME/.antigenrc $HOME/.zshrc $HOME/.zshrc.pre $HOME/.zshrc.post)
 
 # pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-export PYTHON_CONFIGURE_OPTS="--enable-shared"
-alias pyenv_init='git clone https://github.com/pyenv/pyenv.git ~/.pyenv --depth 1'
+#export PYENV_ROOT="$HOME/.pyenv"
+#export PYTHON_CONFIGURE_OPTS="--enable-shared"
+#alias pyenv_init='git clone https://github.com/pyenv/pyenv.git ~/.pyenv --depth 1'
 
 # tmux
 if [ ! -d "$HOME/.tmux/tmux-resurrect" ]; then
@@ -133,14 +134,14 @@ function brew_enable(){
     MANPATH="$BREW_PREFIX/share/man:$MANPATH"
     INFOPATH="$BREW_PREFIX/share/info:$INFOPATH"
     export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
-    export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
+    #export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
 }
 function brew_disable(){
     export PATH=${PATH##*"linuxbrew/bin:"}
     MANPATH=${MANPATH##*"linuxbrew/share/man:"}
     INFOPATH=${INFOPATH##*"linuxbrew/share/info:"}
     export FPATH=${PATH##*"$BREW_PREFIX/share/zsh/site-functions:"}
-    export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
+    #export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
 }
 if [ ! -z "$BREW_PREFIX" ]; then
     brew_enable
@@ -410,9 +411,9 @@ EOF
 
     pushd ~/.tmux/tmux-resurrect > /dev/null && git pull && popd > /dev/null
 
-    if [ -d "$HOME/.pyenv" ]; then
-        pushd ~/.pyenv > /dev/null && git pull && popd > /dev/null
-    fi
+    #if [ -d "$HOME/.pyenv" ]; then
+    #    pushd ~/.pyenv > /dev/null && git pull && popd > /dev/null
+    #fi
 
     if [ -f "$HOME/bin/z.lua" ]; then
         pushd ~/bin > /dev/null && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd > /dev/null

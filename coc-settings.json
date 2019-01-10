@@ -1,0 +1,20 @@
+{
+  "coc.preferences.diagnostic.errorSign": "X",
+  "coc.preferences.diagnostic.warningSign": "!",
+  "coc.preferences.diagnostic.infoSign": "I",
+  "coc.preferences.diagnostic.hintSign": "H",
+  "languageserver": {
+    "clangd": {
+      "command": "clangd",
+      "rootPatterns": ["compile_flags.txt", "compile_commands.json", ".clang_complete", ".vim/", ".git/", ".hg/"],
+      "filetypes": ["c", "cpp", "objc", "objcpp"]
+    },
+    "golang": {
+      // go get -u -v github.com/GeertJohan/go.rice
+      // git clone https://github.com/saibing/bingo.git && cd bingo && go install
+      "command": "bingo",
+      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
+      "filetypes": ["go"]
+    }
+  }
+}

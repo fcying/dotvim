@@ -22,8 +22,8 @@ let g:file_vimrc = g:config_dir . '/vimrc'
 " ============================================================================
 " basic settings {{{
 " ============================================================================
-if filereadable($HOME . '/.vimrc.pre')
-  execute 'source ' . $HOME .'/.vimrc.pre'
+if filereadable($HOME . '/.vimrc.before')
+  execute 'source ' . $HOME .'/.vimrc.before'
 endif
 
 let g:mapleader = get(g:,'mapleader',';')
@@ -165,7 +165,7 @@ set wrap
 set showcmd
 "set cmdheight=1
 set virtualedit=onemore        "onemore all
-"set lazyredraw
+set lazyredraw
 
 set foldmethod=manual
 set nofoldenable
@@ -306,21 +306,10 @@ function! s:set_python_header()
 endfunction
 
 " golang
-function! GetGoTools()
+function! s:gogettools()
   if g:has_go
-    silent !echo "get -u gocode godef gotags goimports"
-    if g:is_win
-      silent !taskkill /F /IM gocode.exe
-      silent !go get -u -ldflags -H=windowsgui github.com/nsf/gocode
-      silent !gocode set lib-path %GOPATH%\pkg\windows_386
-    else
-      silent !killall gocode
-      silent !go get -u github.com/nsf/gocode
-      silent !gocode set lib-path $GOPATH/pkg/linux_amd64
-    endif
-    silent !go get -u github.com/rogpeppe/godef
-    silent !go get -u github.com/jstemmer/gotags
-    silent !go get -u golang.org/x/tools/cmd/goimports
+    silent !go get -u -v github.com/sourcegraph/go-langserver
+    silent !go get -u -v golang.org/x/tools/cmd/goimports
   endif
 endfunction
 function! s:fcy_goimports()
@@ -344,10 +333,11 @@ endfunction
 
 augroup go_lang
   autocmd!
-  autocmd BufWritePost *.go call s:fcy_goimports()
+  "autocmd BufWritePost *.go call s:fcy_goimports()
   command! -nargs=0 GoImports call s:fcy_goimports()
   command! -nargs=0 GoRun call s:fcy_gorun()
   command! -nargs=0 GoBuild call s:fcy_gobuild()
+  command! -nargs=0 GoGetTools call s:gogettools()
 augroup END
 
 " set filetype

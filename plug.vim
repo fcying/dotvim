@@ -1,4 +1,4 @@
-" deoplete ncm2 async neocomplete ycm completor coc
+" deoplete ncm2 asyncomplete neocomplete ycm completor coc
 if g:is_vim8
   let g:complete_func = get(g:, 'complete_func', 'ncm2')
 else
@@ -63,12 +63,12 @@ call add(g:plug_list, "Plug 'adah1972/tellenc'")
 call add(g:plug_list, "Plug 'bogado/file-line'")
 call add(g:plug_list, "Plug 'tpope/vim-eunuch'")
 call add(g:plug_list, "Plug 'itchyny/lightline.vim'")
+call add(g:plug_list, "Plug 'cespare/vim-toml'")
 call add(g:plug_list, "Plug 'moll/vim-bbye', {'on':'Bdelete'}")
 call add(g:plug_list, "Plug 'MattesGroeger/vim-bookmarks'")
 call add(g:plug_list, "Plug 'thinca/vim-ref'")
 call add(g:plug_list, "Plug 'tpope/vim-surround'")
 call add(g:plug_list, "Plug 'terryma/vim-expand-region'")
-"call add(g:plug_list, "Plug 'terryma/vim-multiple-cursors'")
 call add(g:plug_list, "Plug 'mg979/vim-visual-multi', {'branch': 'test'}")
 call add(g:plug_list, "Plug 'derekwyatt/vim-fswitch'")
 call add(g:plug_list, "Plug 'nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}")
@@ -85,15 +85,14 @@ call add(g:plug_list, "Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}")
 "call add(g:plug_list, "Plug 'Raimondi/delimitMate'")
 call add(g:plug_list, "Plug 'dyng/ctrlsf.vim'")
 call add(g:plug_list, "Plug 'easymotion/vim-easymotion'")
-call add(g:plug_list, "Plug 'wsdjeg/FlyGrep.vim', {'on': 'FlyGrep'}")
 call add(g:plug_list, "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}")
 "call add(g:plug_list, "Plug 'tpope/vim-fugitive'")
 call add(g:plug_list, "Plug 'Yggdroot/LeaderF', {'do': '" . s:os_do('./install.sh','.\install.bat'))
-call add(g:plug_list, "Plug 'Shougo/vimproc.vim', {'do':'" . s:os_do('make','.\Tools\update-dll-mingw.bat'))
 
 "call add(g:plug_list, "Plug 'ludovicchabant/vim-gutentags'")
 "call add(g:plug_list, "Plug 'skywind3000/gutentags_plus'")
 call add(g:plug_list, "Plug 'skywind3000/vim-preview'")
+call add(g:plug_list, "Plug 'skywind3000/asyncrun.vim'")
 call add(g:plug_list, "Plug 'jsfaint/gen_tags.vim'")
 call add(g:plug_list, "Plug 'fcying/gen_clang_conf.vim'")
 
@@ -124,20 +123,27 @@ elseif g:complete_func ==# 'ncm2'
   endif
   call add(g:plug_list, "Plug 'roxma/nvim-yarp'")
   call add(g:plug_list, "Plug 'ncm2/ncm2', {'do': 'pip3 install neovim jedi --upgrade'}")
-  call add(g:plug_list, "Plug 'ncm2/ncm2-bufword'")
   if g:is_win ==# 0
     call add(g:plug_list, "Plug 'ncm2/ncm2-tmux'")
   endif
+  call add(g:plug_list, "Plug 'ncm2/ncm2-bufword'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-path'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-pyclang'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-jedi'")
-  call add(g:plug_list, "Plug 'ncm2/ncm2-go'")
+  "curl https://sh.rustup.rs -sSf | sh
+  "rustup toolchain add nightly && cargo +nightly install racer && rustup component add rust-src
+  call add(g:plug_list, "Plug 'ncm2/ncm2-racer'")
+  "call add(g:plug_list, "Plug 'ncm2/ncm2-go'")
+  call add(g:plug_list, "Plug 'prabirshrestha/async.vim'")
+  call add(g:plug_list, "Plug 'prabirshrestha/vim-lsp'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-vim-lsp'")
   call add(g:plug_list, "Plug 'jsfaint/ncm2-vim'")
   call add(g:plug_list, "Plug 'Shougo/neco-vim'")
   call add(g:plug_list, "Plug 'jsfaint/ncm2-syntax'")
   call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
 elseif g:complete_func ==# 'coc'
-  call add(g:plug_list, "Plug 'neoclide/coc.nvim', {'do': './install.sh'}")
+  call add(g:plug_list, "Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}")
+  call add(g:plug_list, "Plug 'neoclide/jsonc.vim'")
 elseif g:complete_func ==# 'neocomplete'
   if has('lua')
     call add(g:plug_list, "Plug 'Shougo/neocomplete'")
@@ -148,7 +154,7 @@ elseif g:complete_func ==# 'neocomplete'
     call add(g:plug_list, "Plug 'nsf/gocode', {'do':function('BuildGoCode'), 'for':'go'}")
     call add(g:plug_list, "Plug 'dgryski/vim-godef', {'for':'go'}")
   endif
-elseif g:complete_func ==# 'async'
+elseif g:complete_func ==# 'asyncomplete'
   call add(g:plug_list, "Plug 'prabirshrestha/async.vim'")
   call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete.vim'")
   call add(g:plug_list, "Plug 'prabirshrestha/vim-lsp'")
@@ -159,7 +165,6 @@ elseif g:complete_func ==# 'async'
   call add(g:plug_list, "Plug 'yami-beta/asyncomplete-omni.vim'")
   call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-necosyntax.vim'")
   call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-necovim.vim'")
-  call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-gocode.vim'")
 elseif g:complete_func ==# 'completor'
   call add(g:plug_list, "Plug 'maralla/completor.vim'")
 elseif g:complete_func ==# 'ycm'
@@ -312,6 +317,11 @@ if (FindPlug('gutentags_plus') != -1)
   let g:gutentags_generate_on_missing = 0
   let g:gutentags_generate_on_new = 0
   let g:gutentags_generate_on_write = 0
+endif
+
+if (FindPlug('asyncrun') != -1)
+  let g:asyncrun_silent = 0
+  autocmd User AsyncRunStop :echo "AsyncRunStop"
 endif
 
 if (FindPlug('lightline') != -1)
@@ -470,16 +480,6 @@ if (FindPlug('asyncomplete.vim') != -1) "{{{
           \ 'completor': function('asyncomplete#sources#necovim#completor'),
           \ }))
   endif
-  if (FindPlug('asyncomplete-gocode.vim') != -1)
-    call asyncomplete#register_source(asyncomplete#sources#gocode#get_source_options({
-          \ 'name': 'gocode',
-          \ 'whitelist': ['go'],
-          \ 'completor': function('asyncomplete#sources#gocode#completor'),
-          \ 'config': {
-          \    'gocode_path': expand('~/go/bin/gocode')
-          \  },
-          \ }))
-  endif
   if (FindPlug('asyncomplete-omni.vim') != -1)
     call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
           \ 'name': 'omni',
@@ -491,12 +491,21 @@ if (FindPlug('asyncomplete.vim') != -1) "{{{
 endif "}}}
 
 if (FindPlug('vim-lsp') != -1)
-  if executable('pyls')
-    " pip install python-language-server
-    autocmd fcying_au User lsp_setup call lsp#register_server({
-          \ 'name': 'pyls',
-          \ 'cmd': {server_info->['pyls']},
-          \ 'whitelist': ['python'],
+  ""go get -u -v github.com/GeertJohan/go.rice
+  ""git clone https://github.com/saibing/bingo.git && cd bingo && go install
+  "if executable('bingo')
+  "  au User lsp_setup call lsp#register_server({
+  "        \ 'name': 'bingo',
+  "        \ 'cmd': {server_info->['bingo', '-mode', 'stdio']},
+  "        \ 'whitelist': ['go'],
+  "        \ })
+  "endif
+  "go get -u github.com/sourcegraph/go-langserver
+  if executable('go-langserver')
+    au User lsp_setup call lsp#register_server({
+          \ 'name': 'go-lsp',
+          \ 'cmd': {server_info->['go-langserver', '-gocodecompletion']},
+          \ 'whitelist': ['go'],
           \ })
   endif
 endif
@@ -548,6 +557,10 @@ if (FindPlug('jedi-vim') != -1)
   let g:jedi#auto_close_doc = 1
 endif
 
+if (FindPlug('coc') != -1)
+  imap <c-l> coc#refresh()
+endif
+
 if (FindPlug('ncm2') != -1)
   "let $NVIM_PYTHON_LOG_FILE="/home/pub/ncm2_log"
   "let $NVIM_NCM_LOG_LEVEL="DEBUG"
@@ -562,7 +575,7 @@ if (FindPlug('ncm2') != -1)
   "let g:ncm2#sorter = 'abbrfuzzy'
   if !exists('g:ncm2_pyclang#library_path')
     if g:is_win
-      let g:ncm2_pyclang#library_path = 'D:\tool\LLVM\bin'
+      let g:ncm2_pyclang#library_path = 'd:\tool\scoop\apps\llvm\current\bin\'
     else
       let g:ncm2_pyclang#library_path = '/usr/lib/llvm-6.0/lib/libclang.so.1'
     endif
@@ -815,6 +828,20 @@ if (FindPlug('LeaderF') != -1)
         \}
 
   let g:Lf_CommandMap = {'<F5>': ['<C-L>']}
+  let g:Lf_RgConfig = [
+        \ "--glob=!git/*",
+        \ "--glob=!**/.repo/*",
+        \ "--glob=!**/.ccache/*",
+        \ "--glob=!**/GTAGS",
+        \ "--glob=!**/GRTAGS",
+        \ "--glob=!**/GPATH",
+        \ "--glob=!**/tags",
+        \ "--glob=!**/prj_tags",
+        \ "--glob=!**/.clang_complete",
+        \ "--iglob=!**/obj/*",
+        \ "--iglob=!**/out/*",
+        \ "--hidden"
+        \ ]
 
   nnoremap ff :<C-u>Leaderf file<CR>
   nnoremap fb :<C-u>Leaderf buffer<CR>
@@ -823,7 +850,11 @@ if (FindPlug('LeaderF') != -1)
   nnoremap fm :<C-u>Leaderf mru<CR>
   nnoremap fh :<C-u>Leaderf searchHistory<CR>
   nnoremap fl :<C-u>Leaderf line --regex<CR>
-  nnoremap fg :<C-u>Leaderf rg -e 
+  nnoremap ft :<C-U>Leaderf! rg --recall<CR>
+  nnoremap fg :<C-u><C-R>=printf("Leaderf! rg -e %s", expand("<cword>"))<CR><CR>
+  nnoremap fG :<C-u><C-R>=printf("Leaderf! rg -e ")<CR>
+  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg -F -e %s", leaderf#Rg#visual())<CR><CR>
+  xnoremap fG :<C-u><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
   nnoremap fs :<C-u>CtrlSF 
   nnoremap fi :exec "Leaderf file --regex --input " . <SID>StripInclude(getline("."))<CR>
   function! s:StripInclude(line)
@@ -978,21 +1009,6 @@ endif
 if (FindPlug('fencview') != -1)
   let g:fencview_autodetect = 1
   let g:fencview_checklines = 10
-endif
-
-if (FindPlug('gocode') != -1)
-  "start gocode first
-  function! s:fcy_CallGocode()
-    if !exists('g:startGocode')
-      call vimproc#system_bg('gocode')
-      let g:startGocode = 1
-    endif
-  endfunction
-  autocmd fcying_au VimEnter *.go call s:fcy_CallGocode()
-
-  "let g:gocomplete#system_function = 'vimproc#system'
-  let g:godef_split=0
-  let g:godef_same_file_in_same_window=1
 endif
 
 if (FindPlug('nerdcommenter') != -1)

@@ -1,6 +1,7 @@
 export EDITOR='vim'
 export VISUAL='vim'
 export PAGER='less'
+
 # Set the default Less options.
 # Mouse-wheel scrolling has been disabled by -X (disable screen clearing).
 # Remove -X and -F (exit if the content fits on one screen) to enable it.
@@ -13,8 +14,3 @@ fi
 
 # disable terminal <c-s>
 stty -ixon
-
-# WSL (aka Bash for Windows) doesn't work well with BG_NICE
-[ -d "/mnt/c" ] && [[ "$(uname -a)" == *Microsoft* ]] && unsetopt BG_NICE
-
-

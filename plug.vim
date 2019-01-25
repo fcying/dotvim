@@ -95,6 +95,7 @@ call add(g:plug_list, "Plug 'skywind3000/vim-preview'")
 call add(g:plug_list, "Plug 'skywind3000/asyncrun.vim'")
 call add(g:plug_list, "Plug 'jsfaint/gen_tags.vim'")
 call add(g:plug_list, "Plug 'fcying/gen_clang_conf.vim'")
+call add(g:plug_list, "Plug 'mattn/emmet-vim'")
 
 if g:complete_func ==# 'deoplete'
   call add(g:plug_list, "Plug 'Shougo/deoplete.nvim', {'do': function('InstallDeoplete')}")
@@ -123,23 +124,27 @@ elseif g:complete_func ==# 'ncm2'
   endif
   call add(g:plug_list, "Plug 'roxma/nvim-yarp'")
   call add(g:plug_list, "Plug 'ncm2/ncm2', {'do': 'pip3 install neovim jedi --upgrade'}")
+  call add(g:plug_list, "Plug 'prabirshrestha/async.vim'")
+  call add(g:plug_list, "Plug 'prabirshrestha/vim-lsp'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-vim-lsp'")
   if g:is_win ==# 0
     call add(g:plug_list, "Plug 'ncm2/ncm2-tmux'")
   endif
   call add(g:plug_list, "Plug 'ncm2/ncm2-bufword'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-path'")
+  call add(g:plug_list, "Plug 'yuki-ycino/ncm2-dictionary'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-cssomni'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-html-subscope'")
+  "call add(g:plug_list, "Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}")
   call add(g:plug_list, "Plug 'ncm2/ncm2-pyclang'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-jedi'")
   "curl https://sh.rustup.rs -sSf | sh
   "rustup toolchain add nightly && cargo +nightly install racer && rustup component add rust-src
   call add(g:plug_list, "Plug 'ncm2/ncm2-racer'")
   "call add(g:plug_list, "Plug 'ncm2/ncm2-go'")
-  call add(g:plug_list, "Plug 'prabirshrestha/async.vim'")
-  call add(g:plug_list, "Plug 'prabirshrestha/vim-lsp'")
-  call add(g:plug_list, "Plug 'ncm2/ncm2-vim-lsp'")
-  call add(g:plug_list, "Plug 'jsfaint/ncm2-vim'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-vim'")
   call add(g:plug_list, "Plug 'Shougo/neco-vim'")
-  call add(g:plug_list, "Plug 'jsfaint/ncm2-syntax'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-syntax'")
   call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
 elseif g:complete_func ==# 'coc'
   call add(g:plug_list, "Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}")
@@ -321,7 +326,7 @@ endif
 
 if (FindPlug('asyncrun') != -1)
   let g:asyncrun_silent = 0
-  autocmd User AsyncRunStop :echo "AsyncRunStop"
+  autocmd User AsyncRunStop :echo 'AsyncRunStop'
 endif
 
 if (FindPlug('lightline') != -1)
@@ -829,18 +834,18 @@ if (FindPlug('LeaderF') != -1)
 
   let g:Lf_CommandMap = {'<F5>': ['<C-L>']}
   let g:Lf_RgConfig = [
-        \ "--glob=!git/*",
-        \ "--glob=!**/.repo/*",
-        \ "--glob=!**/.ccache/*",
-        \ "--glob=!**/GTAGS",
-        \ "--glob=!**/GRTAGS",
-        \ "--glob=!**/GPATH",
-        \ "--glob=!**/tags",
-        \ "--glob=!**/prj_tags",
-        \ "--glob=!**/.clang_complete",
-        \ "--iglob=!**/obj/*",
-        \ "--iglob=!**/out/*",
-        \ "--hidden"
+        \ '--glob=!.git/*',
+        \ '--glob=!**/.repo/*',
+        \ '--glob=!**/.ccache/*',
+        \ '--glob=!**/GTAGS',
+        \ '--glob=!**/GRTAGS',
+        \ '--glob=!**/GPATH',
+        \ '--glob=!**/tags',
+        \ '--glob=!**/prj_tags',
+        \ '--glob=!**/.clang_complete',
+        \ '--iglob=!**/obj/*',
+        \ '--iglob=!**/out/*',
+        \ '--hidden'
         \ ]
 
   nnoremap ff :<C-u>Leaderf file<CR>
@@ -851,10 +856,9 @@ if (FindPlug('LeaderF') != -1)
   nnoremap fh :<C-u>Leaderf searchHistory<CR>
   nnoremap fl :<C-u>Leaderf line --regex<CR>
   nnoremap ft :<C-U>Leaderf! rg --recall<CR>
-  nnoremap fg :<C-u><C-R>=printf("Leaderf! rg -e %s", expand("<cword>"))<CR><CR>
+  nnoremap fg :<C-u><C-R>=printf("Leaderf! rg -e %s", expand("<cword>"))<CR>
   nnoremap fG :<C-u><C-R>=printf("Leaderf! rg -e ")<CR>
-  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg -F -e %s", leaderf#Rg#visual())<CR><CR>
-  xnoremap fG :<C-u><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg -F -e %s", leaderf#Rg#visual())<CR>
   nnoremap fs :<C-u>CtrlSF 
   nnoremap fi :exec "Leaderf file --regex --input " . <SID>StripInclude(getline("."))<CR>
   function! s:StripInclude(line)
@@ -1105,6 +1109,11 @@ if (FindPlug('vimshell') != -1)
         \ 'escape(fnamemodify(getcwd(), ":~").">", "\\[]()?! ")." "'
   let g:vimshell_prompt_pattern = '^\%(\f\|\\.\)\+> '
   let g:vimshell_no_default_keymappings=0
+endif
+
+if (FindPlug('emmet-vim') != -1)
+  let g:user_emmet_install_global = 0
+  autocmd fcying_au FileType html,css EmmetInstall
 endif
 
 "if (FindPlug('delimitMate') != -1)

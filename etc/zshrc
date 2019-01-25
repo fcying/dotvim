@@ -1,11 +1,19 @@
 autoload -Uz compinit && compinit
 
 if [ -f "$HOME/.zshrc.before" ]; then
-    source $HOME/.zshrc.before
+    source "$HOME/.zshrc.before"
 fi
 
 # WSL (aka Bash for Windows) doesn't work well with BG_NICE
-[ -d "/mnt/c" ] && [[ "$(uname -a)" == *Microsoft* ]] && unsetopt BG_NICE
+[ -d "/mnt/c" ] && [[ "$(uname -a)" == *Microsoft* ]] && {
+    export PATH=$PATH:/mnt/c/Windows/System32
+    # disable nice(5) failed
+    unsetopt BG_NICE
+    # autoset dns
+    DNS=$(/mnt/c/Windows/System32/ipconfig.exe /all | grep -P "DNS Servers.*?([0-9]+\.){3}[0-9]+" | cut -d: -f2)
+    [[ -n $DNS ]] && echo "nameserver $DNS" > /etc/resolv.conf
+    echo "nameserver 114.114.114.114" >> /etc/resolv.conf
+}
 
 # screen-256color xterm-256color
 export TERM=${ZSH_TERM:-"xterm-256color"}
@@ -25,14 +33,16 @@ export QT_VERSION=5.12.0
 export QT_DIR=$HOME/qt
 #export QT_WEBKIT=true
 export LD_LIBRARY_PATH=$HOME/bin/lib:$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
+export PKG_CONFIG_PATH=$HOME/qt/$QT_VERSION/gcc_64/lib/pkgconfig:$PKG_CONFIG_PATH
 export PYTHONPATH=$PYTHONPATH:$HOME/tool/python_script
 export RIPGREP_CONFIG_PATH=$HOME/.ripgreprc
-export SHELLCHECK_OPTS="-e SC2164"
+export SHELLCHECK_OPTS="-e SC2164 -e SC1090"
 export RUST_SRC_PATH=$HOME/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src
 
 path=(
     $HOME/bin
     $HOME/tool/go/bin
+    $HOME/.local/bin
     $HOME/qt/$QT_VERSION/gcc_64/bin
     $GOPATH/bin
     $HOME/.cargo/bin
@@ -480,5 +490,5 @@ export USE_CCACHE=1
 
 
 if [ -f "$HOME/.zshrc.after" ]; then
-    source $HOME/.zshrc.after
+    source "$HOME/.zshrc.after"
 fi

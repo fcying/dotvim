@@ -123,10 +123,14 @@ elseif g:complete_func ==# 'ncm2'
     call add(g:plug_list, "Plug 'roxma/vim-hug-neovim-rpc'")
   endif
   call add(g:plug_list, "Plug 'roxma/nvim-yarp'")
-  call add(g:plug_list, "Plug 'ncm2/ncm2', {'do': 'pip3 install neovim jedi --upgrade'}")
+  call add(g:plug_list, "Plug 'ncm2/ncm2', {'do': 'pip3 install neovim python-language-server[all] --upgrade'}")
+  "call add(g:plug_list, "Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do':'" . 
+        "\ s:os_do('bash install.sh', 
+        "\ 'powershell -executionpolicy bypass -File install.ps1'))
   call add(g:plug_list, "Plug 'prabirshrestha/async.vim'")
   call add(g:plug_list, "Plug 'prabirshrestha/vim-lsp'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-vim-lsp'")
+  call add(g:plug_list, "Plug 'ryanolsonx/vim-lsp-python'")
   if g:is_win ==# 0
     call add(g:plug_list, "Plug 'ncm2/ncm2-tmux'")
   endif
@@ -137,7 +141,7 @@ elseif g:complete_func ==# 'ncm2'
   call add(g:plug_list, "Plug 'ncm2/ncm2-html-subscope'")
   "call add(g:plug_list, "Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}")
   call add(g:plug_list, "Plug 'ncm2/ncm2-pyclang'")
-  call add(g:plug_list, "Plug 'ncm2/ncm2-jedi'")
+  "call add(g:plug_list, "Plug 'ncm2/ncm2-jedi'")
   "curl https://sh.rustup.rs -sSf | sh
   "rustup toolchain add nightly && cargo +nightly install racer && rustup component add rust-src
   call add(g:plug_list, "Plug 'ncm2/ncm2-racer'")
@@ -393,15 +397,68 @@ endif
 if (FindPlug('LanguageClient-neovim') != -1)
   " Required for operations modifying multiple buffers like rename.
   set hidden
-  nnoremap <silent> K :call LanguageClient_textDocument_hover()<CR>
-  nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
-  nnoremap <silent> <leader>lr :call LanguageClient_textDocument_rename()<CR>
-  nnoremap <silent> <leader>lc :call LanguageClient_contextMenu()<CR>
+  nnoremap <silent> <leader>ld :call LanguageClient#textDocument_definition()<CR>
+  nnoremap <silent> <leader>lr :call LanguageClient#textDocument_rename()<CR>
+  nnoremap <silent> <leader>lf :call LanguageClient#textDocument_formatting()<CR>
+  nnoremap <silent> <leader>lt :call LanguageClient#textDocument_typeDefinition()<CR>
+  nnoremap <silent> <leader>lx :call LanguageClient#textDocument_references()<CR>
+  nnoremap <silent> <leader>la :call LanguageClient_workspace_applyEdit()<CR>
+  nnoremap <silent> <leader>lc :call LanguageClient#textDocument_completion()<CR>
+  nnoremap <silent> <leader>lh :call LanguageClient#textDocument_hover()<CR>
+  nnoremap <silent> <leader>ls :call LanguageClient_textDocument_documentSymbol()<CR>
+  nnoremap <silent> <leader>lm :call LanguageClient_contextMenu()<CR>
 
-  "pip3 install python-language-server
+  " pip3 install 'python-language-server[all]'
   let g:LanguageClient_serverCommands = {
+        \ 'go': ['go-langserver'],
+        \ 'rust': ['rls'],
         \ 'python': ['pyls'],
         \ }
+endif
+
+if (FindPlug('vim-lsp') != -1)
+  nnoremap <silent> <leader>ld :LspDefinition<CR>
+  nnoremap <silent> <leader>lr :LspRename<CR>
+  nnoremap <silent> <leader>lf :LspDocumentFormat<CR>
+  nnoremap <silent> <leader>lt :LspTypeDefinition<CR>
+  nnoremap <silent> <leader>lx :LspReferences<CR>
+  nnoremap <silent> <leader>lc :LspCodeAction<CR>
+  nnoremap <silent> <leader>lh :LspHover<CR>
+  nnoremap <silent> <leader>ls :LspWorkspaceSymbol<CR>
+  nnoremap <silent> <leader>lm :LspImplementation<CR>
+
+  ""go get -u -v github.com/GeertJohan/go.rice
+  ""git clone https://github.com/saibing/bingo.git && cd bingo && go install
+  "if executable('bingo')
+  "  au User lsp_setup call lsp#register_server({
+  "        \ 'name': 'bingo',
+  "        \ 'cmd': {server_info->['bingo', '-mode', 'stdio']},
+  "        \ 'whitelist': ['go'],
+  "        \ })
+  "endif
+  "go get -u -v github.com/sourcegraph/go-langserver
+  if executable('go-langserver')
+    au User lsp_setup call lsp#register_server({
+          \ 'name': 'go-lsp',
+          \ 'cmd': {server_info->['go-langserver', '-gocodecompletion']},
+          \ 'whitelist': ['go'],
+          \ })
+  endif
+  " pip3 install 'python-language-server[all]'
+  if executable('pyls')
+    au User lsp_setup call lsp#register_server({
+          \ 'name': 'pyls',
+          \ 'cmd': {server_info->['pyls']},
+          \ 'whitelist': ['python'],
+          \ })
+  endif
+  "if executable('clangd')
+  "  au User lsp_setup call lsp#register_server({
+  "        \ 'name': 'clangd',
+  "        \ 'cmd': {server_info->['clangd']},
+  "        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+  "        \ })
+  "endif
 endif
 
 if (FindPlug('neosnippet.vim') != -1)
@@ -494,26 +551,6 @@ if (FindPlug('asyncomplete.vim') != -1) "{{{
           \  }))
   endif
 endif "}}}
-
-if (FindPlug('vim-lsp') != -1)
-  ""go get -u -v github.com/GeertJohan/go.rice
-  ""git clone https://github.com/saibing/bingo.git && cd bingo && go install
-  "if executable('bingo')
-  "  au User lsp_setup call lsp#register_server({
-  "        \ 'name': 'bingo',
-  "        \ 'cmd': {server_info->['bingo', '-mode', 'stdio']},
-  "        \ 'whitelist': ['go'],
-  "        \ })
-  "endif
-  "go get -u github.com/sourcegraph/go-langserver
-  if executable('go-langserver')
-    au User lsp_setup call lsp#register_server({
-          \ 'name': 'go-lsp',
-          \ 'cmd': {server_info->['go-langserver', '-gocodecompletion']},
-          \ 'whitelist': ['go'],
-          \ })
-  endif
-endif
 
 if (FindPlug('YouCompleteMe') != -1) "{{{
   "let g:ycm_key_list_select_completion=['<c-n>']

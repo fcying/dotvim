@@ -6,13 +6,19 @@ fi
 
 # WSL (aka Bash for Windows) doesn't work well with BG_NICE
 [ -d "/mnt/c" ] && [[ "$(uname -a)" == *Microsoft* ]] && {
-    export PATH=$PATH:/mnt/c/Windows/System32
+    export PATH=$PATH:/mnt/d/tool/scoop/shims:/mnt/c/Windows/System32
     # disable nice(5) failed
     unsetopt BG_NICE
     # autoset dns
     DNS=$(/mnt/c/Windows/System32/ipconfig.exe /all | grep -P "DNS Servers.*?([0-9]+\.){3}[0-9]+" | cut -d: -f2)
     [[ -n $DNS ]] && echo "nameserver $DNS" > /etc/resolv.conf
     echo "nameserver 114.114.114.114" >> /etc/resolv.conf
+    # docker
+    type docker-machine.exe >/dev/null 2>&1 && {
+        export DOCKER_TLS_VERIFY=1
+        export DOCKER_CERT_PATH=$HOME/tool/.docker/machine/machines/default
+        export DOCKER_HOST=tcp://192.168.99.100:2376
+    }
 }
 
 # screen-256color xterm-256color
@@ -28,7 +34,7 @@ typeset -gU cdpath fpath mailpath PATH
 
 # Set the list of directories that Zsh searches for programs.
 export GOPATH=$HOME/go
-export QT_VERSION=5.12.0
+export QT_VERSION=5.12.1
 #export GO111MODULE=on
 export QT_DIR=$HOME/qt
 #export QT_WEBKIT=true
@@ -49,6 +55,7 @@ path=(
     /snap/bin
     $HOME/.yarn/bin
     $HOME/.config/yarn/global/node_modules/.bin
+    $HOME/node_modules/.bin
     /usr/local/{sbin,bin}
     /usr/{sbin,bin}
     /{sbin,bin}

@@ -395,7 +395,7 @@ augroup go_lang
 augroup END
 
 " set filetype
-autocmd fcying_au BufNewFile,BufRead *.qml setl filetype=qml
+"autocmd fcying_au BufNewFile,BufRead *.qml setl filetype=qml
 autocmd fcying_au BufNewFile,BufRead *.conf setl filetype=conf
 autocmd fcying_au BufNewFile,BufRead .vimconf setl filetype=vim
 

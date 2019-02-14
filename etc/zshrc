@@ -122,25 +122,14 @@ EOF
 eval "$(lua $HOME/bin/z.lua --init zsh once)"
 export _ZL_MATCH_MODE=1
 alias zi='_zlua -i'
-
-# fasd
-#fasd_cache="$HOME/.cache/.fasd-cache.zsh"
-#if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
-#    init_args=(zsh-hook)
-#    init_args+=(zsh-ccomp zsh-ccomp-install zsh-wcomp zsh-wcomp-install)
-#    fasd --init "$init_args[@]" >! "$fasd_cache" 2> /dev/null
-#fi
-#source "$fasd_cache"
-#unset fasd_cache init_args
-#function fasd_cd {
-#  local fasd_ret="$(fasd -d "$@")"
-#  if [[ -d "$fasd_ret" ]]; then
-#    cd "$fasd_ret"
-#  else
-#    print "$fasd_ret"
-#  fi
-#}
-#alias z='fasd_cd -i'
+function z_dirstack(){
+    if [ -z "$*" ]; then
+        _zlua --
+    else
+        _zlua -"$@"
+    fi
+}
+alias d=' z_dirstack'
 
 # linuxbrew
 BREW_PREFIX=""
@@ -200,34 +189,6 @@ function _git_prompt_info() {
 
 PROMPT='%F{green}%n@%m%f:%B%F{blue}%~%b%f %F{red}$(_git_prompt_info)%f%(!.#.$) '
 #RPROMPT='%F{blue}$(date +%H:%M:%S)'
-
-
-# Save dirstack history to .zdirs
-DIRSTACKSIZE=${DIRSTACKSIZE:-10}
-dirstack_file_dir=${dirstack_file_dir:-${HOME}/.cache}
-dirstack_file=${dirstack_file:-${dirstack_file_dir}/zdirs}
-if [ ! -d ${dirstack_file_dir} ]; then
-    mkdir -p ${dirstack_file_dir}
-fi
-if [[ -f ${dirstack_file} ]] && [[ ${#dirstack[*]} -eq 0 ]]; then
-    sed -i "\|^${PWD}$|d" $dirstack_file
-    dirstack=( ${(f)"$(< $dirstack_file)"} )
-    #"cd -" won't work after login by just setting $OLDPWD, so
-    [[ -d $dirstack[1] ]] && cd $dirstack[1] && cd $OLDPWD
-fi
-chpwd_functions+=(chpwd_dirpersist)
-chpwd_dirpersist() {
-    if (( $DIRSTACKSIZE <= 0 )) || [[ -z $dirstack_file ]]; then return; fi
-    local -ax my_stack
-    my_stack=( ${PWD} ${dirstack} )
-    builtin print -l ${(u)my_stack} >! ${dirstack_file}
-}
-
-# after cd, run ls
-function chpwd() {
-    emulate -L zsh
-    ls -A --color=auto
-}
 
 # Predictable SSH authentication socket location.
 SOCK="/tmp/ssh-agent-$USER-screen"
@@ -419,22 +380,25 @@ repeat 0 {
 }
 
 function soft_update() {
+    pushd ~/.antigen/bundles/robbyrussell/oh-my-zsh
+    git checkout .
+    popd
     install_antigen && antigen update
     cp -f ~/.vim/etc/zsh_custom/misc.zsh ~/.antigen/bundles/robbyrussell/oh-my-zsh/lib/
 
     pushd ~/.fzf > /dev/null && git pull && ./install <<EOF
     y
 EOF
-    popd > /dev/null
+    popd
 
-    pushd ~/.tmux/tmux-resurrect > /dev/null && git pull && popd > /dev/null
+    pushd ~/.tmux/tmux-resurrect > /dev/null && git pull && popd
 
     #if [ -d "$HOME/.pyenv" ]; then
-    #    pushd ~/.pyenv > /dev/null && git pull && popd > /dev/null
+    #    pushd ~/.pyenv && git pull && popd
     #fi
 
     if [ -f "$HOME/bin/z.lua" ]; then
-        pushd ~/bin > /dev/null && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd > /dev/null
+        pushd ~/bin && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd
     fi
 }
 
@@ -449,14 +413,16 @@ alias pacu='sudo pacman -U'
 alias pacautoremove='sudo pacman -Rs $(pacman -Qtdq)'
 alias pacrns='sudo pacman -Rns'
 
+function cdls { builtin cd "$@" && ls; }
+alias cd=' cdls'
 alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_history'
 alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
 alias vi='vim'
 alias py='python3'
 alias py2='python2'
 alias py3='python3'
-alias ls='ls --color=auto'
-alias ll='ls -alh'
+alias ls=' ls --color=auto'
+alias ll=' ls -alh'
 alias tmux=' tmux -2'
 alias ta=' tmux a; [ $? == 1 ] && tmux'
 alias tl=' tmux ls'

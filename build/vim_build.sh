@@ -137,7 +137,7 @@ else
 --enable-multibyte \
 --enable-cscope \
 --enable-rubyinterp=dynamic \
---enable-python3interp=dynamic \
+--enable-python3interp --with-python3-command=python3 \
 --enable-luainterp=dynamic \
 --enable-perlinterp=dynamic \
 --prefix=$prefix \

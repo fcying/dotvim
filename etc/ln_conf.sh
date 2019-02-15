@@ -1,14 +1,16 @@
 #!/bin/bash
 
-cd `dirname $0`
+cd $(dirname $0) 
+config_dir=$PWD
 
-ln -sfv $PWD/zprofile ~/.zprofile
+if [ -f $HOME/.zshrc.local ]; then
+    sed -i "/CONFIG_DIR/d" $HOME/.zshrc.local
+fi
+echo "CONFIG_DIR=$config_dir" | tee -a $HOME/.zshrc.local
 ln -sfv $PWD/zshrc ~/.zshrc
 ln -sfv $PWD/bashrc ~/.bashrc
 ln -sfv $PWD/tigrc ~/.tigrc
 ln -sfv $PWD/tmux.conf ~/.tmux.conf
-ln -sfv $PWD/antigen.rc ~/.antigen.rc
-ln -sfv $PWD/ripgreprc ~/.ripgreprc
 
 # nvim
 mkdir -p ~/.config/nvim

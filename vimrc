@@ -1,7 +1,7 @@
 " check environment {{{
 if &compatible
   set nocompatible
-endif    
+endif
 
 let g:is_osx = has('macunix')
 let g:is_lin = has('unix') && !has('macunix') && !has('win32unix')
@@ -10,10 +10,13 @@ let g:is_nvim = has('nvim')
 let g:is_vim8 = v:version >= 800 ? 1 : 0
 let g:has_go = executable('go') ? 1 : 0
 let s:is_gui = has('gui_running')
+let g:is_tmux = &term =~# '^screen' ? 1 : 0
 
 let g:config_dir = expand('<sfile>:p:h')
 let g:file_plug = g:config_dir . '/plug.vim'
 let g:file_vimrc = g:config_dir . '/vimrc'
+let g:file_vimrc_local = $HOME .'/.vimrc.local'
+
 
 "}}}
 
@@ -22,8 +25,8 @@ let g:file_vimrc = g:config_dir . '/vimrc'
 " ============================================================================
 " basic settings {{{
 " ============================================================================
-if filereadable($HOME . '/.vimrc.before')
-  execute 'source ' . $HOME .'/.vimrc.before'
+if filereadable(g:file_vimrc_local)
+  execute 'source ' . g:file_vimrc_local
 endif
 
 let g:mapleader = get(g:,'mapleader',';')
@@ -43,9 +46,11 @@ syntax enable
 
 "autocmd! bufwritepost _vimrc source $MYVIMRC
 nnoremap <leader>ev :execute 'e ' . g:file_vimrc<CR>
+nnoremap <leader>el :execute 'e ' . g:file_vimrc_local<CR>
 nnoremap <leader>ep :execute 'e ' . g:file_plug<CR>
 nnoremap <leader>sv :execute 'source ' . g:file_vimrc<CR>
 nnoremap <leader>ez :e ~/.zshrc<CR>
+nnoremap <leader>ezl :e ~/.zshrc.local<CR>
 
 if g:is_nvim ==# 0
   if g:is_win
@@ -67,12 +72,12 @@ if s:is_gui
 else
   set mouse=nv
 endif
-if &term =~# '^screen'
+if g:is_tmux
   " tmux knows the extended mouse mode
   set ttymouse=xterm2
 endif
 "close beep
-set visualbell t_vb=       
+set visualbell t_vb=
 set novisualbell
 set noerrorbells
 autocmd fcying_au VimEnter * set shellredir=>
@@ -96,15 +101,20 @@ set hidden
 set noswapfile
 set nobackup
 set nowritebackup
+set undofile
+execute 'set undodir=' . g:config_dir . '/.cache/undodir'
+if !isdirectory(g:config_dir . '/.cache/undodir')
+  call mkdir(g:config_dir . '/.cache/undodir', 'p')
+endif
 set splitright
 set splitbelow
 set noautochdir
-set regexpengine=1        " use old re, for speed syntax 
+set regexpengine=1        " use old re, for speed syntax
 set updatetime=500
 set autoread
 augroup checktime
   au!
-  if !has('gui_running')
+  if !s:is_gui
     "silent! necessary otherwise throws errors when using command line window.
     autocmd FocusGained,BufEnter        * silent! checktime
     autocmd CursorHold                  * silent! checktime
@@ -136,23 +146,24 @@ set expandtab        "%retab
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
-"autocmd fcying_au FileType make setlocal expandtab softtabstop=4 
-autocmd fcying_au FileType vim,json,yaml,toml
-      \ setlocal shiftwidth=2 
-      \ softtabstop=2 
-      \ tabstop=2 
+autocmd fcying_au FileType go setlocal noexpandtab
+autocmd fcying_au FileType vim,json,yaml,toml,dosbatch
+      \ setlocal shiftwidth=2
+      \ softtabstop=2
+      \ tabstop=2
       \ expandtab
+
 set autoindent
 set smartindent
 set cindent
 set indentexpr=""
-set backspace=indent,eol,start 
+set backspace=indent,eol,start
 set whichwrap+=<,>,[,],h,l
 set iskeyword -=-
 set iskeyword -=.
 "aligin #
 set cinkeys-=0#
-"inoremap # X#        
+"inoremap # X#
 "set iskeyword -=#
 autocmd fcying_au FileType * setlocal formatoptions-=o formatoptions+=mM
 
@@ -202,8 +213,8 @@ func! GetVisualSelection() abort
     let [lnum1, col1] = getpos("'<")[1:2]
     let [lnum2, col2] = getpos("'>")[1:2]
     let lines = getline(lnum1, lnum2)
-    let lines[-1] = lines[-1][: col2 - (&selection ==# 'inclusive' ? 1 : 2)] 
-    let lines[0] = lines[0][col1 - 1:] 
+    let lines[-1] = lines[-1][: col2 - (&selection ==# 'inclusive' ? 1 : 2)]
+    let lines[0] = lines[0][col1 - 1:]
     "echo join(lines, "\n")
     return join(lines, "\n")
 endf
@@ -245,8 +256,8 @@ nnoremap > >>_
 nnoremap < <<_
 
 " shell
-nnoremap <leader>vs :rightbelow vertical terminal<CR> 
-nnoremap <leader>hs :terminal<CR> 
+nnoremap <leader>vs :rightbelow vertical terminal<CR>
+nnoremap <leader>hs :terminal<CR>
 
 " Start new line
 inoremap <S-Return> <C-o>o
@@ -395,7 +406,6 @@ augroup go_lang
 augroup END
 
 " set filetype
-"autocmd fcying_au BufNewFile,BufRead *.qml setl filetype=qml
 autocmd fcying_au BufNewFile,BufRead *.conf setl filetype=conf
 autocmd fcying_au BufNewFile,BufRead .vimconf setl filetype=vim
 
@@ -431,44 +441,33 @@ endfunction
 " color {{{
 " ============================================================================
 if g:is_win
-  let g:colorscheme = get(g:, 'colorscheme', 'NeoSolarized')
+  let g:colorscheme = get(g:, 'colorscheme', 'solarized8')
+  set termguicolors
 else
   let g:colorscheme = get(g:, 'colorscheme', 'solarized')
-endif    
+  let g:solarized_termcolors=256
+  set t_Co=256
+endif
+let g:background=get(g:, 'background', 'light')
 
-if &term =~# '256color' 
+if &term =~# '256color'
   " disable background color erase
   set t_ut=
+endif
+
+if g:is_tmux
+  set t_8f=[38;2;%lu;%lu;%lum
+  set t_8b=[48;2;%lu;%lu;%lum
 endif
 
 if g:is_nvim ==# 0
   "enable 256 colors in ConEmu on Win
   if g:is_win && !s:is_gui && !empty($CONEMUBUILD)
     set term=xterm
-  endif
-endif
-
-if g:colorscheme ==# 'solarized'
-  let g:solarized_termcolors=256
-  set t_Co=256
-  let g:background=get(g:, 'background', 'light')
-  if g:is_win && !s:is_gui && !empty($CONEMUBUILD)
+    set t_Co=256
     let &t_AB="\e[48;5;%dm"
     let &t_AF="\e[38;5;%dm"
   endif
-elseif g:colorscheme ==# 'molokai'
-  let g:rehash256 = 1
-  let g:molokai_original = 1
-  let g:background=get(g:, 'background', 'dark')
-elseif g:colorscheme ==# 'NeoSolarized'    
-  set termguicolors
-  let g:neosolarized_vertSplitBgTrans = 0
-  let g:background=get(g:, 'background', 'light')
-  set t_8b=[48;2;%lu;%lu;%lum    
-  set t_8f=[38;2;%lu;%lu;%lum
-else    
-  let g:background=get(g:, 'background', 'dark')
-  set t_Co=256
 endif
 
 exec 'colorscheme ' . g:colorscheme
@@ -476,8 +475,8 @@ exec 'set background=' . g:background
 " }}}
 
 
-if filereadable($HOME . '/.vimrc.post')
-  execute 'source ' . $HOME .'/.vimrc.post'
+if exists('*LoadAfter')
+  call LoadAfter()
 endif
 
 " find project file

@@ -1,8 +1,31 @@
-autoload -Uz compinit && compinit
+#zmodload zsh/zprof
 
-if [ -f "$HOME/.zshrc.before" ]; then
-    source "$HOME/.zshrc.before"
+if [ -f "$HOME/.zshrc.local" ]; then
+    source "$HOME/.zshrc.local"
 fi
+
+CONFIG_DIR=${CONFIG_DIR:-"$HOME/.vim/etc"}
+
+#if  [ -f "$CONFIG_DIR/../plugged/vim-solarized8/scripts/solarized8.sh" ]; then
+#    bash "$CONFIG_DIR/../plugged/vim-solarized8/scripts/solarized8.sh"
+#fi
+
+export EDITOR=${EDITOR:-"vim"}
+export VISUAL=${VISUAL:-"vim"}
+export PAGER=${PAGER:-"less"}
+
+# Set the default Less options.
+# Mouse-wheel scrolling has been disabled by -X (disable screen clearing).
+# Remove -X and -F (exit if the content fits on one screen) to enable it.
+export LESS='-F -g -i -M -R -S -w -X -z-4'
+# Set the Less input preprocessor.
+# Try both `lesspipe` and `lesspipe.sh` as either might exist on a system.
+if (( $#commands[(i)lesspipe(|.sh)] )); then
+  export LESSOPEN="| /usr/bin/env $commands[(i)lesspipe(|.sh)] %s 2>&-"
+fi
+
+# disable terminal <c-s>
+stty -ixon
 
 # WSL (aka Bash for Windows) doesn't work well with BG_NICE
 [ -d "/mnt/c" ] && [[ "$(uname -a)" == *Microsoft* ]] && {
@@ -16,18 +39,21 @@ fi
     # docker
     type docker-machine.exe >/dev/null 2>&1 && {
         export DOCKER_TLS_VERIFY=1
-        export DOCKER_CERT_PATH=$HOME/tool/.docker/machine/machines/default
-        export DOCKER_HOST=tcp://192.168.99.100:2376
+        export DOCKER_CERT_PATH=$HOME/tool/.docker/machine/machines/default    #ln from windows user folder
+        export DOCKER_HOST=${DOCKER_HOST:-"tcp://192.168.99.50:2376"}
     }
+
+    alias cmd='cmd.exe'
+    alias docker-machine='docker-machine.exe'
 }
 
 # screen-256color xterm-256color
-export TERM=${ZSH_TERM:-"xterm-256color"}
+#TERM=${ZSH_TERM:-"xterm-256color"}
 
 # zh_CN.UTF-8 en_US.UTF-8
 export LANG=${ZSH_LANG:-"en_US.UTF-8"}
+export LC_ALL=$LANG
 export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
-export LC_ALL=${ZSH_LC_ALL:-"en_US.UTF-8"}
 
 # Ensure path arrays do not contain duplicates.
 typeset -gU cdpath fpath mailpath PATH
@@ -38,17 +64,17 @@ export QT_VERSION=5.12.1
 #export GO111MODULE=on
 export QT_DIR=$HOME/qt
 #export QT_WEBKIT=true
-export LD_LIBRARY_PATH=$HOME/bin/lib:$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
-export PKG_CONFIG_PATH=$HOME/qt/$QT_VERSION/gcc_64/lib/pkgconfig:$PKG_CONFIG_PATH
-export PYTHONPATH=$PYTHONPATH:$HOME/tool/python_script
-export RIPGREP_CONFIG_PATH=$HOME/.ripgreprc
+LD_LIBRARY_PATH=$HOME/bin/lib:$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
+PKG_CONFIG_PATH=$HOME/qt/$QT_VERSION/gcc_64/lib/pkgconfig:$PKG_CONFIG_PATH
+PYTHONPATH=$PYTHONPATH:$HOME/tool/python_script
+export RIPGREP_CONFIG_PATH=$CONFIG_DIR/ripgreprc
 export SHELLCHECK_OPTS="-e SC2164 -e SC1090"
 export RUST_SRC_PATH=$HOME/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src
 
 path=(
     $HOME/bin
-    $HOME/tool/go/bin
     $HOME/.local/bin
+    $HOME/tool/go/bin
     $HOME/qt/$QT_VERSION/gcc_64/bin
     $GOPATH/bin
     $HOME/.cargo/bin
@@ -66,44 +92,32 @@ fpath=(
     $fpath
 )
 
+# key bindings
+bindkey -e  # Use emacs key bindings
+# for tig
+bindkey -- "\e[1~" beginning-of-line
+bindkey -- "\e[4~" end-of-line
 
-install_antigen() {
-	URL="https://git.io/antigen"
-    TMPFILE="/tmp/antigen.zsh"
-    if [ -x "$(which curl)" ]; then
-		curl -sL "$URL" > $TMPFILE
-	elif [ -x "$(which wget)" ]; then
-		wget "$URL" -O $TMPFILE
-	else
-		echo "ERROR: please install curl or wget before installation"
-		exit
-	fi
-    if [ ! $? -eq 0 ]; then
-		echo ""
-		echo "ERROR: downloading antigen.zsh ($URL) failed !!"
-		exit
-	fi;
-	mv "$TMPFILE" "$antigen_file"
+function soft_update() {
+    zplugin self-update
+    zplugin update --all
+    zplugin compile --all
+
+    pushd ~/.fzf > /dev/null && git pull && ./install <<EOF
+    y
+EOF
+    popd
+
+    pushd ~/.tmux/tmux-resurrect > /dev/null && git pull && popd
+
+    if [ -f "$HOME/bin/z.lua" ]; then
+        pushd ~/bin && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd
+    fi
+
+    #if [ -d "$HOME/.pyenv" ]; then
+    #    pushd ~/.pyenv && git pull && popd
+    #fi
 }
-antigen_file="$HOME/.local/bin/antigen.zsh"
-if [ ! -f "$antigen_file" ]; then
-    [ ! -d "$HOME/.local/bin" ] && mkdir -p "$HOME/.local/bin" 2> /dev/null
-    install_antigen
-fi
-source "$antigen_file"
-antigen init $HOME/.antigen.rc
-typeset -a ANTIGEN_CHECK_FILES=($HOME/.antigenrc $HOME/.zshrc $HOME/.zshrc.before $HOME/.zshrc.after)
-
-# pyenv
-#export PYENV_ROOT="$HOME/.pyenv"
-#export PYTHON_CONFIGURE_OPTS="--enable-shared"
-#alias pyenv_init='git clone https://github.com/pyenv/pyenv.git ~/.pyenv --depth 1'
-
-# tmux
-if [ ! -d "$HOME/.tmux/tmux-resurrect" ]; then
-    mkdir -p $HOME/.tmux
-    git clone https://github.com/fcying/tmux-resurrect $HOME/.tmux/tmux-resurrect --depth=1
-fi
 
 # fzf
 [ ! -d ~/.fzf ] && {
@@ -119,9 +133,19 @@ EOF
     mkdir -p ~/bin
     pushd ~/bin > /dev/null && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd > /dev/null
 }
-eval "$(lua $HOME/bin/z.lua --init zsh once)"
-export _ZL_MATCH_MODE=1
-alias zi='_zlua -i'
+export _ZL_FZF_FLAG="-e"
+eval "$(lua $HOME/bin/z.lua --init zsh once enhanced)"
+function _z() { _zlua "$@"; }
+alias zr='_z -r'
+alias zt='_z -t'
+alias zl='_z -l'
+alias zc='_z -c'
+alias ze='_z -e'
+alias zx='_z -x'
+alias zi='_z -i'
+alias zf='_z -I'
+alias zb='_z -b'
+alias zh='_z -I -t .'
 function z_dirstack(){
     if [ -z "$*" ]; then
         _zlua --
@@ -131,27 +155,29 @@ function z_dirstack(){
 }
 alias d=' z_dirstack'
 
+# pyenv
+#export PYENV_ROOT="$HOME/.pyenv"
+#export PYTHON_CONFIGURE_OPTS="--enable-shared"
+#alias pyenv_init='git clone https://github.com/pyenv/pyenv.git ~/.pyenv --depth 1'
+
+# tmux
+if [ ! -d "$HOME/.tmux/tmux-resurrect" ]; then
+    mkdir -p $HOME/.tmux
+    git clone https://github.com/fcying/tmux-resurrect $HOME/.tmux/tmux-resurrect --depth=1
+fi
+
 # linuxbrew
 BREW_PREFIX=""
 if [ -d "$HOME/.linuxbrew/bin" ]; then
     BREW_PREFIX=$HOME/.linuxbrew
+    export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
 elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
     BREW_PREFIX=/home/linuxbrew/.linuxbrew
 fi
-function brew_enable(){
-    export PATH=$BREW_PREFIX/sbin:$BREW_PREFIX/bin:$PATH
-    MANPATH="$BREW_PREFIX/share/man:$MANPATH"
-    INFOPATH="$BREW_PREFIX/share/info:$INFOPATH"
-    export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
-}
-function brew_disable(){
-    export PATH=${PATH##*"linuxbrew/bin:"}
-    MANPATH=${MANPATH##*"linuxbrew/share/man:"}
-    INFOPATH=${INFOPATH##*"linuxbrew/share/info:"}
-    export FPATH=${PATH##*"$BREW_PREFIX/share/zsh/site-functions:"}
-}
 if [ ! -z "$BREW_PREFIX" ]; then
-    brew_enable
+    alias brew=$BREW_PREFIX/bin/brew
+    export MANPATH="$BREW_PREFIX/share/man:$MANPATH"
+    export INFOPATH="$BREW_PREFIX/share/info:$INFOPATH"
 fi
 
 
@@ -186,7 +212,7 @@ function _git_prompt_info() {
     ref=$(command git rev-parse --short HEAD 2> /dev/null) || return 0
     echo "$ZSH_GIT_PROMPT_PREFIX${ref#refs/heads/}$(_parse_git_dirty)$ZSH_GIT_PROMPT_SUFFIX"
 }
-
+setopt PROMPT_SUBST
 PROMPT='%F{green}%n@%m%f:%B%F{blue}%~%b%f %F{red}$(_git_prompt_info)%f%(!.#.$) '
 #RPROMPT='%F{blue}$(date +%H:%M:%S)'
 
@@ -197,10 +223,6 @@ if test $SSH_AUTH_SOCK && [ $SSH_AUTH_SOCK != $SOCK ]; then
     ln -sf $SSH_AUTH_SOCK $SOCK
     export SSH_AUTH_SOCK=$SOCK
 fi
-
-# key bindings
-bindkey -- "\e[1~" beginning-of-line
-bindkey -- "\e[4~" end-of-line
 
 # history
 HISTFILE="$HOME/.zhistory"
@@ -220,132 +242,59 @@ setopt HIST_VERIFY               # Do not execute immediately upon history expan
 unsetopt HIST_BEEP               # Beep when accessing non-existent history.
 unsetopt CDABLE_VARS             # Change directory to a path stored in a variable.
 
-# autosuggest
-bindkey '^k' autosuggest-accept
-
-# bind P and N for EMACS mode
-bindkey -M emacs '^P' history-substring-search-up
-bindkey -M emacs '^N' history-substring-search-down
-
-
-# zsh-completions
-setopt COMPLETE_IN_WORD    # Complete from both ends of a word.
-setopt ALWAYS_TO_END       # Move cursor to the end of a completed word.
-setopt PATH_DIRS           # Perform path search even on command names with slashes.
-setopt AUTO_MENU           # Show completion menu on a successive tab press.
-setopt AUTO_LIST           # Automatically list choices on ambiguous completion.
-setopt AUTO_PARAM_SLASH    # If completed parameter is a directory, add a trailing slash.
-setopt EXTENDED_GLOB       # Needed for file modification glob modifiers with compinit
-unsetopt MENU_COMPLETE     # Do not autoselect the first completion entry.
-unsetopt FLOW_CONTROL      # Disable start/stop characters in shell editor.
-
-# Use caching to make completion for commands such as dpkg and apt usable.
-zstyle ':completion::complete:*' use-cache on
-zstyle ':completion::complete:*' cache-path "$HOME/.antigen/.zcompcache"
-
-# Case-insensitive (all), partial-word, and then substring completion.
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
-setopt CASE_GLOB
-
-# Group matches and describe.
-zstyle ':completion:*:*:*:*:*' menu select
-zstyle ':completion:*:matches' group 'yes'
-zstyle ':completion:*:options' description 'yes'
-zstyle ':completion:*:options' auto-description '%d'
-zstyle ':completion:*:corrections' format ' %F{green}-- %d (errors: %e) --%f'
-zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
-zstyle ':completion:*:messages' format ' %F{purple} -- %d --%f'
-zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
-zstyle ':completion:*:default' list-prompt '%S%M matches%s'
-zstyle ':completion:*' format ' %F{yellow}-- %d --%f'
-zstyle ':completion:*' group-name ''
-zstyle ':completion:*' verbose yes
-
-# Fuzzy match mistyped completions.
-zstyle ':completion:*' completer _complete _match _approximate
-zstyle ':completion:*:match:*' original only
-zstyle ':completion:*:approximate:*' max-errors 1 numeric
-
-# Increase the number of errors based on the length of the typed word. But make
-# sure to cap (at 7) the max-errors to avoid hanging.
-zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
-
-# Don't complete unavailable commands.
-zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
-
-# Array completion element sorting.
-zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
-
-# Directories
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-directories
-zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
-zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'users' 'expand'
-zstyle ':completion:*' squeeze-slashes true
-
-# History
-zstyle ':completion:*:history-words' stop yes
-zstyle ':completion:*:history-words' remove-all-dups yes
-zstyle ':completion:*:history-words' list false
-zstyle ':completion:*:history-words' menu yes
-
-# Environmental Variables
-zstyle ':completion::*:(-command-|export):*' fake-parameters ${${${_comps[(I)-value-*]#*,}%%,*}:#-*-}
-
-# Populate hostname completion. But allow ignoring custom entries from static
-# */etc/hosts* which might be uninteresting.
-#zstyle -a ':prezto:module:completion:*:hosts' etc-host-ignores '_etc_host_ignores'
-
-zstyle -e ':completion:*:hosts' hosts 'reply=(
-  ${=${=${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) 2> /dev/null)"}%%[#| ]*}//\]:[0-9]*/ }//,/ }//\[/ }
-  ${=${(f)"$(cat /etc/hosts(|)(N) <<(ypcat hosts 2> /dev/null))"}%%(\#${_etc_host_ignores:+|${(j:|:)~_etc_host_ignores}})*}
-  ${=${${${${(@M)${(f)"$(cat ~/.ssh/config 2> /dev/null)"}:#Host *}#Host }:#*\**}:#*\?*}}
-)'
-
-# Don't complete uninteresting users...
-zstyle ':completion:*:*:*:users' ignored-patterns \
-  adm amanda apache avahi beaglidx bin cacti canna clamav daemon \
-  dbus distcache dovecot fax ftp games gdm gkrellmd gopher \
-  hacluster haldaemon halt hsqldb ident junkbust ldap lp mail \
-  mailman mailnull mldonkey mysql nagios \
-  named netdump news nfsnobody nobody nscd ntp nut nx openvpn \
-  operator pcap postfix postgres privoxy pulse pvm quagga radvd \
-  rpc rpcuser rpm shutdown squid sshd sync uucp vcsa xfs '_*'
-
-# ... unless we really want to.
-zstyle '*' single-ignored show
-
-# Ignore multiple entries.
-zstyle ':completion:*:(rm|kill|diff):*' ignore-line other
-zstyle ':completion:*:rm:*' file-patterns '*:all-files'
-
-# Kill
-zstyle ':completion:*:*:*:*:processes' command 'ps -u $LOGNAME -o pid,user,command -w'
-zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
-zstyle ':completion:*:*:kill:*' menu yes select
-zstyle ':completion:*:*:kill:*' force-list always
-#zstyle ':completion:*:*:kill:*' insert-ids single
-
-# Man
-zstyle ':completion:*:manuals' separate-sections true
-zstyle ':completion:*:manuals.(^1*)' insert-sections true
-
-# SSH/SCP/RSYNC
-zstyle ':completion:*:(ssh|scp|rsync):*' tag-order 'hosts:-host:host hosts:-domain:domain hosts:-ipaddr:ip\ address *'
-zstyle ':completion:*:(scp|rsync):*' group-order users files all-files hosts-domain hosts-host hosts-ipaddr
-zstyle ':completion:*:ssh:*' group-order users hosts-domain hosts-host users hosts-ipaddr
-zstyle ':completion:*:(ssh|scp|rsync):*:hosts-host' ignored-patterns '*(.|:)*' loopback ip6-loopback localhost ip6-localhost broadcasthost
-zstyle ':completion:*:(ssh|scp|rsync):*:hosts-domain' ignored-patterns '<->.<->.<->.<->' '^[-[:alnum:]]##(.[-[:alnum:]]##)##' '*@*'
-zstyle ':completion:*:(ssh|scp|rsync):*:hosts-ipaddr' ignored-patterns '^(<->.<->.<->.<->|(|::)([[:xdigit:].]##:(#c,2))##(|%*))' '127.0.0.<->' '255.255.255.255' '::1' 'fe80::*'
-
-
 # bash like
 setopt nonomatch
 autoload -Uz +X bashcompinit && bashcompinit
 autoload -Uz select-word-style
 select-word-style bash
 
-function test_highlight() {
+# pacman
+alias pacsyu='sudo pacman -Syu'
+alias pacsy='sudo pacman -Sy'
+alias pacfs='pacman -Fs'
+alias pacfy='sudo pacman -Fy'
+alias pacql='pacman -Ql'
+alias pacs='sudo pacman -S'
+alias pacu='sudo pacman -U'
+alias pacautoremove='sudo pacman -Rs $(pacman -Qtdq)'
+alias pacrns='sudo pacman -Rns'
+
+function cdls { builtin cd "$@" && ls --color=auto; }
+alias cd='cdls'
+alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_history'
+alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
+alias vi='vim'
+alias py='python3'
+alias py2='python2'
+alias py3='python3'
+alias ls='ls --color=auto'
+alias ll='ls -alh'
+alias tmux=' tmux -2'
+alias ta=' tmux a; [ $? == 1 ] && tmux'
+alias tl=' tmux ls'
+alias rs='rsync -rvazl --partial --delete --progress '
+alias cpa='cp -rfavx '
+alias rgn='rg --no-ignore '
+alias rgf='rg --files'
+alias free_memory='sudo sync && sudo sync && sudo sh -c "echo 3 > /proc/sys/vm/drop_caches"'
+alias cpu_bench='time echo "scale=5000; 4*a(1)" | bc -l -q'
+alias zsh_time_test='for i in $(seq 1 5); do time zsh -i -c exit; done'
+test_true_color() {
+    awk 'BEGIN{
+        s="/\\/\\/\\/\\/\\"; s=s s s s s s s s;
+        for (colnum = 0; colnum<77; colnum++) {
+            r = 255-(colnum*255/76);
+            g = (colnum*510/76);
+            b = (colnum*255/76);
+            if (g>255) g = 510-g;
+            printf "\033[48;2;%d;%d;%dm", r,g,b;
+            printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
+            printf "%s\033[0m", substr(s,colnum+1,1);
+        }
+        printf "\n";
+    }'
+}
+test_highlight() {
     print -zr '
 # Subshell, assignments, math-mode
 echo $(cat /etc/hosts |& grep -i "hello337")
@@ -379,89 +328,63 @@ repeat 0 {
 '
 }
 
-function soft_update() {
-    pushd ~/.antigen/bundles/robbyrussell/oh-my-zsh
-    git checkout .
-    popd
-    install_antigen && antigen update
-    cp -f ~/.vim/etc/zsh_custom/misc.zsh ~/.antigen/bundles/robbyrussell/oh-my-zsh/lib/
 
-    pushd ~/.fzf > /dev/null && git pull && ./install <<EOF
-    y
-EOF
-    popd
-
-    pushd ~/.tmux/tmux-resurrect > /dev/null && git pull && popd
-
-    #if [ -d "$HOME/.pyenv" ]; then
-    #    pushd ~/.pyenv && git pull && popd
-    #fi
-
-    if [ -f "$HOME/bin/z.lua" ]; then
-        pushd ~/bin && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd
-    fi
-}
-
-# pacman
-alias pacsyu='sudo pacman -Syu'
-alias pacsy='sudo pacman -Sy'
-alias pacfs='pacman -Fs'
-alias pacfy='sudo pacman -Fy'
-alias pacql='pacman -Ql'
-alias pacs='sudo pacman -S'
-alias pacu='sudo pacman -U'
-alias pacautoremove='sudo pacman -Rs $(pacman -Qtdq)'
-alias pacrns='sudo pacman -Rns'
-
-function cdls { builtin cd "$@" && ls; }
-alias cd=' cdls'
-alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_history'
-alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
-alias vi='vim'
-alias py='python3'
-alias py2='python2'
-alias py3='python3'
-alias ls=' ls --color=auto'
-alias ll=' ls -alh'
-alias tmux=' tmux -2'
-alias ta=' tmux a; [ $? == 1 ] && tmux'
-alias tl=' tmux ls'
-alias rs='rsync -rvazl --partial --delete --progress '
-alias rgn='rg --no-ignore '
-alias rgf='rg --files'
-alias free_memory='sudo sync && sudo sync && sudo sh -c "echo 3 > /proc/sys/vm/drop_caches"'
-alias cpu_bench='time echo "scale=5000; 4*a(1)" | bc -l -q'
-test_true_color() {
-    awk 'BEGIN{
-        s="/\\/\\/\\/\\/\\"; s=s s s s s s s s;
-        for (colnum = 0; colnum<77; colnum++) {
-            r = 255-(colnum*255/76);
-            g = (colnum*510/76);
-            b = (colnum*255/76);
-            if (g>255) g = 510-g;
-            printf "\033[48;2;%d;%d;%dm", r,g,b;
-            printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
-            printf "%s\033[0m", substr(s,colnum+1,1);
-        }
-        printf "\n";
-    }'
-}
-
-alias brew_init='sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
+alias install_brew='sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
 alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
 alias brew_install_ruby='brew vendor-install ruby'
 
 export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
 #export REPO_URL='https://gerrit-googlesource.proxy.ustclug.org/git-repo'
-alias repo_sync='while true; do; repo sync; if [ $? -eq 0 ]; then; echo "sync ok"; break; fi; done;'
-
-alias gms='git merge --squash'
-alias grv='git-review'
+alias repo_sync='while true; do repo sync; if [ $? -eq 0 ]; then echo "sync ok"; break; fi; done'
 
 alias kmsg='adb wait-for-device && adb root && adb wait-for-device && adb shell "while true; do (cat proc/kmsg); done;"'
 export USE_CCACHE=1
 
 
-if [ -f "$HOME/.zshrc.after" ]; then
-    source "$HOME/.zshrc.after"
+### Added by Zplugin's installer
+if [ ! -f "$HOME/.zplugin/bin/zplugin.zsh" ]; then
+    zplugin_init="true"
+    mkdir ~/.zplugin
+    git clone --depth 1 https://github.com/zdharma/zplugin.git ~/.zplugin/bin
 fi
+source "$HOME/.zplugin/bin/zplugin.zsh"
+autoload -Uz _zplugin
+(( ${+_comps} )) && _comps[zplugin]=_zplugin
+### End of Zplugin's installer chunk
+
+zplugin ice wait"0" lucid; zplugin light caarlos0/zsh-mkc
+zplugin ice wait"0" lucid; zplugin light changyuheng/fz
+
+zplugin ice wait'0' lucid; zplugin light zsh-users/zsh-history-substring-search
+bindkey '^P' history-substring-search-up
+bindkey '^N' history-substring-search-down
+
+zplugin ice wait'0' lucid atload'_zsh_autosuggest_start'
+zplugin light zsh-users/zsh-autosuggestions
+bindkey '^K' autosuggest-accept
+
+zplugin ice wait"0" lucid atinit"zpcompinit; zpcdreplay"
+zplugin light zsh-users/zsh-syntax-highlighting
+#zplugin light zdharma/fast-syntax-highlighting
+
+zplugin ice wait"0" lucid
+zplugin light zsh-users/zsh-completions
+
+_null_plug_dir=${ZPLGM[PLUGINS_DIR]}/_local---null
+if [[ ! -d $_null_plug_dir ]]; then
+    echo "Creating zplugin 'null' plugin directory at: $_null_plug_dir"
+    mkdir -p -- "$_null_plug_dir"
+fi
+unset _null_plug_dir
+zplugin ice wait"1" lucid atload'PluginFinish'
+zplugin light _local/null
+function PluginFinish() {
+    if [ -n "$zplugin_init" ]; then
+        zplugin self-update
+        zplugin compile --all
+    fi
+    source $CONFIG_DIR/zsh_plugin.zsh
+    type LoadAfter >/dev/null 2>&1 && LoadAfter
+}
+
+#zprof

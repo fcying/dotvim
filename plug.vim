@@ -56,6 +56,7 @@ endfunction
 " plugin {{{
 " ============================================================================
 let g:plug_list = []
+call add(g:plug_list, "Plug 'tweekmonster/startuptime.vim', {'on':'StartupTime'}")
 call add(g:plug_list, "Plug 'junegunn/vim-plug'")
 call add(g:plug_list, "Plug 'mbbill/fencview'")
 call add(g:plug_list, "Plug 'adah1972/tellenc'")
@@ -106,8 +107,8 @@ if g:complete_func ==# 'deoplete'
     call add(g:plug_list, "Plug 'roxma/nvim-yarp'")
     call add(g:plug_list, "Plug 'roxma/vim-hug-neovim-rpc'")
   endif
-  "call add(g:plug_list, "Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do':'" . 
-  "      \ s:os_do('bash install.sh', 
+  "call add(g:plug_list, "Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do':'" .
+  "      \ s:os_do('bash install.sh',
   "      \ 'powershell -executionpolicy bypass -File install.ps1'))
   call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
   call add(g:plug_list, "Plug 'Shougo/neoinclude.vim'")
@@ -126,33 +127,33 @@ elseif g:complete_func ==# 'ncm2'
     call add(g:plug_list, "Plug 'roxma/vim-hug-neovim-rpc'")
   endif
   call add(g:plug_list, "Plug 'roxma/nvim-yarp'")
-  call add(g:plug_list, "Plug 'ncm2/ncm2', {'do': 'pip3 install neovim python-language-server[all] --upgrade'}")
-  "call add(g:plug_list, "Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do':'" . 
-        "\ s:os_do('bash install.sh', 
-        "\ 'powershell -executionpolicy bypass -File install.ps1'))
-  call add(g:plug_list, "Plug 'prabirshrestha/async.vim'")
-  call add(g:plug_list, "Plug 'prabirshrestha/vim-lsp'")
-  call add(g:plug_list, "Plug 'ncm2/ncm2-vim-lsp'")
-  call add(g:plug_list, "Plug 'ryanolsonx/vim-lsp-python'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2', {'do': 'pip3 install neovim python-language-server --upgrade'}")
+  call add(g:plug_list, "Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do':'" .
+        \ s:os_do('bash install.sh',
+        \ 'powershell -executionpolicy bypass -File install.ps1'))
+  "call add(g:plug_list, "Plug 'prabirshrestha/async.vim'")
+  "call add(g:plug_list, "Plug 'prabirshrestha/vim-lsp'")
+  "call add(g:plug_list, "Plug 'ncm2/ncm2-vim-lsp'")
+  "call add(g:plug_list, "Plug 'ryanolsonx/vim-lsp-python'")
   if g:is_win ==# 0
     call add(g:plug_list, "Plug 'ncm2/ncm2-tmux'")
   endif
   call add(g:plug_list, "Plug 'ncm2/ncm2-bufword'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-path'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-gtags'")
   call add(g:plug_list, "Plug 'yuki-ycino/ncm2-dictionary'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-cssomni'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-html-subscope'")
-  "call add(g:plug_list, "Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}")
-  call add(g:plug_list, "Plug 'ncm2/ncm2-pyclang'")
-  "call add(g:plug_list, "Plug 'ncm2/ncm2-jedi'")
-  "curl https://sh.rustup.rs -sSf | sh
-  "rustup toolchain add nightly && cargo +nightly install racer && rustup component add rust-src
-  call add(g:plug_list, "Plug 'ncm2/ncm2-racer'")
-  "call add(g:plug_list, "Plug 'ncm2/ncm2-go'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-vim'")
   call add(g:plug_list, "Plug 'Shougo/neco-vim'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-syntax'")
   call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-pyclang'")
+  "curl https://sh.rustup.rs -sSf | sh
+  "rustup toolchain add nightly && cargo +nightly install racer && rustup component add rust-src
+  "call add(g:plug_list, "Plug 'ncm2/ncm2-racer'")
+  "call add(g:plug_list, "Plug 'ncm2/ncm2-go'")
+  "call add(g:plug_list, "Plug 'ncm2/ncm2-jedi'")
 elseif g:complete_func ==# 'coc'
   call add(g:plug_list, "Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}")
   call add(g:plug_list, "Plug 'neoclide/jsonc.vim'")
@@ -184,10 +185,10 @@ elseif g:complete_func ==# 'ycm'
 endif
 
 "color
+"call add(g:plug_list, "Plug 'tomasr/molokai'")
 "call add(g:plug_list, "Plug 'altercation/vim-colors-solarized'")
 call add(g:plug_list, "Plug 'fcying/vim-colors-solarized'")
-call add(g:plug_list, "Plug 'tomasr/molokai'")
-call add(g:plug_list, "Plug 'icymind/NeoSolarized'")
+call add(g:plug_list, "Plug 'lifepillar/vim-solarized8'")
 "}}}
 
 
@@ -411,12 +412,16 @@ if (FindPlug('LanguageClient-neovim') != -1)
   nnoremap <silent> <leader>ls :call LanguageClient_textDocument_documentSymbol()<CR>
   nnoremap <silent> <leader>lm :call LanguageClient_contextMenu()<CR>
 
-  " pip3 install 'python-language-server[all]'
-  let g:LanguageClient_serverCommands = {
-        \ 'go': ['go-langserver'],
-        \ 'rust': ['rls'],
-        \ 'python': ['pyls'],
+  let g:LanguageClient_rootMarkers = {
+        \ 'go': ['.git', 'go.mod'],
         \ }
+
+  let g:LanguageClient_serverCommands = {
+        \ 'go' : ['go-langserver', '-gocodecompletion'],
+        \ 'python': ['pyls'],
+        \ 'rust': ['rls'],
+        \ }
+
 endif
 
 if (FindPlug('vim-lsp') != -1)
@@ -430,16 +435,16 @@ if (FindPlug('vim-lsp') != -1)
   nnoremap <silent> <leader>ls :LspWorkspaceSymbol<CR>
   nnoremap <silent> <leader>lm :LspImplementation<CR>
 
-  ""go get -u -v github.com/GeertJohan/go.rice
-  ""git clone https://github.com/saibing/bingo.git && cd bingo && go install
+  " go get -u -v github.com/GeertJohan/go.rice
+  " git clone https://github.com/saibing/bingo.git && cd bingo && go install
+  " go get -u -v github.com/sourcegraph/go-langserver
   "if executable('bingo')
-  "  au User lsp_setup call lsp#register_server({
-  "        \ 'name': 'bingo',
-  "        \ 'cmd': {server_info->['bingo', '-mode', 'stdio']},
-  "        \ 'whitelist': ['go'],
-  "        \ })
+    "au User lsp_setup call lsp#register_server({
+          "\ 'name': 'bingo',
+          "\ 'cmd': {server_info->['bingo']},
+          "\ 'whitelist': ['go'],
+          "\ })
   "endif
-  "go get -u -v github.com/sourcegraph/go-langserver
   if executable('go-langserver')
     au User lsp_setup call lsp#register_server({
           \ 'name': 'go-lsp',
@@ -447,7 +452,6 @@ if (FindPlug('vim-lsp') != -1)
           \ 'whitelist': ['go'],
           \ })
   endif
-  " pip3 install 'python-language-server[all]'
   if executable('pyls')
     au User lsp_setup call lsp#register_server({
           \ 'name': 'pyls',
@@ -615,7 +619,7 @@ if (FindPlug('ncm2') != -1)
   " note that must keep noinsert in completeopt, the others is optional
   set completeopt=noinsert,menuone,noselect
 
-  autocmd fcying_au InsertEnter * call ncm2#enable_for_buffer()
+  autocmd fcying_au BufEnter * call ncm2#enable_for_buffer()
   let g:ncm2#matcher = 'substrfuzzy'
   "let g:ncm2#sorter = 'abbrfuzzy'
   if !exists('g:ncm2_pyclang#library_path')
@@ -896,10 +900,10 @@ if (FindPlug('LeaderF') != -1)
   nnoremap fh :<C-u>Leaderf searchHistory<CR>
   nnoremap fl :<C-u>Leaderf line --regex<CR>
   nnoremap ft :<C-U>Leaderf! rg --recall<CR>
-  nnoremap fg :<C-u><C-R>=printf("Leaderf! rg -e %s", expand("<cword>"))<CR>
-  nnoremap fG :<C-u><C-R>=printf("Leaderf! rg -e ")<CR>
-  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg -F -e %s", leaderf#Rg#visual())<CR>
-  nnoremap fs :<C-u>CtrlSF 
+  nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=ac -e %s", expand("<cword>"))<CR>
+  nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=ac -e ")<CR>
+  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=ac -F -e %s", leaderf#Rg#visual())<CR>
+  nnoremap fs :<C-u>CtrlSF
   nnoremap fi :exec "Leaderf file --regex --input " . <SID>StripInclude(getline("."))<CR>
   function! s:StripInclude(line)
     let l:strip_include = substitute(a:line, '\v.*[\<"]([a-zA-Z0-9_/\.]+)[\>"]', '\1', 'g')

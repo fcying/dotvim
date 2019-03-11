@@ -305,19 +305,6 @@ function! ClosePair(char)
     endif
 endfunction
 
-" Set Header
-nnoremap <leader>sh :call SetHeader()<CR>
-function! SetHeader()
-  if &filetype ==# 'python'
-    call append(0, '# -*- coding: utf-8 -*-')
-    call append(0, '#!/usr/bin/env python3')
-  elseif &filetype ==# 'sh'
-    call append(0, '#!/bin/bash')
-  endif
-endfunction
-function! s:set_python_header()
-endfunction
-
 " Without any arguments the current buffer is kept.  With an argument the buffer name/number supplied is kept.
 " https://github.com/vim-scripts/BufOnly.vim
 command! -nargs=? -complete=buffer -bang Bufonly

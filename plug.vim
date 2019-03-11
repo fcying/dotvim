@@ -5,6 +5,13 @@ else
   let g:complete_func = get(g:, 'complete_func', 'neocomplete')
 endif
 
+" lsp
+" go get -u -v github.com/GeertJohan/go.rice
+" git clone https://github.com/saibing/bingo.git && cd bingo && go install
+" go get -u -v github.com/sourcegraph/go-langserver
+" npm install -g dockerfile-language-server-nodejs
+" pip3 install python-language-server
+
 " ============================================================================
 " plug func {{{
 " ============================================================================
@@ -68,6 +75,7 @@ call add(g:plug_list, "Plug 'itchyny/lightline.vim'")
 "call add(g:plug_list, "Plug 'sheerun/vim-polyglot'")   "A solid language pack for Vim.
 call add(g:plug_list, "Plug 'cespare/vim-toml'")
 call add(g:plug_list, "Plug 'peterhoeg/vim-qml'")
+"call add(g:plug_list, "Plug 'ekalinin/Dockerfile.vim'")
 call add(g:plug_list, "Plug 'Vimjas/vim-python-pep8-indent', {'for':'python'}")
 call add(g:plug_list, "Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}")
 call add(g:plug_list, "Plug 'godlygeek/tabular', {'for':'markdown'}")
@@ -100,29 +108,9 @@ call add(g:plug_list, "Plug 'skywind3000/asyncrun.vim'")
 call add(g:plug_list, "Plug 'jsfaint/gen_tags.vim'")
 call add(g:plug_list, "Plug 'fcying/gen_clang_conf.vim'")
 call add(g:plug_list, "Plug 'mattn/emmet-vim'")
+call add(g:plug_list, "Plug 'aperezdc/vim-template', {'on':'TemplateHere'}")
 
-if g:complete_func ==# 'deoplete'
-  call add(g:plug_list, "Plug 'Shougo/deoplete.nvim', {'do': function('InstallDeoplete')}")
-  if g:is_nvim ==# 0
-    call add(g:plug_list, "Plug 'roxma/nvim-yarp'")
-    call add(g:plug_list, "Plug 'roxma/vim-hug-neovim-rpc'")
-  endif
-  "call add(g:plug_list, "Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do':'" .
-  "      \ s:os_do('bash install.sh',
-  "      \ 'powershell -executionpolicy bypass -File install.ps1'))
-  call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
-  call add(g:plug_list, "Plug 'Shougo/neoinclude.vim'")
-  call add(g:plug_list, "Plug 'Shougo/neco-vim'")
-  call add(g:plug_list, "Plug 'Shougo/deoplete-clangx'")
-  call add(g:plug_list, "Plug 'zchee/deoplete-jedi'")
-  " for goto feature
-  call add(g:plug_list, "Plug 'davidhalter/jedi-vim'")
-  if g:has_go
-    call add(g:plug_list, "Plug 'zchee/deoplete-go', {'do':'" . s:os_do('make','mingw32-make'))
-  endif
-  call add(g:plug_list, "Plug 'Shougo/neosnippet.vim'")
-  call add(g:plug_list, "Plug 'Shougo/neosnippet-snippets'")
-elseif g:complete_func ==# 'ncm2'
+if g:complete_func ==# 'ncm2'
   if g:is_nvim ==# 0
     call add(g:plug_list, "Plug 'roxma/vim-hug-neovim-rpc'")
   endif
@@ -133,8 +121,8 @@ elseif g:complete_func ==# 'ncm2'
         \ 'powershell -executionpolicy bypass -File install.ps1'))
   "call add(g:plug_list, "Plug 'prabirshrestha/async.vim'")
   "call add(g:plug_list, "Plug 'prabirshrestha/vim-lsp'")
-  "call add(g:plug_list, "Plug 'ncm2/ncm2-vim-lsp'")
   "call add(g:plug_list, "Plug 'ryanolsonx/vim-lsp-python'")
+  "call add(g:plug_list, "Plug 'ncm2/ncm2-vim-lsp'")
   if g:is_win ==# 0
     call add(g:plug_list, "Plug 'ncm2/ncm2-tmux'")
   endif
@@ -154,6 +142,24 @@ elseif g:complete_func ==# 'ncm2'
   "call add(g:plug_list, "Plug 'ncm2/ncm2-racer'")
   "call add(g:plug_list, "Plug 'ncm2/ncm2-go'")
   "call add(g:plug_list, "Plug 'ncm2/ncm2-jedi'")
+elseif g:complete_func ==# 'deoplete'
+  call add(g:plug_list, "Plug 'Shougo/deoplete.nvim', {'do': function('InstallDeoplete')}")
+  if g:is_nvim ==# 0
+    call add(g:plug_list, "Plug 'roxma/nvim-yarp'")
+    call add(g:plug_list, "Plug 'roxma/vim-hug-neovim-rpc'")
+  endif
+  call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
+  call add(g:plug_list, "Plug 'Shougo/neoinclude.vim'")
+  call add(g:plug_list, "Plug 'Shougo/neco-vim'")
+  call add(g:plug_list, "Plug 'Shougo/deoplete-clangx'")
+  call add(g:plug_list, "Plug 'zchee/deoplete-jedi'")
+  " for goto feature
+  call add(g:plug_list, "Plug 'davidhalter/jedi-vim'")
+  if g:has_go
+    call add(g:plug_list, "Plug 'zchee/deoplete-go', {'do':'" . s:os_do('make','mingw32-make'))
+  endif
+  call add(g:plug_list, "Plug 'Shougo/neosnippet.vim'")
+  call add(g:plug_list, "Plug 'Shougo/neosnippet-snippets'")
 elseif g:complete_func ==# 'coc'
   call add(g:plug_list, "Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}")
   call add(g:plug_list, "Plug 'neoclide/jsonc.vim'")
@@ -169,8 +175,8 @@ elseif g:complete_func ==# 'neocomplete'
   endif
 elseif g:complete_func ==# 'asyncomplete'
   call add(g:plug_list, "Plug 'prabirshrestha/async.vim'")
-  call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete.vim'")
   call add(g:plug_list, "Plug 'prabirshrestha/vim-lsp'")
+  call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete.vim'")
   call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-lsp.vim'")
   call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-tags.vim'")
   call add(g:plug_list, "Plug 'prabirshrestha/asyncomplete-buffer.vim'")
@@ -420,6 +426,7 @@ if (FindPlug('LanguageClient-neovim') != -1)
         \ 'go' : ['go-langserver', '-gocodecompletion'],
         \ 'python': ['pyls'],
         \ 'rust': ['rls'],
+        \ 'dockerfile': [&shell, &shellcmdflag, 'docker-langserver --stdio'],
         \ }
 
 endif
@@ -435,9 +442,6 @@ if (FindPlug('vim-lsp') != -1)
   nnoremap <silent> <leader>ls :LspWorkspaceSymbol<CR>
   nnoremap <silent> <leader>lm :LspImplementation<CR>
 
-  " go get -u -v github.com/GeertJohan/go.rice
-  " git clone https://github.com/saibing/bingo.git && cd bingo && go install
-  " go get -u -v github.com/sourcegraph/go-langserver
   "if executable('bingo')
     "au User lsp_setup call lsp#register_server({
           "\ 'name': 'bingo',
@@ -457,6 +461,13 @@ if (FindPlug('vim-lsp') != -1)
           \ 'name': 'pyls',
           \ 'cmd': {server_info->['pyls']},
           \ 'whitelist': ['python'],
+          \ })
+  endif
+  if executable('docker-langserver')
+    au User lsp_setup call lsp#register_server({
+          \ 'name': 'docker-langserver',
+          \ 'cmd': {server_info->[&shell, &shellcmdflag, 'docker-langserver --stdio']},
+          \ 'whitelist': ['dockerfile'],
           \ })
   endif
   "if executable('clangd')
@@ -1158,6 +1169,15 @@ endif
 if (FindPlug('emmet-vim') != -1)
   let g:user_emmet_install_global = 0
   autocmd fcying_au FileType html,css EmmetInstall
+endif
+
+if (FindPlug('vim-template') != -1)
+  nnoremap <silent> <Leader>th :TemplateHere<CR>
+  nnoremap <silent> <Leader>tf :execute 'Template *.' . &filetype<CR>
+  let g:templates_no_autocmd = 1
+  exe 'let g:templates_directory = [''' . g:config_dir . '/etc/template'']'
+  let g:user = get(g:, 'user', 'fcying')
+  let g:email = get(g:, 'email', 'fcying@gmail.com')
 endif
 
 "if (FindPlug('delimitMate') != -1)

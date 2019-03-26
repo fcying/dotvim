@@ -1,4 +1,4 @@
-set wrap-lines = yes
+set wrap-lines = no
 set ignore-case = smart-case
 
 set commit-order = default

@@ -11,6 +11,7 @@ endif
 " go get -u -v github.com/sourcegraph/go-langserver
 " npm install -g dockerfile-language-server-nodejs
 " pip3 install python-language-server
+" npm install --global javascript-typescript-langserver
 
 " ============================================================================
 " plug func {{{
@@ -94,12 +95,12 @@ call add(g:plug_list, "Plug 'majutsushi/tagbar', {'on':'TagbarToggle'}")
 call add(g:plug_list, "Plug 'xolox/vim-session'")
 call add(g:plug_list, "Plug 'xolox/vim-misc'")
 call add(g:plug_list, "Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}")
-"call add(g:plug_list, "Plug 'Raimondi/delimitMate'")
 call add(g:plug_list, "Plug 'dyng/ctrlsf.vim'")
 call add(g:plug_list, "Plug 'easymotion/vim-easymotion'")
 call add(g:plug_list, "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}")
 "call add(g:plug_list, "Plug 'tpope/vim-fugitive'")
 call add(g:plug_list, "Plug 'Yggdroot/LeaderF', {'do': '" . s:os_do('./install.sh','.\install.bat'))
+call add(g:plug_list, "Plug 'wsdjeg/FlyGrep.vim'")
 
 "call add(g:plug_list, "Plug 'ludovicchabant/vim-gutentags'")
 "call add(g:plug_list, "Plug 'skywind3000/gutentags_plus'")
@@ -137,6 +138,9 @@ if g:complete_func ==# 'ncm2'
   call add(g:plug_list, "Plug 'ncm2/ncm2-syntax'")
   call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
   call add(g:plug_list, "Plug 'ncm2/ncm2-pyclang'")
+  call add(g:plug_list, "Plug 'ncm2/ncm2-ultisnips'")
+  call add(g:plug_list, "Plug 'SirVer/ultisnips'")
+  call add(g:plug_list, "Plug 'honza/vim-snippets'")
   "curl https://sh.rustup.rs -sSf | sh
   "rustup toolchain add nightly && cargo +nightly install racer && rustup component add rust-src
   "call add(g:plug_list, "Plug 'ncm2/ncm2-racer'")
@@ -263,6 +267,7 @@ endif
 if (FindPlug('gen_tags.vim') != -1)
   nnoremap <silent> <leader>tg :GenCtags<CR>:GenGTAGS<CR>:GenClangConf<CR>
   nnoremap <silent> <leader>tc :ClearGTAGS!<CR>:echo "clear tags end"<CR>
+  nnoremap <silent> <leader>tr :ClearGTAGS!<CR>:GenCtags<CR>:GenGTAGS<CR>:GenClangConf<CR>
   nnoremap <silent> <leader>te :EditExt<CR>
 
   autocmd fcying_au User GenTags#CtagsLoaded let g:gen_tags#ctags_auto_gen = 1
@@ -426,6 +431,8 @@ if (FindPlug('LanguageClient-neovim') != -1)
         \ 'go' : ['go-langserver', '-gocodecompletion'],
         \ 'python': ['pyls'],
         \ 'rust': ['rls'],
+        \ 'javascript': ['javascript-typescript-stdio'],
+        \ 'typescript': ['javascript-typescript-stdio'],
         \ 'dockerfile': [&shell, &shellcmdflag, 'docker-langserver --stdio'],
         \ }
 
@@ -479,24 +486,36 @@ if (FindPlug('vim-lsp') != -1)
   "endif
 endif
 
+if (FindPlug('ultisnips') != -1)
+  inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
+  let g:UltiSnipsExpandTrigger = "<c-k>"
+  let g:UltiSnipsJumpForwardTrigger	= "<c-j>"
+  let g:UltiSnipsJumpBackwardTrigger	= "<c-k>"
+  let g:UltiSnipsRemoveSelectModeMappings = 0
+endif
+
 if (FindPlug('neosnippet.vim') != -1)
   imap <C-k>     <Plug>(neosnippet_expand_or_jump)
   smap <C-k>     <Plug>(neosnippet_expand_or_jump)
   xmap <C-k>     <Plug>(neosnippet_expand_target)
 
-  " SuperTab like snippets behavior.
-  " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-  "imap <expr><TAB>
-  " \ pumvisible() ? "\<C-n>" :
-  " \ neosnippet#expandable_or_jumpable() ?
-  " \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-  smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-        \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+  if g:complete_func ==# 'ncm2'
+    inoremap <silent> <expr> <CR> ncm2_neosnippet#expand_or("\<CR>", 'n')
+  elseif g:complete_func ==# 'deoplete'
+    " SuperTab like snippets behavior.
+    " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+    "imap <expr><TAB>
+    " \ pumvisible() ? "\<C-n>" :
+    " \ neosnippet#expandable_or_jumpable() ?
+    " \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+    smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+          \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+  endif
 
   " For conceal markers.
-  if has('conceal')
-    set conceallevel=2 concealcursor=niv
-  endif
+  "if has('conceal')
+  "  set conceallevel=2 concealcursor=niv
+  "endif
 endif
 
 if (FindPlug('asyncomplete.vim') != -1) "{{{
@@ -629,6 +648,7 @@ if (FindPlug('ncm2') != -1)
   set shortmess+=c
   " note that must keep noinsert in completeopt, the others is optional
   set completeopt=noinsert,menuone,noselect
+  let g:ncm2#complete_length = [[1,2],[7,1]]
 
   autocmd fcying_au BufEnter * call ncm2#enable_for_buffer()
   let g:ncm2#matcher = 'substrfuzzy'
@@ -879,6 +899,7 @@ endif
 
 if (FindPlug('LeaderF') != -1)
   let g:Lf_PreviewCode = 0
+  let g:Lf_WorkingDirectoryMode = 'c'
   let g:Lf_UseVersionControlTool = 0
   let g:Lf_DefaultMode = 'FullPath'
   let g:Lf_RootMarkers = ['.root', '.git']
@@ -911,10 +932,11 @@ if (FindPlug('LeaderF') != -1)
   nnoremap fh :<C-u>Leaderf searchHistory<CR>
   nnoremap fl :<C-u>Leaderf line --regex<CR>
   nnoremap ft :<C-U>Leaderf! rg --recall<CR>
-  nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=ac -e %s", expand("<cword>"))<CR>
-  nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=ac -e ")<CR>
-  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=ac -F -e %s", leaderf#Rg#visual())<CR>
+  nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -e %s", expand("<cword>"))<CR>
+  nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -e ")<CR>
+  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F -e %s", leaderf#Rg#visual())<CR>
   nnoremap fs :<C-u>CtrlSF
+  nnoremap f/ :<C-u>FlyGrep<cr>
   nnoremap fi :exec "Leaderf file --regex --input " . <SID>StripInclude(getline("."))<CR>
   function! s:StripInclude(line)
     let l:strip_include = substitute(a:line, '\v.*[\<"]([a-zA-Z0-9_/\.]+)[\>"]', '\1', 'g')
@@ -1179,9 +1201,5 @@ if (FindPlug('vim-template') != -1)
   let g:user = get(g:, 'user', 'fcying')
   let g:email = get(g:, 'email', 'fcying@gmail.com')
 endif
-
-"if (FindPlug('delimitMate') != -1)
-"    autocmd fcying_au FileType python let b:delimitMate_nesting_quotes = ['"']
-"endif
 
 "}}}

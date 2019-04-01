@@ -400,12 +400,6 @@ autocmd fcying_au BufNewFile,BufRead .vimconf setl filetype=vim
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
 
-if FindPlug('delimitMate') != -1
-  imap <expr><CR> pumvisible() ? "\<C-y>" : "<Plug>delimitMateCR"
-else
-  inoremap <expr><CR> pumvisible() ? "\<C-y>\<CR>" : "\<CR>"
-endif
-
 set completeopt=noinsert,menuone,noselect
 
 " large file

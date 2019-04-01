@@ -56,7 +56,7 @@ export LC_ALL=$LANG
 export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
 
 # Ensure path arrays do not contain duplicates.
-typeset -gU cdpath fpath mailpath PATH
+typeset -gU cdpath fpath mailpath PATH path
 
 # Set the list of directories that Zsh searches for programs.
 export GOPATH=$HOME/go
@@ -175,10 +175,36 @@ elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
     BREW_PREFIX=/home/linuxbrew/.linuxbrew
 fi
 if [ ! -z "$BREW_PREFIX" ]; then
-    alias brew=$BREW_PREFIX/bin/brew
+    export HOMEBREW_PREFIX="$BREW_PREFIX"
+    export HOMEBREW_CELLAR="$BREW_PREFIX/Cellar"
     export MANPATH="$BREW_PREFIX/share/man:$MANPATH"
     export INFOPATH="$BREW_PREFIX/share/info:$INFOPATH"
+    function brew() {
+        PATH_TEMP=$PATH
+        #export LDFLAGS="-R$HOMEBREW_PREFIX/lib"
+        export PATH=$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:$PATH
+        $HOMEBREW_PREFIX/bin/brew "$@";
+        export PATH=$PATH_TEMP
+        unset PATH_TEMP
+    }
+    function brew_gcc() {
+        type $HOMEBREW_PREFIX/bin/gcc-$1 > /dev/null 2>&1
+        if [ $? == 0 ]; then
+            export HOMEBREW_CC=gcc-$1
+            export HOMEBREW_CXX=g++-$1
+            echo "brew set gcc version: $1"
+        else
+            echo "brew can't found gcc version: $1"
+        fi
+    }
+    function brew_enable() {
+        export PATH=$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:$PATH
+    }
+    function brew_disable() {
+        export PATH=${PATH##*"linuxbrew/sbin:"}
+    }
 fi
+unset BREW_PREFIX
 
 
 # PROMPT
@@ -247,6 +273,11 @@ setopt nonomatch
 autoload -Uz +X bashcompinit && bashcompinit
 autoload -Uz select-word-style
 select-word-style bash
+
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
 
 # pacman
 alias pacsyu='sudo pacman -Syu'

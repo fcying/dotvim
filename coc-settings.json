@@ -1,20 +1,47 @@
 {
-  "coc.preferences.diagnostic.errorSign": "X",
-  "coc.preferences.diagnostic.warningSign": "!",
-  "coc.preferences.diagnostic.infoSign": "I",
-  "coc.preferences.diagnostic.hintSign": "H",
+  "diagnostic.displayByAle": true,
+  "diagnostic.errorSign": "X",
+  "diagnostic.warningSign": "!",
+  "diagnostic.infoSign": "I",
+  "diagnostic.hintSign": "H",
+  "python.jediEnabled": false,
+  "list.normalMappings": {
+    "q": "do:exit"
+  },
+  "snippets.extends": {
+    "cpp": ["c"],
+    "javascriptreact": ["javascript"],
+    "typescript": ["javascript"]
+  },
   "languageserver": {
-    "clangd": {
-      "command": "clangd",
-      "rootPatterns": ["compile_flags.txt", "compile_commands.json", ".clang_complete", ".vim/", ".git/", ".hg/"],
-      "filetypes": ["c", "cpp", "objc", "objcpp"]
+    "ccls": {
+      "command": "ccls",
+      "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
+      "rootPatterns": [".root/", ".ccls", "compile_commands.json", ".git/"],
+      "initializationOptions": {
+        "cache": {
+          "directory": ".ccls-cache"
+        }
+      }
     },
+    //"clangd": {
+    //  "command": "clangd",
+    //  "rootPatterns": [".root", "compile_flags.txt", ".git/"],
+    //  "filetypes": ["c", "cpp", "objc", "objcpp"]
+    //},
     "golang": {
-      // go get -u -v github.com/GeertJohan/go.rice
-      // git clone https://github.com/saibing/bingo.git && cd bingo && go install
-      "command": "bingo",
-      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
-      "filetypes": ["go"]
+      "filetypes": ["go"],
+      //go get -u golang.org/x/tools/cmd/gopls
+      //"command": "gopls",
+      //"rootPatterns": ["go.mod", ".root/", ".git/"],
+      //go get -u github.com/sourcegraph/go-langserver
+      //go get -u golang.org/x/lint/golint
+      "command": "go-langserver",
+      "initializationOptions": {
+        "gocodeCompletionEnabled": true,
+        "diagnosticsEnabled": true,
+        "lintTool": "golint"
+      }
     }
   }
 }

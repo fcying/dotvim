@@ -1,5 +1,6 @@
 " check environment {{{
 if &compatible
+  " vint: -ProhibitSetNoCompatible
   set nocompatible
 endif
 
@@ -16,7 +17,6 @@ let g:config_dir = expand('<sfile>:p:h')
 let g:file_plug = g:config_dir . '/plug.vim'
 let g:file_vimrc = g:config_dir . '/vimrc'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
-
 
 "}}}
 
@@ -110,7 +110,7 @@ set splitright
 set splitbelow
 set noautochdir
 set regexpengine=1        " use old re, for speed syntax
-set updatetime=500
+set updatetime=300
 set autoread
 augroup checktime
   au!
@@ -128,6 +128,7 @@ set wildignore=*.bak,*.o,*.e,*.swp,.git,.svn,*.pyc,*.class
 
 "set cursorcolumn
 set cursorline
+set signcolumn=number
 
 set magic
 set incsearch

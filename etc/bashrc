@@ -9,12 +9,12 @@ case $- in
 esac
 
 if [ -f "$HOME/.bashrc.local" ]; then
-    source $HOME/.bashrc.local
+    source "$HOME/.bashrc.local"
 fi
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
-HISTCONTROL=ignoreboth
+HISTCONTROL=ignoreboth:erasedups
 
 # append to the history file, don't overwrite it
 shopt -s histappend
@@ -47,7 +47,7 @@ esac
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -79,7 +79,7 @@ esac
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
+    alias ls=' ls --color=auto'
 
     alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
     alias fgrep='fgrep --color=auto'
@@ -89,7 +89,7 @@ fi
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-alias ll='ls -alh'
+alias ll=' ls -alh'
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
@@ -124,8 +124,8 @@ export USE_CCACHE=1
 
 # tmux
 if [ ! -d "$HOME/.tmux/tmux-resurrect" ]; then
-    mkdir -p $HOME/.tmux
-    git clone https://github.com/fcying/tmux-resurrect $HOME/.tmux/tmux-resurrect --depth=1
+    mkdir -p "$HOME/.tmux"
+    git clone https://github.com/fcying/tmux-resurrect "$HOME/.tmux/tmux-resurrect" --depth=1
 fi
 
 # fzf
@@ -138,7 +138,7 @@ EOF
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # z.lua
-[ ! -f $HOME/bin/z.lua ] && {
+[ ! -f "$HOME/bin/z.lua" ] && {
     mkdir -p ~/bin
     pushd ~/bin && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd
 }
@@ -166,15 +166,23 @@ PATH=$HOME/bin:$HOME/.local/bin:$HOME/tool/go/bin:$HOME/.cargo/bin:$PATH
 BREW_PREFIX=""
 if [ -d "$HOME/.linuxbrew/bin" ]; then
     BREW_PREFIX=$HOME/.linuxbrew
-    export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
 elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
     BREW_PREFIX=/home/linuxbrew/.linuxbrew
 fi
 if [ ! -z "$BREW_PREFIX" ]; then
+    export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
     export HOMEBREW_PREFIX="$BREW_PREFIX"
     export HOMEBREW_CELLAR="$BREW_PREFIX/Cellar"
     export MANPATH="$BREW_PREFIX/share/man:$MANPATH"
     export INFOPATH="$BREW_PREFIX/share/info:$INFOPATH"
+    for COMPLETION in "$HOMEBREW_PREFIX"/etc/bash_completion.d/*
+    do
+        [[ -f $COMPLETION ]] && source "$COMPLETION"
+    done
+    if [[ -f ${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh ]];
+    then
+        source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
+    fi
     function brew() {
         PATH_TEMP=$PATH
         export PATH=$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:$PATH
@@ -183,7 +191,7 @@ if [ ! -z "$BREW_PREFIX" ]; then
         unset PATH_TEMP
     }
     function brew_gcc() {
-        type $HOMEBREW_PREFIX/bin/gcc-$1 > /dev/null 2>&1
+        type "$HOMEBREW_PREFIX/bin/gcc-$1" > /dev/null 2>&1
         if [ $? == 0 ]; then
             export HOMEBREW_CC=gcc-$1
             export HOMEBREW_CXX=g++-$1
@@ -200,5 +208,8 @@ if [ ! -z "$BREW_PREFIX" ]; then
     }
 fi
 unset BREW_PREFIX
+alias install_brew='bash -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
+alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
+alias brew_install_ruby='brew vendor-install ruby'
 
 type LoadAfter >/dev/null 2>&1 && LoadAfter

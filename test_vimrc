@@ -1,21 +1,13 @@
 set nocompatible
-set mouse=n
 set encoding=utf-8
+set mouse=n
 
-exec 'source ~/.vim/plugged/vim-plug/plug.vim'
-call plug#begin('~/.vim/plugged')
-Plug 'roxma/nvim-yarp'
-Plug 'roxma/vim-hug-neovim-rpc'
-Plug 'ncm2/ncm2'
-Plug 'ncm2/ncm2-path'
-call plug#end()
+set runtimepath+=~/.vim/plugged/coc.nvim
+set runtimepath+=~/.vim/plugged/ale
+let g:ale_linters = { 'c': [] }
 
-let $NVIM_PYTHON_LOG_FILE="/home/pub/ncm2_log"
-let $NVIM_NCM_LOG_LEVEL="DEBUG"
-let $NVIM_NCM_MULTI_THREAD=0
-
-set completeopt=noinsert,menuone,noselect
-autocmd BufEnter * call ncm2#enable_for_buffer()
+nmap <silent> aj :ALENext<cr>
+nmap <silent> ak :ALEPrevious<cr>
 
 filetype plugin indent on
 syntax enable

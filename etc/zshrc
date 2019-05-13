@@ -60,6 +60,7 @@ typeset -gU cdpath fpath mailpath PATH path
 
 # Set the list of directories that Zsh searches for programs.
 export GOPATH=$HOME/go
+export GOPROXY=https://goproxy.io
 export QT_VERSION=5.12.1
 #export GO111MODULE=on
 export QT_DIR=$HOME/qt
@@ -170,11 +171,11 @@ fi
 BREW_PREFIX=""
 if [ -d "$HOME/.linuxbrew/bin" ]; then
     BREW_PREFIX=$HOME/.linuxbrew
-    export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
 elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
     BREW_PREFIX=/home/linuxbrew/.linuxbrew
 fi
 if [ ! -z "$BREW_PREFIX" ]; then
+    export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
     export HOMEBREW_PREFIX="$BREW_PREFIX"
     export HOMEBREW_CELLAR="$BREW_PREFIX/Cellar"
     export MANPATH="$BREW_PREFIX/share/man:$MANPATH"
@@ -293,6 +294,7 @@ alias pacrns='sudo pacman -Rns'
 function cdls { builtin cd "$@" && ls --color=auto; }
 alias cd='cdls'
 alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_history'
+alias zsh_fix_gw='compaudit |xargs chmod -R g-w'
 alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
 alias vi='vim'
 alias py='python3'
@@ -360,7 +362,7 @@ repeat 0 {
 }
 
 
-alias install_brew='sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
+alias install_brew='bash -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
 alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
 alias brew_install_ruby='brew vendor-install ruby'
 

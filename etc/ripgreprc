@@ -20,5 +20,7 @@
 --glob=!**/tags
 --glob=!**/prj_tags
 --glob=!**/.clang_complete
+--glob=!**/.ccls
+--glob=!**/.ccls-cache
 --iglob=!**/obj/*
 --iglob=!**/out/*

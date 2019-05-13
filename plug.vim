@@ -6,8 +6,6 @@ else
 endif
 
 " lsp
-" go get -u -v github.com/GeertJohan/go.rice
-" git clone https://github.com/saibing/bingo.git && cd bingo && go install
 " go get -u -v github.com/sourcegraph/go-langserver
 " npm install -g dockerfile-language-server-nodejs
 " pip3 install python-language-server
@@ -86,7 +84,7 @@ call add(g:plug_list, "Plug 'MattesGroeger/vim-bookmarks'")
 call add(g:plug_list, "Plug 'thinca/vim-ref'")
 call add(g:plug_list, "Plug 'tpope/vim-surround'")
 call add(g:plug_list, "Plug 'terryma/vim-expand-region'")
-call add(g:plug_list, "Plug 'mg979/vim-visual-multi', {'branch': 'test'}")
+call add(g:plug_list, "Plug 'mg979/vim-visual-multi', {'branch': 'master'}")
 call add(g:plug_list, "Plug 'derekwyatt/vim-fswitch'")
 call add(g:plug_list, "Plug 'nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}")
 call add(g:plug_list, "Plug 'scrooloose/nerdtree', {'on':['NERDTreeToggle', 'NERDTreeFind']}")
@@ -97,7 +95,7 @@ call add(g:plug_list, "Plug 'xolox/vim-misc'")
 call add(g:plug_list, "Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}")
 call add(g:plug_list, "Plug 'dyng/ctrlsf.vim'")
 call add(g:plug_list, "Plug 'easymotion/vim-easymotion'")
-call add(g:plug_list, "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}")
+"call add(g:plug_list, "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}")
 "call add(g:plug_list, "Plug 'tpope/vim-fugitive'")
 call add(g:plug_list, "Plug 'Yggdroot/LeaderF', {'do': '" . s:os_do('./install.sh','.\install.bat'))
 call add(g:plug_list, "Plug 'wsdjeg/FlyGrep.vim'")
@@ -110,6 +108,7 @@ call add(g:plug_list, "Plug 'jsfaint/gen_tags.vim'")
 call add(g:plug_list, "Plug 'fcying/gen_clang_conf.vim'")
 call add(g:plug_list, "Plug 'mattn/emmet-vim'")
 call add(g:plug_list, "Plug 'aperezdc/vim-template', {'on':'TemplateHere'}")
+"call add(g:plug_list, "Plug 'w0rp/ale'")
 
 if g:complete_func ==# 'ncm2'
   if g:is_nvim ==# 0
@@ -165,8 +164,17 @@ elseif g:complete_func ==# 'deoplete'
   call add(g:plug_list, "Plug 'Shougo/neosnippet.vim'")
   call add(g:plug_list, "Plug 'Shougo/neosnippet-snippets'")
 elseif g:complete_func ==# 'coc'
-  call add(g:plug_list, "Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}")
-  call add(g:plug_list, "Plug 'neoclide/jsonc.vim'")
+  function! InstallCoc(info) abort
+    if a:info.status !=# 'unchanged' || a:info.force
+      if g:is_win
+        call system('.\install.cmd')
+      else
+        call system('./install.sh')
+      endif
+    endif
+  endfunction
+  call add(g:plug_list, "Plug 'neoclide/coc.nvim', {'do': function('InstallCoc')}")
+  call add(g:plug_list, "Plug 'honza/vim-snippets'")
 elseif g:complete_func ==# 'neocomplete'
   if has('lua')
     call add(g:plug_list, "Plug 'Shougo/neocomplete'")
@@ -345,7 +353,8 @@ endif
 
 if (FindPlug('asyncrun') != -1)
   let g:asyncrun_silent = 0
-  autocmd User AsyncRunStop :echo 'AsyncRunStop'
+  "let g:asyncrun_open = 6
+  autocmd fcying_au User AsyncRunStop :echo 'AsyncRunStop'
 endif
 
 if (FindPlug('lightline') != -1)
@@ -450,35 +459,35 @@ if (FindPlug('vim-lsp') != -1)
   nnoremap <silent> <leader>lm :LspImplementation<CR>
 
   "if executable('bingo')
-    "au User lsp_setup call lsp#register_server({
+    "au fcying_au User lsp_setup call lsp#register_server({
           "\ 'name': 'bingo',
           "\ 'cmd': {server_info->['bingo']},
           "\ 'whitelist': ['go'],
           "\ })
   "endif
   if executable('go-langserver')
-    au User lsp_setup call lsp#register_server({
+    au fcying_au User lsp_setup call lsp#register_server({
           \ 'name': 'go-lsp',
           \ 'cmd': {server_info->['go-langserver', '-gocodecompletion']},
           \ 'whitelist': ['go'],
           \ })
   endif
   if executable('pyls')
-    au User lsp_setup call lsp#register_server({
+    au fcying_au User lsp_setup call lsp#register_server({
           \ 'name': 'pyls',
           \ 'cmd': {server_info->['pyls']},
           \ 'whitelist': ['python'],
           \ })
   endif
   if executable('docker-langserver')
-    au User lsp_setup call lsp#register_server({
+    au fcying_au User lsp_setup call lsp#register_server({
           \ 'name': 'docker-langserver',
           \ 'cmd': {server_info->[&shell, &shellcmdflag, 'docker-langserver --stdio']},
           \ 'whitelist': ['dockerfile'],
           \ })
   endif
   "if executable('clangd')
-  "  au User lsp_setup call lsp#register_server({
+  "  au fcying_au User lsp_setup call lsp#register_server({
   "        \ 'name': 'clangd',
   "        \ 'cmd': {server_info->['clangd']},
   "        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
@@ -486,11 +495,22 @@ if (FindPlug('vim-lsp') != -1)
   "endif
 endif
 
+if (FindPlug('ale') != -1)
+  nmap <silent> <leader>aj :ALENext<cr>
+  nmap <silent> <leader>ak :ALEPrevious<cr>
+
+  let g:ale_sh_shellcheck_exclusions = 'SC2164,SC2086,SC1090'
+
+  let g:ale_linters = {
+        \   'c': [],
+        \}
+endif
+
 if (FindPlug('ultisnips') != -1)
   inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
-  let g:UltiSnipsExpandTrigger = "<c-k>"
-  let g:UltiSnipsJumpForwardTrigger	= "<c-j>"
-  let g:UltiSnipsJumpBackwardTrigger	= "<c-k>"
+  let g:UltiSnipsExpandTrigger = '<c-j>'
+  let g:UltiSnipsJumpForwardTrigger	= '<c-j>'
+  let g:UltiSnipsJumpBackwardTrigger	= '<c-k>'
   let g:UltiSnipsRemoveSelectModeMappings = 0
 endif
 
@@ -637,7 +657,54 @@ if (FindPlug('jedi-vim') != -1)
 endif
 
 if (FindPlug('coc') != -1)
+  let g:coc_global_extensions = ['coc-vimlsp',
+        \ 'coc-dictionary', 'coc-syntax',
+        \ 'coc-rls', 'coc-python',
+        \ 'coc-css', 'coc-html',
+        \ 'coc-tsserver', 'coc-java',
+        \ 'coc-snippets', 'coc-json']
+
   imap <c-l> coc#refresh()
+
+  " don't give |ins-completion-menu| messages.
+  set shortmess+=c
+
+  " Use `[c` and `]c` to navigate diagnostics
+  nmap <silent> [c <Plug>(coc-diagnostic-prev)
+  nmap <silent> ]c <Plug>(coc-diagnostic-next)
+
+  " Remap keys for gotos
+  nmap <silent> gd <Plug>(coc-definition)
+  nmap <silent> gy <Plug>(coc-type-definition)
+  nmap <silent> gi <Plug>(coc-implementation)
+  nmap <silent> gr <Plug>(coc-references)
+
+  nmap <leader>rn <Plug>(coc-rename)
+
+  nnoremap <silent> K :call <SID>show_documentation()<CR>
+  function! s:show_documentation()
+    if (index(['vim','help'], &filetype) >= 0)
+      execute 'h '.expand('<cword>')
+    else
+      call CocAction('doHover')
+    endif
+  endfunction
+
+  let g:lightline = {
+        \ 'colorscheme': 'wombat',
+        \ 'active': {
+        \   'left': [ [ 'mode', 'paste' ],
+        \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
+        \ },
+        \ 'component_function': {
+        \   'cocstatus': 'coc#status'
+        \ },
+        \ }
+
+  " snippets
+  let g:coc_snippet_next = '<c-j>'
+  let g:coc_snippet_prev = '<c-k>'
+  imap <C-j> <Plug>(coc-snippets-expand-jump)
 endif
 
 if (FindPlug('ncm2') != -1)
@@ -662,7 +729,7 @@ if (FindPlug('ncm2') != -1)
   endif
 
   if (FindPlug('ncm2-pyclang') != -1)
-    let g:ncm2_pyclang#args_file_path = ['.git/.clang_complete', '.clang_complete']
+    let g:ncm2_pyclang#args_file_path = ['compile_flags.txt']
     "autocmd fcying_au FileType c,cpp nnoremap <buffer> gd :<c-u>call ncm2_pyclang#goto_declaration()<cr>
   endif
 endif
@@ -911,6 +978,9 @@ if (FindPlug('LeaderF') != -1)
   let g:Lf_CommandMap = {'<F5>': ['<C-L>']}
   let g:Lf_RgConfig = [
         \ '--glob=!.git/*',
+        \ '--glob=!.svn/*',
+        \ '--glob=!.ccls',
+        \ '--glob=!.ccls-cache',
         \ '--glob=!**/.repo/*',
         \ '--glob=!**/.ccache/*',
         \ '--glob=!**/GTAGS',
@@ -1106,19 +1176,20 @@ if (FindPlug('nerdcommenter') != -1)
         \ 'qml': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
         \ 'conf': { 'left': '#' },
         \ 'aptconf': { 'left': '//' },
+        \ 'json': { 'left': '//' },
         \ 'rc': { 'left': '#' },
         \ '': { 'left': '#' },
         \ }
   nmap <A-/> <plug>NERDCommenterToggle
   vmap <A-/> <plug>NERDCommenterToggle gv
-  nmap gc <plug>NERDCommenterToggle
-  vmap gc <plug>NERDCommenterToggle
-  vmap gC <plug>NERDCommenterComment
-  vmap gU <plug>NERDCommenterUncomment
-  nmap gi <plug>NERDCommenterInvert
-  vmap gi <plug>NERDCommenterInvert
-  nmap gs <plug>NERDCommenterSexy
-  vmap gs <plug>NERDCommenterSexy
+  nmap <leader>gc <plug>NERDCommenterToggle
+  vmap <leader>gc <plug>NERDCommenterToggle
+  vmap <leader>gC <plug>NERDCommenterComment
+  vmap <leader>gU <plug>NERDCommenterUncomment
+  nmap <leader>gi <plug>NERDCommenterInvert
+  vmap <leader>gi <plug>NERDCommenterInvert
+  nmap <leader>gs <plug>NERDCommenterSexy
+  vmap <leader>gs <plug>NERDCommenterSexy
 endif
 
 if (FindPlug('tagbar') != -1) "{{{

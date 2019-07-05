@@ -14,6 +14,8 @@ let s:is_gui = has('gui_running')
 let g:is_tmux = &term =~# '^screen' ? 1 : 0
 
 let g:config_dir = expand('<sfile>:p:h')
+let g:cache_dir = g:config_dir . '/.cache'
+let g:etc_dir = g:config_dir . '/etc'
 let g:file_plug = g:config_dir . '/plug.vim'
 let g:file_vimrc = g:config_dir . '/vimrc'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
@@ -29,7 +31,7 @@ if filereadable(g:file_vimrc_local)
   execute 'source ' . g:file_vimrc_local
 endif
 
-let g:mapleader = get(g:,'mapleader',';')
+let g:mapleader = get(g:,'mapleader',' ')
 
 augroup fcying_au
   autocmd!
@@ -102,9 +104,9 @@ set noswapfile
 set nobackup
 set nowritebackup
 set undofile
-execute 'set undodir=' . g:config_dir . '/.cache/undodir'
-if !isdirectory(g:config_dir . '/.cache/undodir')
-  call mkdir(g:config_dir . '/.cache/undodir', 'p')
+execute 'set undodir=' . g:cache_dir . '/undodir'
+if !isdirectory(g:cache_dir . '/undodir')
+  call mkdir(g:cache_dir . '/undodir', 'p')
 endif
 set splitright
 set splitbelow
@@ -128,7 +130,9 @@ set wildignore=*.bak,*.o,*.e,*.swp,.git,.svn,*.pyc,*.class
 
 "set cursorcolumn
 set cursorline
-set signcolumn=number
+if has('patch-8.1.1587')
+  set signcolumn=number
+endif
 
 set magic
 set incsearch
@@ -179,7 +183,31 @@ set showcmd
 set virtualedit=onemore        "onemore all
 set lazyredraw
 
-execute 'set dictionary+=' . g:config_dir . '/etc/dictionary'
+if g:is_vim8
+  set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
+else
+  set cscopequickfix=s+,c+,d+,i+,t+,e+
+endif
+
+"gen tags
+nnoremap <silent> <leader>tg :GenClangConf<CR>:Leaderf gtags --update<CR>
+nnoremap <silent> <leader>tc :ClearClangConf<CR>:Leaderf gtags --remove<CR>
+
+"quickfix
+function! ShowQuickfix()
+  let l:winnr = winnr()
+  rightbelow copen
+  if l:winnr !=# winnr()
+    wincmd p
+  endif
+endfunc
+nnoremap <silent> <leader>co :call ShowQuickfix()<CR>
+nnoremap <silent> <leader>cc :cclose<CR>
+nnoremap <silent> <leader>cn :cnext<CR>
+nnoremap <silent> <leader>cp :cprevious<CR>
+
+"dictionary
+execute 'set dictionary+=' . g:etc_dir . '/dictionary'
 
 set foldmethod=manual
 set nofoldenable

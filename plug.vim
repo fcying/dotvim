@@ -1,6 +1,6 @@
-" deoplete ncm2 asyncomplete neocomplete ycm completor coc
+" deoplete ncm2 asyncomplete ycm completor coc
 if g:is_vim8
-  let g:complete_func = get(g:, 'complete_func', 'ncm2')
+  let g:complete_func = get(g:, 'complete_func', 'coc')
 else
   let g:complete_func = get(g:, 'complete_func', 'neocomplete')
 endif
@@ -29,32 +29,6 @@ function! s:os_do(linux, windows) abort
   endif
 endfunction
 
-function! InstallDeoplete(info) abort
-  if a:info.status !=# 'unchanged' || a:info.force
-    silent !echo "InstallDeoplete"
-    if g:is_nvim
-      silent UpdateRemotePlugins
-    else
-      silent !pip3 install neovim --upgrade
-    endif
-  endif
-endfunction
-
-function! BuildGoCode(info) abort
-  if a:info.status !=# 'unchanged' || a:info.force
-    if g:is_win
-      let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\ftplugin '
-            \ . $HOME . '\vimfiles'
-      call system(l:cmd)
-      let l:cmd = 'cp -R ' . g:config_dir . '\plugged\gocode\vim\autoload ' . $HOME
-            \ . '\vimfiles'
-      call system(l:cmd)
-    else
-      let l:cmd = 'sh ' . g:config_dir . '/plugged/gocode/vim/update.sh'
-      call system(l:cmd)
-    endif
-  endif
-endfunction
 "}}}
 
 
@@ -97,14 +71,23 @@ call add(g:plug_list, "Plug 'dyng/ctrlsf.vim'")
 call add(g:plug_list, "Plug 'easymotion/vim-easymotion'")
 "call add(g:plug_list, "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}")
 "call add(g:plug_list, "Plug 'tpope/vim-fugitive'")
-call add(g:plug_list, "Plug 'Yggdroot/LeaderF', {'do': '" . s:os_do('./install.sh','.\install.bat'))
+
+function! InstallLeaderF(info) abort
+  if a:info.status !=# 'unchanged' || a:info.force
+    silent !echo "InstallLeaderF"
+    if g:is_win
+      silent !.\install.bat
+    else
+      silent !./install.sh
+    endif
+    silent !pip3 install pygments --upgrade
+  endif
+endfunction
+call add(g:plug_list, "Plug 'Yggdroot/LeaderF', {'do': function('InstallLeaderF')}")
 call add(g:plug_list, "Plug 'wsdjeg/FlyGrep.vim'")
 
-"call add(g:plug_list, "Plug 'ludovicchabant/vim-gutentags'")
-"call add(g:plug_list, "Plug 'skywind3000/gutentags_plus'")
 call add(g:plug_list, "Plug 'skywind3000/vim-preview'")
 call add(g:plug_list, "Plug 'skywind3000/asyncrun.vim'")
-call add(g:plug_list, "Plug 'jsfaint/gen_tags.vim'")
 call add(g:plug_list, "Plug 'fcying/gen_clang_conf.vim'")
 call add(g:plug_list, "Plug 'mattn/emmet-vim'")
 call add(g:plug_list, "Plug 'aperezdc/vim-template', {'on':'TemplateHere'}")
@@ -146,6 +129,16 @@ if g:complete_func ==# 'ncm2'
   "call add(g:plug_list, "Plug 'ncm2/ncm2-go'")
   "call add(g:plug_list, "Plug 'ncm2/ncm2-jedi'")
 elseif g:complete_func ==# 'deoplete'
+  function! InstallDeoplete(info) abort
+    if a:info.status !=# 'unchanged' || a:info.force
+      silent !echo "InstallDeoplete"
+      if g:is_nvim
+        silent UpdateRemotePlugins
+      else
+        silent !pip3 install neovim --upgrade
+      endif
+    endif
+  endfunction
   call add(g:plug_list, "Plug 'Shougo/deoplete.nvim', {'do': function('InstallDeoplete')}")
   if g:is_nvim ==# 0
     call add(g:plug_list, "Plug 'roxma/nvim-yarp'")
@@ -175,16 +168,6 @@ elseif g:complete_func ==# 'coc'
   endfunction
   call add(g:plug_list, "Plug 'neoclide/coc.nvim', {'do': function('InstallCoc')}")
   call add(g:plug_list, "Plug 'honza/vim-snippets'")
-elseif g:complete_func ==# 'neocomplete'
-  if has('lua')
-    call add(g:plug_list, "Plug 'Shougo/neocomplete'")
-    call add(g:plug_list, "Plug 'davidhalter/jedi-vim', {'for':'python'}")
-    call add(g:plug_list, "Plug 'Shougo/neoinclude.vim'")
-    call add(g:plug_list, "Plug 'Shougo/neco-syntax'")
-    call add(g:plug_list, "Plug 'Shougo/neco-vim', {'for':'vim'}")
-    call add(g:plug_list, "Plug 'nsf/gocode', {'do':function('BuildGoCode'), 'for':'go'}")
-    call add(g:plug_list, "Plug 'dgryski/vim-godef', {'for':'go'}")
-  endif
 elseif g:complete_func ==# 'asyncomplete'
   call add(g:plug_list, "Plug 'prabirshrestha/async.vim'")
   call add(g:plug_list, "Plug 'prabirshrestha/vim-lsp'")
@@ -235,9 +218,9 @@ nnoremap <leader>pc :PlugClean<CR>
 " auto install
 let g:plug_auto_install = get(g:, 'plug_auto_install', 0)
 if g:plug_auto_install == 1 || exists('s:first_install')
-  let s:plug_list_cache=g:config_dir . '/.cache/plug_list_cache'
-  if !isdirectory(g:config_dir . '/.cache')
-    call mkdir(g:config_dir . '/.cache')
+  let s:plug_list_cache=g:cache_dir . '/plug_list_cache'
+  if !isdirectory(g:cache_dir)
+    call mkdir(g:cache_dir)
   endif
   if filereadable(s:plug_list_cache)
     let s:last_plug_list=readfile(s:plug_list_cache, 'b')
@@ -272,89 +255,18 @@ if (FindPlug('vim-indent-guides') != -1)
   :nmap <silent> <Leader>i <Plug>IndentGuidesToggle
 endif
 
-if (FindPlug('gen_tags.vim') != -1)
-  nnoremap <silent> <leader>tg :GenCtags<CR>:GenGTAGS<CR>:GenClangConf<CR>
-  nnoremap <silent> <leader>tc :ClearGTAGS!<CR>:echo "clear tags end"<CR>
-  nnoremap <silent> <leader>tr :ClearGTAGS!<CR>:GenCtags<CR>:GenGTAGS<CR>:GenClangConf<CR>
-  nnoremap <silent> <leader>te :EditExt<CR>
-
-  autocmd fcying_au User GenTags#CtagsLoaded let g:gen_tags#ctags_auto_gen = 1
-  autocmd fcying_au User GenTags#GtagsLoaded let g:gen_tags#gtags_auto_gen = 1
-
-  let g:gen_tags#use_cache_dir = 0
-  let g:gen_tags#ctags_auto_gen = 0
-  let g:gen_tags#gtags_auto_gen = 0
-  let g:gen_tags#gtags_default_map = 0
-  let g:gen_tags#blacklist = ['$HOME']
-  let g:gen_tags#statusline = 1
-
-  if g:is_vim8
-    set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
-  else
-    set cscopequickfix=s+,c+,d+,i+,t+,e+
-  endif
-
-  function! s:gen_tags_find(cmd, keyword) abort
-    let l:cmd = 'cs find ' . a:cmd . ' ' . a:keyword
-    silent exec 'cexpr l:cmd'
-    call setqflist([], 'a')
-    silent exec l:cmd
-    belowright copen
-  endfunction
-
-  "c    Find functions calling this function
-  "d    Find functions called by this function
-  "e    Find this egrep pattern
-  "f    Find this file
-  "g    Find this definition
-  "i    Find files #including this file
-  "s    Find this C symbol
-  "t    Find this text string
-  noremap  <leader>cc :call <SID>gen_tags_find('c', "<C-R><C-W>")<CR>
-  noremap  <leader>cd :call <SID>gen_tags_find('d', "<C-R><C-W>")<CR>
-  noremap  <leader>ce :call <SID>gen_tags_find('e', "<C-R><C-W>")<CR>
-  noremap  <leader>cf :call <SID>gen_tags_find('f', "<C-R><C-F>")<CR>
-  noremap  <leader>cg :call <SID>gen_tags_find('g', "<C-R><C-W>")<CR>
-  noremap  <leader>ci :call <SID>gen_tags_find('i', "<C-R><C-F>")<CR>
-  noremap  <leader>cs :call <SID>gen_tags_find('s', "<C-R><C-W>")<CR>
-  noremap  <leader>ct :call <SID>gen_tags_find('t', "<C-R><C-W>")<CR>
-
-  autocmd fcying_au FileType qf nnoremap <silent><buffer> p :PreviewQuickfix<cr>
-  autocmd fcying_au FileType qf nnoremap <silent><buffer> P :PreviewClose<cr>
-endif
-
-if (FindPlug('gutentags_plus') != -1)
-  nnoremap <leader>tg :GutentagsUpdate<CR>
-  " enable gtags module
-  let g:gutentags_modules = ['ctags', 'gtags_cscope']
-  " config project root markers.
-  let g:gutentags_project_root = ['.root']
-  " generate datebases in my cache directory, prevent gtags files polluting my project
-  let g:gutentags_cache_dir = expand($HOME . '/.cache/tags')
-  " forbid gutentags adding gtags databases
-  let g:gutentags_auto_add_gtags_cscope = 0
-  let g:gutentags_plus_nomap = 1
-  noremap <silent> <leader>cs :GscopeFind s <C-R><C-W><cr>
-  noremap <silent> <leader>cg :GscopeFind g <C-R><C-W><cr>
-  noremap <silent> <leader>cc :GscopeFind c <C-R><C-W><cr>
-  noremap <silent> <leader>ct :GscopeFind t <C-R><C-W><cr>
-  noremap <silent> <leader>ce :GscopeFind e <C-R><C-W><cr>
-  noremap <silent> <leader>cf :GscopeFind f <C-R>=expand("<cfile>")<cr><cr>
-  noremap <silent> <leader>ci :GscopeFind i <C-R>=expand("<cfile>")<cr><cr>
-  noremap <silent> <leader>cd :GscopeFind d <C-R><C-W><cr>
-  noremap <silent> <leader>ca :GscopeFind a <C-R><C-W><cr>
-  autocmd fcying_au FileType qf nnoremap <silent><buffer> p :PreviewQuickfix<cr>
-  autocmd fcying_au FileType qf nnoremap <silent><buffer> P :PreviewClose<cr>
-
-  let g:gutentags_generate_on_missing = 0
-  let g:gutentags_generate_on_new = 0
-  let g:gutentags_generate_on_write = 0
-endif
-
 if (FindPlug('asyncrun') != -1)
   let g:asyncrun_silent = 0
   "let g:asyncrun_open = 6
-  autocmd fcying_au User AsyncRunStop :echo 'AsyncRunStop'
+  autocmd fcying_au User AsyncRunStop :call <SID>asyncrun_stop()
+  function! s:asyncrun_stop()
+    if (g:asyncrun_code ==# 0)
+      echo 'AsyncRun Success'
+      cclose
+    else
+      call ShowQuickfix()
+    endif
+  endfunction
 endif
 
 if (FindPlug('lightline') != -1)
@@ -780,7 +692,7 @@ if (FindPlug('deoplete.nvim') != -1) "{{{
 endif "}}}
 
 if (FindPlug('neocomplete') != -1) "{{{
-  let g:neocomplete#data_directory= g:config_dir . '/.cache/neocomplete'
+  let g:neocomplete#data_directory= g:cache_dir . '/neocomplete'
   let g:acp_enableAtStartup = 0
   let g:neocomplete#enable_at_startup = 1
   " Use smartcase.
@@ -796,10 +708,10 @@ if (FindPlug('neocomplete') != -1) "{{{
   let g:neocomplete#sources#dictionary#dictionaries =
         \ {
         \ 'default' : '',
-        \ 'vimshell' : g:config_dir . '/.cache/vimshell/command-history',
-        \ 'java' : g:config_dir . '/.cache/dict/java.dict',
-        \ 'ruby' : g:config_dir . '/.cache/dict/ruby.dict',
-        \ 'scala' : g:config_dir . '/.cache/dict/scala.dict',
+        \ 'vimshell' : g:cache_dir . '/vimshell/command-history',
+        \ 'java' : g:cache_dir . '/dict/java.dict',
+        \ 'ruby' : g:cache_dir . '/dict/ruby.dict',
+        \ 'scala' : g:cache_dir . '/dict/scala.dict',
         \ }
 
   let g:neocomplete#enable_auto_delimiter = 1
@@ -929,7 +841,7 @@ if (FindPlug('ctrlsf') != -1)
   "redir! > ctrlsf.log
   let g:ctrlsf_ackprg = 'rg'
   let g:ctrlsf_regex_pattern = 1
-  let g:ctrlsf_case_sensitive = 'smart'
+  let g:ctrlsf_case_sensitive = 'no'
   let g:ctrlsf_default_root = 'cwd'
   let g:ctrlsf_default_view_mode = 'normal'
   let g:ctrlsf_search_mode = 'async'
@@ -945,7 +857,6 @@ if (FindPlug('ctrlsf') != -1)
   nmap <leader>sp <Plug>CtrlSFPwordPath
   nnoremap <leader>so :CtrlSFOpen<CR>
   nnoremap <leader>st :CtrlSFToggle<CR>
-  inoremap <leader>st <Esc>:CtrlSFToggle<CR>
 
   let g:ctrlsf_mapping = {
         \ 'next'    : 'n',
@@ -968,11 +879,14 @@ if (FindPlug('LeaderF') != -1)
   let g:Lf_PreviewCode = 0
   let g:Lf_WorkingDirectoryMode = 'c'
   let g:Lf_UseVersionControlTool = 0
+  let g:Lf_CacheDirectory = g:cache_dir
+  let g:Lf_Gtagslabel = 'native-pygments'
+  let $GTAGSCONF = g:etc_dir . '/gtags.conf'
   let g:Lf_DefaultMode = 'FullPath'
-  let g:Lf_RootMarkers = ['.root', '.git']
+  let g:Lf_RootMarkers = ['.root', '.git', '.svn']
   let g:Lf_WildIgnore = {
-        \ 'dir': ['.root','.svn','.git','.hg'],
-        \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+        \ 'dir': ['.root','.svn','.git','.hg','.ccls-cache'],
+        \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','.ccls']
         \}
 
   let g:Lf_CommandMap = {'<F5>': ['<C-L>']}
@@ -997,14 +911,13 @@ if (FindPlug('LeaderF') != -1)
   nnoremap ff :<C-u>Leaderf file<CR>
   nnoremap fb :<C-u>Leaderf buffer<CR>
   nnoremap fo :<C-u>Leaderf function<CR>
-  nnoremap ft :<C-u>Leaderf tag<CR>
   nnoremap fm :<C-u>Leaderf mru<CR>
   nnoremap fh :<C-u>Leaderf searchHistory<CR>
   nnoremap fl :<C-u>Leaderf line --regex<CR>
-  nnoremap ft :<C-U>Leaderf! rg --recall<CR>
   nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -e %s", expand("<cword>"))<CR>
   nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -e ")<CR>
   xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F -e %s", leaderf#Rg#visual())<CR>
+  nnoremap fgo :<C-U>Leaderf! rg --recall<CR>
   nnoremap fs :<C-u>CtrlSF
   nnoremap f/ :<C-u>FlyGrep<cr>
   nnoremap fi :exec "Leaderf file --regex --input " . <SID>StripInclude(getline("."))<CR>
@@ -1012,6 +925,12 @@ if (FindPlug('LeaderF') != -1)
     let l:strip_include = substitute(a:line, '\v.*[\<"]([a-zA-Z0-9_/\.]+)[\>"]', '\1', 'g')
     return l:strip_include
   endfunction
+  noremap ftr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+  noremap ftd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+  noremap <c-]> :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+  noremap fto :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+  noremap ftn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+  noremap ftp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 endif
 
 if (FindPlug('denite') != -1) "{{{
@@ -1235,20 +1154,17 @@ if (FindPlug('vim-easymotion') != -1)
   let g:EasyMotion_smartcase = 0
   let g:EasyMotion_do_mapping = 0   " Disable default mappings
   " <Leader>f{char} to move to {char}
-  map  <Leader>f <Plug>(easymotion-bd-f)
   nmap <Leader>f <Plug>(easymotion-overwin-f)
   " s{char}{char} to move to {char}{char}
   nmap s <Plug>(easymotion-overwin-f2)
   " Move to line
-  map <Leader>L <Plug>(easymotion-bd-jk)
   nmap <Leader>L <Plug>(easymotion-overwin-line)
   " Move to word
-  map  <Leader>w <Plug>(easymotion-bd-w)
   nmap <Leader>w <Plug>(easymotion-overwin-w)
 endif
 
 if (FindPlug('vim-fswitch') != -1)
-  map <silent> <Leader>h <ESC>:FSHere<CR>
+  nnoremap <silent> <Leader>h <ESC>:FSHere<CR>
 endif
 
 if (FindPlug('vimshell') != -1)
@@ -1268,7 +1184,7 @@ if (FindPlug('vim-template') != -1)
   nnoremap <silent> <Leader>th :TemplateHere<CR>
   nnoremap <silent> <Leader>tf :execute 'Template *.' . &filetype<CR>
   let g:templates_no_autocmd = 1
-  exe 'let g:templates_directory = [''' . g:config_dir . '/etc/template'']'
+  exe 'let g:templates_directory = [''' . g:etc_dir . '/template'']'
   let g:user = get(g:, 'user', 'fcying')
   let g:email = get(g:, 'email', 'fcying@gmail.com')
 endif

@@ -61,7 +61,7 @@ typeset -gU cdpath fpath mailpath PATH path
 # Set the list of directories that Zsh searches for programs.
 export GOPATH=$HOME/go
 export GOPROXY=https://goproxy.io
-export QT_VERSION=5.12.1
+export QT_VERSION=5.13.0
 #export GO111MODULE=on
 export QT_DIR=$HOME/qt
 #export QT_WEBKIT=true

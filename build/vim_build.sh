@@ -78,7 +78,6 @@ if [ $install == "true" ] || [ $update == "true" ]; then
         git clean -fxd
         git fetch -p -v --progress --depth=1 origin master
         if [ "$branch" != "" ]; then
-            git reset --hard origin/master
             git reset --hard "$branch"
         else
             git reset --hard origin/master
@@ -87,7 +86,7 @@ if [ $install == "true" ] || [ $update == "true" ]; then
 else
     cd $vim_home/vim_origin/
     git clean -fxd
-    git reset --hard master
+    git reset --hard HEAD
 fi
 
 # for xshell mouse wheel; fix in the latest version
@@ -116,8 +115,7 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
     export CSCOPE=yes
     export DEBUG=no
     export POSTSCRIPT=yes
-    export USERNAME=JasonYing
-    export USERDOMAIN=JasonYing-PC
+    export USERNAME=fcying
 
     mingw32-make.exe -f Make_ming.mak GUI=yes
     mingw32-make.exe -f Make_ming.mak GUI=no

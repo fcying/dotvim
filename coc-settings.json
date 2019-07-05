@@ -31,17 +31,17 @@
     //},
     "golang": {
       "filetypes": ["go"],
-      //go get -u golang.org/x/tools/cmd/gopls
-      //"command": "gopls",
-      //"rootPatterns": ["go.mod", ".root/", ".git/"],
-      //go get -u github.com/sourcegraph/go-langserver
-      //go get -u golang.org/x/lint/golint
-      "command": "go-langserver",
-      "initializationOptions": {
-        "gocodeCompletionEnabled": true,
-        "diagnosticsEnabled": true,
-        "lintTool": "golint"
-      }
+      //go get -u -v golang.org/x/lint/golint
+      //go get -u -v golang.org/x/tools/cmd/gopls
+      //go get -u -v github.com/sourcegraph/go-langserver
+      "command": "gopls",
+      "rootPatterns": ["go.mod", ".root/", ".git/"],
+      //"command": "go-langserver",
+      //"initializationOptions": {
+        //"gocodeCompletionEnabled": true,
+        //"diagnosticsEnabled": true,
+        //"lintTool": "golint"
+      //}
     }
   }
 }

@@ -78,10 +78,12 @@ if g:is_tmux
   " tmux knows the extended mouse mode
   set ttymouse=xterm2
 endif
+
 "close beep
-set visualbell t_vb=
-set novisualbell
+set t_vb=
+set visualbell
 set noerrorbells
+
 autocmd fcying_au VimEnter * set shellredir=>
 set ttyfast     " when will this cause problems?
 

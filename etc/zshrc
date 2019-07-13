@@ -75,14 +75,11 @@ export RUST_SRC_PATH=$HOME/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/li
 path=(
     $HOME/bin
     $HOME/.local/bin
-    $HOME/tool/go/bin
-    $HOME/qt/$QT_VERSION/gcc_64/bin
     $GOPATH/bin
     $HOME/.cargo/bin
-    /snap/bin
-    $HOME/.yarn/bin
-    $HOME/.config/yarn/global/node_modules/.bin
     $HOME/node_modules/.bin
+    $HOME/qt/$QT_VERSION/gcc_64/bin
+    /snap/bin
     /usr/local/{sbin,bin}
     /usr/{sbin,bin}
     /{sbin,bin}
@@ -250,6 +247,9 @@ if test $SSH_AUTH_SOCK && [ $SSH_AUTH_SOCK != $SOCK ]; then
     ln -sf $SSH_AUTH_SOCK $SOCK
     export SSH_AUTH_SOCK=$SOCK
 fi
+
+# no beep
+setopt nobeep nohistbeep nolistbeep
 
 # history
 HISTFILE="$HOME/.zhistory"

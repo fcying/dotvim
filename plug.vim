@@ -5,11 +5,6 @@ else
   let g:complete_func = get(g:, 'complete_func', 'neocomplete')
 endif
 
-" lsp
-" go get -u -v github.com/sourcegraph/go-langserver
-" npm install -g dockerfile-language-server-nodejs
-" pip3 install python-language-server
-" npm install --global javascript-typescript-langserver
 
 " ============================================================================
 " plug func {{{
@@ -164,9 +159,14 @@ elseif g:complete_func ==# 'coc'
       else
         call system('./install.sh')
       endif
+
+      silent !cd ~ && npm install dockerfile-language-server-nodejs
+      if g:has_go
+        silent !go get -u -v golang.org/x/tools/cmd/gopls
+      endif
     endif
   endfunction
-  call add(g:plug_list, "Plug 'neoclide/coc.nvim', {'do': function('InstallCoc')}")
+  call add(g:plug_list, "Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': function('InstallCoc')}")
   call add(g:plug_list, "Plug 'honza/vim-snippets'")
 elseif g:complete_func ==# 'asyncomplete'
   call add(g:plug_list, "Plug 'prabirshrestha/async.vim'")
@@ -569,12 +569,12 @@ if (FindPlug('jedi-vim') != -1)
 endif
 
 if (FindPlug('coc') != -1)
-  let g:coc_global_extensions = ['coc-vimlsp',
-        \ 'coc-dictionary', 'coc-syntax',
-        \ 'coc-rls', 'coc-python',
-        \ 'coc-css', 'coc-html',
-        \ 'coc-tsserver', 'coc-java',
-        \ 'coc-snippets', 'coc-json']
+  call coc#add_extension('coc-vimlsp')
+  call coc#add_extension('coc-dictionary', 'coc-syntax')
+  call coc#add_extension('coc-snippets', 'coc-json')
+  call coc#add_extension('coc-rls', 'coc-python')
+  call coc#add_extension('coc-css', 'coc-html')
+  call coc#add_extension('coc-tsserver', 'coc-java')
 
   imap <c-l> coc#refresh()
 

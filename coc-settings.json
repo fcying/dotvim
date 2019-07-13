@@ -29,19 +29,15 @@
     //  "rootPatterns": [".root", "compile_flags.txt", ".git/"],
     //  "filetypes": ["c", "cpp", "objc", "objcpp"]
     //},
+    "dockerfile": {
+      "command": "docker-langserver",
+      "filetypes": ["dockerfile"],
+      "args": ["--stdio"]
+    },
     "golang": {
       "filetypes": ["go"],
-      //go get -u -v golang.org/x/lint/golint
-      //go get -u -v golang.org/x/tools/cmd/gopls
-      //go get -u -v github.com/sourcegraph/go-langserver
       "command": "gopls",
       "rootPatterns": ["go.mod", ".root/", ".git/"],
-      //"command": "go-langserver",
-      //"initializationOptions": {
-        //"gocodeCompletionEnabled": true,
-        //"diagnosticsEnabled": true,
-        //"lintTool": "golint"
-      //}
     }
   }
 }

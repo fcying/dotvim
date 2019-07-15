@@ -77,7 +77,7 @@ path=(
     $HOME/.local/bin
     $GOPATH/bin
     $HOME/.cargo/bin
-    $HOME/node_modules/.bin
+    $HOME/.npm/node_modules/.bin
     $HOME/qt/$QT_VERSION/gcc_64/bin
     /snap/bin
     /usr/local/{sbin,bin}
@@ -92,6 +92,7 @@ fpath=(
 
 # key bindings
 bindkey -e  # Use emacs key bindings
+bindkey "\e[3~" delete-char
 # for tig
 bindkey -- "\e[1~" beginning-of-line
 bindkey -- "\e[4~" end-of-line
@@ -365,6 +366,7 @@ repeat 0 {
 alias install_brew='bash -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
 alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
 alias brew_install_ruby='brew vendor-install ruby'
+alias install_nix='bash <(curl https://nixos.org/nix/install) --no-daemon'
 
 export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
 #export REPO_URL='https://gerrit-googlesource.proxy.ustclug.org/git-repo'

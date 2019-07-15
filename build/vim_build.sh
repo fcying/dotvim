@@ -6,6 +6,7 @@ cd `dirname $0`
 
 cd ..
 vim_home=$PWD
+vim_src=.vim_origin
 
 sudo=true
 update=false
@@ -45,7 +46,7 @@ if [ "$sudo" == "true" ]; then
     sudo echo "sudo start"  #entry sudo passwd
 fi
 
-if [ ! -d "$vim_home/vim_origin" ]; then
+if [ ! -d "$vim_home/$vim_src" ]; then
     update=true
     install=true
 fi
@@ -69,12 +70,12 @@ if [ $install == "true" ]; then
 fi
 
 if [ $install == "true" ] || [ $update == "true" ]; then
-    if [ ! -d "$vim_home/vim_origin" ]; then
-        git clone https://github.com/vim/vim.git vim_origin --depth=1
-        cd $vim_home/vim_origin/
+    if [ ! -d "$vim_home/$vim_src" ]; then
+        git clone https://github.com/vim/vim.git $vim_src --depth=1
+        cd $vim_home/$vim_src/
     else
         echo "git fetch"
-        cd $vim_home/vim_origin/
+        cd $vim_home/$vim_src/
         git clean -fxd
         git fetch -p -v --progress --depth=1 origin master
         if [ "$branch" != "" ]; then
@@ -84,7 +85,7 @@ if [ $install == "true" ] || [ $update == "true" ]; then
         fi
     fi
 else
-    cd $vim_home/vim_origin/
+    cd $vim_home/$vim_src/
     git clean -fxd
     git reset --hard HEAD
 fi

@@ -1,12 +1,19 @@
 {
+  "coc.rootPatterns": [".root", ".vim", ".git", ".svn"],
   "diagnostic.displayByAle": true,
   "diagnostic.errorSign": "X",
   "diagnostic.warningSign": "!",
   "diagnostic.infoSign": "I",
   "diagnostic.hintSign": "H",
   "python.jediEnabled": false,
+  "npm.binPath": "npm",
   "list.normalMappings": {
     "q": "do:exit"
+  },
+  "vimlsp.diagnostic.enable": {
+    "type": "boolean",
+    "default": true,
+    "description": "enable diagnostic"
   },
   "snippets.extends": {
     "cpp": ["c"],

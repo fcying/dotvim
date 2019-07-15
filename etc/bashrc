@@ -170,7 +170,7 @@ elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
     BREW_PREFIX=/home/linuxbrew/.linuxbrew
 fi
 if [ ! -z "$BREW_PREFIX" ]; then
-    export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
+    #export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"    #error: function definition file not found
     export HOMEBREW_PREFIX="$BREW_PREFIX"
     export HOMEBREW_CELLAR="$BREW_PREFIX/Cellar"
     export MANPATH="$BREW_PREFIX/share/man:$MANPATH"

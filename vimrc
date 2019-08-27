@@ -134,7 +134,7 @@ set iskeyword -=.
 set cinkeys-=0#
 "inoremap # X#
 "set iskeyword -=#
-set formatoptions-=o 
+set formatoptions-=o
 set formatoptions+=mM
 set virtualedit=onemore        "onemore all
 set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
@@ -493,11 +493,14 @@ augroup END
 autocmd fcying_au BufNewFile,BufRead *.conf setl filetype=conf
 autocmd fcying_au BufNewFile,BufRead .vimconf setl filetype=vim
 
-" <TAB>: completion.
+" completion
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
-
 set completeopt=noinsert,menuone,noselect
+if has('patch-8.1.1902')
+  set completeopt+=popup
+  set completepopup=border:off
+endif
 
 " large file
 let g:LargeFile = 1024 * 1024 * 10

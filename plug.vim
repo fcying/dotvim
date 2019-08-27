@@ -701,7 +701,7 @@ if (FindPlug('vim-visual-multi') != -1)
   let g:VM_maps = {}
   let g:VM_maps['Find Under']         = '<C-n>'
   let g:VM_maps['Find Subword Under'] = '<C-n>'
-  let g:VM_cmdheight = 3
+  let g:VM_cmdheight = 1
   "let g:VM_manual_infoline = 1
 endif
 

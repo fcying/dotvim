@@ -51,7 +51,7 @@ endif
 
 let g:mapleader = get(g:,'mapleader',' ')
 
-augroup fcying_au
+augroup myau
   autocmd!
 augroup END
 
@@ -88,7 +88,7 @@ if s:is_gui
   set guioptions -=m
   set mouse=a
   set guifont=Consolas:h11
-  autocmd fcying_au GUIEnter * simalt ~x
+  autocmd myau GUIEnter * simalt ~x
 else
   set mouse=nv
 endif
@@ -102,7 +102,7 @@ set t_vb=
 set visualbell
 set noerrorbells
 
-autocmd fcying_au VimEnter * set shellredir=>
+autocmd myau VimEnter * set shellredir=>
 set ttyfast     " when will this cause problems?
 
 " encoding
@@ -210,8 +210,8 @@ set expandtab        "%retab
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
-autocmd fcying_au FileType go setlocal noexpandtab
-autocmd fcying_au FileType vim,json,yaml,toml,dosbatch
+autocmd myau FileType go setlocal noexpandtab
+autocmd myau FileType vim,json,yaml,toml,dosbatch
       \ setlocal shiftwidth=2
       \ softtabstop=2
       \ tabstop=2
@@ -223,7 +223,7 @@ if g:is_vim8
 else
   set cscopequickfix=s+,c+,d+,i+,t+,e+
 endif
-au fcying_au FileType qf setlocal nonumber
+au myau FileType qf setlocal nonumber
 function! ShowQuickfix()
   let l:winnr = winnr()
   rightbelow copen
@@ -301,7 +301,7 @@ nnoremap <F4> :set wrap! wrap?<CR>
 
 set pastetoggle=<F5>
 " disbale paste mode when leaving insert mode
-autocmd fcying_au InsertLeave * set nopaste
+autocmd myau InsertLeave * set nopaste
 " Automatically set paste mode in Vim when pasting in insert mode
 function! XTermPasteBegin()
   set pastetoggle=<Esc>[201~
@@ -490,8 +490,8 @@ augroup go_lang
 augroup END
 
 " set filetype
-autocmd fcying_au BufNewFile,BufRead *.conf setl filetype=conf
-autocmd fcying_au BufNewFile,BufRead .vimconf setl filetype=vim
+autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
+autocmd myau BufNewFile,BufRead .vimconf setl filetype=vim
 
 " completion
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -504,14 +504,14 @@ endif
 
 " large file
 let g:LargeFile = 1024 * 1024 * 10
-autocmd fcying_au BufReadPre * let f=getfsize(expand("<afile>")) | if f > g:LargeFile || f == -2 | call LargeFile() | endif
+autocmd myau BufReadPre * let f=getfsize(expand("<afile>")) | if f > g:LargeFile || f == -2 | call LargeFile() | endif
 function! LargeFile()
   set binary
   " no syntax highlighting etc
   set eventignore+=FileType
   "syntax off
   " display message
-  autocmd fcying_au VimEnter *  echo "The file is larger than " . (g:LargeFile / 1024 / 1024) . " MB, so some options are changed (see .vimrc for details)."
+  autocmd myau VimEnter *  echo "The file is larger than " . (g:LargeFile / 1024 / 1024) . " MB, so some options are changed (see .vimrc for details)."
 endfunction
 
 " }}}

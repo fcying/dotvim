@@ -18,14 +18,14 @@ if filereadable(expand(g:plug_dir . '/vim-plug/plug.vim')) == 0
     endif
     silent exec '!git clone --depth 1 https://github.com/junegunn/vim-plug '
           \ . g:plug_dir . '/vim-plug'
-    autocmd fcying_au VimEnter * PlugInstall --sync | source $MYVIMRC
+    autocmd myau VimEnter * PlugInstall --sync | source $MYVIMRC
   else
     echohl WarningMsg
     echom 'You need install git!'
     echohl None
   endif
 else
-  autocmd fcying_au VimEnter *
+  autocmd myau VimEnter *
         \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
         \|   PlugInstall --sync | q
         \| endif
@@ -33,7 +33,6 @@ endif
 exec 'source '. g:plug_dir . '/vim-plug/plug.vim'
 call plug#begin(expand(g:plug_dir))
 
-Plug 'tweekmonster/startuptime.vim', {'on':'StartupTime'}
 Plug 'junegunn/vim-plug'
 Plug 'mbbill/fencview'
 Plug 'adah1972/tellenc'
@@ -42,32 +41,23 @@ Plug 'tpope/vim-eunuch'
 Plug 'moll/vim-bbye', {'on':'Bdelete'}
 Plug 'itchyny/lightline.vim'
 
-"Plug 'sheerun/vim-polyglot'   "A solid language pack for Vim.
-Plug 'cespare/vim-toml'
-Plug 'peterhoeg/vim-qml'
-"Plug 'ekalinin/Dockerfile.vim'
-Plug 'Vimjas/vim-python-pep8-indent', {'for':'python'}
-Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
-Plug 'godlygeek/tabular', {'for':'markdown'}
-Plug 'plasticboy/vim-markdown', {'for':'markdown'}
-
-Plug 'MattesGroeger/vim-bookmarks'
-Plug 'thinca/vim-ref'
 Plug 'tpope/vim-surround'
 Plug 'terryma/vim-expand-region'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
-Plug 'derekwyatt/vim-fswitch'
-Plug 'nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}
+Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}
 Plug 'scrooloose/nerdtree', {'on':['NERDTreeToggle', 'NERDTreeFind']}
 Plug 'scrooloose/nerdcommenter'
 Plug 'majutsushi/tagbar', {'on':'TagbarToggle'}
-Plug 'xolox/vim-session'
-Plug 'xolox/vim-misc'
-Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}
-Plug 'dyng/ctrlsf.vim'
 Plug 'easymotion/vim-easymotion'
-"Plug 'lambdalisue/gina.vim', {'on': 'Gina'}
-"Plug 'tpope/vim-fugitive'
+
+Plug 'aperezdc/vim-template', {'on':'TemplateHere'}
+Plug 'Vimjas/vim-python-pep8-indent', {'for':'python'}
+Plug 'cespare/vim-toml'
+Plug 'peterhoeg/vim-qml'
+"Plug 'ekalinin/Dockerfile.vim'
+Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
+Plug 'godlygeek/tabular', {'for':'markdown'}
+Plug 'plasticboy/vim-markdown', {'for':'markdown'}
 
 function! InstallLeaderF(info) abort
   if a:info.status !=# 'unchanged' || a:info.force
@@ -83,12 +73,34 @@ endfunction
 Plug 'Yggdroot/LeaderF', {'do': function('InstallLeaderF')}
 Plug 'wsdjeg/FlyGrep.vim'
 
+Plug 'tweekmonster/startuptime.vim', {'on':'StartupTime'}
+Plug 'MattesGroeger/vim-bookmarks'
+Plug 'thinca/vim-ref'
+Plug 'derekwyatt/vim-fswitch'
+Plug 'nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}
+Plug 'xolox/vim-session'
+Plug 'xolox/vim-misc'
+Plug 'dyng/ctrlsf.vim'
+"Plug 'lambdalisue/gina.vim', {'on': 'Gina'}
+"Plug 'tpope/vim-fugitive'
+
 Plug 'skywind3000/vim-preview'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'fcying/gen_clang_conf.vim'
 Plug 'mattn/emmet-vim'
-Plug 'aperezdc/vim-template', {'on':'TemplateHere'}
 "Plug 'w0rp/ale'
+
+function! UpdateLsp() abort
+  "silent !rustup update
+  "silent !rustup component add rls rust-analysis rust-src
+  "silent !npm install -g typescript typescript-language-server
+  "silent !npm install -g dockerfile-language-server-nodejs
+  silent !pip3 install python-language-server --upgrade
+endfunction
+
+function! InstallVimLsp(info) abort
+  call UpdateLsp()
+endfunction
 
 function! InstallLanguageClient(info) abort
   if a:info.status !=# 'unchanged' || a:info.force
@@ -97,6 +109,7 @@ function! InstallLanguageClient(info) abort
     else
       silent !bash install.sh
     endif
+    call UpdateLsp()
   endif
 endfunction
 
@@ -107,7 +120,6 @@ if g:complete_func ==# 'ncm2'
       if g:is_nvim ==# 0
         silent !pip3 install neovim --upgrade
       endif
-      silent !pip3 install python-language-server --upgrade
     endif
   endfunction
   if g:is_nvim ==# 0
@@ -116,10 +128,9 @@ if g:complete_func ==# 'ncm2'
   Plug 'roxma/nvim-yarp'
   Plug 'ncm2/ncm2', {'do': function('InstallNcm2')}
   Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('InstallLanguageClient')}
-  "Plug 'prabirshrestha/async.vim'
-  "Plug 'prabirshrestha/vim-lsp'
-  "Plug 'ryanolsonx/vim-lsp-python'
   "Plug 'ncm2/ncm2-vim-lsp'
+  "Plug 'prabirshrestha/async.vim'
+  "Plug 'prabirshrestha/vim-lsp', {'do': function('InstallVimLsp')}
   if g:is_win ==# 0
     Plug 'ncm2/ncm2-tmux'
   endif
@@ -201,17 +212,25 @@ elseif g:complete_func ==# 'coc'
   Plug 'honza/vim-snippets'
 elseif g:complete_func ==# 'asyncomplete'
   Plug 'prabirshrestha/async.vim'
-  Plug 'prabirshrestha/vim-lsp'
+  Plug 'prabirshrestha/vim-lsp', {'do': function('InstallVimLsp')}
   Plug 'prabirshrestha/asyncomplete.vim'
   Plug 'prabirshrestha/asyncomplete-lsp.vim'
-  Plug 'prabirshrestha/asyncomplete-tags.vim'
   Plug 'prabirshrestha/asyncomplete-buffer.vim'
   Plug 'prabirshrestha/asyncomplete-file.vim'
+  Plug 'kyouryuukunn/asyncomplete-neoinclude.vim'
   Plug 'yami-beta/asyncomplete-omni.vim'
+  if g:is_win ==# 0
+    Plug 'wellle/tmux-complete.vim'
+  endif
+  Plug 'prabirshrestha/asyncomplete-tags.vim'
   Plug 'prabirshrestha/asyncomplete-necosyntax.vim'
   Plug 'prabirshrestha/asyncomplete-necovim.vim'
 elseif g:complete_func ==# 'completor'
   Plug 'maralla/completor.vim'
+  Plug 'Shougo/neoinclude.vim'
+  Plug 'tokorom/completor-shell'
+  Plug 'masawada/completor-dictionary'
+  Plug 'ferreum/completor-tmux'
 elseif g:complete_func ==# 'ycm'
   Plug 'Valloric/YouCompleteMe'
 endif
@@ -251,7 +270,7 @@ if (FindPlug('asyncrun.vim') != -1)
   let g:asyncrun_bell = 1
   let g:asyncrun_silent = 0
   "let g:asyncrun_open = 6
-  autocmd fcying_au User AsyncRunStop :call <SID>asyncrun_stop()
+  autocmd myau User AsyncRunStop :call <SID>asyncrun_stop()
   function! s:asyncrun_stop()
     if (g:asyncrun_code ==# 0)
       cclose
@@ -372,33 +391,43 @@ if (FindPlug('vim-lsp') != -1)
   nnoremap <silent> <leader>lm :LspImplementation<CR>
 
   if executable('gopls')
-    au fcying_au User lsp_setup call lsp#register_server({
+    au myau User lsp_setup call lsp#register_server({
           \ 'name': 'gopls',
-          \ 'cmd': {server_info->['gopls']},
+          \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
           \ 'whitelist': ['go'],
           \ })
+    autocmd BufWritePre *.go LspDocumentFormatSync
   endif
   if executable('pyls')
-    au fcying_au User lsp_setup call lsp#register_server({
+    au myau User lsp_setup call lsp#register_server({
           \ 'name': 'pyls',
           \ 'cmd': {server_info->['pyls']},
           \ 'whitelist': ['python'],
           \ })
   endif
+  if executable('ccls')
+    au myau User lsp_setup call lsp#register_server({
+          \ 'name': 'ccls',
+          \ 'cmd': {server_info->['ccls']},
+          \ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'compile_commands.json'))},
+          \ 'initialization_options': {},
+          \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cc'],
+          \ })
+  endif
+  "if executable('clangd')
+  "  au myau User lsp_setup call lsp#register_server({
+  "        \ 'name': 'clangd',
+  "        \ 'cmd': {server_info->['clangd', '-background-index']},
+  "        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
+  "        \ })
+  "endif
   if executable('docker-langserver')
-    au fcying_au User lsp_setup call lsp#register_server({
+    au myau User lsp_setup call lsp#register_server({
           \ 'name': 'docker-langserver',
           \ 'cmd': {server_info->[&shell, &shellcmdflag, 'docker-langserver --stdio']},
           \ 'whitelist': ['dockerfile'],
           \ })
   endif
-  "if executable('clangd')
-  "  au fcying_au User lsp_setup call lsp#register_server({
-  "        \ 'name': 'clangd',
-  "        \ 'cmd': {server_info->['clangd']},
-  "        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
-  "        \ })
-  "endif
 endif
 
 if (FindPlug('ale') != -1)
@@ -451,6 +480,41 @@ if (FindPlug('asyncomplete.vim') != -1) "{{{
   "let g:lsp_log_file = expand('~/vim-lsp.log')
   "let g:asyncomplete_log_file = expand('~/asyncomplete.log')
 
+  if (FindPlug('asyncomplete-buffer.vim') != -1)
+    call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
+          \ 'name': 'buffer',
+          \ 'whitelist': ['*'],
+          \ 'blacklist': ['go'],
+          \ 'completor': function('asyncomplete#sources#buffer#completor'),
+          \ 'config': {
+          \    'max_buffer_size': 5000000,
+          \  },
+          \ }))
+  endif
+  if (FindPlug('asyncomplete-file.vim') != -1)
+    au myau User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#file#get_source_options({
+          \ 'name': 'file',
+          \ 'whitelist': ['*'],
+          \ 'priority': 10,
+          \ 'completor': function('asyncomplete#sources#file#completor')
+          \ }))
+  endif
+  if (FindPlug('asyncomplete-neoinclude.vim') != -1)
+    au myau User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#neoinclude#get_source_options({
+          \ 'name': 'neoinclude',
+          \ 'whitelist': ['cpp'],
+          \ 'refresh_pattern': '\(<\|"\|/\)$',
+          \ 'completor': function('asyncomplete#sources#neoinclude#completor'),
+          \ }))
+  endif
+  if (FindPlug('asyncomplete-omni.vim') != -1)
+    call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
+          \ 'name': 'omni',
+          \ 'whitelist': ['*'],
+          \ 'blacklist': ['c', 'cpp', 'html'],
+          \ 'completor': function('asyncomplete#sources#omni#completor')
+          \  }))
+  endif
   if (FindPlug('tmux-complete.vim') != -1)
     let g:tmuxcomplete#asyncomplete_source_options = {
           \ 'name':      'tmuxcomplete',
@@ -465,53 +529,29 @@ if (FindPlug('asyncomplete.vim') != -1) "{{{
           \     }
           \ }
   endif
-  if (FindPlug('asyncomplete-buffer.vim') != -1)
-    call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
-          \ 'name': 'buffer',
-          \ 'whitelist': ['*'],
-          \ 'blacklist': ['go'],
-          \ 'completor': function('asyncomplete#sources#buffer#completor'),
-          \ }))
-  endif
-  if (FindPlug('asyncomplete-necosyntax.vim') != -1)
-    autocmd fcying_au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
-          \ 'name': 'necosyntax',
-          \ 'whitelist': ['*'],
-          \ 'completor': function('asyncomplete#sources#necosyntax#completor'),
-          \ }))
-  endif
-  if (FindPlug('asyncomplete-file.vim') != -1)
-    autocmd fcying_au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#file#get_source_options({
-          \ 'name': 'file',
-          \ 'whitelist': ['*'],
-          \ 'priority': 10,
-          \ 'completor': function('asyncomplete#sources#file#completor')
-          \ }))
-  endif
   if (FindPlug('asyncomplete-tags.vim') != -1)
-    autocmd fcying_au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#tags#get_source_options({
+    au myau User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#tags#get_source_options({
           \ 'name': 'tags',
-          \ 'whitelist': ['c','cpp'],
+          \ 'whitelist': ['c'],
           \ 'completor': function('asyncomplete#sources#tags#completor'),
           \ 'config': {
           \    'max_file_size': 50000000,
           \  },
           \ }))
   endif
+  if (FindPlug('asyncomplete-necosyntax.vim') != -1)
+    autocmd myau User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
+          \ 'name': 'necosyntax',
+          \ 'whitelist': ['*'],
+          \ 'completor': function('asyncomplete#sources#necosyntax#completor'),
+          \ }))
+  endif
   if (FindPlug('asyncomplete-necovim.vim') != -1)
-    autocmd fcying_au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necovim#get_source_options({
+    autocmd myau User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necovim#get_source_options({
           \ 'name': 'necovim',
           \ 'whitelist': ['vim'],
           \ 'completor': function('asyncomplete#sources#necovim#completor'),
           \ }))
-  endif
-  if (FindPlug('asyncomplete-omni.vim') != -1)
-    call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
-          \ 'name': 'omni',
-          \ 'whitelist': ['*'],
-          \ 'blacklist': ['c', 'cpp', 'html'],
-          \ 'completor': function('asyncomplete#sources#omni#completor')
-          \  }))
   endif
 endif "}}}
 
@@ -576,8 +616,8 @@ if (FindPlug('coc.nvim') != -1)
   imap <c-l> coc#refresh()
 
   " pairs
-  autocmd fcying_au FileType markdown let b:coc_pairs_disabled = ['`']
-  autocmd fcying_au FileType vim let b:coc_pairs_disabled = ['"']
+  autocmd myau FileType markdown let b:coc_pairs_disabled = ['`']
+  autocmd myau FileType vim let b:coc_pairs_disabled = ['"']
 
   " don't give |ins-completion-menu| messages.
   set shortmess+=c
@@ -630,7 +670,7 @@ if (FindPlug('ncm2') != -1)
   set completeopt=noinsert,menuone,noselect
   let g:ncm2#complete_length = [[1,2],[7,1]]
 
-  autocmd fcying_au BufEnter * call ncm2#enable_for_buffer()
+  autocmd myau BufEnter * call ncm2#enable_for_buffer()
   let g:ncm2#matcher = 'substrfuzzy'
   "let g:ncm2#sorter = 'abbrfuzzy'
   if !exists('g:ncm2_pyclang#library_path')
@@ -643,13 +683,13 @@ if (FindPlug('ncm2') != -1)
 
   if (FindPlug('ncm2-pyclang') != -1)
     let g:ncm2_pyclang#args_file_path = ['compile_flags.txt']
-    "autocmd fcying_au FileType c,cpp nnoremap <buffer> gd :<c-u>call ncm2_pyclang#goto_declaration()<cr>
+    "autocmd myau FileType c,cpp nnoremap <buffer> gd :<c-u>call ncm2_pyclang#goto_declaration()<cr>
   endif
 endif
 
 if (FindPlug('deoplete.nvim') != -1) "{{{
   set isfname-==
-  autocmd fcying_au InsertEnter * call deoplete#enable()
+  autocmd myau InsertEnter * call deoplete#enable()
 
   call deoplete#custom#option({
         \ 'smart_case': v:true,
@@ -746,7 +786,7 @@ if (FindPlug('ctrlsf.vim') != -1)
         \ 'prev'    : 'N',
         \ }
 
-  autocmd fcying_au FileType ctrlsf call s:ctrlsf_settings()
+  autocmd myau FileType ctrlsf call s:ctrlsf_settings()
   function! s:ctrlsf_settings()
     nmap <buffer> <c-j> np
     nmap <buffer> <c-k> Np
@@ -810,7 +850,6 @@ if (FindPlug('LeaderF') != -1)
   nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -e %s", expand("<cword>"))<CR>
   nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -e ")<CR>
   xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F -e %s", leaderf#Rg#visual())<CR>
-  nnoremap fgo :<C-U>Leaderf! rg --recall<CR>
   nnoremap fs :<C-u>CtrlSF
   nnoremap f/ :<C-u>FlyGrep<cr>
   nnoremap fi :exec "Leaderf file --regex --input " . <SID>StripInclude(getline("."))<CR>
@@ -824,6 +863,7 @@ if (FindPlug('LeaderF') != -1)
   noremap fto :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
   noremap ftn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
   noremap ftp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+  nnoremap fr :<C-U>Leaderf --recall<CR>
 endif
 
 if (FindPlug('vim-choosewin') != -1)
@@ -978,7 +1018,7 @@ endif
 
 if (FindPlug('emmet-vim') != -1)
   let g:user_emmet_install_global = 0
-  autocmd fcying_au FileType html,css EmmetInstall
+  autocmd myau FileType html,css EmmetInstall
 endif
 
 if (FindPlug('vim-template') != -1)

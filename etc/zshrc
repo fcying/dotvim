@@ -62,7 +62,7 @@ typeset -gU cdpath fpath mailpath PATH path
 export GOPATH=$HOME/go
 export GOPROXY=https://goproxy.io
 export QT_VERSION=5.13.0
-#export GO111MODULE=on
+export GO111MODULE=on
 export QT_DIR=$HOME/qt
 #export QT_WEBKIT=true
 LD_LIBRARY_PATH=$HOME/bin/lib:$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
@@ -307,7 +307,7 @@ alias ll='ls -alh'
 alias tmux=' tmux -2'
 alias ta=' tmux a; [ $? == 1 ] && tmux'
 alias tl=' tmux ls'
-alias rs='rsync -rvazl --partial --delete --progress '
+alias rs='rsync -rval --partial --delete --progress '
 alias cpa='cp -rfavx '
 alias rgn='rg --no-ignore '
 alias rgf='rg --files'

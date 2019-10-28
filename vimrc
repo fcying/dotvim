@@ -459,8 +459,8 @@ endfunction
 " golang
 function! s:getgotools()
   if g:has_go
-    silent !go get -u golang.org/x/tools/cmd/goimports
-    silent !go get golang.org/x/tools/gopls@latest
+    silent !GO111MODULE=on go get -v golang.org/x/tools/cmd/goimports
+    silent !GO111MODULE=on go get -v golang.org/x/tools/gopls@latest
   endif
 endfunction
 function! s:goformat()
@@ -528,6 +528,9 @@ else
   let g:colorscheme = get(g:, 'colorscheme', 'solarized')
   let g:solarized_termcolors=256
   set t_Co=256
+endif
+if strlen(globpath(&rtp,'colors/' . g:colorscheme . '.vim')) ==# 0
+  let g:colorscheme = 'default'
 endif
 let g:background=get(g:, 'background', 'light')
 

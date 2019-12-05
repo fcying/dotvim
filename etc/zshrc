@@ -133,6 +133,7 @@ EOF
     pushd ~/bin > /dev/null && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd > /dev/null
 }
 export _ZL_FZF_FLAG="-e"
+export _ZL_HYPHEN=1
 eval "$(lua $HOME/bin/z.lua --init zsh once enhanced)"
 function _z() { _zlua "$@"; }
 alias zr='_z -r'
@@ -241,13 +242,15 @@ setopt PROMPT_SUBST
 PROMPT='%F{green}%n@%m%f:%B%F{blue}%~%b%f %F{red}$(_git_prompt_info)%f%(!.#.$) '
 #RPROMPT='%F{blue}$(date +%H:%M:%S)'
 
-# Predictable SSH authentication socket location.
-SOCK="/tmp/ssh-agent-$USER-screen"
-if test $SSH_AUTH_SOCK && [ $SSH_AUTH_SOCK != $SOCK ]; then
-    rm -f /tmp/ssh-agent-$USER-screen
-    ln -sf $SSH_AUTH_SOCK $SOCK
-    export SSH_AUTH_SOCK=$SOCK
-fi
+#if test "$SSH_AUTH_SOCK" ; then
+#    ln -sf $SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
+#fi
+
+function precmd() {
+    if [ -n "${TMUX}" ]; then
+        eval "$(tmux show-environment -s)"
+    fi
+}
 
 # no beep
 setopt nobeep nohistbeep nolistbeep

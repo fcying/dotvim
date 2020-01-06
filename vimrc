@@ -494,8 +494,9 @@ autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
 autocmd myau BufNewFile,BufRead .vimconf setl filetype=vim
 
 " completion
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
+"inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+"inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
+inoremap <expr> <cr>    pumvisible() ? "\<C-y>\<cr>": "\<cr>"
 set completeopt=noinsert,menuone,noselect
 if has('patch-8.1.1902')
   set completeopt+=popup

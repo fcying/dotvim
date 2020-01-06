@@ -2,12 +2,14 @@ set nocompatible
 set encoding=utf-8
 set mouse=n
 
-set runtimepath+=~/.vim/plugged/coc.nvim
-set runtimepath+=~/.vim/plugged/ale
-let g:ale_linters = { 'c': [] }
-
-nmap <silent> aj :ALENext<cr>
-nmap <silent> ak :ALEPrevious<cr>
+exec 'source ~/.vim/plugged/vim-plug/plug.vim'
+call plug#begin('~/.vim/plugged')
+  Plug 'prabirshrestha/async.vim'
+  Plug 'prabirshrestha/vim-lsp'
+  Plug 'prabirshrestha/asyncomplete.vim'
+  Plug 'prabirshrestha/asyncomplete-lsp.vim'
+  Plug 'mattn/vim-lsp-settings'
+call plug#end()
 
 filetype plugin indent on
 syntax enable

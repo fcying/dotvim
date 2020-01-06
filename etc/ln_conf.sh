@@ -22,13 +22,11 @@ echo "source ~/.vim/vimrc" > ~/.config/nvim/init.vim
 # windows: $HOME\AppData\Local\nvim\init.vim
 
 # npm
-type npm >/dev/null 2>&1 && {
-    #npm config set registry http://registry.npm.taobao.org/
-    #npm config set registry https://mirrors.huaweicloud.com/repository/npm/
-    mkdir -p ~/.npm
-    #cd ~/.npm
-    #npm install cnpm --registry=https://registry.npm.taobao.org
-}
+#type npm >/dev/null 2>&1 && {
+#    mkdir -p ~/.npm
+#    cd ~/.npm
+#    npm install cnpm
+#}
 
 # pip.conf
 #mkdir -p ~/.config/pip

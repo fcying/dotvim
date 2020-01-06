@@ -99,7 +99,7 @@ function! UpdateLsp() abort
 endfunction
 
 function! InstallVimLsp(info) abort
-  call UpdateLsp()
+  "call UpdateLsp()
 endfunction
 
 function! InstallLanguageClient(info) abort
@@ -127,10 +127,11 @@ if g:complete_func ==# 'ncm2'
   endif
   Plug 'roxma/nvim-yarp'
   Plug 'ncm2/ncm2', {'do': function('InstallNcm2')}
-  Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('InstallLanguageClient')}
-  "Plug 'ncm2/ncm2-vim-lsp'
-  "Plug 'prabirshrestha/async.vim'
-  "Plug 'prabirshrestha/vim-lsp', {'do': function('InstallVimLsp')}
+  "Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('InstallLanguageClient')}
+  Plug 'ncm2/ncm2-vim-lsp'
+  Plug 'prabirshrestha/async.vim'
+  Plug 'prabirshrestha/vim-lsp', {'do': function('InstallVimLsp')}
+  Plug 'mattn/vim-lsp-settings'
   if g:is_win ==# 0
     Plug 'ncm2/ncm2-tmux'
   endif
@@ -202,7 +203,8 @@ elseif g:complete_func ==# 'coc'
       endif
 
       silent !mkdir -p ~/.npm
-      silent !cd ~/.npm && npm install dockerfile-language-server-nodejs
+      silent !cd ~/.npm 
+      silent !npm install dockerfile-language-server-nodejs
       if g:has_go
         GoGetTools
       endif
@@ -215,6 +217,8 @@ elseif g:complete_func ==# 'asyncomplete'
   Plug 'prabirshrestha/vim-lsp', {'do': function('InstallVimLsp')}
   Plug 'prabirshrestha/asyncomplete.vim'
   Plug 'prabirshrestha/asyncomplete-lsp.vim'
+  Plug 'mattn/vim-lsp-settings'
+  Plug 'SirVer/ultisnips'
   Plug 'prabirshrestha/asyncomplete-buffer.vim'
   Plug 'prabirshrestha/asyncomplete-file.vim'
   Plug 'kyouryuukunn/asyncomplete-neoinclude.vim'
@@ -380,6 +384,7 @@ if (FindPlug('LanguageClient-neovim') != -1)
 endif
 
 if (FindPlug('vim-lsp') != -1)
+  let g:lsp_diagnostics_enabled = 0
   nnoremap <silent> <leader>ld :LspDefinition<CR>
   nnoremap <silent> <leader>lr :LspRename<CR>
   nnoremap <silent> <leader>lf :LspDocumentFormat<CR>
@@ -389,45 +394,6 @@ if (FindPlug('vim-lsp') != -1)
   nnoremap <silent> <leader>lh :LspHover<CR>
   nnoremap <silent> <leader>ls :LspWorkspaceSymbol<CR>
   nnoremap <silent> <leader>lm :LspImplementation<CR>
-
-  if executable('gopls')
-    au myau User lsp_setup call lsp#register_server({
-          \ 'name': 'gopls',
-          \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
-          \ 'whitelist': ['go'],
-          \ })
-    autocmd BufWritePre *.go LspDocumentFormatSync
-  endif
-  if executable('pyls')
-    au myau User lsp_setup call lsp#register_server({
-          \ 'name': 'pyls',
-          \ 'cmd': {server_info->['pyls']},
-          \ 'whitelist': ['python'],
-          \ })
-  endif
-  if executable('ccls')
-    au myau User lsp_setup call lsp#register_server({
-          \ 'name': 'ccls',
-          \ 'cmd': {server_info->['ccls']},
-          \ 'root_uri': {server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'compile_commands.json'))},
-          \ 'initialization_options': {},
-          \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp', 'cc'],
-          \ })
-  endif
-  "if executable('clangd')
-  "  au myau User lsp_setup call lsp#register_server({
-  "        \ 'name': 'clangd',
-  "        \ 'cmd': {server_info->['clangd', '-background-index']},
-  "        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
-  "        \ })
-  "endif
-  if executable('docker-langserver')
-    au myau User lsp_setup call lsp#register_server({
-          \ 'name': 'docker-langserver',
-          \ 'cmd': {server_info->[&shell, &shellcmdflag, 'docker-langserver --stdio']},
-          \ 'whitelist': ['dockerfile'],
-          \ })
-  endif
 endif
 
 if (FindPlug('ale') != -1)
@@ -442,7 +408,9 @@ if (FindPlug('ale') != -1)
 endif
 
 if (FindPlug('ultisnips') != -1)
-  inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
+  if (FindPlug('ncm2') != -1)
+    inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
+  endif
   let g:UltiSnipsExpandTrigger = '<c-j>'
   let g:UltiSnipsJumpForwardTrigger = '<c-j>'
   let g:UltiSnipsJumpBackwardTrigger = '<c-k>'
@@ -472,6 +440,10 @@ if (FindPlug('neosnippet.vim') != -1)
   "  set conceallevel=2 concealcursor=niv
   "endif
 endif
+
+if (FindPlug('vim-lsp-settings') != -1) "{{{
+  let g:lsp_settings_servers_dir = g:cache_dir . '/lsp_settings'
+endif "}}}
 
 if (FindPlug('asyncomplete.vim') != -1) "{{{
   let g:asyncomplete_remove_duplicates = 1
@@ -1028,6 +1000,11 @@ if (FindPlug('vim-template') != -1)
   exe 'let g:templates_directory = [''' . g:etc_dir . '/template'']'
   let g:user = get(g:, 'user', 'fcying')
   let g:email = get(g:, 'email', 'fcying@gmail.com')
+endif
+
+if (FindPlug('gen_clang_conf.vim') != -1)
+  " compile_flags.txt, .ccls
+  let g:gen_clang_conf#clang_conf_name = get(g:, 'gen_clang_conf#clang_conf_name', '.ccls')
 endif
 
 "}}}

@@ -1,5 +1,5 @@
 {
-  "coc.rootPatterns": [".root", ".vim", ".git", ".svn"],
+  "coc.rootPatterns": [".root", ".git", ".svn"],
   "diagnostic.displayByAle": true,
   "diagnostic.errorSign": "X",
   "diagnostic.warningSign": "!",

@@ -203,8 +203,7 @@ elseif g:complete_func ==# 'coc'
       endif
 
       silent !mkdir -p ~/.npm
-      silent !cd ~/.npm 
-      silent !npm install dockerfile-language-server-nodejs
+      silent !cd ~/.npm; npm install dockerfile-language-server-nodejs
       if g:has_go
         GoGetTools
       endif
@@ -575,7 +574,7 @@ if (FindPlug('jedi-vim') != -1)
 endif
 
 if (FindPlug('coc.nvim') != -1)
-  let g:coc_extension_root = g:cache_dir . '/coc/extensions'
+  let g:coc_data_home = g:cache_dir . '/coc'
   "call coc#add_extension('coc-tabnine')
   call coc#add_extension('coc-vimlsp')
   "call coc#add_extension('coc-pairs')
@@ -585,7 +584,7 @@ if (FindPlug('coc.nvim') != -1)
   call coc#add_extension('coc-css', 'coc-html')
   call coc#add_extension('coc-tsserver', 'coc-java')
 
-  imap <c-l> coc#refresh()
+  inoremap <silent><expr> <c-l> coc#refresh()
 
   " pairs
   autocmd myau FileType markdown let b:coc_pairs_disabled = ['`']

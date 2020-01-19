@@ -98,9 +98,9 @@ bindkey -- "\e[1~" beginning-of-line
 bindkey -- "\e[4~" end-of-line
 
 function soft_update() {
-    zplugin self-update
-    zplugin update --all
-    zplugin compile --all
+    zinit self-update
+    zinit update --all
+    zinit compile --all
 
     pushd ~/.fzf > /dev/null && git pull && ./install <<EOF
     y
@@ -380,50 +380,45 @@ alias kmsg='adb wait-for-device && adb root && adb wait-for-device && adb shell 
 export USE_CCACHE=1
 
 
-### Added by Zplugin's installer
-if [ ! -f "$HOME/.zplugin/bin/zplugin.zsh" ]; then
-    zplugin_init="true"
-    mkdir ~/.zplugin
-    git clone --depth 1 https://github.com/zdharma/zplugin.git ~/.zplugin/bin
+### zinit
+ZINIT_DIR=$HOME/.zinit
+if [ ! -f "$ZINIT_DIR/bin/zinit.zsh" ]; then
+    zinit_inited="true"
+    mkdir ~/.zinit
+    git clone --depth 1 https://github.com/zdharma/zinit.git $ZINIT_DIR/bin
 fi
-source "$HOME/.zplugin/bin/zplugin.zsh"
-autoload -Uz _zplugin
-(( ${+_comps} )) && _comps[zplugin]=_zplugin
-### End of Zplugin's installer chunk
+source "$ZINIT_DIR/bin/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
 
-zplugin ice wait"0" lucid; zplugin light caarlos0/zsh-mkc
-zplugin ice wait"0" lucid; zplugin light changyuheng/fz
+zinit ice wait'0' lucid; zinit light caarlos0/zsh-mkc
+zinit ice wait'0' lucid; zinit light changyuheng/fz
 
-zplugin ice wait'0' lucid; zplugin light zsh-users/zsh-history-substring-search
+zinit ice wait'0' lucid; zinit light zsh-users/zsh-history-substring-search
 bindkey '^P' history-substring-search-up
 bindkey '^N' history-substring-search-down
 
-zplugin ice wait'0' lucid atload'_zsh_autosuggest_start'
-zplugin light zsh-users/zsh-autosuggestions
+zinit ice wait'0' lucid atload'_zsh_autosuggest_start'
+zinit light zsh-users/zsh-autosuggestions
 bindkey '^K' autosuggest-accept
 
-zplugin ice wait"0" lucid atinit"zpcompinit; zpcdreplay"
-zplugin light zsh-users/zsh-syntax-highlighting
-#zplugin light zdharma/fast-syntax-highlighting
+zinit ice wait'0' lucid atinit'zpcompinit; zpcdreplay'
+zinit light zsh-users/zsh-syntax-highlighting
+#zinit light zdharma/fast-syntax-highlighting
 
-zplugin ice wait"0" lucid
-zplugin light zsh-users/zsh-completions
+zinit ice wait'0' blockf lucid
+zinit light zsh-users/zsh-completions
 
-_null_plug_dir=${ZPLGM[PLUGINS_DIR]}/_local---null
-if [[ ! -d $_null_plug_dir ]]; then
-    echo "Creating zplugin 'null' plugin directory at: $_null_plug_dir"
-    mkdir -p -- "$_null_plug_dir"
-fi
-unset _null_plug_dir
-zplugin ice wait"1" lucid atload'PluginFinish'
-zplugin light _local/null
 function PluginFinish() {
-    if [ -n "$zplugin_init" ]; then
-        zplugin self-update
-        zplugin compile --all
+    if [ -n "$zinit_inited" ]; then
+        zinit self-update
+        zinit compile --all
     fi
     source $CONFIG_DIR/zsh_plugin.zsh
     type LoadAfter >/dev/null 2>&1 && LoadAfter
 }
+zinit ice wait'1' lucid atload'PluginFinish'
+
+zinit load zdharma/null
 
 #zprof

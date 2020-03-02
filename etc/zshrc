@@ -134,7 +134,7 @@ EOF
 }
 export _ZL_FZF_FLAG="-e"
 export _ZL_HYPHEN=1
-eval "$(lua $HOME/bin/z.lua --init zsh once enhanced)"
+#eval "$(lua $HOME/bin/z.lua --init zsh once enhanced)"
 function _z() { _zlua "$@"; }
 alias zr='_z -r'
 alias zt='_z -t'
@@ -415,6 +415,7 @@ function PluginFinish() {
         zinit compile --all
     fi
     source $CONFIG_DIR/zsh_plugin.zsh
+    eval "$(lua $HOME/bin/z.lua --init zsh once enhanced)"
     type LoadAfter >/dev/null 2>&1 && LoadAfter
 }
 zinit ice wait'1' lucid atload'PluginFinish'

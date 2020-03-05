@@ -1,5 +1,6 @@
 {
   "coc.rootPatterns": [".root", ".git", ".svn"],
+  "coc.source.file.ignoreHidden": false,
   "diagnostic.displayByAle": true,
   "diagnostic.errorSign": "X",
   "diagnostic.warningSign": "!",

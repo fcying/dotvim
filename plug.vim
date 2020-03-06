@@ -81,6 +81,7 @@ Plug 'nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}
 Plug 'xolox/vim-session'
 Plug 'xolox/vim-misc'
 Plug 'dyng/ctrlsf.vim'
+Plug 'pechorin/any-jump.vim'
 "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}
 "Plug 'tpope/vim-fugitive'
 
@@ -999,6 +1000,10 @@ if (FindPlug('vim-template') != -1)
   exe 'let g:templates_directory = [''' . g:etc_dir . '/template'']'
   let g:user = get(g:, 'user', 'fcying')
   let g:email = get(g:, 'email', 'fcying@gmail.com')
+endif
+
+if (FindPlug('any-jump.vim') != -1)
+  let g:any_jump_disable_default_keybindings = 0
 endif
 
 if (FindPlug('gen_clang_conf.vim') != -1)

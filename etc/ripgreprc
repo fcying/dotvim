@@ -4,6 +4,7 @@
 #--vimgrep      #result is bigger 
 --no-heading
 --no-column
+--follow
 #-a
 #--max-filesize=10M
 #--max-columns=150

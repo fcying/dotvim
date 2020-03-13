@@ -81,7 +81,9 @@ Plug 'nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}
 Plug 'xolox/vim-session'
 Plug 'xolox/vim-misc'
 Plug 'dyng/ctrlsf.vim'
-Plug 'pechorin/any-jump.vim'
+if exists('*popup_menu')
+  Plug 'pechorin/any-jump.vim'
+endif
 "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}
 "Plug 'tpope/vim-fugitive'
 

@@ -370,9 +370,18 @@ repeat 0 {
 alias install_brew='bash -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
 alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
 alias brew_install_ruby='brew vendor-install ruby'
+function brew_fix_ssl() {
+    sed -i '/^insecure$/d' ~/.curlrc
+    echo insecure >> ~/.curlrc
+    git config --global http.sslVerify false
+    HOMEBREW_CURLRC=1 brew reinstall openssl curl
+    sed -i '/^insecure$/d' ~/.curlrc
+    git config --global http.sslVerify true
+}
+
 alias install_nix='bash <(curl https://nixos.org/nix/install) --no-daemon'
 
-export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
+#export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
 #export REPO_URL='https://gerrit-googlesource.proxy.ustclug.org/git-repo'
 alias repo_sync='while true; do repo sync; if [ $? -eq 0 ]; then echo "sync ok"; break; fi; done'
 

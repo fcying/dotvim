@@ -45,15 +45,21 @@ endif
 " ============================================================================
 " basic settings {{{
 " ============================================================================
-if filereadable(g:file_vimrc_local)
-  execute 'source ' . g:file_vimrc_local
-endif
-
 let g:mapleader = get(g:,'mapleader',' ')
 
 augroup myau
   autocmd!
 augroup END
+
+if filereadable(g:file_vimrc_local)
+  execute 'source ' . g:file_vimrc_local
+endif
+
+" find project file
+let s:vimconf_path = findfile('.vimconf', '.;')
+if s:vimconf_path !=# ''
+  exec 'source ' . s:vimconf_path
+endif
 
 
 " add plugin
@@ -564,9 +570,7 @@ if exists('*LoadAfter')
   call LoadAfter()
 endif
 
-" find project file
-let s:vimconf_path = findfile('.vimconf', '.;')
-if s:vimconf_path !=# ''
-  exec 'source ' . s:vimconf_path
+if exists('*LoadAfterConf')
+  call LoadAfterConf()
 endif
 

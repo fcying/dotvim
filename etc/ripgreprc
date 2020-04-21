@@ -1,27 +1,29 @@
 --no-ignore
 --hidden
 --color=auto
-#--vimgrep      #result is bigger 
+#--vimgrep      #result is bigger
 --no-heading
 --no-column
 --follow
 #-a
+#--no-messages
 #--max-filesize=10M
 #--max-columns=150
 #--smart-case
+
 # --glob in cmd line must use '', ex: --glob='!test'
---glob=!**/.git/*
---glob=!**/.svn/*
---glob=!**/.hg/*
---glob=!**/.repo/*
---glob=!**/.ccache/*
---glob=!**/GTAGS
---glob=!**/GRTAGS
---glob=!**/GPATH
---glob=!**/tags
---glob=!**/prj_tags
---glob=!**/.clang_complete
---glob=!**/.ccls
---glob=!**/.ccls-cache
---iglob=!**/obj/*
---iglob=!**/out/*
+--glob=!.git
+--glob=!.svn
+--glob=!.hg
+--glob=!.repo
+--glob=!.ccache
+--glob=!GTAGS
+--glob=!GRTAGS
+--glob=!GPATH
+--glob=!tags
+--glob=!prj_tags
+--glob=!.clang_complete
+--glob=!.ccls
+--glob=!.ccls-cache
+--iglob=!obj
+--iglob=!out

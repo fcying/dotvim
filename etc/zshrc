@@ -369,6 +369,7 @@ repeat 0 {
 
 alias install_brew='bash -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
 alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
+alias brew_update='brew update && brew upgrade && brew cleanup --prune 7; brew doctor'
 alias brew_install_ruby='brew vendor-install ruby'
 function brew_fix_ssl() {
     sed -i '/^insecure$/d' ~/.curlrc

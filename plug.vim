@@ -274,7 +274,7 @@ endif
 
 if (FindPlug('asyncrun.vim') != -1)
   let g:asyncrun_bell = 1
-  let g:asyncrun_silent = 0
+  let g:asyncrun_silent = get(g:, 'asyncrun_silent', '0')
   "let g:asyncrun_open = 6
   autocmd myau User AsyncRunStop :call <SID>asyncrun_stop()
   function! s:asyncrun_stop()
@@ -774,6 +774,7 @@ endif
 
 if (FindPlug('LeaderF') != -1)
   let g:Lf_PreviewCode = 0
+  let g:Lf_PreviewInPopup = 1
   let g:Lf_WorkingDirectoryMode = 'c'
   let g:Lf_UseVersionControlTool = 0
   let g:Lf_CacheDirectory = g:cache_dir
@@ -782,11 +783,6 @@ if (FindPlug('LeaderF') != -1)
   let g:Lf_DefaultMode = 'FullPath'
   let g:Lf_GtagsAutoGenerate = 0
   let g:Lf_RootMarkers = ['.root', '.git', '.svn']
-  let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll']
-  let g:Lf_WildIgnore = {
-        \ 'dir': ['.root','.svn','.git','.hg','.ccls-cache'],
-        \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','.ccls']
-        \}
 
   let g:Lf_CommandMap = {'<F5>': ['<C-L>']}
   let g:Lf_NormalMap = {
@@ -797,23 +793,34 @@ if (FindPlug('LeaderF') != -1)
         \ 'BufTag': [['<ESC>', ':exec g:Lf_py "bufTagExplManager.quit()"<cr>']],
         \ 'Function': [['<ESC>', ':exec g:Lf_py "functionExplManager.quit()"<cr>']],
         \ }
+
+  let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll']
+  let g:Lf_WildIgnore = {
+        \ 'dir': ['.root','.svn','.git','.hg','.ccls-cache'],
+        \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','.ccls']
+        \}
   let g:Lf_RgConfig = [
-        \ '--glob=!.git/*',
-        \ '--glob=!.svn/*',
+        \ '--glob=!.git',
+        \ '--glob=!.svn',
+        \ '--glob=!.hg',
+        \ '--glob=!.repo',
+        \ '--glob=!.ccache',
+        \ '--glob=!GTAGS',
+        \ '--glob=!GRTAGS',
+        \ '--glob=!GPATH',
+        \ '--glob=!tags',
+        \ '--glob=!prj_tags',
+        \ '--glob=!.clang_complete',
         \ '--glob=!.ccls',
         \ '--glob=!.ccls-cache',
-        \ '--glob=!**/.repo/*',
-        \ '--glob=!**/.ccache/*',
-        \ '--glob=!**/GTAGS',
-        \ '--glob=!**/GRTAGS',
-        \ '--glob=!**/GPATH',
-        \ '--glob=!**/tags',
-        \ '--glob=!**/prj_tags',
-        \ '--glob=!**/.clang_complete',
-        \ '--iglob=!**/obj/*',
-        \ '--iglob=!**/out/*',
+        \ '--iglob=!obj',
+        \ '--iglob=!out',
         \ '--hidden'
         \ ]
+  if exists('g:c_Lf_RgConfig')
+    let g:Lf_RgConfig = extend(g:Lf_RgConfig, g:c_Lf_RgConfig)
+  endif
+
 
   nnoremap ff :<C-u>Leaderf file<CR>
   nnoremap fb :<C-u>Leaderf buffer<CR>
@@ -821,9 +828,9 @@ if (FindPlug('LeaderF') != -1)
   nnoremap fm :<C-u>Leaderf mru<CR>
   nnoremap fh :<C-u>Leaderf searchHistory<CR>
   nnoremap fl :<C-u>Leaderf line --regex<CR>
-  nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -e %s", expand("<cword>"))<CR>
-  nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -e ")<CR>
-  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F -e %s", leaderf#Rg#visual())<CR>
+  nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c %s", expand("<cword>"))<CR>
+  nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c ")<CR>
+  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F %s", leaderf#Rg#visual())<CR>
   nnoremap fs :<C-u>CtrlSF
   nnoremap f/ :<C-u>FlyGrep<cr>
   nnoremap fi :exec "Leaderf file --regex --input " . <SID>StripInclude(getline("."))<CR>

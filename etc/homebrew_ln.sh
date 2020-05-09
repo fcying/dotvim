@@ -37,4 +37,5 @@ if [ -n "$HOMEBREW_PREFIX" ]; then
     linuxbrew_ln vimdiff
     linuxbrew_ln w3m
     linuxbrew_ln zsh
+    linuxbrew_ln gcc-5
 fi

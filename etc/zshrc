@@ -59,14 +59,14 @@ export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
 typeset -gU cdpath fpath mailpath PATH path
 
 # Set the list of directories that Zsh searches for programs.
+export GO111MODULE=on
 export GOPATH=$HOME/go
 export GOPROXY=https://goproxy.io
-export QT_VERSION=5.13.0
-export GO111MODULE=on
-export QT_DIR=$HOME/qt
+export QT_DIR=${QT_DIR:-"$HOME/tool/qt"}
+export QT_VERSION=${QT_VERSION:-"5.14.2"}
 #export QT_WEBKIT=true
 LD_LIBRARY_PATH=$HOME/bin/lib:$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
-PKG_CONFIG_PATH=$HOME/qt/$QT_VERSION/gcc_64/lib/pkgconfig:$PKG_CONFIG_PATH
+PKG_CONFIG_PATH=$QT_DIR/$QT_VERSION/gcc_64/lib/pkgconfig:$PKG_CONFIG_PATH
 PYTHONPATH=$PYTHONPATH:$HOME/tool/python_script
 export RIPGREP_CONFIG_PATH=$CONFIG_DIR/ripgreprc
 export SHELLCHECK_OPTS="-e SC2164 -e SC1090"
@@ -78,7 +78,7 @@ path=(
     $GOPATH/bin
     $HOME/.cargo/bin
     $HOME/.npm/node_modules/.bin
-    $HOME/qt/$QT_VERSION/gcc_64/bin
+    $QT_DIR/$QT_VERSION/gcc_64/bin
     /snap/bin
     /usr/local/{sbin,bin}
     /usr/{sbin,bin}

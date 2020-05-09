@@ -492,7 +492,7 @@ augroup go_lang
   command! -nargs=0 GoFmt call s:goformat()
   command! -nargs=0 GoSave call s:gosave()
   command! -nargs=0 GoGetTools call s:getgotools()
-  autocmd FileType go autocmd BufWritePre <buffer> GoSave
+  "autocmd FileType go autocmd BufWritePre <buffer> GoSave
 augroup END
 
 " set filetype

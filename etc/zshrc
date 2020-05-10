@@ -299,6 +299,7 @@ function cdls { builtin cd "$@" && ls --color=auto; }
 alias cd='cdls'
 alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_history'
 alias zsh_fix_gw='compaudit |xargs chmod -R g-w'
+alias zsh_time_test='for i in $(seq 1 5); do time zsh -i -c exit; done'
 alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
 alias vi='vim'
 alias rz='rz -y'
@@ -316,7 +317,6 @@ alias rgn='rg --no-ignore '
 alias rgf='rg --files'
 alias free_memory='sudo sync && sudo sync && sudo sh -c "echo 3 > /proc/sys/vm/drop_caches"'
 alias cpu_bench='time echo "scale=5000; 4*a(1)" | bc -l -q'
-alias zsh_time_test='for i in $(seq 1 5); do time zsh -i -c exit; done'
 test_true_color() {
     awk 'BEGIN{
         s="/\\/\\/\\/\\/\\"; s=s s s s s s s s;

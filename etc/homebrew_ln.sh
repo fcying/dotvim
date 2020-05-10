@@ -17,9 +17,6 @@ if [ -n "$HOMEBREW_PREFIX" ]; then
     linuxbrew_ln cmake
     linuxbrew_ln docker-langserver
     linuxbrew_ln global
-    linuxbrew_ln go
-    linuxbrew_ln godoc
-    linuxbrew_ln gofmt
     linuxbrew_ln gtags
     linuxbrew_ln lua
     linuxbrew_ln nnn
@@ -37,5 +34,4 @@ if [ -n "$HOMEBREW_PREFIX" ]; then
     linuxbrew_ln vimdiff
     linuxbrew_ln w3m
     linuxbrew_ln zsh
-    linuxbrew_ln gcc-5
 fi

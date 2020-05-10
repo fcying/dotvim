@@ -199,12 +199,6 @@ elseif g:complete_func ==# 'deoplete'
 elseif g:complete_func ==# 'coc'
   function! InstallCoc(info) abort
     if a:info.status !=# 'unchanged' || a:info.force
-      if g:is_win
-        call system('.\install.cmd')
-      else
-        call system('./install.sh')
-      endif
-
       silent !mkdir -p ~/.npm
       silent !cd ~/.npm; npm install dockerfile-language-server-nodejs
       if g:has_go

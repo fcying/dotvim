@@ -162,5 +162,12 @@ else
     else
         make install
     fi
-    vim --version
+    cd $prefix/bin
+    if [ $prefix != "/usr/local" ]; then
+        ln -svf $(pwd)/vim ~/bin
+        ln -svf $(pwd)/vimdiff ~/bin
+        ln -svf $(pwd)/xxd ~/bin
+    fi
+
+    ./vim --version
 fi

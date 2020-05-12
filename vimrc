@@ -11,13 +11,13 @@ if &compatible
 endif
 
 let g:is_osx = has('macunix')
-let g:is_lin = has('unix') && !has('macunix') && !has('win32unix')
+let g:is_linux = has('unix') && !has('macunix') && !has('win32unix')
 let g:is_win = has('win32')
 let g:is_nvim = has('nvim')
 let g:is_vim8 = v:version >= 800 ? 1 : 0
 let g:has_go = executable('go') ? 1 : 0
 let s:is_gui = has('gui_running')
-let g:is_tmux = &term =~# '^screen' ? 1 : 0
+let g:is_tmux = exists('$TMUX')
 
 if executable('pip3') ==# 0
   echohl WarningMsg
@@ -31,12 +31,29 @@ let g:etc_dir = g:config_dir . '/etc'
 let g:file_plug = g:config_dir . '/plug.vim'
 let g:file_vimrc = g:config_dir . '/vimrc'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
+let g:root_markers = ['.root', '.git', '.svn']
+let g:scm_dir = ''
 
 exec 'set rtp+=' . g:config_dir
 
 if !isdirectory(g:cache_dir)
   call mkdir(g:cache_dir)
 endif
+
+" find project root dir
+function! GetRootDir()
+  for l:item in g:root_markers
+    let l:dir = finddir(l:item, '.;')
+    if !empty(l:dir)
+      break
+    endif
+  endfor
+  if !empty(l:dir)
+    let g:scm_dir = fnamemodify(l:dir, ':p:h')
+    "echom g:scm_dir
+  endif
+endfunction
+call GetRootDir()
 
 "}}}
 
@@ -56,9 +73,10 @@ if filereadable(g:file_vimrc_local)
 endif
 
 " find project file
-let s:vimconf_path = findfile('.vimconf', '.;')
+let s:vimconf_path = findfile('.vimconf', g:scm_dir . '/.;')
 if s:vimconf_path !=# ''
   exec 'source ' . s:vimconf_path
+  "echom s:vimconf_path
 endif
 
 
@@ -66,8 +84,6 @@ endif
 if filereadable(g:file_plug)
   execute 'source ' . g:file_plug
 endif
-filetype plugin indent on
-syntax enable
 
 
 "autocmd! bufwritepost _vimrc source $MYVIMRC
@@ -75,8 +91,6 @@ nnoremap <leader>ev :execute 'e ' . g:file_vimrc<CR>
 nnoremap <leader>el :execute 'e ' . g:file_vimrc_local<CR>
 nnoremap <leader>ep :execute 'e ' . g:file_plug<CR>
 nnoremap <leader>sv :execute 'source ' . g:file_vimrc<CR>
-nnoremap <leader>ez :e ~/.zshrc<CR>
-nnoremap <leader>ezl :e ~/.zshrc.local<CR>
 
 if g:is_nvim ==# 0
   if g:is_win
@@ -100,7 +114,9 @@ else
 endif
 if g:is_tmux
   " tmux knows the extended mouse mode
-  set ttymouse=xterm2
+  if g:is_nvim ==# 0
+    set ttymouse=xterm2
+  endif
 endif
 
 " disable beep
@@ -118,7 +134,7 @@ set fileencoding=utf-8
 scriptencoding utf-8
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
-set fileencodings=ucs-bom,utf-8,cp936,gpk,gb18030,big5,euc-jp,euc-kr,latin1
+set fileencodings=ucs-bom,utf-8,gbk,gb18030,big5,euc-jp,euc-kr,latin1
 if g:is_win
   set fileformats=dos,unix,mac
 else
@@ -140,18 +156,10 @@ set iskeyword -=.
 set cinkeys-=0#
 "inoremap # X#
 "set iskeyword -=#
-set formatoptions-=o
+autocmd myau FileType * setlocal formatoptions-=o
 set formatoptions+=mM
 set virtualedit=onemore        "onemore all
-set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
-set listchars=tab:\|\ ,trail:.,extends:>,precedes:<
 set tags=./.tags;,.tags
-set path+=../inc,../src,
-if g:is_win
-  let $PATH = g:config_dir . '\lib' . ';' . $PATH
-elseif g:is_lin
-  let $PATH = g:config_dir . '/lib' . ':' . $PATH
-endif
 set history=2000
 set scrolloff=3
 set hidden
@@ -198,6 +206,8 @@ set wildmode=longest:full,full
 set splitright
 set splitbelow
 set lazyredraw
+set listchars=tab:\|\ ,trail:.,extends:>,precedes:<
+set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
 
 " search
 set magic
@@ -337,16 +347,20 @@ nnoremap > >>_
 nnoremap < <<_
 
 " switch tab
-noremap <silent><leader>1 1gt<cr>
-noremap <silent><leader>2 2gt<cr>
-noremap <silent><leader>3 3gt<cr>
-noremap <silent><leader>4 4gt<cr>
-noremap <silent><leader>5 5gt<cr>
-noremap <silent><leader>6 6gt<cr>
-noremap <silent><leader>7 7gt<cr>
-noremap <silent><leader>8 8gt<cr>
-noremap <silent><leader>9 9gt<cr>
-noremap <silent><leader>0 10gt<cr>
+noremap <silent><leader>tc :tabnew<CR>
+noremap <silent><leader>tq :tabclose<CR>
+noremap <silent><leader>1 :tabn 1<cr>
+noremap <silent><leader>2 :tabn 2<cr>
+noremap <silent><leader>3 :tabn 3<cr>
+noremap <silent><leader>4 :tabn 4<cr>
+noremap <silent><leader>5 :tabn 5<cr>
+noremap <silent><leader>6 :tabn 6<cr>
+noremap <silent><leader>7 :tabn 7<cr>
+noremap <silent><leader>8 :tabn 8<cr>
+noremap <silent><leader>9 :tabn 9<cr>
+noremap <silent><leader>0 :tabn 10<cr>
+noremap <silent><s-tab> :tabnext<CR>
+inoremap <silent><s-tab> <ESC>:tabnext<CR>
 
 " fast move
 cnoremap <c-h> <left>
@@ -360,16 +374,21 @@ cnoremap <c-b> <left>
 cnoremap <c-d> <del>
 cnoremap <c-_> <c-k>
 
-" shell
-nnoremap <leader>vs :rightbelow vertical terminal<CR>
-nnoremap <leader>hs :terminal<CR>
+" terminal
+nnoremap <leader>vt :rightbelow vertical terminal<CR>
+nnoremap <leader>ht :terminal<CR>
+tnoremap <ESC> <c-w>N
+tnoremap <c-o>p <C-W>"+
 
 " Start new line
 inoremap <S-Return> <C-o>o
 
-"delete space, delete ^M
+" delete space, delete ^M
 nnoremap <leader>ds :%s/\s\+$//g<CR>:noh<CR>
 nnoremap <leader>dm :%s/\r$//g<CR>:noh<CR>
+
+" set working directory to the current file
+nnoremap <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
 
 " virtual mode search
 vnoremap <silent> * :<C-U>
@@ -502,7 +521,6 @@ autocmd myau BufNewFile,BufRead .vimconf setl filetype=vim
 " completion
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
-inoremap <expr> <cr>    pumvisible() ? "\<C-y>\<cr>": "\<cr>"
 set completeopt=noinsert,menuone,noselect
 if has('patch-8.1.1902')
   set completeopt+=popup
@@ -528,38 +546,55 @@ endfunction
 " ============================================================================
 " color {{{
 " ============================================================================
-if g:is_win
-  let g:colorscheme = get(g:, 'colorscheme', 'solarized8')
+" solarized8 gruvbox molokai
+let g:colorscheme = get(g:, 'colorscheme', 'solarized8')
+
+if g:colorscheme ==# 'molokai'
+  let g:background=get(g:, 'background', 'dark')
+  let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'wombat')
+elseif g:colorscheme ==# 'solarized8'
+  let g:background=get(g:, 'background', 'light')
+  let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'solarized')
+elseif g:colorscheme ==# 'gruvbox'
+  let g:background=get(g:, 'background', 'light')
+  let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'gruvbox')
+else
+  let g:background=get(g:, 'background', 'light')
+  let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'wombat')
+endif
+
+if strlen(globpath(&rtp, 'colors/' . g:colorscheme . '.vim')) ==# 0
+  echom 'not found ' . g:colorscheme . ', use default'
+  let g:colorscheme = 'default'
+  let g:background=get(g:, 'background', 'light')
+  let g:lightline.colorscheme=get(g:, 'lightline.colorscheme', 'wombat')
+endif
+
+if &term =~# '256color' && g:is_tmux
+	" disable Background Color Erase (BCE) so that color schemes
+	" render properly when inside 256-color tmux and GNU screen.
+	" see also http://snk.tuxfamily.org/log/vim-256color-bce.html
+	set t_ut=
+endif
+
+if has('termguicolors')
+  " :h xterm-true-color
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
   set termguicolors
 else
-  let g:colorscheme = get(g:, 'colorscheme', 'solarized')
-  let g:solarized_termcolors=256
   set t_Co=256
 endif
-if strlen(globpath(&rtp,'colors/' . g:colorscheme . '.vim')) ==# 0
-  let g:colorscheme = 'default'
-endif
-let g:background=get(g:, 'background', 'light')
 
-if &term =~# '256color'
-  " disable background color erase
-  set t_ut=
-endif
-
-if g:is_tmux
-  set t_8f=[38;2;%lu;%lu;%lum
-  set t_8b=[48;2;%lu;%lu;%lum
-endif
-
-if g:is_nvim ==# 0
-  "enable 256 colors in ConEmu on Win
-  if g:is_win && !s:is_gui && !empty($CONEMUBUILD)
-    set term=xterm
-    set t_Co=256
-    let &t_AB="\e[48;5;%dm"
-    let &t_AF="\e[38;5;%dm"
-  endif
-endif
+"if g:is_nvim ==# 0
+"  "enable 256 colors in ConEmu on Win
+"  if g:is_win && !s:is_gui && !empty($CONEMUBUILD)
+"    set term=xterm
+"    set t_Co=256
+"    let &t_AB="\e[48;5;%dm"
+"    let &t_AF="\e[38;5;%dm"
+"  endif
+"endif
 
 exec 'colorscheme ' . g:colorscheme
 exec 'set background=' . g:background
@@ -574,3 +609,9 @@ if exists('*LoadAfterConf')
   call LoadAfterConf()
 endif
 
+filetype plugin indent on
+syntax enable
+
+if (FindPlug('LeaderF') != -1)
+  autocmd myau Syntax * hi Lf_hl_cursorline guifg=fg
+endif

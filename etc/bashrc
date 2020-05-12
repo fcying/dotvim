@@ -112,8 +112,6 @@ if ! shopt -oq posix; then
   fi
 fi
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
 # android builder
 function jack_server() {
     if [ "$1" == "restart" ]; then
@@ -185,14 +183,6 @@ if [ ! -z "$BREW_PREFIX" ]; then
     export HOMEBREW_CELLAR="$BREW_PREFIX/Cellar"
     export MANPATH="$BREW_PREFIX/share/man:$MANPATH"
     export INFOPATH="$BREW_PREFIX/share/info:$INFOPATH"
-    for COMPLETION in "$HOMEBREW_PREFIX"/etc/bash_completion.d/*
-    do
-        [[ -f $COMPLETION ]] && source "$COMPLETION"
-    done
-    if [[ -f ${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh ]];
-    then
-        source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
-    fi
     function brew() {
         PATH_TEMP=$PATH
         export PATH=$HOMEBREW_PREFIX/bin:$HOMEBREW_PREFIX/sbin:$PATH

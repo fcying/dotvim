@@ -1,5 +1,5 @@
-" deoplete ncm2 asyncomplete ycm completor coc
-let g:complete_func = get(g:, 'complete_func', 'ncm2')
+" ncm2 asyncomplete coc
+let g:complete_func = get(g:, 'complete_func', 'coc')
 
 
 " ============================================================================
@@ -46,6 +46,7 @@ Plug 'terryma/vim-expand-region'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}
 Plug 'scrooloose/nerdtree', {'on':['NERDTreeToggle', 'NERDTreeFind']}
+Plug 'justinmk/vim-dirvish'
 Plug 'scrooloose/nerdcommenter'
 Plug 'majutsushi/tagbar', {'on':'TagbarToggle'}
 Plug 'easymotion/vim-easymotion'
@@ -73,7 +74,7 @@ endfunction
 Plug 'Yggdroot/LeaderF', {'do': function('InstallLeaderF')}
 Plug 'wsdjeg/FlyGrep.vim'
 
-Plug 'tweekmonster/startuptime.vim', {'on':'StartupTime'}
+Plug 'dstein64/vim-startuptime', {'on':'StartupTime'}
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'thinca/vim-ref'
 Plug 'derekwyatt/vim-fswitch'
@@ -91,6 +92,7 @@ Plug 'skywind3000/vim-preview'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'fcying/gen_clang_conf.vim'
 Plug 'mattn/emmet-vim'
+Plug 'honza/vim-snippets'
 "Plug 'w0rp/ale'
 
 function! UpdateLsp() abort
@@ -151,51 +153,11 @@ if g:complete_func ==# 'ncm2'
   "Plug 'ncm2/ncm2-pyclang'
   Plug 'ncm2/ncm2-ultisnips'
   Plug 'SirVer/ultisnips'
-  Plug 'honza/vim-snippets'
   "curl https://sh.rustup.rs -sSf | sh
   "rustup toolchain add nightly && cargo +nightly install racer && rustup component add rust-src
   "Plug 'ncm2/ncm2-racer'
   "Plug 'ncm2/ncm2-go'
   "Plug 'ncm2/ncm2-jedi'
-elseif g:complete_func ==# 'deoplete'
-  function! InstallDeoplete(info) abort
-    if a:info.status !=# 'unchanged' || a:info.force
-      silent !echo "InstallDeoplete"
-      if g:is_nvim
-        silent UpdateRemotePlugins
-      else
-        silent !pip3 install neovim --upgrade
-      endif
-      silent !pip3 install python-language-server --upgrade
-    endif
-  endfunction
-  Plug 'Shougo/deoplete.nvim', {'do': function('InstallDeoplete')}
-  if g:is_nvim ==# 0
-    Plug 'roxma/nvim-yarp'
-    Plug 'roxma/vim-hug-neovim-rpc'
-  endif
-  Plug 'Shougo/neco-syntax'
-  Plug 'Shougo/neoinclude.vim'
-  Plug 'Shougo/neco-vim'
-  Plug 'Shougo/deoplete-clangx'
-  Plug 'zchee/deoplete-jedi'
-  " for goto feature
-  Plug 'davidhalter/jedi-vim'
-  if g:has_go
-    function! InstallDeopleteGo(info) abort
-      if a:info.status !=# 'unchanged' || a:info.force
-        if g:is_win
-          silent !mingw32-make
-        else
-          silent !make
-        endif
-        silent !pip3 install pygments --upgrade
-      endif
-    endfunction
-    Plug 'zchee/deoplete-go', {'do': function('InstallDeopleteGo')}
-  endif
-  Plug 'Shougo/neosnippet.vim'
-  Plug 'Shougo/neosnippet-snippets'
 elseif g:complete_func ==# 'coc'
   function! InstallCoc(info) abort
     if a:info.status !=# 'unchanged' || a:info.force
@@ -207,7 +169,6 @@ elseif g:complete_func ==# 'coc'
     endif
   endfunction
   Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': function('InstallCoc')}
-  Plug 'honza/vim-snippets'
 elseif g:complete_func ==# 'asyncomplete'
   Plug 'prabirshrestha/async.vim'
   Plug 'prabirshrestha/vim-lsp', {'do': function('InstallVimLsp')}
@@ -225,21 +186,14 @@ elseif g:complete_func ==# 'asyncomplete'
   Plug 'prabirshrestha/asyncomplete-tags.vim'
   Plug 'prabirshrestha/asyncomplete-necosyntax.vim'
   Plug 'prabirshrestha/asyncomplete-necovim.vim'
-elseif g:complete_func ==# 'completor'
-  Plug 'maralla/completor.vim'
-  Plug 'Shougo/neoinclude.vim'
-  Plug 'tokorom/completor-shell'
-  Plug 'masawada/completor-dictionary'
-  Plug 'ferreum/completor-tmux'
-elseif g:complete_func ==# 'ycm'
-  Plug 'Valloric/YouCompleteMe'
 endif
 
 "color
 Plug 'tomasr/molokai'
-"Plug 'altercation/vim-colors-solarized'
-Plug 'fcying/vim-colors-solarized'
 Plug 'lifepillar/vim-solarized8'
+Plug 'morhetz/gruvbox'
+"Plug 'nightsense/cosmic_latte'
+
 call plug#end()
 delc PlugUpgrade
 nnoremap <leader>pu :PlugUpdate<CR>:redraw!<CR>
@@ -256,8 +210,7 @@ function! FindPlug(plugname) abort
 endfunction
 
 " gen tags
-nnoremap <silent> <leader>tg :GenClangConf<CR>:Leaderf gtags --update<CR>
-nnoremap <silent> <leader>tc :ClearClangConf<CR>:Leaderf gtags --remove<CR>
+nnoremap <silent> tg :GenClangConf<CR>:Leaderf gtags --update<CR>
 
 if (FindPlug('vim-indent-guides') != -1)
   let g:indent_guides_enable_on_vim_startup=0
@@ -283,26 +236,11 @@ endif
 
 if (FindPlug('lightline.vim') != -1)
   set showtabline=1
-  "let g:lightline = {'colorscheme': 'default'}
-  let g:lightline = {'colorscheme': 'solarized'}
+  let g:lightline = {}
   let g:lightline.enable = {
         \ 'statusline': 1,
         \ 'tabline': 1
         \ }
-  noremap <silent><leader>tn :tabn<cr>
-  noremap <silent><leader>tp :tabp<cr>
-  noremap <silent><leader>1 :tabn 1<cr>
-  noremap <silent><leader>2 :tabn 2<cr>
-  noremap <silent><leader>3 :tabn 3<cr>
-  noremap <silent><leader>4 :tabn 4<cr>
-  noremap <silent><leader>5 :tabn 5<cr>
-  noremap <silent><leader>6 :tabn 6<cr>
-  noremap <silent><leader>7 :tabn 7<cr>
-  noremap <silent><leader>8 :tabn 8<cr>
-  noremap <silent><leader>9 :tabn 9<cr>
-  noremap <silent><leader>0 :tabn 10<cr>
-  noremap <silent><s-tab> :tabnext<CR>
-  inoremap <silent><s-tab> <ESC>:tabnext<CR>
 endif
 
 if (FindPlug('vim-expand-region') != -1)
@@ -413,35 +351,13 @@ if (FindPlug('ultisnips') != -1)
   let g:UltiSnipsRemoveSelectModeMappings = 0
 endif
 
-if (FindPlug('neosnippet.vim') != -1)
-  imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-  smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-  xmap <C-k>     <Plug>(neosnippet_expand_target)
-
-  if g:complete_func ==# 'ncm2'
-    inoremap <silent> <expr> <CR> ncm2_neosnippet#expand_or("\<CR>", 'n')
-  elseif g:complete_func ==# 'deoplete'
-    " SuperTab like snippets behavior.
-    " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-    "imap <expr><TAB>
-    " \ pumvisible() ? "\<C-n>" :
-    " \ neosnippet#expandable_or_jumpable() ?
-    " \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-    smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-          \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-  endif
-
-  " For conceal markers.
-  "if has('conceal')
-  "  set conceallevel=2 concealcursor=niv
-  "endif
-endif
-
 if (FindPlug('vim-lsp-settings') != -1) "{{{
   let g:lsp_settings_servers_dir = g:cache_dir . '/lsp_settings'
 endif "}}}
 
 if (FindPlug('asyncomplete.vim') != -1) "{{{
+  inoremap <expr> <cr>    pumvisible() ? "\<C-y>\<cr>": "\<cr>"
+
   let g:asyncomplete_remove_duplicates = 1
 
   "let g:lsp_log_verbose = 1
@@ -523,65 +439,25 @@ if (FindPlug('asyncomplete.vim') != -1) "{{{
   endif
 endif "}}}
 
-if (FindPlug('YouCompleteMe') != -1) "{{{
-  "let g:ycm_key_list_select_completion=['<c-n>']
-  let g:ycm_key_list_select_completion = ['<Down>']
-  "let g:ycm_key_list_previous_completion=['<c-p>']
-  let g:ycm_key_list_previous_completion = ['<Up>']
-  let g:ycm_complete_in_comments = 1
-  let g:ycm_complete_in_strings = 1
-  let g:ycm_use_ultisnips_completer = 0
-  let g:ycm_collect_identifiers_from_comments_and_strings = 1
-  let g:ycm_collect_identifiers_from_tags_files = 1
-  let g:ycm_seed_identifiers_with_syntax=1
-  let g:ycm_key_list_stop_completion = ['<CR>']
-
-  let g:ycm_seed_identifiers_with_syntax=1
-
-  let g:ycm_goto_buffer_command = 'horizontal-split'
-  let g:ycm_register_as_syntastic_checker = 0
-  nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
-  nnoremap <leader>gd :YcmCompleter GoToDeclaration<CR>
-
-  if !empty(glob(g:config_dir . 'plug/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'))
-    let g:ycm_global_ycm_extra_conf = g:config_dir . 'plug/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
-  endif
-
-  " let g:ycm_key_invoke_completion = '<C-Space>'
-  let g:ycm_filetype_blacklist = {
-        \ 'tagbar' : 1,
-        \ 'gitcommit' : 1,
-        \}
-endif "}}}
-
-if (FindPlug('jedi-vim') != -1)
-  let g:jedi#auto_vim_configuration = 0
-  let g:jedi#goto_command = '<leader>d'
-  let g:jedi#goto_assignments_command = ''  " dynamically done for ft=python.
-  let g:jedi#goto_definitions_command = ''  " dynamically done for ft=python.
-  let g:jedi#use_tabs_not_buffers = 0       " current default is 1.
-  let g:jedi#rename_command = '<Leader>gR'
-  let g:jedi#usages_command = '<Leader>gu'
-  let g:jedi#completions_enabled = 0
-  let g:jedi#smart_auto_mappings = 1
-
-  " Unite/ref and pydoc are more useful.
-  let g:jedi#documentation_command = '<Leader>K'
-  let g:jedi#auto_close_doc = 1
-endif
-
-if (FindPlug('coc.nvim') != -1)
+if (FindPlug('coc.nvim') != -1) "{{{
   let g:coc_data_home = g:cache_dir . '/coc'
-  "call coc#add_extension('coc-tabnine')
-  call coc#add_extension('coc-vimlsp')
+  let g:coc_config_home = g:config_dir
+  call coc#add_extension('coc-vimlsp', 'coc-json')
   "call coc#add_extension('coc-pairs')
   call coc#add_extension('coc-dictionary', 'coc-syntax')
-  call coc#add_extension('coc-snippets', 'coc-json')
-  call coc#add_extension('coc-rls', 'coc-python')
+  call coc#add_extension('coc-snippets')
+  call coc#add_extension('coc-rls')
+  call coc#add_extension('coc-python')
+  call coc#add_extension('coc-clangd', 'coc-cmake')
+  call coc#add_extension('coc-go')
+  call coc#add_extension('coc-yaml','coc-xml')
   call coc#add_extension('coc-css', 'coc-html')
   call coc#add_extension('coc-tsserver', 'coc-java')
 
   inoremap <silent><expr> <c-l> coc#refresh()
+
+  inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() :
+        \"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
   " pairs
   autocmd myau FileType markdown let b:coc_pairs_disabled = ['`']
@@ -600,6 +476,7 @@ if (FindPlug('coc.nvim') != -1)
   nmap <silent> gi <Plug>(coc-implementation)
   nmap <silent> gr <Plug>(coc-references)
 
+  nmap <leader>rf <Plug>(coc-refactor)
   nmap <leader>rn <Plug>(coc-rename)
 
   nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -611,27 +488,21 @@ if (FindPlug('coc.nvim') != -1)
     endif
   endfunction
 
-  let g:lightline = {
-        \ 'colorscheme': 'wombat',
-        \ 'active': {
+  let g:lightline.active ={
         \   'left': [ [ 'mode', 'paste' ],
         \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
-        \ },
-        \ 'component_function': {
-        \   'cocstatus': 'coc#status'
-        \ },
         \ }
+  let g:lightline.component_function ={
+        \   'cocstatus': 'coc#status'
+        \ }
+endif "}}}
 
-  " snippets
-  let g:coc_snippet_next = '<c-j>'
-  let g:coc_snippet_prev = '<c-k>'
-  imap <C-j> <Plug>(coc-snippets-expand-jump)
-endif
-
-if (FindPlug('ncm2') != -1)
+if (FindPlug('ncm2') != -1) "{{{
   "let $NVIM_PYTHON_LOG_FILE="/home/pub/ncm2_log"
   "let $NVIM_NCM_LOG_LEVEL="DEBUG"
   "let $NVIM_NCM_MULTI_THREAD=0
+
+  inoremap <expr> <cr>    pumvisible() ? "\<C-y>\<cr>": "\<cr>"
 
   set shortmess+=c
   " note that must keep noinsert in completeopt, the others is optional
@@ -653,56 +524,7 @@ if (FindPlug('ncm2') != -1)
     let g:ncm2_pyclang#args_file_path = ['compile_flags.txt']
     "autocmd myau FileType c,cpp nnoremap <buffer> gd :<c-u>call ncm2_pyclang#goto_declaration()<cr>
   endif
-endif
-
-if (FindPlug('deoplete.nvim') != -1) "{{{
-  set isfname-==
-  autocmd myau InsertEnter * call deoplete#enable()
-
-  call deoplete#custom#option({
-        \ 'smart_case': v:true,
-        \ 'camel_case': v:true,
-        \ 'ignore_sources': {},
-        \ })
-
-  call deoplete#custom#source('_', 'matchers', ['matcher_fuzzy'])
-  call deoplete#custom#source('LanguageClient', 'min_pattern_length', 2)
-
-  " jedi clangx gtags LanguageClient
-  call deoplete#custom#option('sources', {
-        \ 'c': ['buffer', 'clangx', 'gtags'],
-        \ 'cpp': ['buffer', 'clangx', 'gtags'],
-        \ 'python': ['buffer', 'jedi'],
-        \ })
-
-  call deoplete#custom#option('keyword_patterns', {
-        \ '_': '[a-zA-Z_]\k*',
-        \ 'tex': '\\?[a-zA-Z_]\w*',
-        \ 'ruby': '[a-zA-Z_]\w*[!?]?',
-        \ })
-
-  "call deoplete#custom#option('omni_patterns', {
-  "  \ 'c': '\(\.\|->\)',
-  "  \ 'cpp': '\(\.\|->\)',
-  "  \ })
-
-  call deoplete#custom#var('clangx', 'clang_file_path', ['.git/.clang_complete', '.clang_complete'])
-
-  let g:deoplete#sources#jedi#server_timeout = 10
-  let g:deoplete#sources#jedi#python_path = 'python3'
-
-  "call deoplete#custom#option('profile', v:true)
-  "call deoplete#enable_logging('DEBUG', 'deoplete.log')
-  "call deoplete#custom#source('jedi', 'is_debug_enabled', 1)
-  "let g:deoplete#sources#jedi#debug_server = "jedi.log"
-
-  inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
-  inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
 endif "}}}
-
-if (FindPlug('completor.vim') != -1)
-  let g:completor_python_binary = 'python3'
-endif
 
 if (FindPlug('vim-visual-multi') != -1)
   let g:VM_no_meta_mappings = 1
@@ -725,6 +547,11 @@ if (FindPlug('nerdtree') != -1)
   let g:NERDTreeShowBookmarks=1
   let g:NERDTreeShowLineNumbers=1
   let g:NERDTreeShowHidden=1
+endif
+
+if (FindPlug('vim-dirvish') != -1)
+  let g:dirvish_mode = 1
+  let g:dirvish_relative_paths = 0
 endif
 
 if (FindPlug('ctrlsf.vim') != -1)
@@ -767,54 +594,75 @@ if (FindPlug('vim-session') != -1)
 endif
 
 if (FindPlug('LeaderF') != -1)
+  let g:Lf_ShowDevIcons = 0
+  let g:Lf_ShowHidden = 1
+  let g:Lf_HideHelp = 1
+  let g:Lf_DefaultMode = 'FullPath'
+  let g:Lf_UseCache = 0
   let g:Lf_PreviewCode = 0
-  let g:Lf_PreviewInPopup = 1
   let g:Lf_WorkingDirectoryMode = 'c'
   let g:Lf_UseVersionControlTool = 0
   let g:Lf_CacheDirectory = g:cache_dir
+  let g:Lf_RootMarkers = ['.root', '.git', '.svn']
   let g:Lf_Gtagslabel = 'native-pygments'
   let $GTAGSCONF = g:etc_dir . '/gtags.conf'
-  let g:Lf_DefaultMode = 'FullPath'
   let g:Lf_GtagsAutoGenerate = 0
-  let g:Lf_RootMarkers = ['.root', '.git', '.svn']
+  let g:Lf_GtagsStoreInRootMarker = 1
+
+  let g:Lf_PreviewInPopup = 1
+  "let g:Lf_WindowPosition = 'popup'
+
+  " default gruvbox_material
+  let g:Lf_StlColorscheme = 'default'
+  let g:Lf_PopupColorscheme = 'gruvbox_material'
 
   let g:Lf_CommandMap = {'<F5>': ['<C-L>']}
   let g:Lf_NormalMap = {
-        \ 'File':   [['<ESC>', ':exec g:Lf_py "fileExplManager.quit()"<CR>']],
-        \ 'Buffer': [['<ESC>', ':exec g:Lf_py "bufExplManager.quit()"<cr>']],
-        \ 'Mru': [['<ESC>', ':exec g:Lf_py "mruExplManager.quit()"<cr>']],
-        \ 'Tag': [['<ESC>', ':exec g:Lf_py "tagExplManager.quit()"<cr>']],
-        \ 'BufTag': [['<ESC>', ':exec g:Lf_py "bufTagExplManager.quit()"<cr>']],
-        \ 'Function': [['<ESC>', ':exec g:Lf_py "functionExplManager.quit()"<cr>']],
+        \ '_':        [['<C-j>', 'j'],
+        \              ['<C-k>', 'k'],
+        \             ],
+        \ 'File':     [['<ESC>', ':exec g:Lf_py "fileExplManager.quit()"<CR>']],
+        \ 'Buffer':   [['<ESC>', ':exec g:Lf_py "bufExplManager.quit()"<CR>']],
+        \ 'BufTag':   [['<ESC>', ':exec g:Lf_py "bufTagExplManager.quit()"<CR>']],
+        \ 'Mru':      [['<ESC>', ':exec g:Lf_py "mruExplManager.quit()"<CR>']],
+        \ 'Line':     [['<ESC>', ':exec g:Lf_py "lineExplManager.quit()"<CR>']],
+        \ 'Function': [['<ESC>', ':exec g:Lf_py "functionExplManager.quit()"<CR>']],
+        \ 'Tag':      [['<ESC>', ':exec g:Lf_py "tagExplManager.quit()"<CR>']],
+        \ 'Rg':       [['<ESC>', ':exec g:Lf_py "rgExplManager.quit()"<CR>']],
+        \ 'Gtags':    [['<ESC>', ':exec g:Lf_py "gtagsExplManager.quit()"<CR>']],
         \ }
 
-  let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll']
-  let g:Lf_WildIgnore = {
-        \ 'dir': ['.root','.svn','.git','.hg','.ccls-cache'],
-        \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','.ccls']
-        \}
-  let g:Lf_RgConfig = [
-        \ '--glob=!.git',
-        \ '--glob=!.svn',
-        \ '--glob=!.hg',
-        \ '--glob=!.repo',
-        \ '--glob=!.ccache',
-        \ '--glob=!GTAGS',
-        \ '--glob=!GRTAGS',
-        \ '--glob=!GPATH',
-        \ '--glob=!tags',
-        \ '--glob=!prj_tags',
-        \ '--glob=!.clang_complete',
-        \ '--glob=!.ccls',
-        \ '--glob=!.ccls-cache',
-        \ '--iglob=!obj',
-        \ '--iglob=!out',
-        \ '--hidden'
-        \ ]
-  if exists('g:c_Lf_RgConfig')
-    let g:Lf_RgConfig = extend(g:Lf_RgConfig, g:c_Lf_RgConfig)
+  let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
+
+  if !exists('g:Lf_MruFileExclude')
+    let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll']
   endif
 
+  if !exists('g:Lf_WildIgnore')
+    let g:Lf_WildIgnore = {
+          \ 'dir': ['.root','.svn','.git','.hg','.ccls-cache'],
+          \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+          \}
+  endif
+
+  if !exists('g:Lf_RgConfig')
+    let g:Lf_RgConfig = [
+          \ '--glob=!.git',
+          \ '--glob=!.svn',
+          \ '--glob=!.hg',
+          \ '--glob=!.repo',
+          \ '--glob=!.ccache',
+          \ '--glob=!GTAGS',
+          \ '--glob=!GRTAGS',
+          \ '--glob=!GPATH',
+          \ '--glob=!tags',
+          \ '--glob=!prj_tags',
+          \ '--glob=!.ccls-cache',
+          \ '--iglob=!obj',
+          \ '--iglob=!out',
+          \ '--hidden'
+          \ ]
+  endif
 
   nnoremap ff :<C-u>Leaderf file<CR>
   nnoremap fb :<C-u>Leaderf buffer<CR>
@@ -822,27 +670,28 @@ if (FindPlug('LeaderF') != -1)
   nnoremap fm :<C-u>Leaderf mru<CR>
   nnoremap fh :<C-u>Leaderf searchHistory<CR>
   nnoremap fl :<C-u>Leaderf line --regex<CR>
+  nnoremap ft :<C-u>Leaderf gtags --regex<CR>
   nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c %s", expand("<cword>"))<CR>
   nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c ")<CR>
   xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F %s", leaderf#Rg#visual())<CR>
   nnoremap fs :<C-u>CtrlSF
   nnoremap f/ :<C-u>FlyGrep<cr>
+  nnoremap fr :<C-U>Leaderf --recall<CR><TAB>
   nnoremap fi :exec "Leaderf file --regex --input " . <SID>StripInclude(getline("."))<CR>
   function! s:StripInclude(line)
     let l:strip_include = substitute(a:line, '\v.*[\<"]([a-zA-Z0-9_/\.]+)[\>"]', '\1', 'g')
     return l:strip_include
   endfunction
-  noremap ftr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
-  noremap ftd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
   "noremap <C-]> :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-  noremap fto :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
-  noremap ftn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
-  noremap ftp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
-  nnoremap fr :<C-U>Leaderf --recall<CR>
+  noremap tr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+  noremap td :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+  "noremap to :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+  noremap tn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+  noremap tp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 endif
 
 if (FindPlug('vim-choosewin') != -1)
-  nmap - <Plug>(choosewin)
+  nmap = <Plug>(choosewin)
 endif
 
 if (FindPlug('vim-bookmarks') != -1)
@@ -983,14 +832,6 @@ if (FindPlug('vim-fswitch') != -1)
   nnoremap <silent> <Leader>h <ESC>:FSHere<CR>
 endif
 
-if (FindPlug('vimshell') != -1)
-  nnoremap <leader>vs :silent VimShell<CR>
-  let g:vimshell_prompt_expr =
-        \ 'escape(fnamemodify(getcwd(), ":~").">", "\\[]()?! ")." "'
-  let g:vimshell_prompt_pattern = '^\%(\f\|\\.\)\+> '
-  let g:vimshell_no_default_keymappings=0
-endif
-
 if (FindPlug('emmet-vim') != -1)
   let g:user_emmet_install_global = 0
   autocmd myau FileType html,css EmmetInstall
@@ -1011,7 +852,7 @@ endif
 
 if (FindPlug('gen_clang_conf.vim') != -1)
   " compile_flags.txt, .ccls
-  let g:gen_clang_conf#clang_conf_name = get(g:, 'gen_clang_conf#clang_conf_name', '.ccls')
+  let g:gen_clang_conf#clang_conf_name = get(g:, 'gen_clang_conf#clang_conf_name', 'compile_flags.txt')
 endif
 
 "}}}

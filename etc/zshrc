@@ -6,9 +6,9 @@ fi
 
 CONFIG_DIR=${CONFIG_DIR:-"$HOME/.vim/etc"}
 
-#if  [ -f "$CONFIG_DIR/../plugged/vim-solarized8/scripts/solarized8.sh" ]; then
-#    bash "$CONFIG_DIR/../plugged/vim-solarized8/scripts/solarized8.sh"
-#fi
+if [ -f "$CONFIG_DIR/color/solarized_light.sh" ]; then
+    [ -n "$PS1" ] && bash $CONFIG_DIR/color/solarized_light.sh
+fi
 
 export EDITOR=${EDITOR:-"vim"}
 export VISUAL=${VISUAL:-"vim"}
@@ -62,8 +62,8 @@ typeset -gU cdpath fpath mailpath PATH path
 export GO111MODULE=on
 export GOPATH=$HOME/go
 export GOPROXY=https://goproxy.io
-export QT_DIR=${QT_DIR:-"$HOME/tool/qt"}
-export QT_VERSION=${QT_VERSION:-"5.14.2"}
+export QT_DIR=${QT_DIR:-"$HOME/tool/Qt"}
+export QT_VERSION=${QT_VERSION:-"5.15.0"}
 #export QT_WEBKIT=true
 LD_LIBRARY_PATH=$HOME/bin/lib:$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
 PKG_CONFIG_PATH=$QT_DIR/$QT_VERSION/gcc_64/lib/pkgconfig:$PKG_CONFIG_PATH
@@ -174,7 +174,6 @@ elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
     BREW_PREFIX=/home/linuxbrew/.linuxbrew
 fi
 if [ ! -z "$BREW_PREFIX" ]; then
-    export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
     export HOMEBREW_PREFIX="$BREW_PREFIX"
     export HOMEBREW_CELLAR="$BREW_PREFIX/Cellar"
     export MANPATH="$BREW_PREFIX/share/man:$MANPATH"
@@ -308,9 +307,9 @@ alias py2='python2'
 alias py3='python3'
 alias ls='ls --color=auto'
 alias ll='ls -alh'
-alias tmux=' tmux -2'
 alias ta=' tmux a; [ $? == 1 ] && tmux'
 alias tl=' tmux ls'
+alias tk=' tmux kill-server'
 alias rs='rsync -rval --partial --delete --progress '
 alias cpa='cp -rfavx '
 alias rgn='rg --no-ignore '

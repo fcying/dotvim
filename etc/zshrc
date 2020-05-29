@@ -10,9 +10,12 @@ if [ -f "$CONFIG_DIR/color/solarized_light.sh" ]; then
     [ -n "$PS1" ] && bash $CONFIG_DIR/color/solarized_light.sh
 fi
 
-export EDITOR=${EDITOR:-"vim"}
-export VISUAL=${VISUAL:-"vim"}
 export PAGER=${PAGER:-"less"}
+export EDITOR=${EDITOR:-"nvim"}
+export VISUAL=${VISUAL:-"nvim"}
+
+alias vim='nvim'
+alias vi='vim'
 
 # Set the default Less options.
 # Mouse-wheel scrolling has been disabled by -X (disable screen clearing).
@@ -300,7 +303,6 @@ alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_his
 alias zsh_fix_gw='compaudit |xargs chmod -R g-w'
 alias zsh_time_test='for i in $(seq 1 5); do time zsh -i -c exit; done'
 alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
-alias vi='vim'
 alias rz='rz -y'
 alias py='python3'
 alias py2='python2'

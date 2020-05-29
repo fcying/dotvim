@@ -1,4 +1,4 @@
-" ncm2 asyncomplete coc
+" ncm2 asyncomplete coc ycm completor
 let g:complete_func = get(g:, 'complete_func', 'coc')
 
 
@@ -11,7 +11,8 @@ if filereadable(expand(g:plug_dir . '/vim-plug/plug.vim')) == 0
     if filereadable(expand(g:file_vimrc_local)) == 0
       call writefile([
             \ 'let g:complete_func=''ncm2''',
-            \ '"let g:colorscheme=''molokai''',
+            \ '"let g:colorscheme=''solarized8''',
+            \ '"let g:background=''light''',
             \ 'function! LoadAfter()',
             \ 'endfunc',
             \ ], expand(g:file_vimrc_local), 'a')
@@ -43,10 +44,11 @@ Plug 'itchyny/lightline.vim'
 
 Plug 'tpope/vim-surround'
 Plug 'terryma/vim-expand-region'
+Plug 'godlygeek/tabular', {'on': 'Tabularize'}
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}
-Plug 'scrooloose/nerdtree', {'on':['NERDTreeToggle', 'NERDTreeFind']}
-Plug 'justinmk/vim-dirvish'
+Plug 'scrooloose/nerdtree', {'on':['NERDTree', 'NERDTreeFocus', 'NERDTreeToggle', 'NERDTreeCWD', 'NERDTreeFind']}
+"Plug 'justinmk/vim-dirvish'
 Plug 'scrooloose/nerdcommenter'
 Plug 'majutsushi/tagbar', {'on':'TagbarToggle'}
 Plug 'easymotion/vim-easymotion'
@@ -57,7 +59,6 @@ Plug 'cespare/vim-toml'
 Plug 'peterhoeg/vim-qml'
 "Plug 'ekalinin/Dockerfile.vim'
 Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
-Plug 'godlygeek/tabular', {'for':'markdown'}
 Plug 'plasticboy/vim-markdown', {'for':'markdown'}
 
 function! InstallLeaderF(info) abort
@@ -82,11 +83,9 @@ Plug 'nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}
 Plug 'xolox/vim-session'
 Plug 'xolox/vim-misc'
 Plug 'dyng/ctrlsf.vim'
-if exists('*popup_menu')
-  Plug 'pechorin/any-jump.vim'
-endif
+Plug 'pechorin/any-jump.vim'
 "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}
-"Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-fugitive'
 
 Plug 'skywind3000/vim-preview'
 Plug 'skywind3000/asyncrun.vim'
@@ -95,16 +94,18 @@ Plug 'mattn/emmet-vim'
 Plug 'honza/vim-snippets'
 "Plug 'w0rp/ale'
 
+" color
+Plug 'tomasr/molokai'
+Plug 'lifepillar/vim-solarized8'
+Plug 'morhetz/gruvbox'
+
+" complete_func
 function! UpdateLsp() abort
   "silent !rustup update
   "silent !rustup component add rls rust-analysis rust-src
   "silent !npm install -g typescript typescript-language-server
   "silent !npm install -g dockerfile-language-server-nodejs
   silent !pip3 install python-language-server --upgrade
-endfunction
-
-function! InstallVimLsp(info) abort
-  "call UpdateLsp()
 endfunction
 
 function! InstallLanguageClient(info) abort
@@ -135,29 +136,17 @@ if g:complete_func ==# 'ncm2'
   "Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('InstallLanguageClient')}
   Plug 'ncm2/ncm2-vim-lsp'
   Plug 'prabirshrestha/async.vim'
-  Plug 'prabirshrestha/vim-lsp', {'do': function('InstallVimLsp')}
+  Plug 'prabirshrestha/vim-lsp', {'do': function('UpdateLsp')}
   Plug 'mattn/vim-lsp-settings'
-  if g:is_win ==# 0
-    Plug 'ncm2/ncm2-tmux'
-  endif
   Plug 'ncm2/ncm2-bufword'
   Plug 'ncm2/ncm2-path'
   Plug 'ncm2/ncm2-gtags'
   Plug 'yuki-ycino/ncm2-dictionary'
   Plug 'ncm2/ncm2-cssomni'
   Plug 'ncm2/ncm2-html-subscope'
-  Plug 'ncm2/ncm2-vim'
-  Plug 'Shougo/neco-vim'
-  Plug 'ncm2/ncm2-syntax'
-  Plug 'Shougo/neco-syntax'
-  "Plug 'ncm2/ncm2-pyclang'
-  Plug 'ncm2/ncm2-ultisnips'
-  Plug 'SirVer/ultisnips'
-  "curl https://sh.rustup.rs -sSf | sh
-  "rustup toolchain add nightly && cargo +nightly install racer && rustup component add rust-src
-  "Plug 'ncm2/ncm2-racer'
-  "Plug 'ncm2/ncm2-go'
-  "Plug 'ncm2/ncm2-jedi'
+  Plug 'ncm2/ncm2-neoinclude' | Plug 'Shougo/neoinclude.vim'
+  "Plug 'ncm2/ncm2-syntax' | Plug 'Shougo/neco-syntax'
+  Plug 'ncm2/ncm2-ultisnips' | Plug 'SirVer/ultisnips'
 elseif g:complete_func ==# 'coc'
   function! InstallCoc(info) abort
     if a:info.status !=# 'unchanged' || a:info.force
@@ -171,7 +160,7 @@ elseif g:complete_func ==# 'coc'
   Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': function('InstallCoc')}
 elseif g:complete_func ==# 'asyncomplete'
   Plug 'prabirshrestha/async.vim'
-  Plug 'prabirshrestha/vim-lsp', {'do': function('InstallVimLsp')}
+  Plug 'prabirshrestha/vim-lsp', {'do': function('UpdateLsp')}
   Plug 'prabirshrestha/asyncomplete.vim'
   Plug 'prabirshrestha/asyncomplete-lsp.vim'
   Plug 'mattn/vim-lsp-settings'
@@ -186,16 +175,20 @@ elseif g:complete_func ==# 'asyncomplete'
   Plug 'prabirshrestha/asyncomplete-tags.vim'
   Plug 'prabirshrestha/asyncomplete-necosyntax.vim'
   Plug 'prabirshrestha/asyncomplete-necovim.vim'
+elseif g:complete_func ==# 'ycm'
+  Plug 'ycm-core/YouCompleteMe'
+elseif g:complete_func ==# 'completor'
+  Plug 'maralla/completor.vim'
+  Plug 'kyouryuukunn/completor-necovim'
+  Plug 'masawada/completor-dictionary'
+  Plug 'SirVer/ultisnips'
+  Plug 'maralla/completor-neosnippet'
+  "Plug 'ferreum/completor-tmux'  "let other complete error
 endif
-
-"color
-Plug 'tomasr/molokai'
-Plug 'lifepillar/vim-solarized8'
-Plug 'morhetz/gruvbox'
-"Plug 'nightsense/cosmic_latte'
 
 call plug#end()
 delc PlugUpgrade
+
 nnoremap <leader>pu :PlugUpdate<CR>:redraw!<CR>
 nnoremap <leader>pi :PlugInstall<CR>:redraw!<CR>
 nnoremap <leader>pc :PlugClean<CR>:redraw!<CR>
@@ -205,10 +198,6 @@ nnoremap <leader>pc :PlugClean<CR>:redraw!<CR>
 " ============================================================================
 " plugin settings {{{
 " ============================================================================
-function! FindPlug(plugname) abort
-  return index(g:plugs_order, a:plugname)
-endfunction
-
 " gen tags
 nnoremap <silent> tg :GenClangConf<CR>:Leaderf gtags --update<CR>
 
@@ -232,6 +221,11 @@ if (FindPlug('asyncrun.vim') != -1)
       call ShowQuickfix()
     endif
   endfunction
+endif
+
+if (FindPlug('vim-preview') != -1)
+  autocmd myau FileType qf nnoremap <silent><buffer> p :PreviewQuickfix<cr>
+  autocmd myau FileType qf nnoremap <silent><buffer> P :PreviewClose<cr>
 endif
 
 if (FindPlug('lightline.vim') != -1)
@@ -278,6 +272,10 @@ if (FindPlug('gina.vim') != -1)
   nnoremap <silent> <leader>glo    :Gina log<CR>
   nnoremap <silent> <leader>gb     :Gina blame<CR>
   nnoremap <silent> <leader>gm     :Gina compare<CR><C-w>L
+endif
+
+if (FindPlug('vim-fugitive') != -1)
+  autocmd myau FileType fugitive* nmap <buffer> q gq
 endif
 
 if (FindPlug('LanguageClient-neovim') != -1)
@@ -330,6 +328,13 @@ if (FindPlug('vim-lsp') != -1)
   nnoremap <silent> <leader>lm :LspImplementation<CR>
 endif
 
+if (FindPlug('vim-lsp-settings') != -1) "{{{
+  let g:lsp_settings_servers_dir = g:cache_dir . '/lsp_settings'
+  let g:lsp_settings_root_markers = ['.root/', '.git', '.git/', '.svn/']
+  let g:lsp_settings_filetype_python = ['pyls-ms', 'pyls']
+endif "}}}
+
+
 if (FindPlug('ale') != -1)
   nmap <silent> <leader>aj :ALENext<cr>
   nmap <silent> <leader>ak :ALEPrevious<cr>
@@ -342,27 +347,19 @@ if (FindPlug('ale') != -1)
 endif
 
 if (FindPlug('ultisnips') != -1)
-  if (FindPlug('ncm2') != -1)
-    inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
-  endif
+  "let g:UltiSnipsExpandTrigger = "<Plug>(ultisnips_expand)"
   let g:UltiSnipsExpandTrigger = '<c-j>'
   let g:UltiSnipsJumpForwardTrigger = '<c-j>'
   let g:UltiSnipsJumpBackwardTrigger = '<c-k>'
   let g:UltiSnipsRemoveSelectModeMappings = 0
 endif
 
-if (FindPlug('vim-lsp-settings') != -1) "{{{
-  let g:lsp_settings_servers_dir = g:cache_dir . '/lsp_settings'
-endif "}}}
-
 if (FindPlug('asyncomplete.vim') != -1) "{{{
-  inoremap <expr> <cr>    pumvisible() ? "\<C-y>\<cr>": "\<cr>"
-
   let g:asyncomplete_remove_duplicates = 1
 
   "let g:lsp_log_verbose = 1
-  "let g:lsp_log_file = expand('~/vim-lsp.log')
-  "let g:asyncomplete_log_file = expand('~/asyncomplete.log')
+  "let g:lsp_log_file = expand('/tmp/vim-lsp.log')
+  "let g:asyncomplete_log_file = expand('/tmp/asyncomplete.log')
 
   if (FindPlug('asyncomplete-buffer.vim') != -1)
     call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
@@ -399,20 +396,6 @@ if (FindPlug('asyncomplete.vim') != -1) "{{{
           \ 'completor': function('asyncomplete#sources#omni#completor')
           \  }))
   endif
-  if (FindPlug('tmux-complete.vim') != -1)
-    let g:tmuxcomplete#asyncomplete_source_options = {
-          \ 'name':      'tmuxcomplete',
-          \ 'whitelist': ['*'],
-          \ 'config': {
-          \     'splitmode':      'words',
-          \     'filter_prefix':   1,
-          \     'show_incomplete': 1,
-          \     'sort_candidates': 0,
-          \     'scrollback':      0,
-          \     'truncate':        0
-          \     }
-          \ }
-  endif
   if (FindPlug('asyncomplete-tags.vim') != -1)
     au myau User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#tags#get_source_options({
           \ 'name': 'tags',
@@ -442,29 +425,26 @@ endif "}}}
 if (FindPlug('coc.nvim') != -1) "{{{
   let g:coc_data_home = g:cache_dir . '/coc'
   let g:coc_config_home = g:config_dir
-  call coc#add_extension('coc-vimlsp', 'coc-json')
-  "call coc#add_extension('coc-pairs')
-  call coc#add_extension('coc-dictionary', 'coc-syntax')
-  call coc#add_extension('coc-snippets')
-  call coc#add_extension('coc-rls')
-  call coc#add_extension('coc-python')
-  call coc#add_extension('coc-clangd', 'coc-cmake')
-  call coc#add_extension('coc-go')
-  call coc#add_extension('coc-yaml','coc-xml')
-  call coc#add_extension('coc-css', 'coc-html')
-  call coc#add_extension('coc-tsserver', 'coc-java')
+  "'coc-pairs',
+  let g:coc_global_extensions = ['coc-vimlsp', 'coc-json',
+        \ 'coc-dictionary', 'coc-syntax', 'coc-snippets',
+        \ 'coc-rls', 'coc-python', 'coc-go',
+        \ 'coc-clangd', 'coc-cmake',
+        \ 'coc-yaml', 'coc-xml',
+        \ 'coc-css', 'coc-html',
+        \ 'coc-tsserver', 'coc-java',
+        \ ]
 
   inoremap <silent><expr> <c-l> coc#refresh()
 
-  inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() :
-        \"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+  " snippets
+  imap <c-j> <Plug>(coc-snippets-expand)
+  let g:coc_snippet_next = '<c-j>'
+  let g:coc_snippet_prev = '<c-k>'
 
   " pairs
   autocmd myau FileType markdown let b:coc_pairs_disabled = ['`']
   autocmd myau FileType vim let b:coc_pairs_disabled = ['"']
-
-  " don't give |ins-completion-menu| messages.
-  set shortmess+=c
 
   " Use `[c` and `]c` to navigate diagnostics
   nmap <silent> [c <Plug>(coc-diagnostic-prev)
@@ -488,6 +468,9 @@ if (FindPlug('coc.nvim') != -1) "{{{
     endif
   endfunction
 
+  if !exists('g:lightline')
+    let g:lightline = {}
+  endif
   let g:lightline.active ={
         \   'left': [ [ 'mode', 'paste' ],
         \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
@@ -498,32 +481,67 @@ if (FindPlug('coc.nvim') != -1) "{{{
 endif "}}}
 
 if (FindPlug('ncm2') != -1) "{{{
-  "let $NVIM_PYTHON_LOG_FILE="/home/pub/ncm2_log"
+  "let $NVIM_PYTHON_LOG_FILE="/tmp/ncm2_log"
   "let $NVIM_NCM_LOG_LEVEL="DEBUG"
   "let $NVIM_NCM_MULTI_THREAD=0
 
-  inoremap <expr> <cr>    pumvisible() ? "\<C-y>\<cr>": "\<cr>"
-
-  set shortmess+=c
   " note that must keep noinsert in completeopt, the others is optional
-  set completeopt=noinsert,menuone,noselect
   let g:ncm2#complete_length = [[1,2],[7,1]]
 
-  autocmd myau BufEnter * call ncm2#enable_for_buffer()
+  "autocmd myau BufEnter * call ncm2#enable_for_buffer()
+  autocmd myau InsertEnter * call ncm2#enable_for_buffer()
+
   let g:ncm2#matcher = 'substrfuzzy'
   "let g:ncm2#sorter = 'abbrfuzzy'
-  if !exists('g:ncm2_pyclang#library_path')
-    if g:is_win
-      let g:ncm2_pyclang#library_path = 'd:\tool\scoop\apps\llvm\current\bin\'
-    else
-      let g:ncm2_pyclang#library_path = '/usr/lib/llvm-6.0/lib/libclang.so.1'
-    endif
-  endif
+endif "}}}
 
-  if (FindPlug('ncm2-pyclang') != -1)
-    let g:ncm2_pyclang#args_file_path = ['compile_flags.txt']
-    "autocmd myau FileType c,cpp nnoremap <buffer> gd :<c-u>call ncm2_pyclang#goto_declaration()<cr>
-  endif
+if (FindPlug('YouCompleteMe') != -1) "{{{
+  let g:ycm_confirm_extra_conf = 0
+  let g:ycm_add_preview_to_completeopt = 0
+
+  let g:ycm_show_diagnostics_ui = 0
+  let g:ycm_server_log_level = 'info'
+  let g:ycm_min_num_identifier_candidate_chars = 2
+  let g:ycm_collect_identifiers_from_comments_and_strings = 1
+  let g:ycm_complete_in_strings=1
+  let g:ycm_key_invoke_completion = '<c-z>'
+
+  let g:ycm_semantic_triggers =  {
+        \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+        \ 'cs,lua,javascript': ['re!\w{2}'],
+        \ }
+
+let g:ycm_filetype_whitelist = {
+			\ 'c':1, 'cpp':1, 'objc':1, 'objcpp':1,
+			\ 'go':1, 'rust':1, 'python':1, 'vim':1,
+			\ 'lua':1, 'java':1, 'ruby':1, 'php':1,
+			\ 'javascript':1, 'typedscript':1, 'coffee':1,
+			\ 'perl':1, 'perl6':1, 'erlang':1,
+			\ 'asm':1, 'nasm':1, 'masm':1, 'tasm':1, 'asm68k':1, 'asmh8300':1,
+			\ 'basic':1, 'cs':1, 'vb':1,
+			\ 'make':1, 'cmake':1,
+			\ 'html':1, 'css':1, 'less':1,
+			\ 'dosini':1, 'conf':1, 'config':1, 'json':1, 'cson':1,
+			\ 'haskell':1, 'lhaskell':1, 'lisp':1,
+			\ 'scheme':1, 'sdl':1,
+			\ 'sh':1, 'zsh':1, 'bash':1, 'ps1':1, 'bat':1,
+			\ 'asciidoc':1, 'man':1, 'markdown':1, 'matlab':1, 'maxima':1,
+			\ }
+endif "}}}
+
+if (FindPlug('completor.vim') != -1) "{{{
+  let g:completor_auto_trigger = 1
+  let g:completor_complete_options = 'menuone,noselect,preview'
+  let g:completor_clang_disable_placeholders = 1
+  let g:completor_min_chars = 1
+  noremap <silent> gd :call completor#do('definition')<CR>
+  noremap <silent> gc :call completor#do('doc')<CR>
+  noremap <silent> gf :call completor#do('format')<CR>
+  noremap <silent> gs :call completor#do('hover')<CR>
+  let g:completor_filetype_map = {}
+  let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}
+  let g:completor_filetype_map.c = {'ft': 'lsp', 'cmd': 'clangd'}
+  let g:completor_filetype_map.rust = {'ft': 'lsp', 'cmd': 'rls'}
 endif "}}}
 
 if (FindPlug('vim-visual-multi') != -1)
@@ -604,10 +622,11 @@ if (FindPlug('LeaderF') != -1)
   let g:Lf_UseVersionControlTool = 0
   let g:Lf_CacheDirectory = g:cache_dir
   let g:Lf_RootMarkers = ['.root', '.git', '.svn']
-  let g:Lf_Gtagslabel = 'native-pygments'
-  let $GTAGSCONF = g:etc_dir . '/gtags.conf'
   let g:Lf_GtagsAutoGenerate = 0
   let g:Lf_GtagsStoreInRootMarker = 1
+  let g:Lf_Gtagslabel = 'native-pygments'
+  let g:Lf_Gtagsconf = get(g:, 'Lf_Gtagsconf', g:etc_dir . '/gtags.conf')
+  let g:Lf_GtagsSource = 1
 
   let g:Lf_PreviewInPopup = 1
   "let g:Lf_WindowPosition = 'popup'
@@ -651,26 +670,26 @@ if (FindPlug('LeaderF') != -1)
           \ '--glob=!.svn',
           \ '--glob=!.hg',
           \ '--glob=!.repo',
+          \ '--glob=!.root',
           \ '--glob=!.ccache',
+          \ '--glob=!.cache',
           \ '--glob=!GTAGS',
           \ '--glob=!GRTAGS',
           \ '--glob=!GPATH',
           \ '--glob=!tags',
-          \ '--glob=!prj_tags',
-          \ '--glob=!.ccls-cache',
           \ '--iglob=!obj',
           \ '--iglob=!out',
           \ '--hidden'
           \ ]
   endif
 
-  nnoremap ff :<C-u>Leaderf file<CR>
-  nnoremap fb :<C-u>Leaderf buffer<CR>
-  nnoremap fo :<C-u>Leaderf function<CR>
-  nnoremap fm :<C-u>Leaderf mru<CR>
-  nnoremap fh :<C-u>Leaderf searchHistory<CR>
-  nnoremap fl :<C-u>Leaderf line --regex<CR>
-  nnoremap ft :<C-u>Leaderf gtags --regex<CR>
+  nnoremap ff :<C-u>Leaderf file --fullPath<CR>
+  nnoremap fb :<C-u>Leaderf buffer --fullPath<CR>
+  nnoremap fo :<C-u>Leaderf function --fullPath<CR>
+  nnoremap fm :<C-u>Leaderf mru --fullPath<CR>
+  nnoremap fh :<C-u>Leaderf searchHistory --fullPath<CR>
+  nnoremap fl :<C-u>Leaderf line --fuzzy<CR>
+  nnoremap ft :<C-u>Leaderf gtags --fuzzy<CR>
   nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c %s", expand("<cword>"))<CR>
   nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c ")<CR>
   xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F %s", leaderf#Rg#visual())<CR>
@@ -782,33 +801,6 @@ if (FindPlug('tagbar') != -1) "{{{
   let g:tagbar_left=1
   let g:tagbar_width=32
   let g:tagbar_compact=1
-  let g:tagbar_type_go = {
-        \ 'ctagstype' : 'go',
-        \ 'kinds'     : [
-        \ 'p:package',
-        \ 'i:imports:1',
-        \ 'c:constants',
-        \ 'v:variables',
-        \ 't:types',
-        \ 'n:interfaces',
-        \ 'w:fields',
-        \ 'e:embedded',
-        \ 'm:methods',
-        \ 'r:constructor',
-        \ 'f:functions'
-        \ ],
-        \ 'sro' : '.',
-        \ 'kind2scope' : {
-        \ 't' : 'ctype',
-        \ 'n' : 'ntype'
-        \ },
-        \ 'scope2kind' : {
-        \ 'ctype' : 't',
-        \ 'ntype' : 'n'
-        \ },
-        \ 'ctagsbin'  : 'gotags',
-        \ 'ctagsargs' : '-sort -silent'
-        \ }
 endif "}}}
 
 if (FindPlug('vim-bbye') != -1)

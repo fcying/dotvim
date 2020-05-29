@@ -16,13 +16,12 @@
 --glob=!.svn
 --glob=!.hg
 --glob=!.repo
+--glob=!.root
 --glob=!.ccache
 --glob=!.cache
 --glob=!GTAGS
 --glob=!GRTAGS
 --glob=!GPATH
 --glob=!tags
---glob=!prj_tags
---glob=!.ccls-cache
 --iglob=!obj
 --iglob=!out

@@ -17,9 +17,12 @@ ln -sfv $PWD/npmrc ~/.npmrc
 # nvim
 mkdir -p ~/.config/nvim
 echo "set nvim init.vim"
-rm -f ~/.config/nvim/init.vim
-echo "source ~/.vim/vimrc" > ~/.config/nvim/init.vim
-# windows: $HOME\AppData\Local\nvim\init.vim
+#rm -f ~/.config/nvim/init.vim
+#echo "source ~/.vim/vimrc" > ~/.config/nvim/init.vim
+ln -svf $PWD/../vimrc ~/.config/nvim/init.vim
+
+# windows
+#echo "source d:\tool\vim\vimrc" > $HOME\AppData\Local\nvim\init.vim
 
 # npm
 #type npm >/dev/null 2>&1 && {

@@ -18,6 +18,7 @@ let g:is_vim8 = v:version >= 800 ? 1 : 0
 let g:has_go = executable('go') ? 1 : 0
 let s:is_gui = has('gui_running')
 let g:is_tmux = exists('$TMUX')
+let g:is_conemu = !empty($CONEMUBUILD)  
 
 if executable('pip3') ==# 0
   echohl WarningMsg
@@ -55,6 +56,18 @@ function! GetRootDir()
 endfunction
 call GetRootDir()
 
+function! GetVisualSelection()
+    let [line_start, column_start] = getpos("'<")[1:2]
+    let [line_end, column_end] = getpos("'>")[1:2]
+    let lines = getline(line_start, line_end)
+    if len(lines) == 0
+        return ''
+    endif
+    let lines[-1] = lines[-1][: column_end - (&selection ==# 'inclusive' ? 1 : 2)]
+    let lines[0] = lines[0][column_start - 1:]
+    return join(lines, "\n")
+endfunction
+
 "}}}
 
 
@@ -72,25 +85,36 @@ if filereadable(g:file_vimrc_local)
   execute 'source ' . g:file_vimrc_local
 endif
 
-" find project file
-let s:vimconf_path = findfile('.vimconf', g:scm_dir . '/.;')
-if s:vimconf_path !=# ''
-  exec 'source ' . s:vimconf_path
-  "echom s:vimconf_path
+" find project vimrc
+let g:pvimrc_path = findfile('.pvimrc', g:scm_dir . '/.;')
+if g:pvimrc_path !=# ''
+  exec 'source ' . g:pvimrc_path
+  "echom g:pvimrc_path
+else
+  let g:pvimrc_path = g:scm_dir . '/.pvimrc'
 endif
 
 
 " add plugin
+if !exists('g:plugs_order')
+  let g:plugs_order = []
+endif
+function! FindPlug(plugname) abort
+  return index(g:plugs_order, a:plugname)
+endfunction
+
 if filereadable(g:file_plug)
   execute 'source ' . g:file_plug
 endif
 
 
-"autocmd! bufwritepost _vimrc source $MYVIMRC
-nnoremap <leader>ev :execute 'e ' . g:file_vimrc<CR>
-nnoremap <leader>el :execute 'e ' . g:file_vimrc_local<CR>
-nnoremap <leader>ep :execute 'e ' . g:file_plug<CR>
-nnoremap <leader>sv :execute 'source ' . g:file_vimrc<CR>
+nnoremap <silent> <leader>ev :execute 'e '  . g:file_vimrc<CR>
+nnoremap <silent> <leader>sv :execute 'so ' . g:file_vimrc<CR>
+nnoremap <silent> <leader>el :execute 'e '  . g:file_vimrc_local<CR>
+nnoremap <silent> <leader>ep :execute 'e '  . g:file_plug<CR>
+nnoremap <silent> <leader>ec :execute 'e '  . g:pvimrc_path<CR>
+nnoremap <silent> <leader>sc :execute 'so ' . g:pvimrc_path<CR>
+execute 'autocmd! BufWritePost .pvimrc so ' . g:pvimrc_path
 
 if g:is_nvim ==# 0
   if g:is_win
@@ -112,6 +136,7 @@ if s:is_gui
 else
   set mouse=nv
 endif
+
 if g:is_tmux
   " tmux knows the extended mouse mode
   if g:is_nvim ==# 0
@@ -152,19 +177,18 @@ set ttimeout
 set ttimeoutlen=50
 set iskeyword -=-
 set iskeyword -=.
-" aligin #
+" align #
 set cinkeys-=0#
 "inoremap # X#
 "set iskeyword -=#
 autocmd myau FileType * setlocal formatoptions-=o
 set formatoptions+=mM
 set virtualedit=onemore        "onemore all
-set tags=./.tags;,.tags
+set tags=tags,tags;
 set history=2000
 set scrolloff=3
 set hidden
 set noautochdir
-"set regexpengine=1        " use old re, for speed syntax
 set updatetime=300
 set autoread
 augroup checktime
@@ -189,11 +213,6 @@ set noswapfile
 
 " display
 set cursorline
-if has('patch-8.1.1587')
-  set signcolumn=number
-else
-  set signcolumn=auto
-endif
 set showmatch
 set matchtime=2
 set number
@@ -208,6 +227,12 @@ set splitbelow
 set lazyredraw
 set listchars=tab:\|\ ,trail:.,extends:>,precedes:<
 set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
+if has('patch-8.1.1564')
+  " Recently vim can merge signcolumn and number column into one
+  set signcolumn=number
+else
+  set signcolumn=auto
+endif
 
 " search
 set magic
@@ -216,10 +241,6 @@ set hlsearch
 set wrapscan    "search loop
 set ignorecase
 set smartcase
-if has('patch-8.1.0360')
-  " search index
-  set shortmess-=S
-endif
 
 " tab shift
 set expandtab        "%retab
@@ -375,10 +396,12 @@ cnoremap <c-d> <del>
 cnoremap <c-_> <c-k>
 
 " terminal
-nnoremap <leader>vt :rightbelow vertical terminal<CR>
-nnoremap <leader>ht :terminal<CR>
-tnoremap <ESC> <c-w>N
-tnoremap <c-o>p <C-W>"+
+tnoremap <ESC> <c-\><c-n>
+if g:is_nvim
+  tnoremap <c-o>p <c-\><c-n>pi
+else
+  tnoremap <c-o>p <C-W>"+
+endif
 
 " Start new line
 inoremap <S-Return> <C-o>o
@@ -516,12 +539,14 @@ augroup END
 
 " set filetype
 autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
-autocmd myau BufNewFile,BufRead .vimconf setl filetype=vim
 
 " completion
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
+" close menu and start a new line
+inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>": "\<cr>"
 set completeopt=noinsert,menuone,noselect
+set shortmess+=c
 if has('patch-8.1.1902')
   set completeopt+=popup
   set completepopup=border:off
@@ -548,6 +573,10 @@ endfunction
 " ============================================================================
 " solarized8 gruvbox molokai
 let g:colorscheme = get(g:, 'colorscheme', 'solarized8')
+
+if !exists('g:lightline')
+  let g:lightline = {}
+endif
 
 if g:colorscheme ==# 'molokai'
   let g:background=get(g:, 'background', 'dark')
@@ -586,15 +615,15 @@ else
   set t_Co=256
 endif
 
-"if g:is_nvim ==# 0
-"  "enable 256 colors in ConEmu on Win
-"  if g:is_win && !s:is_gui && !empty($CONEMUBUILD)
-"    set term=xterm
-"    set t_Co=256
-"    let &t_AB="\e[48;5;%dm"
-"    let &t_AF="\e[38;5;%dm"
-"  endif
-"endif
+if g:is_nvim ==# 0
+  "enable 256 colors in ConEmu on Win
+  if g:is_win && !s:is_gui && g:is_conemu
+    set term=xterm
+    set t_Co=256
+    let &t_AB="\e[48;5;%dm"
+    let &t_AF="\e[38;5;%dm"
+  endif
+endif
 
 exec 'colorscheme ' . g:colorscheme
 exec 'set background=' . g:background
@@ -605,8 +634,8 @@ if exists('*LoadAfter')
   call LoadAfter()
 endif
 
-if exists('*LoadAfterConf')
-  call LoadAfterConf()
+if exists('*LoadAfterProject')
+  call LoadAfterProject()
 endif
 
 filetype plugin indent on

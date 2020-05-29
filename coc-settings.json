@@ -1,30 +1,27 @@
 {
-  "coc.rootPatterns": [".root", ".git", ".svn"],
+  "coc.preferences.rootPatterns": [".root", ".git", ".svn"],
   "coc.source.file.ignoreHidden": false,
   "suggest.enablePreview": true,
-  "diagnostic.displayByAle": true,
+  "diagnostic.displayByAle": false,
   "diagnostic.errorSign": "X",
   "diagnostic.warningSign": "!",
   "diagnostic.infoSign": "I",
   "diagnostic.hintSign": "H",
-  "python.jediEnabled": false,
-  "python.analysis.diagnosticEnabled": true,
   "npm.binPath": "npm",
   "list.normalMappings": {
     "q": "do:exit"
-  },
-  "vimlsp.diagnostic.enable": {
-    "type": "boolean",
-    "default": true,
-    "description": "enable diagnostic"
   },
   "snippets.extends": {
     "cpp": ["c"],
     "javascriptreact": ["javascript"],
     "typescript": ["javascript"]
   },
+  "vimlsp.diagnostic.enable": false,
+  "python.jediEnabled": false,
+  "python.analysis.diagnosticEnabled": false,
+  //https://github.com/clangd/clangd/releases
   "clangd.enabled": true,
-  "clangd.disableDiagnostics": false,
+  "clangd.disableDiagnostics": true,
   "clangd.path": "clangd",
   "go.enable": true,
   "go.goplsOptions": {

@@ -8,6 +8,13 @@ if [ -f "$HOME/.bashrc.local" ]; then
     source "$HOME/.bashrc.local"
 fi
 
+export PAGER=${PAGER:-"less"}
+export VISUAL=${VISUAL:-"nvim"}
+export EDITOR="$VISUAL"
+
+alias vim='nvim'
+alias vi='vim'
+
 # don't put duplicate lines or lines starting with space in the history.
 HISTCONTROL=ignoreboth:erasedups
 PROMPT_COMMAND="history -n; history -w; history -c; history -r; $PROMPT_COMMAND"
@@ -152,12 +159,11 @@ EOF
 }
 export _ZL_FZF_FLAG="-e"
 eval "$(lua $HOME/bin/z.lua --init bash once enhanced)"
-alias zz='z -i'
-alias zc='z -c'
-alias zf='z -I'
-alias zb='z -b'
+alias zz='z -c'      # restrict matches to subdirs of $PWD
+alias zi='z -i'      # cd with interactive selection
+alias zf='z -I'      # use fzf to select in multiple matches
+alias zb='z -b'      # quickly cd to the parent directory
 alias zh='z -I -t .'
-alias zzc='zz -c'
 function z_dirstack(){
     if [ -z "$*" ]; then
         _zlua --

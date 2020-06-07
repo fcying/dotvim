@@ -52,6 +52,7 @@ Plug 'scrooloose/nerdtree', {'on':['NERDTree', 'NERDTreeFocus', 'NERDTreeToggle'
 Plug 'scrooloose/nerdcommenter'
 Plug 'majutsushi/tagbar', {'on':'TagbarToggle'}
 Plug 'easymotion/vim-easymotion'
+"Plug 'Krasjet/auto.pairs'
 
 Plug 'aperezdc/vim-template', {'on':'TemplateHere'}
 Plug 'Vimjas/vim-python-pep8-indent', {'for':'python'}
@@ -189,9 +190,9 @@ endif
 call plug#end()
 delc PlugUpgrade
 
-nnoremap <leader>pu :PlugUpdate<CR>:redraw!<CR>
-nnoremap <leader>pi :PlugInstall<CR>:redraw!<CR>
-nnoremap <leader>pc :PlugClean<CR>:redraw!<CR>
+nnoremap <leader>pu :PlugUpdate<CR>
+nnoremap <leader>pi :PlugInstall<CR>
+nnoremap <leader>pc :PlugClean<CR>
 
 
 
@@ -425,7 +426,7 @@ endif "}}}
 if (FindPlug('coc.nvim') != -1) "{{{
   let g:coc_data_home = g:cache_dir . '/coc'
   let g:coc_config_home = g:config_dir
-  "'coc-pairs',
+  "'coc-pairs', 'coc-syntax'
   let g:coc_global_extensions = ['coc-vimlsp', 'coc-json',
         \ 'coc-dictionary', 'coc-syntax', 'coc-snippets',
         \ 'coc-rls', 'coc-python', 'coc-go',
@@ -435,6 +436,12 @@ if (FindPlug('coc.nvim') != -1) "{{{
         \ 'coc-tsserver', 'coc-java',
         \ ]
 
+  "if exists('*complete_info')
+  "  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+  "else
+  "  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+  "endif
+
   inoremap <silent><expr> <c-l> coc#refresh()
 
   " snippets
@@ -443,8 +450,8 @@ if (FindPlug('coc.nvim') != -1) "{{{
   let g:coc_snippet_prev = '<c-k>'
 
   " pairs
-  autocmd myau FileType markdown let b:coc_pairs_disabled = ['`']
-  autocmd myau FileType vim let b:coc_pairs_disabled = ['"']
+  "autocmd myau FileType markdown let b:coc_pairs_disabled = ['`']
+  "autocmd myau FileType vim let b:coc_pairs_disabled = ['"']
 
   " Use `[c` and `]c` to navigate diagnostics
   nmap <silent> [c <Plug>(coc-diagnostic-prev)
@@ -609,6 +616,7 @@ endif
 if (FindPlug('vim-session') != -1)
   let g:session_autosave = 'no'
   let g:session_autoload = 'no'
+  let g:session_directory = g:cache_dir . '/sessions'
 endif
 
 if (FindPlug('LeaderF') != -1)
@@ -620,6 +628,7 @@ if (FindPlug('LeaderF') != -1)
   let g:Lf_PreviewCode = 0
   let g:Lf_WorkingDirectoryMode = 'c'
   let g:Lf_UseVersionControlTool = 0
+  let g:Lf_JumpToExistingWindow = 0
   let g:Lf_CacheDirectory = g:cache_dir
   let g:Lf_RootMarkers = ['.root', '.git', '.svn']
   let g:Lf_GtagsAutoGenerate = 0
@@ -666,6 +675,7 @@ if (FindPlug('LeaderF') != -1)
 
   if !exists('g:Lf_RgConfig')
     let g:Lf_RgConfig = [
+          \ '--max-columns=300',
           \ '--glob=!.git',
           \ '--glob=!.svn',
           \ '--glob=!.hg',
@@ -673,6 +683,7 @@ if (FindPlug('LeaderF') != -1)
           \ '--glob=!.root',
           \ '--glob=!.ccache',
           \ '--glob=!.cache',
+          \ '--glob=!.ccls-cache',
           \ '--glob=!GTAGS',
           \ '--glob=!GRTAGS',
           \ '--glob=!GPATH',
@@ -845,6 +856,10 @@ endif
 if (FindPlug('gen_clang_conf.vim') != -1)
   " compile_flags.txt, .ccls
   let g:gen_clang_conf#clang_conf_name = get(g:, 'gen_clang_conf#clang_conf_name', 'compile_flags.txt')
+endif
+
+if (FindPlug('auto.pairs') != -1)
+  autocmd myau FileType markdown let b:AutoPairsSingleQuoteBalanceCheck = 0
 endif
 
 "}}}

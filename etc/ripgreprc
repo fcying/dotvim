@@ -19,6 +19,7 @@
 --glob=!.root
 --glob=!.ccache
 --glob=!.cache
+--glob=!.ccls-cache
 --glob=!GTAGS
 --glob=!GRTAGS
 --glob=!GPATH

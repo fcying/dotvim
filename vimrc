@@ -18,7 +18,7 @@ let g:is_vim8 = v:version >= 800 ? 1 : 0
 let g:has_go = executable('go') ? 1 : 0
 let s:is_gui = has('gui_running')
 let g:is_tmux = exists('$TMUX')
-let g:is_conemu = !empty($CONEMUBUILD)  
+let g:is_conemu = !empty($CONEMUBUILD)
 
 if executable('pip3') ==# 0
   echohl WarningMsg
@@ -115,6 +115,7 @@ nnoremap <silent> <leader>ep :execute 'e '  . g:file_plug<CR>
 nnoremap <silent> <leader>ec :execute 'e '  . g:pvimrc_path<CR>
 nnoremap <silent> <leader>sc :execute 'so ' . g:pvimrc_path<CR>
 execute 'autocmd! BufWritePost .pvimrc so ' . g:pvimrc_path
+"autocmd! bufwritepost _vimrc source $MYVIMRC
 
 if g:is_nvim ==# 0
   if g:is_win
@@ -185,6 +186,11 @@ autocmd myau FileType * setlocal formatoptions-=o
 set formatoptions+=mM
 set virtualedit=onemore        "onemore all
 set tags=tags,tags;
+if g:is_win
+  let $PATH = g:config_dir . '\lib' . ';' . $PATH
+elseif g:is_linux
+  let $PATH = g:config_dir . '/lib' . ':' . $PATH
+endif
 set history=2000
 set scrolloff=3
 set hidden
@@ -274,8 +280,19 @@ nnoremap <silent> <leader>cn :cnext<CR>
 nnoremap <silent> <leader>cp :cprevious<CR>
 
 " dictionary
-execute 'set dictionary+=' . g:etc_dir . '/dictionary'
+execute 'set dictionary+=' . g:config_dir . '/dict/dictionary'
+function! s:add_dict()
+  let l:dict = g:config_dir . '/dict/' . &filetype . '.dict'
+  if filereadable(expand(l:dict))
+    execute 'setlocal dictionary+=' . l:dict
+  endif
+endfunction
+autocmd myau FileType * :call s:add_dict()
 
+" session
+set sessionoptions-=help
+
+" foldmethod
 set foldmethod=manual
 set nofoldenable
 
@@ -398,6 +415,7 @@ cnoremap <c-_> <c-k>
 " terminal
 tnoremap <ESC> <c-\><c-n>
 if g:is_nvim
+  autocmd myau TermOpen * startinsert
   tnoremap <c-o>p <c-\><c-n>pi
 else
   tnoremap <c-o>p <C-W>"+
@@ -411,7 +429,7 @@ nnoremap <leader>ds :%s/\s\+$//g<CR>:noh<CR>
 nnoremap <leader>dm :%s/\r$//g<CR>:noh<CR>
 
 " set working directory to the current file
-nnoremap <silent> <leader>cd :cd %:p:h<CR>:pwd<CR>
+nnoremap <silent> <leader>cd :tcd %:p:h<CR>:pwd<CR>
 
 " virtual mode search
 vnoremap <silent> * :<C-U>

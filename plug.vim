@@ -635,7 +635,6 @@ if (FindPlug('LeaderF') != -1)
   let g:Lf_GtagsStoreInRootMarker = 1
   let g:Lf_Gtagslabel = 'native-pygments'
   let g:Lf_Gtagsconf = get(g:, 'Lf_Gtagsconf', g:etc_dir . '/gtags.conf')
-  let g:Lf_GtagsSource = 1
 
   let g:Lf_PreviewInPopup = 1
   "let g:Lf_WindowPosition = 'popup'
@@ -693,6 +692,21 @@ if (FindPlug('LeaderF') != -1)
           \ '--hidden'
           \ ]
   endif
+
+  let g:Lf_GtagsSource = 2
+  function! s:lf_set_gtagsfiles_cmd()
+    let l:cmd=''
+    for p in g:Lf_RgConfig
+      let l:cmd = l:cmd . p . ' '
+    endfor
+    let g:Lf_GtagsfilesCmd = {
+          \ '.git': 'rg --no-messages --files ' . l:cmd,
+          \ '.hg': 'rg --no-messages --files ' . l:cmd,
+          \ 'default': 'rg --no-messages --files ' . l:cmd
+          \}
+  endfunction
+  au myau SourcePost .pvimrc call s:lf_set_gtagsfiles_cmd()
+  call s:lf_set_gtagsfiles_cmd()
 
   nnoremap ff :<C-u>Leaderf file --fullPath<CR>
   nnoremap fb :<C-u>Leaderf buffer --fullPath<CR>

@@ -16,7 +16,7 @@ let g:is_win = has('win32')
 let g:is_nvim = has('nvim')
 let g:is_vim8 = v:version >= 800 ? 1 : 0
 let g:has_go = executable('go') ? 1 : 0
-let s:is_gui = has('gui_running')
+let g:is_gui = has('gui_running') || exists('g:GuiLoaded')
 let g:is_tmux = exists('$TMUX')
 let g:is_conemu = !empty($CONEMUBUILD)
 
@@ -114,7 +114,7 @@ nnoremap <silent> <leader>el :execute 'e '  . g:file_vimrc_local<CR>
 nnoremap <silent> <leader>ep :execute 'e '  . g:file_plug<CR>
 nnoremap <silent> <leader>ec :execute 'e '  . g:pvimrc_path<CR>
 nnoremap <silent> <leader>sc :execute 'so ' . g:pvimrc_path<CR>
-execute 'autocmd! BufWritePost .pvimrc so ' . g:pvimrc_path
+execute 'autocmd myau BufWritePost .pvimrc nested so ' . g:pvimrc_path
 "autocmd! bufwritepost _vimrc source $MYVIMRC
 
 if g:is_nvim ==# 0
@@ -128,12 +128,18 @@ else
   set guicursor=
 endif
 
-if s:is_gui
-  set guioptions -=T
-  set guioptions -=m
+if g:is_gui
+  if g:is_nvim
+    nnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>
+    inoremap <silent><RightMouse> <Esc>:call GuiShowContextMenu()<CR>
+    vnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>gv
+  else
+    set guioptions -=T
+    set guioptions -=m
+    autocmd myau GUIEnter * simalt ~x
+    set guifont=Consolas:h11
+  endif
   set mouse=a
-  set guifont=Consolas:h11
-  autocmd myau GUIEnter * simalt ~x
 else
   set mouse=nv
 endif
@@ -199,7 +205,7 @@ set updatetime=300
 set autoread
 augroup checktime
   au!
-  if !s:is_gui
+  if !g:is_gui
     "silent! necessary otherwise throws errors when using command line window.
     autocmd FocusGained,BufEnter        * silent! checktime
     autocmd CursorHold                  * silent! checktime
@@ -635,7 +641,7 @@ endif
 
 if g:is_nvim ==# 0
   "enable 256 colors in ConEmu on Win
-  if g:is_win && !s:is_gui && g:is_conemu
+  if g:is_win && !g:is_gui && g:is_conemu
     set term=xterm
     set t_Co=256
     let &t_AB="\e[48;5;%dm"

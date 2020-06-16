@@ -16,7 +16,7 @@ let g:is_win = has('win32')
 let g:is_nvim = has('nvim')
 let g:is_vim8 = v:version >= 800 ? 1 : 0
 let g:has_go = executable('go') ? 1 : 0
-let g:is_gui = has('gui_running') || exists('g:GuiLoaded')
+let g:is_gui = has('gui_running') || !empty($NVIM_GUI)
 let g:is_tmux = exists('$TMUX')
 let g:is_conemu = !empty($CONEMUBUILD)
 
@@ -117,33 +117,32 @@ nnoremap <silent> <leader>sc :execute 'so ' . g:pvimrc_path<CR>
 execute 'autocmd myau BufWritePost .pvimrc nested so ' . g:pvimrc_path
 "autocmd! bufwritepost _vimrc source $MYVIMRC
 
-if g:is_nvim ==# 0
-  if g:is_win
-    set renderoptions=type:directx,level:0.50,
-          \gamma:1.0,contrast:0.0,geom:1,renmode:5,taamode:1
-  else
-    set clipboard=exclude:.*    "setup clipboard make startup slow
-  endif
-else
-  set guicursor=
-endif
-
-if g:is_gui
-  if g:is_nvim
+" gui
+set mouse=nv
+set clipboard^=unnamed,unnamedplus
+if g:is_nvim
+  function! s:nvim_gui_enter()
     nnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>
     inoremap <silent><RightMouse> <Esc>:call GuiShowContextMenu()<CR>
     vnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>gv
-  else
+    set guicursor=
+    set mouse=a
+  endfunction
+  au myau UiEnter * call s:nvim_gui_enter()
+else
+  "set clipboard=exclude:.*    "some version setup clipboard make startup slow
+  if g:is_gui
     set guioptions -=T
     set guioptions -=m
+    set mouse=a
+    if g:is_win
+      set guifont=Consolas:h11
+    endif
     autocmd myau GUIEnter * simalt ~x
-    set guifont=Consolas:h11
   endif
-  set mouse=a
-else
-  set mouse=nv
 endif
 
+" tmux
 if g:is_tmux
   " tmux knows the extended mouse mode
   if g:is_nvim ==# 0
@@ -155,9 +154,6 @@ endif
 set t_vb=
 set visualbell
 set noerrorbells
-
-autocmd myau VimEnter * set shellredir=>
-set ttyfast     " when will this cause problems?
 
 " encoding
 let $LANG='en' "zh-cn gina work error
@@ -202,15 +198,14 @@ set scrolloff=3
 set hidden
 set noautochdir
 set updatetime=300
+
+" autoread
 set autoread
 augroup checktime
   au!
-  if !g:is_gui
-    "silent! necessary otherwise throws errors when using command line window.
-    autocmd FocusGained,BufEnter        * silent! checktime
-    autocmd CursorHold                  * silent! checktime
-    autocmd CursorHoldI                 * silent! checktime
-  endif
+  autocmd FocusGained,BufEnter        * silent! checktime
+  autocmd CursorHold                  * silent! checktime
+  autocmd CursorHoldI                 * silent! checktime
 augroup END
 
 " backup
@@ -617,7 +612,6 @@ else
 endif
 
 if strlen(globpath(&rtp, 'colors/' . g:colorscheme . '.vim')) ==# 0
-  echom 'not found ' . g:colorscheme . ', use default'
   let g:colorscheme = 'default'
   let g:background=get(g:, 'background', 'light')
   let g:lightline.colorscheme=get(g:, 'lightline.colorscheme', 'wombat')

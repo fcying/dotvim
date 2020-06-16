@@ -16,6 +16,7 @@ export EDITOR="$VISUAL"
 
 alias vim='nvim'
 alias vi='vim'
+alias nvim-qt="NVIM_GUI=1 nvim-qt"
 
 # Set the default Less options.
 # Mouse-wheel scrolling has been disabled by -X (disable screen clearing).

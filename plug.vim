@@ -204,14 +204,14 @@ nnoremap <leader>pc :PlugClean<CR>
 " gen tags
 nnoremap <silent> tg :GenClangConf<CR>:Leaderf gtags --update<CR>
 
-if (FindPlug('vim-indent-guides') != -1)
+if (FindPlug('vim-indent-guides') != -1) "{{{
   let g:indent_guides_enable_on_vim_startup=0
   let g:indent_guides_start_level=2
   let g:indent_guides_guide_size=1
   :nmap <silent> <Leader>i <Plug>IndentGuidesToggle
-endif
+endif "}}}
 
-if (FindPlug('asyncrun.vim') != -1)
+if (FindPlug('asyncrun.vim') != -1) "{{{
   let g:asyncrun_bell = 1
   let g:asyncrun_silent = get(g:, 'asyncrun_silent', '0')
   "let g:asyncrun_open = 6
@@ -224,23 +224,23 @@ if (FindPlug('asyncrun.vim') != -1)
       call ShowQuickfix()
     endif
   endfunction
-endif
+endif "}}}
 
-if (FindPlug('vim-preview') != -1)
+if (FindPlug('vim-preview') != -1) "{{{
   autocmd myau FileType qf nnoremap <silent><buffer> p :PreviewQuickfix<cr>
   autocmd myau FileType qf nnoremap <silent><buffer> P :PreviewClose<cr>
-endif
+endif "}}}
 
-if (FindPlug('lightline.vim') != -1)
+if (FindPlug('lightline.vim') != -1) "{{{
   set showtabline=1
   let g:lightline = {}
   let g:lightline.enable = {
         \ 'statusline': 1,
         \ 'tabline': 1
         \ }
-endif
+endif "}}}
 
-if (FindPlug('vim-expand-region') != -1)
+if (FindPlug('vim-expand-region') != -1) "{{{
   xmap v <Plug>(expand_region_expand)
   xmap V <Plug>(expand_region_shrink)
   let g:expand_region_text_objects = {
@@ -256,9 +256,9 @@ if (FindPlug('vim-expand-region') != -1)
         \ 'ip'  :0,
         \ 'ie'  :0,
         \ }
-endif
+endif "}}}
 
-if (FindPlug('gina.vim') != -1)
+if (FindPlug('gina.vim') != -1) "{{{
   nnoremap <silent> <leader>gs     :Gina status<CR>
   nnoremap <silent> <leader>gr     :Gina branch<CR>
   nnoremap <silent> <leader>gU     :Gina reset -q %<CR>
@@ -275,13 +275,13 @@ if (FindPlug('gina.vim') != -1)
   nnoremap <silent> <leader>glo    :Gina log<CR>
   nnoremap <silent> <leader>gb     :Gina blame<CR>
   nnoremap <silent> <leader>gm     :Gina compare<CR><C-w>L
-endif
+endif "}}}
 
-if (FindPlug('vim-fugitive') != -1)
+if (FindPlug('vim-fugitive') != -1) "{{{
   autocmd myau FileType fugitive* nmap <buffer> q gq
-endif
+endif "}}}
 
-if (FindPlug('LanguageClient-neovim') != -1)
+if (FindPlug('LanguageClient-neovim') != -1) "{{{
   " Required for operations modifying multiple buffers like rename.
   set hidden
   nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
@@ -316,9 +316,9 @@ if (FindPlug('LanguageClient-neovim') != -1)
         \ 'dockerfile': ['docker-langserver --stdio'],
         \ }
 
-endif
+endif "}}}
 
-if (FindPlug('vim-lsp') != -1)
+if (FindPlug('vim-lsp') != -1) "{{{
   let g:lsp_diagnostics_enabled = 0
   nnoremap <silent> <leader>ld :LspDefinition<CR>
   nnoremap <silent> <leader>lr :LspRename<CR>
@@ -329,7 +329,7 @@ if (FindPlug('vim-lsp') != -1)
   nnoremap <silent> <leader>lh :LspHover<CR>
   nnoremap <silent> <leader>ls :LspWorkspaceSymbol<CR>
   nnoremap <silent> <leader>lm :LspImplementation<CR>
-endif
+endif "}}}
 
 if (FindPlug('vim-lsp-settings') != -1) "{{{
   let g:lsp_settings_servers_dir = g:cache_dir . '/lsp_settings'
@@ -338,7 +338,7 @@ if (FindPlug('vim-lsp-settings') != -1) "{{{
 endif "}}}
 
 
-if (FindPlug('ale') != -1)
+if (FindPlug('ale') != -1) "{{{
   nmap <silent> <leader>aj :ALENext<cr>
   nmap <silent> <leader>ak :ALEPrevious<cr>
 
@@ -347,15 +347,15 @@ if (FindPlug('ale') != -1)
   let g:ale_linters = {
         \   'c': [],
         \}
-endif
+endif "}}}
 
-if (FindPlug('ultisnips') != -1)
+if (FindPlug('ultisnips') != -1) "{{{
   "let g:UltiSnipsExpandTrigger = "<Plug>(ultisnips_expand)"
   let g:UltiSnipsExpandTrigger = '<c-j>'
   let g:UltiSnipsJumpForwardTrigger = '<c-j>'
   let g:UltiSnipsJumpBackwardTrigger = '<c-k>'
   let g:UltiSnipsRemoveSelectModeMappings = 0
-endif
+endif "}}}
 
 if (FindPlug('asyncomplete.vim') != -1) "{{{
   let g:asyncomplete_remove_duplicates = 1
@@ -553,16 +553,16 @@ if (FindPlug('completor.vim') != -1) "{{{
   let g:completor_filetype_map.rust = {'ft': 'lsp', 'cmd': 'rls'}
 endif "}}}
 
-if (FindPlug('vim-visual-multi') != -1)
+if (FindPlug('vim-visual-multi') != -1) "{{{
   let g:VM_no_meta_mappings = 1
   let g:VM_maps = {}
   let g:VM_maps['Find Under']         = '<C-n>'
   let g:VM_maps['Find Subword Under'] = '<C-n>'
   let g:VM_cmdheight = 1
   "let g:VM_manual_infoline = 1
-endif
+endif "}}}
 
-if (FindPlug('nerdtree') != -1)
+if (FindPlug('nerdtree') != -1) "{{{
   nmap <leader>nt :NERDTreeToggle<cr>
   nmap <leader>nf :NERDTreeFind<cr>
   nmap <F12> :NERDTreeToggle<cr>
@@ -574,14 +574,14 @@ if (FindPlug('nerdtree') != -1)
   let g:NERDTreeShowBookmarks=1
   let g:NERDTreeShowLineNumbers=1
   let g:NERDTreeShowHidden=1
-endif
+endif "}}}
 
-if (FindPlug('vim-dirvish') != -1)
+if (FindPlug('vim-dirvish') != -1) "{{{
   let g:dirvish_mode = 1
   let g:dirvish_relative_paths = 0
-endif
+endif "}}}
 
-if (FindPlug('ctrlsf.vim') != -1)
+if (FindPlug('ctrlsf.vim') != -1) "{{{
   "let g:ctrlsf_debug_mode = 1
   "redir! > ctrlsf.log
   let g:ctrlsf_ackprg = 'rg'
@@ -613,15 +613,15 @@ if (FindPlug('ctrlsf.vim') != -1)
     nmap <buffer> <c-j> np
     nmap <buffer> <c-k> Np
   endfunction
-endif
+endif "}}}
 
-if (FindPlug('vim-session') != -1)
+if (FindPlug('vim-session') != -1) "{{{
   let g:session_autosave = 'no'
   let g:session_autoload = 'no'
   let g:session_directory = g:cache_dir . '/sessions'
-endif
+endif "}}}
 
-if (FindPlug('LeaderF') != -1)
+if (FindPlug('LeaderF') != -1) "{{{
   let g:Lf_ShowDevIcons = 0
   let g:Lf_ShowHidden = 1
   let g:Lf_HideHelp = 1
@@ -734,13 +734,13 @@ if (FindPlug('LeaderF') != -1)
   "noremap to :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
   noremap tn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
   noremap tp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
-endif
+endif "}}}
 
-if (FindPlug('vim-choosewin') != -1)
+if (FindPlug('vim-choosewin') != -1) "{{{
   nmap = <Plug>(choosewin)
-endif
+endif "}}}
 
-if (FindPlug('vim-bookmarks') != -1)
+if (FindPlug('vim-bookmarks') != -1) "{{{
   nmap <Leader>m <Plug>BookmarkToggle
   nmap <Leader>mi <Plug>BookmarkAnnotate
   nmap <Leader>ma <Plug>BookmarkShowAll
@@ -748,9 +748,9 @@ if (FindPlug('vim-bookmarks') != -1)
   nmap <Leader>mk <Plug>BookmarkPrev
   nmap <Leader>mc <Plug>BookmarkClear
   nmap <Leader>mx <Plug>BookmarkClearAll
-endif
+endif "}}}
 
-if (FindPlug('vim-ref') != -1)
+if (FindPlug('vim-ref') != -1) "{{{
   let g:ref_source_webdict_sites = {
         \   'je': {
         \     'url': 'http://dictionary.infoseek.ne.jp/jeword/%s',
@@ -785,14 +785,14 @@ if (FindPlug('vim-ref') != -1)
   nnoremap <Leader>rc :<C-u>Ref webdict cn<Space>
   nnoremap <Leader>rw :<C-u>Ref webdict wikipedia:en<Space>
   nnoremap <Leader>rb :<C-u>Ref webdict bing<Space>
-endif
+endif "}}}
 
-if (FindPlug('fencview') != -1)
+if (FindPlug('fencview') != -1) "{{{
   let g:fencview_autodetect = 1
   let g:fencview_checklines = 10
-endif
+endif "}}}
 
-if (FindPlug('nerdcommenter') != -1)
+if (FindPlug('nerdcommenter') != -1) "{{{
   let g:NERDCreateDefaultMappings = 0
   let g:NERDSpaceDelims = 0
   "let g:NERDRemoveExtraSpaces = 0
@@ -820,7 +820,7 @@ if (FindPlug('nerdcommenter') != -1)
   vmap <leader>gi <plug>NERDCommenterInvert
   nmap <leader>gs <plug>NERDCommenterSexy
   vmap <leader>gs <plug>NERDCommenterSexy
-endif
+endif "}}}
 
 if (FindPlug('tagbar') != -1) "{{{
   nnoremap <silent><Leader>tt :TagbarToggle<CR>
@@ -828,13 +828,20 @@ if (FindPlug('tagbar') != -1) "{{{
   let g:tagbar_left=1
   let g:tagbar_width=32
   let g:tagbar_compact=1
+  let g:tagbar_type_vim = {
+        \ 'ctagstype' : 'vim',
+        \ 'kinds' : [
+        \ 'p:plugin_setting',
+        \ 'f:functions',
+        \ ]
+        \ }
 endif "}}}
 
-if (FindPlug('vim-bbye') != -1)
+if (FindPlug('vim-bbye') != -1) "{{{
   :nnoremap <Leader>q :Bdelete<CR>
-endif
+endif "}}}
 
-if (FindPlug('vim-easymotion') != -1)
+if (FindPlug('vim-easymotion') != -1) "{{{
   let g:EasyMotion_smartcase = 0
   let g:EasyMotion_do_mapping = 0   " Disable default mappings
   " move to {char}
@@ -845,37 +852,39 @@ if (FindPlug('vim-easymotion') != -1)
   nmap <Leader>L <Plug>(easymotion-overwin-line)
   " Move to word
   nmap <Leader>w <Plug>(easymotion-overwin-w)
-endif
+endif "}}}
 
-if (FindPlug('vim-fswitch') != -1)
+if (FindPlug('vim-fswitch') != -1) "{{{
   nnoremap <silent> <Leader>h <ESC>:FSHere<CR>
-endif
+endif "}}}
 
-if (FindPlug('emmet-vim') != -1)
+if (FindPlug('emmet-vim') != -1) "{{{
   let g:user_emmet_install_global = 0
   autocmd myau FileType html,css EmmetInstall
-endif
+endif "}}}
 
-if (FindPlug('vim-template') != -1)
+if (FindPlug('vim-template') != -1) "{{{
   nnoremap <silent> <Leader>th :TemplateHere<CR>
   nnoremap <silent> <Leader>tf :execute 'Template *.' . &filetype<CR>
   let g:templates_no_autocmd = 1
   exe 'let g:templates_directory = [''' . g:etc_dir . '/template'']'
   let g:user = get(g:, 'user', 'fcying')
   let g:email = get(g:, 'email', 'fcying@gmail.com')
-endif
+endif "}}}
 
-if (FindPlug('any-jump.vim') != -1)
+if (FindPlug('any-jump.vim') != -1) "{{{
   let g:any_jump_disable_default_keybindings = 0
-endif
+endif "}}}
 
-if (FindPlug('gen_clang_conf.vim') != -1)
+if (FindPlug('gen_clang_conf.vim') != -1) "{{{
   " compile_flags.txt, .ccls
   let g:gen_clang_conf#clang_conf_name = get(g:, 'gen_clang_conf#clang_conf_name', 'compile_flags.txt')
-endif
+endif "}}}
 
-if (FindPlug('auto.pairs') != -1)
+if (FindPlug('auto.pairs') != -1) "{{{
   autocmd myau FileType markdown let b:AutoPairsSingleQuoteBalanceCheck = 0
-endif
+endif "}}}
 
 "}}}
+
+

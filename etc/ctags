@@ -17,3 +17,5 @@
 --exclude=public
 --exclude=lib
 --exclude=libs
+
+--regex-vim=/.*FindPlug\('(.*)'.*\{\{\{/\1/p,plugin_setting/

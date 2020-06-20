@@ -641,10 +641,6 @@ if (FindPlug('LeaderF') != -1) "{{{
   let g:Lf_PreviewInPopup = 1
   "let g:Lf_WindowPosition = 'popup'
 
-  " default gruvbox_material
-  let g:Lf_StlColorscheme = 'default'
-  let g:Lf_PopupColorscheme = 'gruvbox_material'
-
   let g:Lf_CommandMap = {'<F5>': ['<C-L>']}
   let g:Lf_NormalMap = {
         \ '_':        [['<C-j>', 'j'],

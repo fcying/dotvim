@@ -231,7 +231,9 @@ set wildmenu
 set wildmode=longest:full,full
 set splitright
 set splitbelow
-set lazyredraw
+if &term !=# "ansi"
+  set lazyredraw  "vim-plug scripts update error: Vim: Error reading input, exiting
+endif
 set listchars=tab:\|\ ,trail:.,extends:>,precedes:<
 set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
 if has('patch-8.1.1564')

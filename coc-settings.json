@@ -23,7 +23,7 @@
   "clangd.enabled": true,
   "clangd.disableDiagnostics": true,
   "clangd.path": "clangd",
-  "clangd.snippetSupport": false,
+  "clangd.disableSnippetCompletion": true,
   "clangd.arguments": ["--background-index"],
   "go.enable": true,
   "go.goplsOptions": {

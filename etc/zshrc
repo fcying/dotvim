@@ -112,15 +112,11 @@ function soft_update() {
 EOF
     popd
 
-    pushd ~/.tmux/tmux-resurrect > /dev/null && git pull && popd
+    tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/update_plugins all
 
     if [ -f "$HOME/bin/z.lua" ]; then
         pushd ~/bin && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd
     fi
-
-    #if [ -d "$HOME/.pyenv" ]; then
-    #    pushd ~/.pyenv && git pull && popd
-    #fi
 }
 
 ### zinit
@@ -196,15 +192,12 @@ function z_dirstack(){
 }
 alias d=' z_dirstack'
 
-# pyenv
-#export PYENV_ROOT="$HOME/.pyenv"
-#export PYTHON_CONFIGURE_OPTS="--enable-shared"
-#alias pyenv_init='git clone https://github.com/pyenv/pyenv.git ~/.pyenv --depth 1'
-
 # tmux
-if [ ! -d "$HOME/.tmux/tmux-resurrect" ]; then
-    mkdir -p $HOME/.tmux
-    git clone https://github.com/fcying/tmux-resurrect $HOME/.tmux/tmux-resurrect --depth=1
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+    mkdir -p $HOME/.tmux/plugins && pushd $_
+    git clone https://github.com/tmux-plugins/tpm --depth 1
+    popd
+    tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/install_plugins
 fi
 
 # linuxbrew

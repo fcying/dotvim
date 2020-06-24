@@ -137,12 +137,6 @@ export USE_CCACHE=1
 # pyenv
 #export PYENV_ROOT="$HOME/.pyenv"
 
-# tmux
-if [ ! -d "$HOME/.tmux/tmux-resurrect" ]; then
-    mkdir -p "$HOME/.tmux"
-    git clone https://github.com/fcying/tmux-resurrect "$HOME/.tmux/tmux-resurrect" --depth=1
-fi
-
 # fzf
 [ ! -d ~/.fzf ] && {
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf

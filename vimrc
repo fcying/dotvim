@@ -257,7 +257,7 @@ set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 autocmd myau FileType go setlocal noexpandtab
-autocmd myau FileType vim,json,yaml,toml,dosbatch
+autocmd myau FileType vim,json,jsonc,yaml,toml,dosbatch
       \ setlocal shiftwidth=2
       \ softtabstop=2
       \ tabstop=2
@@ -560,6 +560,7 @@ augroup END
 
 " set filetype
 autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
+autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
 
 " completion
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"

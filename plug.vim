@@ -1,6 +1,9 @@
 " ncm2 asyncomplete coc ycm completor
 let g:complete_func = get(g:, 'complete_func', 'coc')
 
+" for spacevim plugin
+let g:spacevim_data_dir = g:config_dir . '/.cache/spacevim'
+
 
 " ============================================================================
 " plugin {{{
@@ -58,6 +61,7 @@ Plug 'aperezdc/vim-template', {'on':'TemplateHere'}
 Plug 'Vimjas/vim-python-pep8-indent', {'for':'python'}
 Plug 'cespare/vim-toml'
 Plug 'peterhoeg/vim-qml'
+Plug 'neoclide/jsonc.vim'
 "Plug 'ekalinin/Dockerfile.vim'
 Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
 Plug 'plasticboy/vim-markdown', {'for':'markdown'}
@@ -621,6 +625,10 @@ if (FindPlug('vim-session') != -1) "{{{
   let g:session_directory = g:cache_dir . '/sessions'
 endif "}}}
 
+if (FindPlug('FlyGrep.vim') != -1) "{{{
+  nnoremap f/ :<C-u>FlyGrep<cr>
+endif "}}}
+
 if (FindPlug('LeaderF') != -1) "{{{
   let g:Lf_ShowDevIcons = 0
   let g:Lf_ShowHidden = 1
@@ -717,7 +725,6 @@ if (FindPlug('LeaderF') != -1) "{{{
   nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c ")<CR>
   xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F %s", leaderf#Rg#visual())<CR>
   nnoremap fs :<C-u>CtrlSF
-  nnoremap f/ :<C-u>FlyGrep<cr>
   nnoremap fr :<C-U>Leaderf --recall<CR><TAB>
   nnoremap fi :exec "Leaderf file --regex --input " . <SID>StripInclude(getline("."))<CR>
   function! s:StripInclude(line)

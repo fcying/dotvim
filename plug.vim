@@ -44,6 +44,7 @@ Plug 'bogado/file-line'
 Plug 'tpope/vim-eunuch'
 Plug 'moll/vim-bbye', {'on':'Bdelete'}
 Plug 'itchyny/lightline.vim'
+Plug 'simnalamburt/vim-mundo'
 
 Plug 'tpope/vim-surround'
 Plug 'terryma/vim-expand-region'
@@ -54,7 +55,6 @@ Plug 'scrooloose/nerdtree', {'on':['NERDTree', 'NERDTreeFocus', 'NERDTreeToggle'
 "Plug 'justinmk/vim-dirvish'
 Plug 'scrooloose/nerdcommenter'
 Plug 'majutsushi/tagbar', {'on':'TagbarToggle'}
-Plug 'easymotion/vim-easymotion'
 "Plug 'Krasjet/auto.pairs'
 
 Plug 'aperezdc/vim-template', {'on':'TemplateHere'}
@@ -66,6 +66,11 @@ Plug 'neoclide/jsonc.vim'
 Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
 Plug 'plasticboy/vim-markdown', {'for':'markdown'}
 
+Plug 'easymotion/vim-easymotion'
+Plug 'dyng/ctrlsf.vim'
+if exists('*popup_menu') || g:is_nvim
+  Plug 'pechorin/any-jump.vim'
+endif
 function! InstallLeaderF(info) abort
   if a:info.status !=# 'unchanged' || a:info.force
     silent !echo "InstallLeaderF"
@@ -78,6 +83,7 @@ function! InstallLeaderF(info) abort
   endif
 endfunction
 Plug 'Yggdroot/LeaderF', {'do': function('InstallLeaderF')}
+Plug 'brooth/far.vim'
 Plug 'wsdjeg/FlyGrep.vim'
 
 Plug 'dstein64/vim-startuptime', {'on':'StartupTime'}
@@ -87,10 +93,6 @@ Plug 'derekwyatt/vim-fswitch'
 Plug 'nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}
 Plug 'xolox/vim-session'
 Plug 'xolox/vim-misc'
-Plug 'dyng/ctrlsf.vim'
-if exists('*popup_menu') || g:is_nvim
-  Plug 'pechorin/any-jump.vim'
-endif
 "Plug 'lambdalisue/gina.vim', {'on': 'Gina'}
 Plug 'tpope/vim-fugitive'
 
@@ -206,7 +208,8 @@ nnoremap <leader>pc :PlugClean<CR>
 " plugin settings {{{
 " ============================================================================
 " gen tags
-nnoremap <silent> tg :GenClangConf<CR>:Leaderf gtags --update<CR>
+nnoremap <silent> <leader>tg :GenClangConf<CR>:Leaderf gtags --update<CR>
+nnoremap <silent> <leader>tr :ClearClangConf<CR>:Leaderf gtags --remove<CR>y<CR>
 
 if (FindPlug('vim-indent-guides') != -1) "{{{
   let g:indent_guides_enable_on_vim_startup=0
@@ -629,6 +632,12 @@ if (FindPlug('FlyGrep.vim') != -1) "{{{
   nnoremap f/ :<C-u>FlyGrep<cr>
 endif "}}}
 
+if (FindPlug('far.vim') != -1) "{{{
+  let g:far#enable_undo = 1
+  let g:far#source = 'rg'
+  let g:far#ignore_files = [g:etc_dir . '/farignore']
+endif "}}}
+
 if (FindPlug('LeaderF') != -1) "{{{
   let g:Lf_ShowDevIcons = 0
   let g:Lf_ShowHidden = 1
@@ -643,7 +652,11 @@ if (FindPlug('LeaderF') != -1) "{{{
   let g:Lf_RootMarkers = ['.root', '.git', '.svn']
   let g:Lf_GtagsAutoGenerate = 0
   let g:Lf_GtagsStoreInRootMarker = 1
+  "let g:Lf_GtagsStoreInProject = 1
+  "let $GTAGSLABEL = 'native-pygments'
+  "let $GTAGSCONF = g:etc_dir . '/gtags.conf'
   let g:Lf_Gtagslabel = 'native-pygments'
+  "let g:Lf_Gtagslabel = 'ctags'
   let g:Lf_Gtagsconf = get(g:, 'Lf_Gtagsconf', g:etc_dir . '/gtags.conf')
 
   let g:Lf_PreviewInPopup = 1
@@ -693,6 +706,9 @@ if (FindPlug('LeaderF') != -1) "{{{
           \ '--glob=!GRTAGS',
           \ '--glob=!GPATH',
           \ '--glob=!tags',
+          \ '--glob=!.pyc',
+          \ '--glob=!.tmp',
+          \ '--glob=!.swp',
           \ '--iglob=!obj',
           \ '--iglob=!out',
           \ '--hidden'
@@ -718,7 +734,6 @@ if (FindPlug('LeaderF') != -1) "{{{
   nnoremap fb :<C-u>Leaderf buffer --fullPath<CR>
   nnoremap fo :<C-u>Leaderf function --fullPath<CR>
   nnoremap fm :<C-u>Leaderf mru --fullPath<CR>
-  nnoremap fh :<C-u>Leaderf searchHistory --fullPath<CR>
   nnoremap fl :<C-u>Leaderf line --fuzzy<CR>
   nnoremap ft :<C-u>Leaderf gtags --fuzzy<CR>
   nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c %s", expand("<cword>"))<CR>
@@ -726,11 +741,23 @@ if (FindPlug('LeaderF') != -1) "{{{
   xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F %s", leaderf#Rg#visual())<CR>
   nnoremap fs :<C-u>CtrlSF
   nnoremap fr :<C-U>Leaderf --recall<CR><TAB>
-  nnoremap fi :exec "Leaderf file --regex --input " . <SID>StripInclude(getline("."))<CR>
-  function! s:StripInclude(line)
+
+  nnoremap fi :exec "Leaderf file --fullPath --input " . <SID>strip_include(getline("."))<CR>
+  function! s:strip_include(line)
     let l:strip_include = substitute(a:line, '\v.*[\<"]([a-zA-Z0-9_/\.]+)[\>"]', '\1', 'g')
     return l:strip_include
   endfunction
+  nnoremap fh :exec "Leaderf file --input " . <SID>fswitch()<CR>
+  function! s:fswitch()
+    let l:filename = expand('%:t:r')
+    let l:extension = expand('%:e')
+    if l:extension ==# 'h'
+      return l:filename . '.c' . ' --fullPath'
+    elseif l:extension ==# 'c' || l:extension ==# 'cpp'
+      return l:filename . '.h' . ' --fullPath'
+    endif
+  endfunction
+
   "noremap <C-]> :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
   noremap tr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
   noremap td :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
@@ -740,7 +767,7 @@ if (FindPlug('LeaderF') != -1) "{{{
 endif "}}}
 
 if (FindPlug('vim-choosewin') != -1) "{{{
-  nmap = <Plug>(choosewin)
+  nmap - <Plug>(choosewin)
 endif "}}}
 
 if (FindPlug('vim-bookmarks') != -1) "{{{
@@ -835,6 +862,13 @@ if (FindPlug('tagbar') != -1) "{{{
         \ 'ctagstype' : 'vim',
         \ 'kinds' : [
         \ 'p:plugin_setting',
+        \ 'f:functions',
+        \ ]
+        \ }
+  let g:tagbar_type_sh = {
+        \ 'ctagstype' : 'sh',
+        \ 'kinds' : [
+        \ 'i:if_condition',
         \ 'f:functions',
         \ ]
         \ }

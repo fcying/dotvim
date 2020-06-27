@@ -63,7 +63,7 @@ export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
 typeset -gU cdpath fpath mailpath PATH path
 
 # Set the list of directories that Zsh searches for programs.
-export GO111MODULE=on
+export GO111MODULE=auto
 export GOPATH=$HOME/go
 export GOPROXY=https://goproxy.io
 export QT_DIR=${QT_DIR:-"$HOME/tool/Qt"}
@@ -275,13 +275,12 @@ setopt PROMPT_SUBST
 PROMPT='%F{green}%n@%m%f:%B%F{blue}%~%b%f %F{red}$(_git_prompt_info)%f%(!.#.$) '
 #RPROMPT='%F{blue}$(date +%H:%M:%S)'
 
-if [ ! -S ~/.ssh/ssh_auth_sock ] && [ -S "$SSH_AUTH_SOCK" ]; then
-    ln -sf $SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
-fi
-
 function precmd() {
-    if [ -n "${TMUX}" ]; then
-        eval "$(tmux show-environment -s)"
+    if [ -n "$TMUX" ] && [ -n "$SSH_AUTH_SOCK" ]; then
+        local new_sock=$(find /tmp/ssh-* -type s -readable 2>/dev/null | head -n 1)
+        if [ ! -z $new_sock ]; then
+            ln -sf $new_sock ~/.ssh/ssh_auth_sock
+        fi
     fi
 }
 

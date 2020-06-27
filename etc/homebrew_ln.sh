@@ -20,6 +20,7 @@ if [ -n "$HOMEBREW_PREFIX" ]; then
     linuxbrew_ln gtags
     linuxbrew_ln lua
     linuxbrew_ln nnn
+    linuxbrew_ln vifm
     linuxbrew_ln node
     linuxbrew_ln npm
     linuxbrew_ln nvim
@@ -34,4 +35,5 @@ if [ -n "$HOMEBREW_PREFIX" ]; then
     linuxbrew_ln vimdiff
     linuxbrew_ln w3m
     linuxbrew_ln zsh
+    linuxbrew_ln xclip
 fi

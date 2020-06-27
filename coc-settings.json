@@ -16,9 +16,11 @@
     "javascriptreact": ["javascript"],
     "typescript": ["javascript"]
   },
-  "vimlsp.diagnostic.enable": false,
+  "vimlsp.diagnostic.enable": true,
+  "vimlsp.indexes.count": 1,
+  "vimlsp.indexes.gap": 200,
   "python.jediEnabled": false,
-  "python.analysis.diagnosticEnabled": false,
+  "python.analysis.diagnosticEnabled": true,
   //https://github.com/clangd/clangd/releases
   "clangd.enabled": true,
   "clangd.disableDiagnostics": true,

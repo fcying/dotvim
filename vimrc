@@ -119,18 +119,20 @@ execute 'autocmd myau BufWritePost .pvimrc nested so ' . g:pvimrc_path
 
 " gui
 set mouse=nv
-set clipboard^=unnamed,unnamedplus
 if g:is_nvim
   function! s:nvim_gui_enter()
-    nnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>
-    inoremap <silent><RightMouse> <Esc>:call GuiShowContextMenu()<CR>
-    vnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>gv
+    call rpcnotify(0, "Gui", "Option", "Popupmenu", 0)
+    "nnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>
+    "inoremap <silent><RightMouse> <Esc>:call GuiShowContextMenu()<CR>
+    "vnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>gv
     set guicursor=
     set mouse=a
   endfunction
   au myau UiEnter * call s:nvim_gui_enter()
+  " some platform slow with xsel, need install xclip
+  set clipboard^=unnamed,unnamedplus
 else
-  "set clipboard=exclude:.*    "some version setup clipboard make startup slow
+  set clipboard=exclude:.*    "some platform setup clipboard make startup slow
   if g:is_gui
     set guioptions -=T
     set guioptions -=m
@@ -213,11 +215,7 @@ set nobackup
 set nowritebackup
 set undofile
 execute 'set undodir=' . g:cache_dir . '/undodir'
-if !isdirectory(g:cache_dir . '/undodir')
-  call mkdir(g:cache_dir . '/undodir', 'p')
-endif
 set noswapfile
-
 " display
 set cursorline
 set showmatch
@@ -250,6 +248,9 @@ set hlsearch
 set wrapscan    "search loop
 set ignorecase
 set smartcase
+if g:is_nvim
+  set inccommand=nosplit
+endif
 
 " tab shift
 set expandtab        "%retab
@@ -377,10 +378,10 @@ nnoremap <F6> :exec exists('syntax_on') ? 'syn off' : 'syn on'<CR>
 "nnoremap <leader>ws :w !sudo tee %<CR>
 
 " Wrapped lines goes down/up to next row, rather than next line in file
-nnoremap k gk
-nnoremap gk k
-nnoremap j gj
-nnoremap gj j
+"nnoremap k gk
+"nnoremap gk k
+"nnoremap j gj
+"nnoremap gj j
 
 xnoremap < <gv
 xnoremap > >gv|

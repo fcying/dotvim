@@ -24,5 +24,8 @@
 --glob=!GRTAGS
 --glob=!GPATH
 --glob=!tags
+--glob=!.pyc
+--glob=!.tmp
+--glob=!.swp
 --iglob=!obj
 --iglob=!out

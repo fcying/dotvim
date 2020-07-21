@@ -40,11 +40,14 @@ call plug#begin(expand(g:plug_dir))
 Plug 'junegunn/vim-plug'
 Plug 'mbbill/fencview'
 Plug 'adah1972/tellenc'
-Plug 'bogado/file-line'
+Plug 'wsdjeg/vim-fetch'
 Plug 'tpope/vim-eunuch'
 Plug 'moll/vim-bbye', {'on':'Bdelete'}
 Plug 'itchyny/lightline.vim'
 Plug 'simnalamburt/vim-mundo'
+Plug 'tpope/vim-apathy'
+Plug 'chrisbra/Colorizer'
+"Plug 'RRethy/vim-hexokinase', { 'do': 'make hexokinase' }
 
 Plug 'tpope/vim-surround'
 Plug 'terryma/vim-expand-region'
@@ -115,6 +118,12 @@ function! UpdateLsp() abort
   "silent !npm install -g typescript typescript-language-server
   "silent !npm install -g dockerfile-language-server-nodejs
   silent !pip3 install python-language-server --upgrade
+  silent !pip3 install jedi --upgrade
+  silent !mkdir -p ~/.npm
+  silent !cd ~/.npm; npm install dockerfile-language-server-nodejs
+  if g:has_go
+    GoGetTools
+  endif
 endfunction
 
 function! InstallLanguageClient(info) abort
@@ -159,11 +168,7 @@ if g:complete_func ==# 'ncm2'
 elseif g:complete_func ==# 'coc'
   function! InstallCoc(info) abort
     if a:info.status !=# 'unchanged' || a:info.force
-      silent !mkdir -p ~/.npm
-      silent !cd ~/.npm; npm install dockerfile-language-server-nodejs
-      if g:has_go
-        GoGetTools
-      endif
+      call UpdateLsp()
     endif
   endfunction
   Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': function('InstallCoc')}
@@ -434,16 +439,18 @@ endif "}}}
 
 if (FindPlug('coc.nvim') != -1) "{{{
   let g:coc_data_home = g:cache_dir . '/coc'
+  let $NVIM_COC_LOG_FILE=g:coc_data_home . '/log'
   let g:coc_config_home = g:config_dir
   "'coc-pairs', 'coc-syntax'
   let g:coc_global_extensions = ['coc-vimlsp', 'coc-json',
-        \ 'coc-dictionary', 'coc-syntax', 'coc-snippets',
+        \ 'coc-dictionary', 'coc-syntax',
         \ 'coc-rls', 'coc-python', 'coc-go',
         \ 'coc-clangd', 'coc-cmake',
         \ 'coc-yaml', 'coc-xml',
         \ 'coc-css', 'coc-html',
         \ 'coc-tsserver', 'coc-java',
         \ ]
+  call add(g:coc_global_extensions, 'coc-snippets')
 
   "if exists('*complete_info')
   "  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
@@ -650,7 +657,11 @@ if (FindPlug('LeaderF') != -1) "{{{
   let g:Lf_JumpToExistingWindow = 0
   let g:Lf_CacheDirectory = g:cache_dir
   let g:Lf_RootMarkers = ['.root', '.git', '.svn']
+  if g:is_win ==# 0
+    let g:Lf_Ctags = 'ctags 2>/dev/null'
+  endif
   let g:Lf_GtagsAutoGenerate = 0
+  let g:Lf_GtagsSource = 2
   let g:Lf_GtagsStoreInRootMarker = 1
   "let g:Lf_GtagsStoreInProject = 1
   "let $GTAGSLABEL = 'native-pygments'
@@ -714,21 +725,6 @@ if (FindPlug('LeaderF') != -1) "{{{
           \ '--hidden'
           \ ]
   endif
-
-  let g:Lf_GtagsSource = 2
-  function! s:lf_set_gtagsfiles_cmd()
-    let l:cmd=''
-    for p in g:Lf_RgConfig
-      let l:cmd = l:cmd . p . ' '
-    endfor
-    let g:Lf_GtagsfilesCmd = {
-          \ '.git': 'rg --no-messages --files ' . l:cmd,
-          \ '.hg': 'rg --no-messages --files ' . l:cmd,
-          \ 'default': 'rg --no-messages --files ' . l:cmd
-          \}
-  endfunction
-  au myau SourcePost .pvimrc call s:lf_set_gtagsfiles_cmd()
-  call s:lf_set_gtagsfiles_cmd()
 
   nnoremap ff :<C-u>Leaderf file --fullPath<CR>
   nnoremap fb :<C-u>Leaderf buffer --fullPath<CR>
@@ -916,12 +912,74 @@ endif "}}}
 if (FindPlug('gen_clang_conf.vim') != -1) "{{{
   " compile_flags.txt, .ccls
   let g:gen_clang_conf#clang_conf_name = get(g:, 'gen_clang_conf#clang_conf_name', 'compile_flags.txt')
+
+  if !exists('g:gen_clang_conf#ignore_dirs')
+    let g:gen_clang_conf#ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
+          \ 'cache', 'doc', 'docs']
+  endif
 endif "}}}
 
 if (FindPlug('auto.pairs') != -1) "{{{
   autocmd myau FileType markdown let b:AutoPairsSingleQuoteBalanceCheck = 0
 endif "}}}
 
+if (FindPlug('Colorizer') != -1) "{{{
+  nnoremap <silent> <leader>ch :call <SID>set_color_highlight()<CR>
+  function! s:set_color_highlight()
+    ColorHighlight!
+    au myau BufRead <buffer> :ColorHighlight!<CR>
+  endfunction
+endif "}}}
+
+if (FindPlug('vim-hexokinase') != -1) "{{{
+  "let g:Hexokinase_ftEnabled = []
+  let g:Hexokinase_termDisabled = 1
+  let g:Hexokinase_highlighters = ['backgroundfull']
+  let g:Hexokinase_refreshEvents = ['BufWrite', 'BufRead', 'TextChanged', 'InsertLeave']
+  let g:Hexokinase_palettes = [g:etc_dir . '/hexokinase.json']
+  nnoremap <silent> <leader>ch :HexokinaseTurnOn<CR>
+endif "}}}
+
 "}}}
 
 
+" auto update pvimrc var
+if !exists('g:custom_ignore')
+  let g:custom_ignore = {
+        \ 'dir': [],
+        \ 'file': [],
+        \}
+endif
+let g:b_Lf_MruFileExclude = deepcopy(g:Lf_MruFileExclude)
+let g:b_Lf_WildIgnore = deepcopy(g:Lf_WildIgnore)
+let g:b_Lf_RgConfig = deepcopy(g:Lf_RgConfig)
+let g:b_gen_clang_conf#ignore_dirs = deepcopy(g:gen_clang_conf#ignore_dirs)
+
+function! s:update_ignore()
+  let g:Lf_MruFileExclude = deepcopy(g:b_Lf_MruFileExclude)
+  let g:Lf_WildIgnore = deepcopy(g:b_Lf_WildIgnore)
+  let g:Lf_RgConfig = deepcopy(g:b_Lf_RgConfig)
+  let g:gen_clang_conf#ignore_dirs = deepcopy(g:b_gen_clang_conf#ignore_dirs)
+  for i in g:custom_ignore['file']
+    call add(g:Lf_MruFileExclude, i)
+    call add(g:Lf_WildIgnore['file'], i)
+    call add(g:Lf_RgConfig, '--glob=!' . i)
+  endfor
+  for i in g:custom_ignore['dir']
+    call add(g:Lf_WildIgnore['dir'], i)
+    call add(g:Lf_RgConfig, '--glob=!' . i)
+    call add(g:gen_clang_conf#ignore_dirs, i)
+  endfor
+
+  let l:cmd=''
+  for i in g:Lf_RgConfig
+    let l:cmd = l:cmd . i . ' '
+  endfor
+  let g:Lf_GtagsfilesCmd = {
+        \ '.git': 'rg --no-messages --files ' . l:cmd,
+        \ '.hg': 'rg --no-messages --files ' . l:cmd,
+        \ 'default': 'rg --no-messages --files ' . l:cmd
+        \}
+endfunction
+au myau SourcePost .pvimrc call s:update_ignore()
+call s:update_ignore()

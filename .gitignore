@@ -11,3 +11,5 @@
 /sessions
 *.zwc
 *vim_origin
+compile_flags.txt
+.ccls

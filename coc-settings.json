@@ -19,7 +19,7 @@
   "vimlsp.diagnostic.enable": true,
   "vimlsp.indexes.count": 1,
   "vimlsp.indexes.gap": 200,
-  "python.jediEnabled": false,
+  "python.jediEnabled": true,
   "python.analysis.diagnosticEnabled": true,
   //https://github.com/clangd/clangd/releases
   "clangd.enabled": true,

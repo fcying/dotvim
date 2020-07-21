@@ -129,8 +129,8 @@ if g:is_nvim
     set mouse=a
   endfunction
   au myau UiEnter * call s:nvim_gui_enter()
-  " some platform slow with xsel, need install xclip
-  set clipboard^=unnamed,unnamedplus
+  let $DISPLAY="" "some platform have DISPLAY make clipboard.vim slow
+  set clipboard+=unnamedplus
 else
   set clipboard=exclude:.*    "some platform setup clipboard make startup slow
   if g:is_gui
@@ -428,9 +428,12 @@ endif
 " Start new line
 inoremap <S-Return> <C-o>o
 
-" delete space, delete ^M
+" delete space
 nnoremap <leader>ds :%s/\s\+$//g<CR>:noh<CR>
+" delete ^M
 nnoremap <leader>dm :%s/\r$//g<CR>:noh<CR>
+" delete ansi escape codes
+nnoremap <leader>da :%s/\%x1b\[[0-9;]*m//g<CR>:noh<CR>
 
 " set working directory to the current file
 nnoremap <silent> <leader>cd :tcd %:p:h<CR>:pwd<CR>

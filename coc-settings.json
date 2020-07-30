@@ -27,6 +27,7 @@
   "clangd.path": "clangd",
   "clangd.disableSnippetCompletion": true,
   "clangd.arguments": ["--background-index"],
+  "java.completion.enabled": true,
   "go.enable": true,
   "go.goplsOptions": {
     "completeUnimported": true

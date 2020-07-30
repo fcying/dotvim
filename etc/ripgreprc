@@ -5,6 +5,7 @@
 --no-heading
 --no-column
 --follow
+--binary
 #-a
 #--no-messages
 #--max-filesize=10M

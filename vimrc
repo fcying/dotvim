@@ -129,7 +129,7 @@ if g:is_nvim
     set mouse=a
   endfunction
   au myau UiEnter * call s:nvim_gui_enter()
-  let $DISPLAY="" "some platform have DISPLAY make clipboard.vim slow
+  unlet $DISPLAY  "some platform have DISPLAY make clipboard.vim slow
   set clipboard+=unnamedplus
 else
   set clipboard=exclude:.*    "some platform setup clipboard make startup slow

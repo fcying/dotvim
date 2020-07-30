@@ -16,6 +16,7 @@ export EDITOR="$VISUAL"
 
 alias vim='nvim'
 alias vi='vim'
+alias vimdiff='nvim -d'
 alias nvim-qt="NVIM_GUI=1 nvim-qt"
 
 umask 027
@@ -38,19 +39,7 @@ stty -ixon
     export PATH=$PATH:/mnt/d/tool/scoop/shims:/mnt/c/Windows/System32
     # disable nice(5) failed
     unsetopt BG_NICE
-    # autoset dns
-    DNS=$(/mnt/c/Windows/System32/ipconfig.exe /all | grep -P "DNS Servers.*?([0-9]+\.){3}[0-9]+" | cut -d: -f2)
-    [[ -n $DNS ]] && echo "nameserver $DNS" > /etc/resolv.conf
-    echo "nameserver 114.114.114.114" >> /etc/resolv.conf
-    # docker
-    type docker-machine.exe >/dev/null 2>&1 && {
-        export DOCKER_TLS_VERIFY=1
-        export DOCKER_CERT_PATH=$HOME/tool/.docker/machine/machines/default    #ln from windows user folder
-        export DOCKER_HOST=${DOCKER_HOST:-"tcp://192.168.99.50:2376"}
-    }
-
     alias cmd='cmd.exe'
-    alias docker-machine='docker-machine.exe'
 }
 
 # screen-256color xterm-256color
@@ -274,8 +263,12 @@ function _git_prompt_info() {
     echo "$ZSH_GIT_PROMPT_PREFIX${ref#refs/heads/}$(_parse_git_dirty)$ZSH_GIT_PROMPT_SUFFIX"
 }
 setopt PROMPT_SUBST
-PROMPT='%F{green}%n@%m%f:%B%F{blue}%~%b%f %F{red}$(_git_prompt_info)%f%(!.#.$) '
-#RPROMPT='%F{blue}$(date +%H:%M:%S)'
+if [ -z "$CUSTOM_PROMPT" ]; then
+    PROMPT='%F{green}%n@%m%f:%B%F{blue}%~%b%f %F{red}$(_git_prompt_info)%f%(!.#.$) '
+    #RPROMPT='%F{blue}$(date +%H:%M:%S)'
+else
+    PROMPT=$CUSTOM_PROMPT
+fi
 
 function precmd() {
     if [ -n "$TMUX" ] && [ -n "$SSH_AUTH_SOCK" ]; then

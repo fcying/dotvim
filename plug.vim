@@ -88,6 +88,8 @@ endfunction
 Plug 'Yggdroot/LeaderF', {'do': function('InstallLeaderF')}
 Plug 'brooth/far.vim'
 Plug 'wsdjeg/FlyGrep.vim'
+"Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+"Plug 'junegunn/fzf.vim'
 
 Plug 'dstein64/vim-startuptime', {'on':'StartupTime'}
 Plug 'MattesGroeger/vim-bookmarks'
@@ -118,7 +120,7 @@ function! UpdateLsp() abort
   "silent !npm install -g typescript typescript-language-server
   "silent !npm install -g dockerfile-language-server-nodejs
   silent !pip3 install python-language-server --upgrade
-  silent !pip3 install jedi --upgrade
+  silent !pip3 install jedi pylint --upgrade
   silent !mkdir -p ~/.npm
   silent !cd ~/.npm; npm install dockerfile-language-server-nodejs
   if g:has_go
@@ -442,15 +444,18 @@ if (FindPlug('coc.nvim') != -1) "{{{
   let $NVIM_COC_LOG_FILE=g:coc_data_home . '/log'
   let g:coc_config_home = g:config_dir
   "'coc-pairs', 'coc-syntax'
-  let g:coc_global_extensions = ['coc-vimlsp', 'coc-json',
+  let g:coc_global_extensions = ['coc-vimlsp',
         \ 'coc-dictionary', 'coc-syntax',
-        \ 'coc-rls', 'coc-python', 'coc-go',
+        \ 'coc-rls', 'coc-go',
         \ 'coc-clangd', 'coc-cmake',
-        \ 'coc-yaml', 'coc-xml',
+        \ 'coc-yaml', 'coc-xml', 'coc-json',
         \ 'coc-css', 'coc-html',
-        \ 'coc-tsserver', 'coc-java',
+        \ 'coc-tsserver'
         \ ]
   call add(g:coc_global_extensions, 'coc-snippets')
+  "call add(g:coc_global_extensions, 'coc-python')
+  call add(g:coc_global_extensions, 'coc-pyright')
+  "call add(g:coc_global_extensions, 'coc-java')
 
   "if exists('*complete_info')
   "  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
@@ -666,12 +671,13 @@ if (FindPlug('LeaderF') != -1) "{{{
   "let g:Lf_GtagsStoreInProject = 1
   "let $GTAGSLABEL = 'native-pygments'
   "let $GTAGSCONF = g:etc_dir . '/gtags.conf'
-  let g:Lf_Gtagslabel = 'native-pygments'
-  "let g:Lf_Gtagslabel = 'ctags'
+  "let g:Lf_Gtagslabel = 'native-pygments'
+  let g:Lf_Gtagslabel = 'ctags'
   let g:Lf_Gtagsconf = get(g:, 'Lf_Gtagsconf', g:etc_dir . '/gtags.conf')
 
   let g:Lf_PreviewInPopup = 1
   "let g:Lf_WindowPosition = 'popup'
+  "let g:Lf_PreviewHorizontalPosition = 'right'
 
   let g:Lf_CommandMap = {'<F5>': ['<C-L>']}
   let g:Lf_NormalMap = {
@@ -689,7 +695,18 @@ if (FindPlug('LeaderF') != -1) "{{{
         \ 'Gtags':    [['<ESC>', ':exec g:Lf_py "gtagsExplManager.quit()"<CR>']],
         \ }
 
-  let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
+  let g:Lf_PreviewResult = {
+        \ 'File': 0,
+        \ 'Buffer': 0,
+        \ 'Mru': 0,
+        \ 'Tag': 0,
+        \ 'BufTag': 0,
+        \ 'Function': 0,
+        \ 'Line': 0,
+        \ 'Colorscheme': 0,
+        \ 'Rg': 0,
+        \ 'Gtags': 0
+        \}
 
   if !exists('g:Lf_MruFileExclude')
     let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll']
@@ -732,9 +749,9 @@ if (FindPlug('LeaderF') != -1) "{{{
   nnoremap fm :<C-u>Leaderf mru --fullPath<CR>
   nnoremap fl :<C-u>Leaderf line --fuzzy<CR>
   nnoremap ft :<C-u>Leaderf gtags --fuzzy<CR>
-  nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c %s", expand("<cword>"))<CR>
-  nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c ")<CR>
-  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F %s", leaderf#Rg#visual())<CR>
+  nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w %s", expand("<cword>"))<CR>
+  nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w ")<CR>
+  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w -F %s", leaderf#Rg#visual())<CR>
   nnoremap fs :<C-u>CtrlSF
   nnoremap fr :<C-U>Leaderf --recall<CR><TAB>
 
@@ -833,8 +850,8 @@ if (FindPlug('nerdcommenter') != -1) "{{{
         \ 'conf': { 'left': '#' },
         \ 'aptconf': { 'left': '//' },
         \ 'json': { 'left': '//' },
+        \ 'jsonc': { 'left': '//' },
         \ 'rc': { 'left': '#' },
-        \ '': { 'left': '#' },
         \ }
   nmap <A-/> <plug>NERDCommenterToggle
   vmap <A-/> <plug>NERDCommenterToggle gv

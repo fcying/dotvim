@@ -464,6 +464,7 @@ if (FindPlug('coc.nvim') != -1) "{{{
   "endif
 
   inoremap <silent><expr> <c-l> coc#refresh()
+  inoremap <silent> <c-h> <c-o><Plug>(coc-float-hide)
 
   " snippets
   imap <c-j> <Plug>(coc-snippets-expand)

@@ -748,7 +748,7 @@ if (FindPlug('LeaderF') != -1) "{{{
   nnoremap fb :<C-u>Leaderf buffer --fullPath<CR>
   nnoremap fo :<C-u>Leaderf function --fullPath<CR>
   nnoremap fm :<C-u>Leaderf mru --fullPath<CR>
-  nnoremap fl :<C-u>Leaderf line --fuzzy<CR>
+  nnoremap fl :<C-u>Leaderf line --regex<CR>
   nnoremap ft :<C-u>Leaderf gtags --fuzzy<CR>
   nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w %s", expand("<cword>"))<CR>
   nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w ")<CR>

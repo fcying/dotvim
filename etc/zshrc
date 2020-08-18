@@ -19,8 +19,6 @@ alias vi='vim'
 alias vimdiff='nvim -d'
 alias nvim-qt="NVIM_GUI=1 nvim-qt"
 
-umask 027
-
 # Set the default Less options.
 # Mouse-wheel scrolling has been disabled by -X (disable screen clearing).
 # Remove -X and -F (exit if the content fits on one screen) to enable it.
@@ -85,12 +83,22 @@ fpath=(
     $fpath
 )
 
+
 # key bindings
 bindkey -e  # Use emacs key bindings
 bindkey "\e[3~" delete-char
+
 # for tig
 bindkey -- "\e[1~" beginning-of-line
 bindkey -- "\e[4~" end-of-line
+
+# Enable Ctrl-x-e to edit command line
+autoload -U edit-command-line
+# Emacs style
+zle -N edit-command-line
+bindkey '^xe' edit-command-line
+bindkey '^x^e' edit-command-line
+
 
 # soft_update
 function soft_update() {
@@ -272,7 +280,7 @@ fi
 
 function precmd() {
     if [ -n "$TMUX" ] && [ -n "$SSH_AUTH_SOCK" ]; then
-        local new_sock=$(find /tmp/ssh-* -type s -readable 2>/dev/null | head -n 1)
+        local new_sock=$(find /tmp/ssh-* -type s -readable 2>/dev/null | xargs ls -t | head -n 1)
         if [ ! -z $new_sock ]; then
             ln -sf $new_sock ~/.ssh/ssh_auth_sock
         fi

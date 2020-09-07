@@ -314,6 +314,21 @@ autoload -Uz +X bashcompinit && bashcompinit
 autoload -Uz select-word-style
 select-word-style bash
 
+fg() {
+    if [[ $# -eq 1 && $1 = - ]]; then
+        builtin fg %-
+    else
+        builtin fg %"$@"
+    fi
+}
+jobs() {
+    if [[ $# -eq 1 && $1 = "-p" ]]; then
+        builtin jobs -p | awk '{print $3}'
+    else
+        builtin jobs "$@"
+    fi
+}
+
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"

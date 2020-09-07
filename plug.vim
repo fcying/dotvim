@@ -44,6 +44,7 @@ Plug 'wsdjeg/vim-fetch'
 Plug 'tpope/vim-eunuch'
 Plug 'moll/vim-bbye', {'on':'Bdelete'}
 Plug 'itchyny/lightline.vim'
+Plug 'skywind3000/vim-quickui'
 Plug 'simnalamburt/vim-mundo'
 Plug 'tpope/vim-apathy'
 Plug 'chrisbra/Colorizer'
@@ -958,9 +959,54 @@ if (FindPlug('vim-hexokinase') != -1) "{{{
   nnoremap <silent> <leader>ch :HexokinaseTurnOn<CR>
 endif "}}}
 
+if (FindPlug('vim-quickui') != -1) "{{{
+  call quickui#menu#reset()
+
+  call quickui#menu#install('&File', [
+        \ [ "&New File\tCtrl+n", 'echo 0' ],
+        \ [ "&Open File\t(F3)", 'echo 1' ],
+        \ [ "&Close", 'echo 2' ],
+        \ [ "--", '' ],
+        \ [ "&Save\tCtrl+s", 'echo 3'],
+        \ [ "Save &As", 'echo 4' ],
+        \ [ "Save All", 'echo 5' ],
+        \ [ "--", '' ],
+        \ [ "E&xit\tAlt+x", 'echo 6' ],
+        \ ])
+
+  call quickui#menu#install('&Edit', [
+        \ [ '&Copy', 'echo 1', 'help 1' ],
+        \ [ '&Paste', 'echo 2', 'help 2' ],
+        \ [ '&Find', 'echo 3', 'help 3' ],
+        \ ])
+
+  call quickui#menu#install("&Option", [
+        \ ['Set &Spell %{&spell? "Off":"On"}', 'set spell!'],
+        \ ['Set &Cursor Line %{&cursorline? "Off":"On"}', 'set cursorline!'],
+        \ ['Set &Paste %{&paste? "Off":"On"}', 'set paste!'],
+        \ ])
+
+  call quickui#menu#install('H&elp', [
+        \ ["&Cheatsheet", 'help index', ''],
+        \ ['T&ips', 'help tips', ''],
+        \ ['--',''],
+        \ ["&Tutorial", 'help tutor', ''],
+        \ ['&Quick Reference', 'help quickref', ''],
+        \ ['&Summary', 'help summary', ''],
+        \ ], 10000)
+
+  let g:quickui_show_tip = 1
+
+  noremap <space><space> :call quickui#menu#open()<cr>
+endif "}}}
+
 "}}}
 
 
+
+" ============================================================================
+" pvimrc {{{
+" ============================================================================
 " auto update pvimrc var
 if !exists('g:custom_ignore')
   let g:custom_ignore = {

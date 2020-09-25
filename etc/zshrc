@@ -129,14 +129,14 @@ source "$ZINIT_DIR/bin/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
-zinit ice wait'0' lucid; zinit light caarlos0/zsh-mkc
+#zinit light Aloxaf/fzf-tab
 
 zinit ice wait'0' lucid; zinit light changyuheng/fz
 FZ_HISTORY_CD_CMD=_zlua
 
 zinit ice wait'0' lucid; zinit light zsh-users/zsh-history-substring-search
-bindkey '^P' history-substring-search-up
-bindkey '^N' history-substring-search-down
+bindkey -M emacs '^p' history-substring-search-up
+bindkey -M emacs '^n' history-substring-search-down
 
 zinit ice wait'0' lucid atload'_zsh_autosuggest_start'
 zinit light zsh-users/zsh-autosuggestions
@@ -157,7 +157,7 @@ function PluginFinish() {
     source $CONFIG_DIR/zsh_plugin.zsh
     type LoadAfter >/dev/null 2>&1 && LoadAfter
 }
-zinit ice wait'1' lucid atload'PluginFinish'
+zinit ice wait'0' lucid atload'PluginFinish'
 
 zinit load zdharma/null
 

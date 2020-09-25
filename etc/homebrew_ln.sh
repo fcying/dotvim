@@ -3,6 +3,12 @@
 # Copyright (C) 2019 fcying <fcying@gmail.com>
 #
 
+if [ -d "$HOME/.linuxbrew/bin" ]; then
+    HOMEBREW_PREFIX=$HOME/.linuxbrew
+elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
+    HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
+fi
+
 # linuxbrew
 function linuxbrew_ln() {
     bin_path=$HOMEBREW_PREFIX/bin/$1

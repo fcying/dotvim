@@ -186,21 +186,20 @@ elseif g:complete_func ==# 'asyncomplete'
   Plug 'prabirshrestha/asyncomplete-file.vim'
   Plug 'kyouryuukunn/asyncomplete-neoinclude.vim'
   Plug 'yami-beta/asyncomplete-omni.vim'
-  if g:is_win ==# 0
-    Plug 'wellle/tmux-complete.vim'
-  endif
   Plug 'prabirshrestha/asyncomplete-tags.vim'
   Plug 'prabirshrestha/asyncomplete-necosyntax.vim'
   Plug 'prabirshrestha/asyncomplete-necovim.vim'
 elseif g:complete_func ==# 'ycm'
-  Plug 'ycm-core/YouCompleteMe'
+  Plug 'ycm-core/YouCompleteMe', {'do': 'python3 install.py --all'}
 elseif g:complete_func ==# 'completor'
   Plug 'maralla/completor.vim'
   Plug 'kyouryuukunn/completor-necovim'
   Plug 'masawada/completor-dictionary'
   Plug 'SirVer/ultisnips'
   Plug 'maralla/completor-neosnippet'
-  "Plug 'ferreum/completor-tmux'  "let other complete error
+endif
+if g:is_win ==# 0
+  Plug 'wellle/tmux-complete.vim'
 endif
 
 call plug#end()
@@ -534,11 +533,13 @@ if (FindPlug('YouCompleteMe') != -1) "{{{
   let g:ycm_min_num_identifier_candidate_chars = 2
   let g:ycm_collect_identifiers_from_comments_and_strings = 1
   let g:ycm_complete_in_strings=1
-  let g:ycm_key_invoke_completion = '<c-z>'
+  let g:ycm_key_invoke_completion = '<c-l>'
 
   let g:ycm_semantic_triggers =  {
-        \ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
-        \ 'cs,lua,javascript': ['re!\w{2}'],
+        \ 'c,cpp': [ '->', '.', 're!\w{2}'],
+        \ 'python,java,go,rust,lua': ['.', 're!\w{2}'],
+        \ 'cs,javascript': ['re!\w{2}'],
+        \ 'sh': ['re!\w{2}'],
         \ }
 
 let g:ycm_filetype_whitelist = {
@@ -573,6 +574,10 @@ if (FindPlug('completor.vim') != -1) "{{{
   let g:completor_filetype_map.c = {'ft': 'lsp', 'cmd': 'clangd'}
   let g:completor_filetype_map.rust = {'ft': 'lsp', 'cmd': 'rls'}
 endif "}}}
+
+if (FindPlug('tmux-complete.vim') != -1) "{{{
+  let g:tmuxcomplete#trigger = 'omnifunc'
+endif
 
 if (FindPlug('vim-visual-multi') != -1) "{{{
   let g:VM_no_meta_mappings = 1

@@ -313,6 +313,9 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:
 setopt CASE_GLOB
 
 # Group matches and describe.
+zmodload -i zsh/complist
+bindkey -M menuselect '^n' expand-or-complete
+bindkey -M menuselect '^p' reverse-menu-complete
 zstyle ':completion:*:*:*:*:*' menu select
 zstyle ':completion:*:matches' group 'yes'
 zstyle ':completion:*:options' description 'yes'

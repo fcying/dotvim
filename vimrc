@@ -150,6 +150,9 @@ if g:is_tmux
   if g:is_nvim ==# 0
     set ttymouse=xterm2
   endif
+  set ttimeoutlen=30
+else
+  set ttimeoutlen=80
 endif
 
 " disable beep

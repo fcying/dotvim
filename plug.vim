@@ -8,7 +8,7 @@ let g:spacevim_data_dir = g:config_dir . '/.cache/spacevim'
 " ============================================================================
 " plugin {{{
 " ============================================================================
-let g:plug_dir = g:config_dir . '/plugged'
+let g:plug_dir = g:config_dir . '/.plugged'
 if filereadable(expand(g:plug_dir . '/vim-plug/plug.vim')) == 0
   if executable('git')
     if filereadable(expand(g:file_vimrc_local)) == 0
@@ -66,7 +66,6 @@ Plug 'Vimjas/vim-python-pep8-indent', {'for':'python'}
 Plug 'cespare/vim-toml'
 Plug 'peterhoeg/vim-qml'
 Plug 'neoclide/jsonc.vim'
-"Plug 'ekalinin/Dockerfile.vim'
 Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
 Plug 'plasticboy/vim-markdown', {'for':'markdown'}
 
@@ -118,8 +117,6 @@ Plug 'morhetz/gruvbox'
 function! UpdateLsp() abort
   "silent !rustup update
   "silent !rustup component add rls rust-analysis rust-src
-  "silent !npm install -g typescript typescript-language-server
-  "silent !npm install -g dockerfile-language-server-nodejs
   silent !pip3 install python-language-server --upgrade
   silent !pip3 install jedi pylint --upgrade
   silent !mkdir -p ~/.npm
@@ -448,9 +445,10 @@ if (FindPlug('coc.nvim') != -1) "{{{
         \ 'coc-dictionary', 'coc-syntax',
         \ 'coc-rls', 'coc-go',
         \ 'coc-clangd', 'coc-cmake',
-        \ 'coc-yaml', 'coc-xml', 'coc-json',
+        \ 'coc-yaml', 'coc-toml', 'coc-xml', 'coc-json',
         \ 'coc-css', 'coc-html',
-        \ 'coc-tsserver'
+        \ 'coc-tsserver', 'coc-docker',
+        \ 'coc-marketplace'
         \ ]
   call add(g:coc_global_extensions, 'coc-snippets')
   "call add(g:coc_global_extensions, 'coc-python')
@@ -487,6 +485,9 @@ if (FindPlug('coc.nvim') != -1) "{{{
 
   nmap <leader>rf <Plug>(coc-refactor)
   nmap <leader>rn <Plug>(coc-rename)
+
+  " switch source header
+  autocmd myau FileType c,cpp nnoremap <buffer> <Leader>h <ESC>:CocCommand clangd.switchSourceHeader<CR>
 
   nnoremap <silent> K :call <SID>show_documentation()<CR>
   function! s:show_documentation()
@@ -731,12 +732,12 @@ if (FindPlug('LeaderF') != -1) "{{{
           \ '--max-columns=300',
           \ '--glob=!.git',
           \ '--glob=!.svn',
-          \ '--glob=!.hg',
           \ '--glob=!.repo',
           \ '--glob=!.root',
           \ '--glob=!.ccache',
           \ '--glob=!.cache',
           \ '--glob=!.ccls-cache',
+          \ '--glob=!.clangd',
           \ '--glob=!GTAGS',
           \ '--glob=!GRTAGS',
           \ '--glob=!GPATH',
@@ -745,8 +746,7 @@ if (FindPlug('LeaderF') != -1) "{{{
           \ '--glob=!.tmp',
           \ '--glob=!.swp',
           \ '--iglob=!obj',
-          \ '--iglob=!out',
-          \ '--hidden'
+          \ '--iglob=!out'
           \ ]
   endif
 
@@ -756,6 +756,8 @@ if (FindPlug('LeaderF') != -1) "{{{
   nnoremap fm :<C-u>Leaderf mru --fullPath<CR>
   nnoremap fl :<C-u>Leaderf line --regex<CR>
   nnoremap ft :<C-u>Leaderf gtags --fuzzy<CR>
+  nnoremap fhc :<C-u>Leaderf cmdHistory --fuzzy<CR>
+  nnoremap fhs :<C-u>Leaderf searchHistory --fuzzy<CR>
   nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w %s", expand("<cword>"))<CR>
   nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w ")<CR>
   xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w -F %s", leaderf#Rg#visual())<CR>
@@ -766,16 +768,6 @@ if (FindPlug('LeaderF') != -1) "{{{
   function! s:strip_include(line)
     let l:strip_include = substitute(a:line, '\v.*[\<"]([a-zA-Z0-9_/\.]+)[\>"]', '\1', 'g')
     return l:strip_include
-  endfunction
-  nnoremap fh :exec "Leaderf file --input " . <SID>fswitch()<CR>
-  function! s:fswitch()
-    let l:filename = expand('%:t:r')
-    let l:extension = expand('%:e')
-    if l:extension ==# 'h'
-      return l:filename . '.c' . ' --fullPath'
-    elseif l:extension ==# 'c' || l:extension ==# 'cpp'
-      return l:filename . '.h' . ' --fullPath'
-    endif
   endfunction
 
   "noremap <C-]> :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
@@ -912,7 +904,7 @@ if (FindPlug('vim-easymotion') != -1) "{{{
 endif "}}}
 
 if (FindPlug('vim-fswitch') != -1) "{{{
-  nnoremap <silent> <Leader>h <ESC>:FSHere<CR>
+  nnoremap <Leader>h <ESC>:FSHere<CR>
 endif "}}}
 
 if (FindPlug('emmet-vim') != -1) "{{{
@@ -1013,18 +1005,27 @@ endif "}}}
 " pvimrc {{{
 " ============================================================================
 " auto update pvimrc var
-if !exists('g:custom_ignore')
-  let g:custom_ignore = {
-        \ 'dir': [],
-        \ 'file': [],
-        \}
-endif
+" init backup
 let g:b_Lf_MruFileExclude = deepcopy(g:Lf_MruFileExclude)
 let g:b_Lf_WildIgnore = deepcopy(g:Lf_WildIgnore)
 let g:b_Lf_RgConfig = deepcopy(g:Lf_RgConfig)
 let g:b_gen_clang_conf#ignore_dirs = deepcopy(g:gen_clang_conf#ignore_dirs)
 
 function! s:update_ignore()
+  " init var
+  if !exists('g:custom_ignore')
+    let g:custom_ignore = {}
+  endif
+  if !exists('g:custom_ignore["dir"]')
+    let g:custom_ignore['dir'] = []
+  endif
+  if !exists('g:custom_ignore["file"]')
+    let g:custom_ignore['file'] = []
+  endif
+  if !exists('g:custom_ignore["rg"]')
+    let g:custom_ignore['rg'] = []
+  endif
+
   let g:Lf_MruFileExclude = deepcopy(g:b_Lf_MruFileExclude)
   let g:Lf_WildIgnore = deepcopy(g:b_Lf_WildIgnore)
   let g:Lf_RgConfig = deepcopy(g:b_Lf_RgConfig)
@@ -1038,6 +1039,9 @@ function! s:update_ignore()
     call add(g:Lf_WildIgnore['dir'], i)
     call add(g:Lf_RgConfig, '--glob=!' . i)
     call add(g:gen_clang_conf#ignore_dirs, i)
+  endfor
+  for i in g:custom_ignore['rg']
+    call add(g:Lf_RgConfig, i)
   endfor
 
   let l:cmd=''

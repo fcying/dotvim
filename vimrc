@@ -391,6 +391,10 @@ xnoremap > >gv|
 nnoremap > >>_
 nnoremap < <<_
 
+" cmd history search
+cnoremap <expr> <c-n> pumvisible() ? "<c-n>" : "<down>"
+cnoremap <expr> <c-p> pumvisible() ? "<c-p>" : "<up>"
+
 " switch tab
 noremap <silent><leader>tc :tabnew<CR>
 noremap <silent><leader>tq :tabclose<CR>

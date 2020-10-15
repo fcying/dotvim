@@ -5,6 +5,7 @@
 /*.log
 /vim*/
 /plugged/
+/.plugged/
 /.netrwhist
 /autoload
 /ftplugin

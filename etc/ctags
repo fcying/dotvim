@@ -6,6 +6,7 @@
 --exclude=.ccache
 --exclude=.cache
 --exclude=.ccls-cache
+--exclude=.clangd
 --exclude=.so
 --exclude=.dll
 --exclude=.exe
@@ -27,10 +28,10 @@
 --exclude=[lL]ibs
 
 --langmap=vim:+(*vimrc*)
---regex-vim=/.*FindPlug\('(.*)'.*\{\{\{/\1/p,plugin_setting/
+--regex-vim=/(.*)\{\{\{/\1/s,setting/
 
 --langmap=sh:+.zsh(.zshrc*)
---regex-sh=/.*(if.*then).*\{\{\{/\1/i,if_condition/
+--regex-sh=/(.*)\{\{\{/\1/s,setting/
 
 --regex-html=/id="([A-Za-z0-9_-]+)"/\1/i,id,ids/
 --regex-html=/class="([A-Za-z0-9_-]+)"/\1/c,class,classes/

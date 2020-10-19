@@ -99,7 +99,7 @@ endif
 if !exists('g:plugs_order')
   let g:plugs_order = []
 endif
-function! FindPlug(plugname) abort
+function! HasPlug(plugname) abort
   return index(g:plugs_order, a:plugname)
 endfunction
 
@@ -109,23 +109,21 @@ endif
 
 
 nnoremap <silent> <leader>ev :execute 'e '  . g:file_vimrc<CR>
-nnoremap <silent> <leader>sv :execute 'so ' . g:file_vimrc<CR>
 nnoremap <silent> <leader>el :execute 'e '  . g:file_vimrc_local<CR>
 nnoremap <silent> <leader>ep :execute 'e '  . g:file_plug<CR>
 nnoremap <silent> <leader>ec :execute 'e '  . g:pvimrc_path<CR>
-nnoremap <silent> <leader>sc :execute 'so ' . g:pvimrc_path<CR>
 execute 'autocmd myau BufWritePost .pvimrc nested so ' . g:pvimrc_path
 "autocmd! bufwritepost _vimrc source $MYVIMRC
 
 " gui
 set mouse=nv
+set guicursor=
 if g:is_nvim
   function! s:nvim_gui_enter()
     call rpcnotify(0, "Gui", "Option", "Popupmenu", 0)
     "nnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>
     "inoremap <silent><RightMouse> <Esc>:call GuiShowContextMenu()<CR>
     "vnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>gv
-    set guicursor=
     set mouse=a
   endfunction
   au myau UiEnter * call s:nvim_gui_enter()
@@ -152,7 +150,9 @@ if g:is_tmux
   endif
   set ttimeoutlen=30
 else
-  set ttimeoutlen=80
+  if &ttimeoutlen > 80 || &ttimeoutlen <= 0
+    set ttimeoutlen=80
+  endif
 endif
 
 " disable beep
@@ -160,7 +160,7 @@ set t_vb=
 set visualbell
 set noerrorbells
 
-" encoding
+" encoding {{{
 let $LANG='en' "zh-cn gina work error
 set encoding=utf-8
 set fileencoding=utf-8
@@ -174,7 +174,7 @@ else
   set fileformats=unix,dos,mac
 endif
 
-" basic
+" basic {{{
 set autoindent
 set smartindent
 set cindent
@@ -204,7 +204,7 @@ set hidden
 set noautochdir
 set updatetime=300
 
-" autoread
+" autoread {{{
 set autoread
 augroup checktime
   au!
@@ -213,12 +213,13 @@ augroup checktime
   autocmd CursorHoldI                 * silent! checktime
 augroup END
 
-" backup
+" backup {{{
 set nobackup
 set nowritebackup
 set undofile
 execute 'set undodir=' . g:cache_dir . '/undodir'
 set noswapfile
+
 " display
 set cursorline
 set showmatch
@@ -244,7 +245,7 @@ else
   set signcolumn=auto
 endif
 
-" search
+" search {{{
 set magic
 set incsearch
 set hlsearch
@@ -255,7 +256,7 @@ if g:is_nvim
   set inccommand=nosplit
 endif
 
-" tab shift
+" tab shift {{{
 set expandtab        "%retab
 set tabstop=4
 set shiftwidth=4
@@ -267,7 +268,7 @@ autocmd myau FileType vim,json,jsonc,yaml,toml,dosbatch
       \ tabstop=2
       \ expandtab
 
-" quickfix
+" quickfix {{{
 if g:is_vim8
   set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
 else
@@ -308,7 +309,7 @@ if has('patch-8.1.0360')
   set diffopt+=internal,algorithm:patience
 endif
 
-" ignore
+" ignore {{{
 set suffixes=.bak,~,.o,.h,.info,.swp,.obj,.pyc,.pyo,.egg-info,.class
 set wildignore=*.o,*.obj,*~,*.exe,*.a,*.pdb,*.lib "stuff to ignore when tab completing
 set wildignore+=*.so,*.dll,*.swp,*.egg,*.jar,*.class,*.pyc,*.pyo,*.bin,*.dex
@@ -327,7 +328,7 @@ set wildignore+=*.msi,*.crx,*.deb,*.vfd,*.apk,*.ipa,*.bin,*.msu
 set wildignore+=*.gba,*.sfc,*.078,*.nds,*.smd,*.smc
 set wildignore+=*.linux2,*.win32,*.darwin,*.freebsd,*.linux,*.android
 
-" jump to the last position
+" jump to the last position {{{
 augroup vimStartup
   au!
   autocmd BufReadPost *
@@ -355,12 +356,13 @@ func! GetVisualSelection() abort
 endf
 
 
-" keymap
+" keymap {{{
 nnoremap <F2> :set number! number?<CR>
 nnoremap <F3> :set list! list?<CR>
 nnoremap <F4> :set wrap! wrap?<CR>
 
 set pastetoggle=<F5>
+"set pastetoggle=<leader>z
 " disbale paste mode when leaving insert mode
 autocmd myau InsertLeave * set nopaste
 " Automatically set paste mode in Vim when pasting in insert mode
@@ -391,13 +393,42 @@ xnoremap > >gv|
 nnoremap > >>_
 nnoremap < <<_
 
+" q --> Q
+nnoremap Q q
+nnoremap q <nop>
+
+" insert mode emacs
+inoremap <c-a> <home>
+inoremap <c-e> <end>
+
 " cmd history search
 cnoremap <expr> <c-n> pumvisible() ? "<c-n>" : "<down>"
 cnoremap <expr> <c-p> pumvisible() ? "<c-p>" : "<up>"
 
-" switch tab
-noremap <silent><leader>tc :tabnew<CR>
-noremap <silent><leader>tq :tabclose<CR>
+" tab
+function! s:tab_moveleft()
+	let l:tabnr = tabpagenr() - 2
+	if l:tabnr >= 0
+		exec 'tabmove '.l:tabnr
+	endif
+endfunc
+function! s:tab_moveright()
+	let l:tabnr = tabpagenr() + 1
+	if l:tabnr <= tabpagenr('$')
+		exec 'tabmove '.l:tabnr
+	endif
+endfunc
+command! -nargs=0 TabMoveRight call s:tab_moveright()
+command! -nargs=0 TabMoveLeft call s:tab_moveleft()
+noremap <silent> <leader>tc :tabnew<cr>
+noremap <silent> <leader>tq :tabclose<cr>
+noremap <silent> <leader>tn :tabnext<cr>
+noremap <silent> <leader>tp :tabprev<cr>
+noremap <S-l> gt
+noremap <S-h> gT
+noremap <silent> <leader>to :tabonly<cr>
+noremap <silent><s-tab> :tabnext<CR>
+inoremap <silent><s-tab> <ESC>:tabnext<CR>
 noremap <silent><leader>1 :tabn 1<cr>
 noremap <silent><leader>2 :tabn 2<cr>
 noremap <silent><leader>3 :tabn 3<cr>
@@ -408,8 +439,6 @@ noremap <silent><leader>7 :tabn 7<cr>
 noremap <silent><leader>8 :tabn 8<cr>
 noremap <silent><leader>9 :tabn 9<cr>
 noremap <silent><leader>0 :tabn 10<cr>
-noremap <silent><s-tab> :tabnext<CR>
-inoremap <silent><s-tab> <ESC>:tabnext<CR>
 
 " fast move
 cnoremap <c-h> <left>
@@ -443,7 +472,8 @@ nnoremap <leader>dm :%s/\r$//g<CR>:noh<CR>
 nnoremap <leader>da :%s/\%x1b\[[0-9;]*m//g<CR>:noh<CR>
 
 " set working directory to the current file
-nnoremap <silent> <leader>cd :tcd %:p:h<CR>:pwd<CR>
+nnoremap <silent> <leader>cdt :tcd %:p:h<CR>:pwd<CR>
+nnoremap <silent> <leader>cda :cd %:p:h<CR>:pwd<CR>
 
 " virtual mode search
 vnoremap <silent> * :<C-U>
@@ -615,24 +645,19 @@ if !exists('g:lightline')
   let g:lightline = {}
 endif
 
+let g:background=get(g:, 'background', 'light')
 if g:colorscheme ==# 'molokai'
-  let g:background=get(g:, 'background', 'dark')
+  let g:background='dark'
   let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'wombat')
-elseif g:colorscheme ==# 'solarized8'
-  let g:background=get(g:, 'background', 'light')
-  let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'solarized')
-elseif g:colorscheme ==# 'gruvbox'
-  let g:background=get(g:, 'background', 'light')
-  let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'gruvbox')
 else
-  let g:background=get(g:, 'background', 'light')
-  let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'wombat')
+  let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'solarized')
 endif
 
 if strlen(globpath(&rtp, 'colors/' . g:colorscheme . '.vim')) ==# 0
+  "echom "use default colorscheme"
   let g:colorscheme = 'default'
   let g:background=get(g:, 'background', 'light')
-  let g:lightline.colorscheme=get(g:, 'lightline.colorscheme', 'wombat')
+  let g:lightline.colorscheme=get(g:, 'lightline.colorscheme', 'solarized')
 endif
 
 if &term =~# '256color' && g:is_tmux
@@ -677,6 +702,6 @@ endif
 filetype plugin indent on
 syntax enable
 
-if (FindPlug('LeaderF') != -1)
+if (HasPlug('LeaderF') != -1)
   autocmd myau Syntax * hi Lf_hl_cursorline guifg=fg
 endif

@@ -973,6 +973,7 @@ if (HasPlug('vim-which-key') != -1) "{{{
   let g:which_key_map.c = { 'name' : '+QuickFix--cd--color' }
   let g:which_key_map.d = { 'name' : '+DeleteSth' }
   let g:which_key_map.e = { 'name' : '+EditSth' }
+  let g:which_key_map.e.v = { 'name' : '+vim config' }
   let g:which_key_map.g = { 'name' : '+Comment' }
   let g:which_key_map.n = { 'name' : '+NERDTree' }
   let g:which_key_map.p = { 'name' : '+Plug' }

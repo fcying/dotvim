@@ -86,9 +86,9 @@ if filereadable(g:file_vimrc_local)
 endif
 
 " find project vimrc
-let g:pvimrc_path = findfile('.pvimrc', g:scm_dir . '/.;')
+let g:pvimrc_path = findfile('.pvimrc', g:scm_dir . ';' . g:scm_dir . '..')
 if g:pvimrc_path !=# ''
-  exec 'source ' . g:pvimrc_path
+  exec 'sandbox source ' . g:pvimrc_path
   "echom g:pvimrc_path
 else
   let g:pvimrc_path = g:scm_dir . '/.pvimrc'
@@ -108,11 +108,12 @@ if filereadable(g:file_plug)
 endif
 
 
-nnoremap <silent> <leader>ev :execute 'e '  . g:file_vimrc<CR>
-nnoremap <silent> <leader>el :execute 'e '  . g:file_vimrc_local<CR>
-nnoremap <silent> <leader>ep :execute 'e '  . g:file_plug<CR>
-nnoremap <silent> <leader>ec :execute 'e '  . g:pvimrc_path<CR>
-execute 'autocmd myau BufWritePost .pvimrc nested so ' . g:pvimrc_path
+nnoremap <silent> <leader>evv :execute 'e '  . g:file_vimrc<CR>
+nnoremap <silent> <leader>evl :execute 'e '  . g:file_vimrc_local<CR>
+nnoremap <silent> <leader>evp :execute 'e '  . g:file_plug<CR>
+
+nnoremap <silent> <leader>ep  :execute 'e '  . g:pvimrc_path<CR>
+execute 'autocmd myau BufWritePost .pvimrc nested sandbox so ' . g:pvimrc_path
 "autocmd! bufwritepost _vimrc source $MYVIMRC
 
 " gui
@@ -183,7 +184,6 @@ set wrap
 set whichwrap+=<,>,[,],h,l
 set ttimeout
 set ttimeoutlen=50
-set iskeyword -=-
 set iskeyword -=.
 " align #
 set cinkeys-=0#

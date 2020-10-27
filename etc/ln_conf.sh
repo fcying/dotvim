@@ -24,7 +24,9 @@ echo "set nvim init.vim"
 ln -svf $PWD/../vimrc ~/.config/nvim/init.vim
 
 # windows
-#echo "source d:\tool\vim\vimrc" > $HOME\AppData\Local\nvim\init.vim
+#mkdir %userprofile%\AppData\Local\nvim
+#echo source d:\tool\vim\vimrc > %userprofile%\AppData\Local\nvim\init.vim
+#echo source d:\tool\vim\vimrc > %userprofile%\_vimrc   #use this doesn't load defaults.vim
 
 # npm
 #type npm >/dev/null 2>&1 && {
@@ -37,6 +39,4 @@ ln -svf $PWD/../vimrc ~/.config/nvim/init.vim
 #mkdir -p ~/.config/pip
 #rm -vf ~/.config/pip/pip.conf
 #ln -sfv $PWD/pip.conf ~/.config/pip
-
-# windows: $HOME\_vimrc   #use this doesn't load defaults.vim
 

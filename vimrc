@@ -111,6 +111,7 @@ endif
 nnoremap <silent> <leader>evv :execute 'e '  . g:file_vimrc<CR>
 nnoremap <silent> <leader>evl :execute 'e '  . g:file_vimrc_local<CR>
 nnoremap <silent> <leader>evp :execute 'e '  . g:file_plug<CR>
+nnoremap <silent> <leader>evz :execute 'e '  . g:etc_dir . '/zshrc'<CR>
 
 nnoremap <silent> <leader>ep  :execute 'e '  . g:pvimrc_path<CR>
 execute 'autocmd myau BufWritePost .pvimrc nested sandbox so ' . g:pvimrc_path
@@ -237,7 +238,6 @@ if &term !=# "ansi"
   set lazyredraw  "vim-plug scripts update error: Vim: Error reading input, exiting
 endif
 set listchars=tab:\|\ ,trail:.,extends:>,precedes:<
-set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
 if has('patch-8.1.1564')
   " Recently vim can merge signcolumn and number column into one
   set signcolumn=number
@@ -269,12 +269,13 @@ autocmd myau FileType vim,json,jsonc,yaml,toml,dosbatch
       \ expandtab
 
 " quickfix {{{
-if g:is_vim8
-  set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
-else
-  set cscopequickfix=s+,c+,d+,i+,t+,e+
-endif
+"if g:is_vim8
+"  set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
+"else
+"  set cscopequickfix=s+,c+,d+,i+,t+,e+
+"endif
 au myau FileType qf setlocal nonumber
+set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
 function! ShowQuickfix()
   let l:winnr = winnr()
   rightbelow copen
@@ -599,9 +600,10 @@ augroup go_lang
   "autocmd FileType go autocmd BufWritePre <buffer> GoSave
 augroup END
 
-" set filetype
+" set filetype {{{
 autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
 autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
+autocmd myau BufNewFile,BufRead .tasks setl filetype=conf
 
 " completion
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -621,8 +623,7 @@ autocmd myau BufReadPre * let f=getfsize(expand("<afile>")) | if f > g:LargeFile
 function! LargeFile()
   set binary
   " no syntax highlighting etc
-  set eventignore+=FileType
-  "syntax off
+  "set eventignore+=FileType
   " display message
   autocmd myau VimEnter *  echo "The file is larger than " . (g:LargeFile / 1024 / 1024) . " MB, so some options are changed (see .vimrc for details)."
 endfunction

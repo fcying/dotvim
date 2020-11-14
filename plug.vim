@@ -100,7 +100,10 @@ Plug 'xolox/vim-misc'
 Plug 'tpope/vim-fugitive'
 
 Plug 'skywind3000/vim-preview'
-Plug 'skywind3000/asyncrun.vim'
+Plug 'skywind3000/asyncrun.vim', {'on': ['AsyncRun', 'AsyncStop'] }
+"Plug 'skywind3000/asynctasks.vim', {'on': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] }
+Plug 'fcying/asynctasks.vim', {'on': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] }
+
 Plug 'fcying/gen_clang_conf.vim'
 Plug 'mattn/emmet-vim'
 Plug 'honza/vim-snippets'
@@ -231,9 +234,17 @@ if (HasPlug('asyncrun.vim') != -1) "{{{
       echo 'AsyncRun Success'
     else
       call ShowQuickfix()
+      silent cnext
     endif
   endfunction
 endif "}}}
+
+if (HasPlug('asynctasks.vim') != -1) "{{{
+  let g:asyncrun_rootmarks = ['.root', '.git', '.svn']
+  let g:asynctasks_config_name = ['.root/.tasks', '.git/.tasks', '.tasks']
+  let g:asynctasks_rtp_config = "asynctasks.ini"
+  nnoremap <leader>b :AsyncTask build<CR>
+endif
 
 if (HasPlug('vim-preview') != -1) "{{{
   autocmd myau FileType qf nnoremap <silent><buffer> p :PreviewQuickfix<cr>
@@ -736,7 +747,7 @@ if (HasPlug('LeaderF') != -1) "{{{
   nnoremap fb :<C-u>Leaderf buffer --fullPath<CR>
   nnoremap fo :<C-u>Leaderf function --fullPath<CR>
   nnoremap fm :<C-u>Leaderf mru --fullPath<CR>
-  nnoremap fl :<C-u>Leaderf line --regex<CR>
+  nnoremap fl :<C-u>Leaderf line --fuzzy<CR>
   nnoremap ft :<C-u>Leaderf gtags --fuzzy<CR>
   nnoremap fhc :<C-u>Leaderf cmdHistory --fuzzy<CR>
   nnoremap fhs :<C-u>Leaderf searchHistory --fuzzy<CR>
@@ -914,7 +925,7 @@ endif "}}}
 
 if (HasPlug('gen_clang_conf.vim') != -1) "{{{
   " compile_flags.txt, .ccls
-  let g:gen_clang_conf#clang_conf_name = get(g:, 'gen_clang_conf#clang_conf_name', 'compile_flags.txt')
+  let g:gen_clang_conf#conf_name = get(g:, 'gen_clang_conf#conf_name', 'compile_flags.txt')
 
   if !exists('g:gen_clang_conf#ignore_dirs')
     let g:gen_clang_conf#ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
@@ -1021,20 +1032,16 @@ if (HasPlug('vim-quickui') != -1) "{{{
         \ [ '&Find', 'echo 3', 'help 3' ],
         \ ])
 
+  silent! call quickui#menu#install('&Build', [
+        \ [ '&Build', 'AsyncTask build', 'build project' ],
+        \ ])
+
+
   silent! call quickui#menu#install("&Option", [
         \ ['Set &Spell %{&spell? "Off":"On"}', 'set spell!'],
         \ ['Set &Cursor Line %{&cursorline? "Off":"On"}', 'set cursorline!'],
         \ ['Set &Paste %{&paste? "Off":"On"}', 'set paste!'],
         \ ])
-
-  silent! call quickui#menu#install('H&elp', [
-        \ ["&Cheatsheet", 'help index', ''],
-        \ ['T&ips', 'help tips', ''],
-        \ ['--',''],
-        \ ["&Tutorial", 'help tutor', ''],
-        \ ['&Quick Reference', 'help quickref', ''],
-        \ ['&Summary', 'help summary', ''],
-        \ ], 10000)
 
   let g:quickui_show_tip = 1
 

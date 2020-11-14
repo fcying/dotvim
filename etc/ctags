@@ -30,7 +30,7 @@
 --langmap=vim:+(*vimrc*)
 --regex-vim=/(.*)\{\{\{/\1/s,setting/
 
---langmap=sh:+.zsh(.zshrc*)
+--langmap=sh:+.zsh(*zshrc*)
 --regex-sh=/(.*)\{\{\{/\1/s,setting/
 
 --regex-html=/id="([A-Za-z0-9_-]+)"/\1/i,id,ids/

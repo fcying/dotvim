@@ -6,16 +6,12 @@ fi
 
 CONFIG_DIR=${CONFIG_DIR:-"$HOME/.vim/etc"}
 
-#if [ -f "$CONFIG_DIR/color/solarized_light.sh" ]; then
-#    [ -n "$PS1" ] && bash $CONFIG_DIR/color/solarized_light.sh
-#fi
-
 export PAGER=${PAGER:-"less"}
 export VISUAL=${VISUAL:-"nvim"}
 export EDITOR="$VISUAL"
 
 alias vim='nvim'
-alias vi='vim'
+alias vi='nvim'
 alias vimdiff='nvim -d'
 alias nvim-qt="NVIM_GUI=1 nvim-qt"
 
@@ -29,29 +25,41 @@ if (( $#commands[(i)lesspipe(|.sh)] )); then
   export LESSOPEN="| /usr/bin/env $commands[(i)lesspipe(|.sh)] %s 2>&-"
 fi
 
-# disable terminal <c-s>
-stty -ixon
 
-# WSL (aka Bash for Windows) doesn't work well with BG_NICE
-[ -d "/mnt/c" ] && [[ "$(uname -a)" == *Microsoft* ]] && {
-    export PATH=$PATH:/mnt/d/tool/scoop/shims:/mnt/c/Windows/System32
-    # disable nice(5) failed
-    unsetopt BG_NICE
-    alias cmd='cmd.exe'
+# wsl2 {{{
+[ -d "/mnt/c" ] && [[ "$(uname -a)" == *microsoft* ]] && {
+    export SCOOP=${SCOOP:-"/mnt/d/tool/scoop"}
+    export PATH=$PATH:$SCOOP/shims
+    alias cmd='/mnt/c/Windows/System32/cmd.exe'
+    alias adb='$SCOOP/shims/adb.exe'
+    alias fastboot='$SCOOP/shims/fastboot.exe'
+
+    # https://github.com/rupor-github/wsl-ssh-agent#wsl-2-compatibility
+    if [ -z "$SSH_AUTH_SOCK" ]; then
+        export SSH_AUTH_SOCK=$HOME/.ssh/agent.sock
+        if [ $(ss -a | grep -c $SSH_AUTH_SOCK) -eq 0 ]; then
+            rm -f $SSH_AUTH_SOCK
+            ( setsid socat UNIX-LISTEN:$SSH_AUTH_SOCK,fork EXEC:"$HOME/sync/bin/npiperelay.exe -ei -s //./pipe/openssh-ssh-agent",nofork & ) >/dev/null 2>&1
+        elif [ ! -f "$SSH_AUTH_SOCK" ]; then
+            kill $(ps -ef | grep "[s]ocat.*$SSH_AUTH_SOCK" | awk '{print $2}') 2>/dev/null
+            ( setsid socat UNIX-LISTEN:$SSH_AUTH_SOCK,fork EXEC:"$HOME/sync/bin/npiperelay.exe -ei -s //./pipe/openssh-ssh-agent",nofork & ) >/dev/null 2>&1
+        fi
+    fi
 }
 
 # screen-256color xterm-256color
 #TERM=${ZSH_TERM:-"xterm-256color"}
 
-# zh_CN.UTF-8 en_US.UTF-8
+# LANG zh_CN.UTF-8 en_US.UTF-8 {{{
 export LANG=${ZSH_LANG:-"en_US.UTF-8"}
 export LC_ALL=$LANG
 export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
 
+
+# path {{{
 # Ensure path arrays do not contain duplicates.
 typeset -gU cdpath fpath mailpath PATH path
 
-# Set the list of directories that Zsh searches for programs.
 export GO111MODULE=auto
 export GOPATH=$HOME/go
 export GOPROXY=https://goproxy.io
@@ -84,7 +92,7 @@ fpath=(
 )
 
 
-# key bindings
+# key bindings {{{
 bindkey -e  # Use emacs key bindings
 bindkey "\e[3~" delete-char
 
@@ -100,25 +108,7 @@ bindkey '^xe' edit-command-line
 bindkey '^x^e' edit-command-line
 
 
-# soft_update
-function soft_update() {
-    zinit self-update
-    zinit update --all
-    zinit compile --all
-
-    pushd ~/.fzf > /dev/null && git pull && ./install <<EOF
-    y
-EOF
-    popd
-
-    tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/update_plugins all
-
-    if [ -f "$HOME/bin/z.lua" ]; then
-        pushd ~/bin && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd
-    fi
-}
-
-### zinit
+### zinit {{{
 ZINIT_DIR=$HOME/.zinit
 if [ ! -f "$ZINIT_DIR/bin/zinit.zsh" ]; then
     zinit_inited="true"
@@ -161,16 +151,36 @@ zinit ice wait'0' lucid atload'PluginFinish'
 
 zinit load zdharma/null
 
-# fzf
+
+# third party software {{{
+function soft_update() {
+    zinit self-update
+    zinit update --all
+    zinit compile --all
+
+    pushd ~/.fzf > /dev/null && git pull && ./install <<EOF
+    y
+EOF
+    popd
+
+    tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/update_plugins all
+
+    if [ -f "$HOME/bin/z.lua" ]; then
+        pushd ~/bin && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd
+    fi
+}
+
+# fzf {{{
 [ ! -d ~/.fzf ] && {
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     ~/.fzf/install <<EOF
     y
 EOF
+    ln -sf ~/.fzf/bin/fzf ~/bin/
 }
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# z.lua
+# z.lua {{{
 [ ! -f $HOME/bin/z.lua ] && {
     mkdir -p ~/bin
     pushd ~/bin > /dev/null && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd > /dev/null
@@ -191,7 +201,7 @@ function z_dirstack(){
 }
 alias d=' z_dirstack'
 
-# tmux
+# tmux {{{
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
     mkdir -p $HOME/.tmux/plugins && pushd $_
     git clone https://github.com/tmux-plugins/tpm --depth 1
@@ -199,7 +209,7 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
     tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/install_plugins
 fi
 
-# linuxbrew
+# linuxbrew {{{
 BREW_PREFIX=""
 if [ -d "$HOME/.linuxbrew/bin" ]; then
     BREW_PREFIX=$HOME/.linuxbrew
@@ -242,9 +252,21 @@ if [ ! -z "$BREW_PREFIX" ]; then
     }
 fi
 unset BREW_PREFIX
+alias install_brew='bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
+alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
+alias brew_update='brew update && brew upgrade && brew cleanup --prune 7; brew doctor'
+alias brew_install_ruby='brew vendor-install ruby'
+function brew_fix_ssl() {
+    sed -i '/^insecure$/d' ~/.curlrc
+    echo insecure >> ~/.curlrc
+    git config --global http.sslVerify false
+    HOMEBREW_CURLRC=1 brew reinstall openssl curl
+    sed -i '/^insecure$/d' ~/.curlrc
+    git config --global http.sslVerify true
+}
 
 
-# PROMPT
+# PROMPT {{{
 ZSH_HIDE_DIRTY=${ZSH_HIDE_DIRTY:-1}
 ZSH_GIT_PROMPT_PREFIX=${ZSH_GIT_PROMPT_PREFIX:-"‹"}
 ZSH_GIT_PROMPT_SUFFIX=${ZSH_GIT_PROMPT_SUFFIX:-"›"}
@@ -283,17 +305,22 @@ else
     PROMPT=$CUSTOM_PROMPT
 fi
 
+# SSH_AUTH_SOCK {{{
 function precmd() {
     if [ -n "$TMUX" ] && [ -n "$SSH_AUTH_SOCK" ]; then
-        local new_sock=$(find /tmp/ssh-* -type s -readable 2>/dev/null | xargs ls -t | head -n 1)
+        local new_sock=$(find /tmp/ssh-* -type s -readable 2>/dev/null | head -n 1)
         if [ ! -z $new_sock ]; then
             ln -sf $new_sock ~/.ssh/ssh_auth_sock
         fi
     fi
 }
 
-# no beep
-setopt nobeep nohistbeep nolistbeep
+# setting {{{
+stty -ixon                              # disable terminal <c-s>
+setopt nobeep nohistbeep nolistbeep     # no beep
+setopt rm_star_silent                   # silent rm
+setopt interactive_comments
+setopt hist_ignore_space
 
 # history
 HISTFILE="$HOME/.zhistory"
@@ -339,7 +366,7 @@ if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
 fi
 
-# pacman
+# pacman {{{
 alias pacsyu='sudo pacman -Syu'
 alias pacsy='sudo pacman -Sy'
 alias pacfs='pacman -Fs'
@@ -420,26 +447,10 @@ repeat 0 {
 '
 }
 
-
-alias install_brew='bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
-alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
-alias brew_update='brew update && brew upgrade && brew cleanup --prune 7; brew doctor'
-alias brew_install_ruby='brew vendor-install ruby'
-function brew_fix_ssl() {
-    sed -i '/^insecure$/d' ~/.curlrc
-    echo insecure >> ~/.curlrc
-    git config --global http.sslVerify false
-    HOMEBREW_CURLRC=1 brew reinstall openssl curl
-    sed -i '/^insecure$/d' ~/.curlrc
-    git config --global http.sslVerify true
-}
-
-alias install_nix='bash <(curl https://nixos.org/nix/install) --no-daemon'
-
+# project {{{
 #export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
 #export REPO_URL='https://gerrit-googlesource.proxy.ustclug.org/git-repo'
 alias repo_sync='while true; do repo sync; if [ $? -eq 0 ]; then echo "sync ok"; break; fi; done'
-
 alias kmsg='adb wait-for-device && adb root && adb wait-for-device && adb shell "while true; do (cat proc/kmsg); done;"'
 export USE_CCACHE=1
 

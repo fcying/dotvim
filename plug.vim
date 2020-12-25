@@ -827,6 +827,8 @@ if (HasPlug('fencview') != -1) "{{{
 endif "}}}
 
 if (HasPlug('nerdcommenter') != -1) "{{{
+  " set default delimiter
+  set commentstring=#%s
   let g:NERDCreateDefaultMappings = 0
   let g:NERDSpaceDelims = 0
   "let g:NERDRemoveExtraSpaces = 0
@@ -843,6 +845,7 @@ if (HasPlug('nerdcommenter') != -1) "{{{
         \ 'json': { 'left': '//' },
         \ 'jsonc': { 'left': '//' },
         \ 'rc': { 'left': '#' },
+        \ '*': { 'left': '#' },
         \ }
   nmap <A-/> <plug>NERDCommenterToggle
   vmap <A-/> <plug>NERDCommenterToggle gv

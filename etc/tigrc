@@ -1,12 +1,17 @@
-set wrap-lines = no
-set ignore-case = smart-case
+set mouse           = true
+set wrap-lines      = yes
+set ignore-case     = smart-case
+set commit-order    = default
+set show-changes    = yes
+set tab-size        = 4
 
-set commit-order = default
-set main-options = -n 1000
-set show-changes = yes
+set main-view-date          = custom
+set main-view-date-format   = "%Y-%m-%d %H:%M"
+set main-view-id            = yes
+set main-options            = -n 1000
 
-set main-view-id = yes
 
+# bind HOME END
 bind generic <Esc>[1~ move-first-line
 bind generic <Esc>[4~ move-last-line
 
@@ -17,6 +22,8 @@ bind generic j move-down
 bind generic k move-up
 bind generic l scroll-right
 
+bind main    G move-last-line
+bind generic G move-last-line
 bind generic g  none
 bind generic gg move-first-line
 bind generic gj next
@@ -24,9 +31,6 @@ bind generic gk previous
 bind generic gp parent
 bind generic gP back
 bind generic gn view-next
-
-bind main    G move-last-line
-bind generic G move-last-line
 
 bind generic <C-f> move-page-down
 bind generic <C-b> move-page-up

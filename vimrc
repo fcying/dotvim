@@ -117,9 +117,16 @@ nnoremap <silent> <leader>ep  :execute 'e '  . g:pvimrc_path<CR>
 execute 'autocmd myau BufWritePost .pvimrc nested sandbox so ' . g:pvimrc_path
 "autocmd! bufwritepost _vimrc source $MYVIMRC
 
+" cursor
+if g:is_nvim
+  au VimEnter,VimResume * set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+  \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
+  \,sm:block-blinkwait175-blinkoff150-blinkon175
+  au VimLeave,VimSuspend * set guicursor=a:hor50-blinkon200
+endif
+
 " gui
 set mouse=nv
-set guicursor=
 if g:is_nvim
   function! s:nvim_gui_enter()
     call rpcnotify(0, "Gui", "Option", "Popupmenu", 0)
@@ -375,10 +382,11 @@ endfunction
 inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 nnoremap <F6> :exec exists('syntax_on') ? 'syn off' : 'syn on'<CR>
 
-" fast save
-"nnoremap <C-s> :<C-u>w<CR>
-"vnoremap <C-s> :<C-u>w<CR>
-"cnoremap <C-s> <C-u>w<CR>
+" fast save ctrl-s {{{
+nnoremap <C-s> :update<CR>
+vnoremap <C-s> :<C-u>update<CR>
+cnoremap <C-s> <C-u>update<CR>
+inoremap <C-s> <C-o>:update<CR>
 
 " save with sudo;  use vim-eunuch instead
 "nnoremap <leader>ws :w !sudo tee %<CR>

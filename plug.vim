@@ -94,7 +94,7 @@ Plug 'dstein64/vim-startuptime', {'on':'StartupTime'}
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'thinca/vim-ref'
 Plug 'derekwyatt/vim-fswitch'
-Plug 'nathanaelkane/vim-indent-guides', {'on':'<Plug>IndentGuidesToggle'}
+Plug 'Yggdroot/indentLine' ", {'on':'IndentLinesToggle'}
 Plug 'xolox/vim-session'
 Plug 'xolox/vim-misc'
 Plug 'tpope/vim-fugitive'
@@ -107,6 +107,11 @@ Plug 'fcying/gen_clang_conf.vim'
 Plug 'mattn/emmet-vim'
 Plug 'honza/vim-snippets'
 "Plug 'w0rp/ale'
+
+if g:is_nvim ==# 0
+  Plug 'tmux-plugins/vim-tmux-focus-events'
+  Plug 'roxma/vim-tmux-clipboard'
+endif
 
 " color {{{
 Plug 'tomasr/molokai'
@@ -215,11 +220,11 @@ nnoremap <leader>pc :PlugClean<CR>
 nnoremap <silent> <leader>tg :GenClangConf<CR>:Leaderf gtags --update<CR>
 nnoremap <silent> <leader>tr :ClearClangConf<CR>:Leaderf gtags --remove<CR>y<CR>
 
-if (HasPlug('vim-indent-guides') != -1) "{{{
-  let g:indent_guides_enable_on_vim_startup=0
-  let g:indent_guides_start_level=2
-  let g:indent_guides_guide_size=1
-  :nmap <silent> <Leader>i <Plug>IndentGuidesToggle
+if (HasPlug('indentLine') != -1) "{{{
+  let g:indentLine_setColors = 1
+  let g:indentLine_enabled = 0
+  let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+  nmap <silent> <Leader>i :IndentLinesToggle<CR>
 endif "}}}
 
 if (HasPlug('asyncrun.vim') != -1) "{{{

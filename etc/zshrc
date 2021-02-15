@@ -182,6 +182,9 @@ EOF
 
 # z.lua {{{
 [ ! -f $HOME/bin/z.lua ] && {
+    # wsl1 need it
+    # sudo apt install lua-filesystem
+
     mkdir -p ~/bin
     pushd ~/bin > /dev/null && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd > /dev/null
 }

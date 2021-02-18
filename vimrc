@@ -433,8 +433,6 @@ noremap <silent> <leader>tc :tabnew<cr>
 noremap <silent> <leader>tq :tabclose<cr>
 noremap <silent> <leader>tn :tabnext<cr>
 noremap <silent> <leader>tp :tabprev<cr>
-noremap <S-l> gt
-noremap <S-h> gT
 noremap <silent> <leader>to :tabonly<cr>
 noremap <silent><s-tab> :tabnext<CR>
 inoremap <silent><s-tab> <ESC>:tabnext<CR>

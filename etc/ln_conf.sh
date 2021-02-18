@@ -35,8 +35,8 @@ ln -svf $PWD/../vimrc ~/.config/nvim/init.vim
 #    npm install cnpm
 #}
 
-# pip.conf
-#mkdir -p ~/.config/pip
-#rm -vf ~/.config/pip/pip.conf
-#ln -sfv $PWD/pip.conf ~/.config/pip
+# pypi mirror
+pip3 install -i https://opentuna.cn/pypi/web/simple pip -U
+pip3 config set global.index-url https://opentuna.cn/pypi/simple
+
 

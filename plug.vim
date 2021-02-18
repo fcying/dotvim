@@ -71,10 +71,11 @@ Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
 Plug 'plasticboy/vim-markdown', {'for':'markdown'}
 
 Plug 'easymotion/vim-easymotion'
-"Plug 'dyng/ctrlsf.vim'
+"Plug 'justinmk/vim-sneak'
 if exists('*popup_menu') || g:is_nvim
   Plug 'pechorin/any-jump.vim'
 endif
+"Plug 'dyng/ctrlsf.vim'
 function! InstallLeaderF(info) abort
   if a:info.status !=# 'unchanged' || a:info.force
     silent !echo "InstallLeaderF"
@@ -895,11 +896,15 @@ if (HasPlug('vim-easymotion') != -1) "{{{
   " move to {char}
   nmap s <Plug>(easymotion-overwin-f)
   " move to {char}{char}
-  nmap <Leader>s <Plug>(easymotion-overwin-f2)
+  nmap S <Plug>(easymotion-overwin-f2)
   " Move to line
-  nmap <Leader>L <Plug>(easymotion-overwin-line)
+  nmap L <Plug>(easymotion-overwin-line)
   " Move to word
   "nmap <Leader>w <Plug>(easymotion-overwin-w)
+endif "}}}
+
+if (HasPlug('vim-sneak') != -1) "{{{
+  let g:sneak#label = 1
 endif "}}}
 
 if (HasPlug('vim-fswitch') != -1) "{{{

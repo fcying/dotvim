@@ -1,4 +1,4 @@
-" ncm2 asyncomplete coc ycm completor
+" ncm2 asyncomplete coc ycm vap
 let g:complete_func = get(g:, 'complete_func', 'coc')
 
 " for spacevim plugin
@@ -51,16 +51,22 @@ Plug 'chrisbra/Colorizer'
 Plug 'skywind3000/vim-quickui'
 Plug 'liuchengxu/vim-which-key'
 
+if g:is_nvim
+  Plug 'antoinemadec/FixCursorHold.nvim'
+endif
+
 Plug 'tpope/vim-surround'
 Plug 'terryma/vim-expand-region'
 Plug 'godlygeek/tabular', {'on': 'Tabularize'}
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}
-Plug 'scrooloose/nerdtree', {'on':['NERDTree', 'NERDTreeFocus', 'NERDTreeToggle', 'NERDTreeCWD', 'NERDTreeFind']}
+"Plug 'preservim/nerdtree', {'on':['NERDTree', 'NERDTreeFocus', 'NERDTreeToggle', 'NERDTreeCWD', 'NERDTreeFind']}
+Plug 'lambdalisue/fern.vim'
 "Plug 'justinmk/vim-dirvish'
-Plug 'scrooloose/nerdcommenter'
-Plug 'majutsushi/tagbar', {'on':'TagbarToggle'}
+Plug 'preservim/nerdcommenter'
+Plug 'preservim/tagbar', {'on':'TagbarToggle'}
 "Plug 'Krasjet/auto.pairs'
+Plug 'andymass/vim-matchup'
 
 Plug 'aperezdc/vim-template', {'on':'TemplateHere'}
 Plug 'Vimjas/vim-python-pep8-indent', {'for':'python'}
@@ -69,13 +75,13 @@ Plug 'peterhoeg/vim-qml'
 Plug 'neoclide/jsonc.vim'
 Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
 Plug 'plasticboy/vim-markdown', {'for':'markdown'}
+Plug 'skanehira/preview-markdown.vim', {'for':'markdown'}
 
 Plug 'easymotion/vim-easymotion'
 "Plug 'justinmk/vim-sneak'
 if exists('*popup_menu') || g:is_nvim
   Plug 'pechorin/any-jump.vim'
 endif
-"Plug 'dyng/ctrlsf.vim'
 function! InstallLeaderF(info) abort
   if a:info.status !=# 'unchanged' || a:info.force
     silent !echo "InstallLeaderF"
@@ -89,7 +95,6 @@ function! InstallLeaderF(info) abort
 endfunction
 Plug 'Yggdroot/LeaderF', {'do': function('InstallLeaderF')}
 Plug 'brooth/far.vim'
-"Plug 'wsdjeg/FlyGrep.vim'
 
 Plug 'dstein64/vim-startuptime', {'on':'StartupTime'}
 Plug 'MattesGroeger/vim-bookmarks'
@@ -194,13 +199,10 @@ elseif g:complete_func ==# 'asyncomplete'
   Plug 'prabirshrestha/asyncomplete-necovim.vim'
 elseif g:complete_func ==# 'ycm'
   Plug 'ycm-core/YouCompleteMe', {'do': 'python3 install.py --all'}
-elseif g:complete_func ==# 'completor'
-  Plug 'maralla/completor.vim'
-  Plug 'kyouryuukunn/completor-necovim'
-  Plug 'masawada/completor-dictionary'
-  Plug 'SirVer/ultisnips'
-  Plug 'maralla/completor-neosnippet'
+elseif g:complete_func ==# 'vap'
+  Plug 'skywind3000/vim-auto-popmenu', {'do': 'python3 install.py --all'}
 endif
+
 if g:is_win ==# 0
   Plug 'wellle/tmux-complete.vim'
 endif
@@ -263,6 +265,10 @@ if (HasPlug('lightline.vim') != -1) "{{{
         \ 'statusline': 1,
         \ 'tabline': 1
         \ }
+endif "}}}
+
+if (HasPlug('FixCursorHold.nvim') != -1) "{{{
+  let g:cursorhold_updatetime = 300
 endif "}}}
 
 if (HasPlug('vim-expand-region') != -1) "{{{
@@ -520,6 +526,12 @@ if (HasPlug('ncm2') != -1) "{{{
   "let g:ncm2#sorter = 'abbrfuzzy'
 endif "}}}
 
+if (HasPlug('vim-auto-popmenu') != -1) "{{{
+  let g:apc_enable_ft = {'*':1}
+  set completeopt=menu,menuone,noselect
+  set shortmess+=c
+endif "}}}
+
 if (HasPlug('YouCompleteMe') != -1) "{{{
   let g:ycm_confirm_extra_conf = 0
   let g:ycm_add_preview_to_completeopt = 0
@@ -556,21 +568,6 @@ let g:ycm_filetype_whitelist = {
 			\ }
 endif "}}}
 
-if (HasPlug('completor.vim') != -1) "{{{
-  let g:completor_auto_trigger = 1
-  let g:completor_complete_options = 'menuone,noselect,preview'
-  let g:completor_clang_disable_placeholders = 1
-  let g:completor_min_chars = 1
-  noremap <silent> gd :call completor#do('definition')<CR>
-  noremap <silent> gc :call completor#do('doc')<CR>
-  noremap <silent> gf :call completor#do('format')<CR>
-  noremap <silent> gs :call completor#do('hover')<CR>
-  let g:completor_filetype_map = {}
-  let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}
-  let g:completor_filetype_map.c = {'ft': 'lsp', 'cmd': 'clangd'}
-  let g:completor_filetype_map.rust = {'ft': 'lsp', 'cmd': 'rls'}
-endif "}}}
-
 if (HasPlug('tmux-complete.vim') != -1) "{{{
   let g:tmuxcomplete#trigger = 'omnifunc'
 endif
@@ -585,11 +582,11 @@ if (HasPlug('vim-visual-multi') != -1) "{{{
 endif "}}}
 
 if (HasPlug('nerdtree') != -1) "{{{
-  nmap <leader>nt :NERDTreeToggle<cr>
-  nmap <leader>nf :NERDTreeFind<cr>
+  nmap <leader>fe :NERDTreeToggle<cr>
+  nmap <leader>ff :NERDTreeFind<cr>
   nmap <F12> :NERDTreeToggle<cr>
   let g:NERDTreeWinSize=32
-  let g:NERDTreeWinPos='right'
+  let g:NERDTreeWinPos='left'
   let g:NERDTreeShowHidden=1
   let g:NERDTreeMinimalUI=1
   let g:NERDTreeAutoDeleteBuffer=1
@@ -598,54 +595,42 @@ if (HasPlug('nerdtree') != -1) "{{{
   let g:NERDTreeShowHidden=1
 endif "}}}
 
+if (HasPlug('fern.vim') != -1) "{{{
+  " can't open on right https://github.com/lambdalisue/fern.vim/issues/272
+  nmap <leader>fe :Fern . -drawer -toggle -keep<CR>
+  nmap <leader>ff :Fern . -drawer -reveal=%<CR>
+  autocmd myau FileType fern call s:init_fern()
+  function! s:init_fern()
+    nmap <buffer> <2-LeftMouse> <Plug>(fern-action-open-or-expand)
+    nmap <buffer> <enter> <Plug>(fern-action-open-or-expand)
+    nmap <buffer> t <Plug>(fern-action-open:tabedit)
+    nmap <buffer> T <Plug>(fern-action-open:tabedit)gT
+    nmap <buffer> i <Plug>(fern-action-open:split)
+    nmap <buffer> gi <Plug>(fern-action-open:split)<C-w>p
+    nmap <buffer> s <Plug>(fern-action-open:vsplit)
+    nmap <buffer> gs <Plug>(fern-action-open:vsplit)<C-w>p
+
+    nmap <buffer> E <Plug>(fern-action-enter)
+    nmap <buffer> u <Plug>(fern-action-leave)
+    nmap <buffer> r <Plug>(fern-action-reload)
+    nmap <buffer> q :<C-u>quit<CR>
+  endfunction
+endif "}}}
+
 if (HasPlug('vim-dirvish') != -1) "{{{
   let g:dirvish_mode = 1
   let g:dirvish_relative_paths = 0
 endif "}}}
 
-if (HasPlug('ctrlsf.vim') != -1) "{{{
-  "let g:ctrlsf_debug_mode = 1
-  "redir! > ctrlsf.log
-  let g:ctrlsf_ackprg = 'rg'
-  let g:ctrlsf_regex_pattern = 1
-  let g:ctrlsf_case_sensitive = 'no'
-  let g:ctrlsf_default_root = 'cwd'
-  let g:ctrlsf_default_view_mode = 'normal'
-  let g:ctrlsf_search_mode = 'async'
-  let g:ctrlsf_auto_focus = {
-        \ 'at': 'done',
-        \ 'duration_less_than': 1000
-        \ }
-
-  nnoremap fs :<C-u>CtrlSF
-  nmap <leader>sf <Plug>CtrlSFCwordExec
-  nmap <leader>sF <Plug>CtrlSFPrompt
-  vmap <leader>sf <Plug>CtrlSFVwordExec
-  vmap <leader>sF <Plug>CtrlSFVwordPath
-  nmap <leader>sp <Plug>CtrlSFPwordPath
-  nnoremap <leader>so :CtrlSFOpen<CR>
-  nnoremap <leader>st :CtrlSFToggle<CR>
-
-  let g:ctrlsf_mapping = {
-        \ 'next'    : 'n',
-        \ 'prev'    : 'N',
-        \ }
-
-  autocmd myau FileType ctrlsf call s:ctrlsf_settings()
-  function! s:ctrlsf_settings()
-    nmap <buffer> <c-j> np
-    nmap <buffer> <c-k> Np
-  endfunction
+if (HasPlug('vim-dirvish') != -1) "{{{
+  let g:dirvish_mode = 1
+  let g:dirvish_relative_paths = 0
 endif "}}}
 
 if (HasPlug('vim-session') != -1) "{{{
   let g:session_autosave = 'no'
   let g:session_autoload = 'no'
   let g:session_directory = g:cache_dir . '/sessions'
-endif "}}}
-
-if (HasPlug('FlyGrep.vim') != -1) "{{{
-  nnoremap f/ :<C-u>FlyGrep<cr>
 endif "}}}
 
 if (HasPlug('far.vim') != -1) "{{{
@@ -760,6 +745,7 @@ if (HasPlug('LeaderF') != -1) "{{{
   nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w ")<CR>
   xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w -F %s", leaderf#Rg#visual())<CR>
   nnoremap fr :<C-U>Leaderf --recall<CR><TAB>
+  nnoremap f/ :<C-U>Leaderf rg<CR>
 
   nnoremap fi :exec "Leaderf file --fullPath --input " . <SID>strip_include(getline("."))<CR>
   function! s:strip_include(line)
@@ -864,10 +850,13 @@ if (HasPlug('nerdcommenter') != -1) "{{{
   vmap <leader>gs <plug>NERDCommenterSexy
 endif "}}}
 
+if (HasPlug('vim-matchup') != -1) "{{{
+  let g:loaded_matchit = 1
+endif "}}}
+
 if (HasPlug('tagbar') != -1) "{{{
-  nnoremap <silent><Leader>tt :TagbarToggle<CR>
+  nnoremap <silent><Leader>tb :TagbarToggle<CR>
   nnoremap <silent><F11> :TagbarToggle<CR>
-  let g:tagbar_left=1
   let g:tagbar_width=32
   let g:tagbar_compact=1
   let g:tagbar_type_vim = {
@@ -945,8 +934,9 @@ if (HasPlug('gen_clang_conf.vim') != -1) "{{{
   endif
 endif "}}}
 
-if (HasPlug('auto.pairs') != -1) "{{{
-  autocmd myau FileType markdown let b:AutoPairsSingleQuoteBalanceCheck = 0
+if (HasPlug('preview-markdown.vim') != -1) "{{{
+  let g:preview_markdown_vertical=1
+  let g:preview_markdown_auto_update=1
 endif "}}}
 
 if (HasPlug('Colorizer') != -1) "{{{
@@ -996,9 +986,9 @@ if (HasPlug('vim-which-key') != -1) "{{{
   let g:which_key_map.c = { 'name' : '+QuickFix--cd--color' }
   let g:which_key_map.d = { 'name' : '+DeleteSth' }
   let g:which_key_map.e = { 'name' : '+EditSth' }
-  let g:which_key_map.e.v = { 'name' : '+vim config' }
+  let g:which_key_map.e.v = { 'name' : '+vim_config' }
   let g:which_key_map.g = { 'name' : '+Comment' }
-  let g:which_key_map.n = { 'name' : '+NERDTree' }
+  let g:which_key_map.f = { 'name' : '+File_Explorer' }
   let g:which_key_map.p = { 'name' : '+Plug' }
   let g:which_key_map.r = { 'name' : '+Ref--Coc' }
   let g:which_key_map.t = { 'name' : '+Tab--Tagbar--Template' }

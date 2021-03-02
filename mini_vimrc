@@ -2,7 +2,7 @@ set nocompatible
 set encoding=utf-8
 set mouse=n
 
-set runtimepath^=~/.vim/.plugged/any-jump.vim
+set runtimepath^=~/.vim/.plugged/vim-matchup
 filetype plugin indent on
 syntax on
 set hidden

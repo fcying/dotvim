@@ -241,7 +241,7 @@ set wildmenu
 set wildmode=longest:full,full
 set splitright
 set splitbelow
-if &term !=# "ansi"
+if $TERM !=# "ansi"
   set lazyredraw  "vim-plug scripts update error: Vim: Error reading input, exiting
 endif
 set listchars=tab:\|\ ,trail:.,extends:>,precedes:<
@@ -667,13 +667,6 @@ if strlen(globpath(&rtp, 'colors/' . g:colorscheme . '.vim')) ==# 0
   let g:lightline.colorscheme=get(g:, 'lightline.colorscheme', 'solarized')
 endif
 
-if &term =~# '256color' && g:is_tmux
-	" disable Background Color Erase (BCE) so that color schemes
-	" render properly when inside 256-color tmux and GNU screen.
-	" see also http://snk.tuxfamily.org/log/vim-256color-bce.html
-	set t_ut=
-endif
-
 if has('termguicolors')
   " :h xterm-true-color
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
@@ -682,6 +675,18 @@ if has('termguicolors')
 else
   set t_Co=256
 endif
+
+if $TERM =~# '256color' && g:is_tmux
+	" disable Background Color Erase (BCE) so that color schemes
+	" render properly when inside 256-color tmux and GNU screen.
+	" see also http://snk.tuxfamily.org/log/vim-256color-bce.html
+	set t_ut=
+elseif $TERM ==# 'linux'
+  let g:colorscheme = 'desert'
+  let g:background='dark'
+  set t_Co=256
+endif
+
 
 if g:is_nvim ==# 0
   "enable 256 colors in ConEmu on Win

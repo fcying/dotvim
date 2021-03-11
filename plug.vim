@@ -75,7 +75,7 @@ Plug 'peterhoeg/vim-qml'
 Plug 'neoclide/jsonc.vim'
 Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
 Plug 'plasticboy/vim-markdown', {'for':'markdown'}
-Plug 'skanehira/preview-markdown.vim', {'for':'markdown'}
+"Plug 'skanehira/preview-markdown.vim', {'for':'markdown'}
 
 Plug 'easymotion/vim-easymotion'
 "Plug 'justinmk/vim-sneak'

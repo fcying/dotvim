@@ -235,7 +235,9 @@ set matchtime=2
 set number
 set ruler
 set laststatus=2
-set nolist
+"set nolist
+set list
+set listchars=tab:▸\ ,trail:.,nbsp:+,extends:❯,precedes:❮
 set showcmd
 set wildmenu
 set wildmode=longest:full,full
@@ -244,7 +246,6 @@ set splitbelow
 if $TERM !=# "ansi"
   set lazyredraw  "vim-plug scripts update error: Vim: Error reading input, exiting
 endif
-set listchars=tab:\|\ ,trail:.,extends:>,precedes:<
 if has('patch-8.1.1564')
   " Recently vim can merge signcolumn and number column into one
   set signcolumn=number

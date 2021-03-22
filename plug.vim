@@ -51,22 +51,22 @@ Plug 'chrisbra/Colorizer'
 Plug 'skywind3000/vim-quickui'
 Plug 'liuchengxu/vim-which-key'
 
+" FIXME
 if g:is_nvim
   Plug 'antoinemadec/FixCursorHold.nvim'
 endif
 
 Plug 'tpope/vim-surround'
 Plug 'terryma/vim-expand-region'
-Plug 'godlygeek/tabular', {'on': 'Tabularize'}
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}
 "Plug 'preservim/nerdtree', {'on':['NERDTree', 'NERDTreeFocus', 'NERDTreeToggle', 'NERDTreeCWD', 'NERDTreeFind']}
 Plug 'lambdalisue/fern.vim'
-"Plug 'justinmk/vim-dirvish'
 Plug 'preservim/nerdcommenter'
 Plug 'preservim/tagbar', {'on':'TagbarToggle'}
 "Plug 'Krasjet/auto.pairs'
 Plug 'andymass/vim-matchup'
+Plug 'fcying/vim-foldsearch'
 
 Plug 'aperezdc/vim-template', {'on':'TemplateHere'}
 Plug 'Vimjas/vim-python-pep8-indent', {'for':'python'}
@@ -74,8 +74,9 @@ Plug 'cespare/vim-toml'
 Plug 'peterhoeg/vim-qml'
 Plug 'neoclide/jsonc.vim'
 Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
+
+Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown', {'for':'markdown'}
-"Plug 'skanehira/preview-markdown.vim', {'for':'markdown'}
 
 Plug 'easymotion/vim-easymotion'
 "Plug 'justinmk/vim-sneak'
@@ -582,8 +583,8 @@ if (HasPlug('vim-visual-multi') != -1) "{{{
 endif "}}}
 
 if (HasPlug('nerdtree') != -1) "{{{
-  nmap <leader>fe :NERDTreeToggle<cr>
-  nmap <leader>ff :NERDTreeFind<cr>
+  nmap <leader>wf :NERDTreeToggle<cr>
+  nmap <leader>wl :NERDTreeFind<cr>
   nmap <F12> :NERDTreeToggle<cr>
   let g:NERDTreeWinSize=32
   let g:NERDTreeWinPos='left'
@@ -597,8 +598,8 @@ endif "}}}
 
 if (HasPlug('fern.vim') != -1) "{{{
   " can't open on right https://github.com/lambdalisue/fern.vim/issues/272
-  nmap <leader>fe :Fern . -drawer -toggle -keep<CR>
-  nmap <leader>ff :Fern . -drawer -reveal=%<CR>
+  nmap <leader>wf :Fern . -drawer -toggle -keep<CR>
+  nmap <leader>wl :Fern . -drawer -reveal=%<CR>
   autocmd myau FileType fern call s:init_fern()
   function! s:init_fern()
     nmap <buffer> <2-LeftMouse> <Plug>(fern-action-open-or-expand)
@@ -615,16 +616,6 @@ if (HasPlug('fern.vim') != -1) "{{{
     nmap <buffer> r <Plug>(fern-action-reload)
     nmap <buffer> q :<C-u>quit<CR>
   endfunction
-endif "}}}
-
-if (HasPlug('vim-dirvish') != -1) "{{{
-  let g:dirvish_mode = 1
-  let g:dirvish_relative_paths = 0
-endif "}}}
-
-if (HasPlug('vim-dirvish') != -1) "{{{
-  let g:dirvish_mode = 1
-  let g:dirvish_relative_paths = 0
 endif "}}}
 
 if (HasPlug('vim-session') != -1) "{{{
@@ -854,8 +845,23 @@ if (HasPlug('vim-matchup') != -1) "{{{
   let g:loaded_matchit = 1
 endif "}}}
 
+if (HasPlug('vim-foldsearch') != -1) "{{{
+  let g:foldsearch_disable_mappings = 1
+  let g:foldsearch_highlight = 1
+
+  nmap <Leader>fg :<C-u><C-R>=printf("Fp %s", expand("<cword>"))<CR>
+  xmap <Leader>fg :<C-u><C-R>=printf("Fp %s", expand("<cword>"))<CR>
+  map <Leader>fw :call foldsearch#foldsearch#FoldCword()<CR>
+  map <Leader>fs :call foldsearch#foldsearch#FoldSearch()<CR>
+  map <Leader>fS :call foldsearch#foldsearch#FoldSpell()<CR>
+  map <Leader>fl :call foldsearch#foldsearch#FoldLast()<CR>
+  map <Leader>fi :call foldsearch#foldsearch#FoldContextAdd(+1)<CR>
+  map <Leader>fd :call foldsearch#foldsearch#FoldContextAdd(-1)<CR>
+  map <Leader>fe :call foldsearch#foldsearch#FoldSearchEnd()<CR>
+endif "}}}
+
 if (HasPlug('tagbar') != -1) "{{{
-  nnoremap <silent><Leader>tb :TagbarToggle<CR>
+  nnoremap <silent><Leader>wt :TagbarToggle<CR>
   nnoremap <silent><F11> :TagbarToggle<CR>
   let g:tagbar_width=32
   let g:tagbar_compact=1
@@ -969,7 +975,7 @@ if (HasPlug('vim-which-key') != -1) "{{{
   autocmd  FileType which_key set laststatus=0 noshowmode noruler
         \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
 
-  let g:which_key_map = {}
+  let g:which_key_map   = {}
   let g:which_key_map_f = {}
   let g:which_key_map_t = {}
 
@@ -981,28 +987,25 @@ if (HasPlug('vim-which-key') != -1) "{{{
   let g:which_key_map_t.g = 'tag gen'
   let g:which_key_map_t.r = 'tag remove'
 
-  let g:which_key_map.a = { 'name' : '+AnyJump' }
-  let g:which_key_map.m = { 'name' : '+Bookmark' }
-  let g:which_key_map.c = { 'name' : '+QuickFix--cd--color' }
-  let g:which_key_map.d = { 'name' : '+DeleteSth' }
-  let g:which_key_map.e = { 'name' : '+EditSth' }
+  let g:which_key_map.a   = { 'name' : '+AnyJump' }
+  let g:which_key_map.m   = { 'name' : '+Bookmark' }
+  let g:which_key_map.c   = { 'name' : '+QuickFix--cd--color' }
+  let g:which_key_map.d   = { 'name' : '+DeleteSth' }
+  let g:which_key_map.e   = { 'name' : '+EditSth' }
   let g:which_key_map.e.v = { 'name' : '+vim_config' }
-  let g:which_key_map.g = { 'name' : '+Comment' }
-  let g:which_key_map.f = { 'name' : '+File_Explorer' }
-  let g:which_key_map.p = { 'name' : '+Plug' }
-  let g:which_key_map.r = { 'name' : '+Ref--Coc' }
-  let g:which_key_map.t = { 'name' : '+Tab--Tagbar--Template' }
+  let g:which_key_map.g   = { 'name' : '+Comment' }
+  let g:which_key_map.p   = { 'name' : '+Plug' }
+  let g:which_key_map.r   = { 'name' : '+Ref--Coc' }
+  let g:which_key_map.t   = { 'name' : '+Tab--Tagbar--Template' }
   let g:which_key_map['w'] = {
       \ 'name' : '+Windows' ,
+      \ 'f' : 'FileExplorer'                           ,
+      \ 'l' : 'FileLocation'                           ,
       \ 'w' : ['<C-W>w'     , 'other-window']          ,
       \ 'd' : ['<C-W>c'     , 'delete-window']         ,
       \ '-' : ['<C-W>s'     , 'split-window-below']    ,
       \ '|' : ['<C-W>v'     , 'split-window-right']    ,
       \ '2' : ['<C-W>v'     , 'layout-double-columns'] ,
-      \ 'h' : ['<C-W>h'     , 'window-left']           ,
-      \ 'j' : ['<C-W>j'     , 'window-below']          ,
-      \ 'l' : ['<C-W>l'     , 'window-right']          ,
-      \ 'k' : ['<C-W>k'     , 'window-up']             ,
       \ 'H' : ['<C-W>5<'    , 'expand-window-left']    ,
       \ 'J' : [':resize +5' , 'expand-window-below']   ,
       \ 'L' : ['<C-W>5>'    , 'expand-window-right']   ,

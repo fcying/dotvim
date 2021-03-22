@@ -269,12 +269,6 @@ set expandtab        "%retab
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
-autocmd myau FileType go setlocal noexpandtab
-autocmd myau FileType vim,json,jsonc,yaml,toml,dosbatch
-      \ setlocal shiftwidth=2
-      \ softtabstop=2
-      \ tabstop=2
-      \ expandtab
 
 " quickfix {{{
 "if g:is_vim8
@@ -607,7 +601,13 @@ augroup go_lang
   "autocmd FileType go autocmd BufWritePre <buffer> GoSave
 augroup END
 
-" set filetype {{{
+" filetype {{{
+autocmd myau FileType go setlocal noexpandtab nolist
+autocmd myau FileType vim,json,jsonc,yaml,toml,dosbatch
+      \ setlocal shiftwidth=2
+      \ softtabstop=2
+      \ tabstop=2
+      \ expandtab
 autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
 autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
 autocmd myau BufNewFile,BufRead .tasks setl filetype=conf

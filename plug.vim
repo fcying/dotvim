@@ -50,6 +50,7 @@ Plug 'chrisbra/Colorizer'
 "Plug 'RRethy/vim-hexokinase', { 'do': 'make hexokinase' }
 Plug 'skywind3000/vim-quickui'
 Plug 'liuchengxu/vim-which-key'
+Plug 'roxma/vim-paste-easy'
 
 " FIXME
 if g:is_nvim

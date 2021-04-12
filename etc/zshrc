@@ -213,6 +213,15 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
 fi
 
 # linuxbrew {{{
+export BREW_REMOTE=${BREW_REMOTE:-"cn"}
+if [[ "$BREW_REMOTE" == "cn" ]]; then
+    #export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
+    #export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/linuxbrew-core.git"
+    #export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/linuxbrew-bottles/bottles"
+    export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.ustc.edu.cn/brew.git"
+    export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.ustc.edu.cn/linuxbrew-core.git"
+    export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.ustc.edu.cn/linuxbrew-bottles/bottles"
+fi
 BREW_PREFIX=""
 if [ -d "$HOME/.linuxbrew/bin" ]; then
     BREW_PREFIX=$HOME/.linuxbrew
@@ -255,10 +264,27 @@ if [ ! -z "$BREW_PREFIX" ]; then
     }
 fi
 unset BREW_PREFIX
-alias install_brew='bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
 alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
 alias brew_update='brew update && brew upgrade && brew cleanup --prune 7; brew doctor'
-alias brew_install_ruby='brew vendor-install ruby'
+function brew_install() {
+    if [[ "$1" == "origin" ]]; then
+        bash -c "$(curl -fsSL https://github.com/Homebrew/install/raw/master/install.sh)"
+    else
+        echo "install from cdn"
+        bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/Homebrew/install@master/install.sh)"
+    fi
+}
+function brew_set_mirror() {
+    if [[ "$1" == "origin" ]]; then
+        git -C "$(brew --repo)" remote set-url origin https://github.com/Homebrew/brew.git
+        git -C "$(brew --repo homebrew/core)" remote set-url origin https://github.com/Homebrew/linuxbrew-core.git
+        brew update-reset
+    else
+        git -C "$(brew --repo)" remote set-url origin $HOMEBREW_BREW_GIT_REMOTE
+        git -C "$(brew --repo homebrew/core)" remote set-url origin $HOMEBREW_CORE_GIT_REMOTE
+        brew update-reset
+    fi
+}
 function brew_fix_ssl() {
     sed -i '/^insecure$/d' ~/.curlrc
     echo insecure >> ~/.curlrc

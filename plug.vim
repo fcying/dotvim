@@ -41,7 +41,8 @@ Plug 'junegunn/vim-plug'
 Plug 'mbbill/fencview'
 Plug 'adah1972/tellenc'
 Plug 'wsdjeg/vim-fetch'
-Plug 'tpope/vim-eunuch'
+"Plug 'tpope/vim-eunuch'
+Plug 'lambdalisue/suda.vim'
 Plug 'moll/vim-bbye', {'on':'Bdelete'}
 Plug 'itchyny/lightline.vim'
 Plug 'simnalamburt/vim-mundo'
@@ -446,7 +447,7 @@ if (HasPlug('coc.nvim') != -1) "{{{
   "'coc-pairs', 'coc-syntax'
   let g:coc_global_extensions = ['coc-vimlsp',
         \ 'coc-dictionary', 'coc-syntax',
-        \ 'coc-rls', 'coc-go',
+        \ 'coc-rls', 'coc-go', 'coc-lua',
         \ 'coc-clangd', 'coc-cmake',
         \ 'coc-yaml', 'coc-toml', 'coc-xml', 'coc-json',
         \ 'coc-css', 'coc-html',
@@ -603,8 +604,15 @@ if (HasPlug('fern.vim') != -1) "{{{
   nmap <leader>wl :Fern . -drawer -reveal=%<CR>
   autocmd myau FileType fern call s:init_fern()
   function! s:init_fern()
-    nmap <buffer> <2-LeftMouse> <Plug>(fern-action-open-or-expand)
-    nmap <buffer> <enter> <Plug>(fern-action-open-or-expand)
+    nmap <buffer><expr>
+          \ <Plug>(fern-my-open-or-expand-or-collapse)
+          \ fern#smart#leaf(
+          \   "\<Plug>(fern-action-open)",
+          \   "\<Plug>(fern-action-expand)",
+          \   "\<Plug>(fern-action-collapse)",
+          \ )
+    nmap <buffer> <2-LeftMouse> <Plug>(fern-my-open-or-expand-or-collapse)
+    nmap <buffer> <enter> <Plug>(fern-my-open-or-expand-or-collapse)
     nmap <buffer> t <Plug>(fern-action-open:tabedit)
     nmap <buffer> T <Plug>(fern-action-open:tabedit)gT
     nmap <buffer> i <Plug>(fern-action-open:split)
@@ -944,6 +952,11 @@ endif "}}}
 if (HasPlug('preview-markdown.vim') != -1) "{{{
   let g:preview_markdown_vertical=1
   let g:preview_markdown_auto_update=1
+endif "}}}
+
+if (HasPlug('suda.vim') != -1) "{{{
+  command! -nargs=0 SudoWrite exec 'SudaWrite'
+  command! -nargs=0 SudoRead exec 'SudaRead'
 endif "}}}
 
 if (HasPlug('Colorizer') != -1) "{{{

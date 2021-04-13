@@ -36,7 +36,8 @@ ln -svf $PWD/../vimrc ~/.config/nvim/init.vim
 #}
 
 # pypi mirror
-pip3 install -i https://opentuna.cn/pypi/web/simple pip -U
-pip3 config set global.index-url https://opentuna.cn/pypi/simple
+PYPI=https://opentuna.cn/pypi/web/simple
+pip3 install -i $PYPI pip -U
+pip3 config set global.index-url $PYPI
 
 

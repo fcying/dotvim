@@ -336,11 +336,16 @@ else
 fi
 
 # SSH_AUTH_SOCK {{{
+old_sock=
 function precmd() {
     if [ -n "$TMUX" ] && [ -n "$SSH_AUTH_SOCK" ]; then
-        local new_sock=$(find /tmp/ssh-* -type s -readable 2>/dev/null | head -n 1)
-        if [ ! -z $new_sock ]; then
-            ln -sf $new_sock ~/.ssh/ssh_auth_sock
+        local new_sock=$(find /tmp/ssh-* -type s -readable -writable -executable 2>/dev/null | xargs ls -t | head -n 1)
+        if [ "$old_sock" != "$new_sock" ]; then
+            if [ ! -z $new_sock ]; then
+                export SSH_AUTH_SOCK=$new_sock
+                #ln -sf $new_sock ~/.ssh/ssh_auth_sock
+                old_sock=$new_sock
+            fi
         fi
     fi
 }

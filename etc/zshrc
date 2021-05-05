@@ -36,6 +36,7 @@ fi
 
     # https://github.com/rupor-github/wsl-ssh-agent#wsl-2-compatibility
     if [ -z "$SSH_AUTH_SOCK" ]; then
+        export WSL2_AGENT=true
         export SSH_AUTH_SOCK=$HOME/.ssh/agent.sock
         if [ $(ss -a | grep -c $SSH_AUTH_SOCK) -eq 0 ]; then
             rm -f $SSH_AUTH_SOCK
@@ -338,13 +339,16 @@ fi
 # SSH_AUTH_SOCK {{{
 old_sock=
 function precmd() {
-    if [ -n "$TMUX" ] && [ -n "$SSH_AUTH_SOCK" ]; then
-        local new_sock=$(find /tmp/ssh-* -type s -readable -writable -executable 2>/dev/null | xargs ls -t | head -n 1)
-        if [ "$old_sock" != "$new_sock" ]; then
-            if [ ! -z $new_sock ]; then
-                export SSH_AUTH_SOCK=$new_sock
-                #ln -sf $new_sock ~/.ssh/ssh_auth_sock
-                old_sock=$new_sock
+    if [ -n "$TMUX" ] && [ -n "$SSH_AUTH_SOCK" ] && [ "$WSL2_AGENT" != "true" ]; then
+        local new_sock=$(find /tmp -maxdepth 1 -name "ssh-*" -type s -perm 700 -user $USER 2>/dev/null)
+        if [ -n "$new_sock" ]; then
+            new_sock=$(echo $new_sock | xargs -0 ls -t | head -n 1)
+            if [ "$old_sock" != "$new_sock" ]; then
+                if [ ! -z $new_sock ]; then
+                    export SSH_AUTH_SOCK=$new_sock
+                    #ln -sf $new_sock ~/.ssh/ssh_auth_sock
+                    old_sock=$new_sock
+                fi
             fi
         fi
     fi

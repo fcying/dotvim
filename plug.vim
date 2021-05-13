@@ -20,6 +20,7 @@ if filereadable(expand(g:plug_dir . '/vim-plug/plug.vim')) == 0
             \ 'endfunc',
             \ ], expand(g:file_vimrc_local), 'a')
     endif
+    call mkdir(g:plug_dir, 'p')
     exec 'silent !git clone --depth 1 https://github.com/junegunn/vim-plug '
           \ . g:plug_dir . '/vim-plug'
     autocmd myau VimEnter * PlugInstall --sync | source $MYVIMRC
@@ -51,7 +52,7 @@ Plug 'chrisbra/Colorizer'
 "Plug 'RRethy/vim-hexokinase', { 'do': 'make hexokinase' }
 Plug 'skywind3000/vim-quickui'
 Plug 'liuchengxu/vim-which-key'
-Plug 'roxma/vim-paste-easy'
+"Plug 'roxma/vim-paste-easy'
 
 " FIXME
 if g:is_nvim
@@ -133,7 +134,7 @@ function! UpdateLsp() abort
   "silent !rustup component add rls rust-analysis rust-src
   silent !pip3 install python-language-server --upgrade
   silent !pip3 install jedi pylint --upgrade
-  silent !mkdir -p ~/.npm
+  call mkdir($HOME . '/.npm', 'p')
   silent !cd ~/.npm; npm install dockerfile-language-server-nodejs
   if g:has_go
     GoGetTools

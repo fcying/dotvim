@@ -35,7 +35,7 @@ export LESS='-F -g -i -M -R -S -w -X -z-4'
         export WSL2_AGENT=true
         export SSH_AUTH_SOCK=$HOME/.ssh/agent.sock
         if [ "$(ss -a | grep -c "$SSH_AUTH_SOCK")" -eq 0 ]; then
-            rm -f "$SSH_AUTH_SOCK"
+            rm -vf "$SSH_AUTH_SOCK"
             ( setsid socat UNIX-LISTEN:"$SSH_AUTH_SOCK",fork EXEC:"$HOME/sync/bin/npiperelay.exe -ei -s //./pipe/openssh-ssh-agent",nofork & ) >/dev/null 2>&1
         elif [ ! -f "$SSH_AUTH_SOCK" ]; then
             kill "$(pgrep -f "[s]ocat.*$SSH_AUTH_SOCK")" 2>/dev/null

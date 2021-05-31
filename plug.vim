@@ -624,6 +624,7 @@ if (HasPlug('fern.vim') != -1) "{{{
     nmap <buffer> E <Plug>(fern-action-enter)
     nmap <buffer> u <Plug>(fern-action-leave)
     nmap <buffer> r <Plug>(fern-action-reload)
+    nmap <buffer> d <Plug>(fern-action-remove)
     nmap <buffer> q :<C-u>quit<CR>
   endfunction
 endif "}}}

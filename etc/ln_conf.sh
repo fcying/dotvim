@@ -12,6 +12,7 @@ if [[ $app == "all" ]]; then
     echo "CONFIG_DIR=$config_dir" | tee -a $HOME/.zshrc.local
     ln -sfv $PWD/zshrc ~/.zshrc
     ln -sfv $PWD/bashrc ~/.bashrc
+    ln -sfv $PWD/bashenv ~/.bashenv
     ln -sfv $PWD/dircolors ~/.dircolors
     ln -sfv $PWD/inputrc ~/.inputrc
     ln -sfv $PWD/tigrc ~/.tigrc

@@ -10,6 +10,7 @@ CONFIG_DIR=${CONFIG_DIR:-"$HOME/.vim/etc"}
 export PAGER=${PAGER:-"less"}
 export VISUAL=${VISUAL:-"nvim"}
 export EDITOR="$VISUAL"
+export BASH_ENV="$HOME/.bashenv"
 
 alias vim='nvim'
 alias vi='nvim'
@@ -450,7 +451,17 @@ test_true_color() {
 #export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
 #export REPO_URL='https://gerrit-googlesource.proxy.ustclug.org/git-repo'
 alias repo_sync='while true; do repo sync; if [ $? -eq 0 ]; then echo "sync ok"; break; fi; done'
-alias kmsg='adb wait-for-device && adb root && adb wait-for-device && adb shell "while true; do (cat proc/kmsg); done;"'
 export USE_CCACHE=1
+function adb_logcat {
+    local search_opt
+    [ -n "$1" ] && search_opt="| grep $*" || search_opt=""
+    eval "while true; do adb logcat -v time $search_opt; sleep 3; done;"
+}
+function kmsg {
+    local search_opt
+    adb wait-for-device && adb root && adb wait-for-device
+    [ -n "$1" ] && search_opt="| grep $*" || search_opt=""
+    eval "adb shell \"while true; do (cat proc/kmsg $search_opt); done;\""
+}
 
 #zprof

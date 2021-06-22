@@ -11,6 +11,7 @@ fi
 export PAGER=${PAGER:-"less"}
 export VISUAL=${VISUAL:-"nvim"}
 export EDITOR="$VISUAL"
+export BASH_ENV="$HOME/.bashenv"
 
 alias vim='nvim'
 alias vi='vim'

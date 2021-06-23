@@ -224,8 +224,14 @@ nnoremap <leader>pc :PlugClean<CR>
 " plugin settings
 " ============================================================================
 " gen tags {{{
+func! ReGentags()
+  ClearClangConf
+  call feedkeys(":Leaderf gtags --remove\<CR>y\<CR>\<CR>", "tx")
+  GenClangConf
+  Leaderf gtags --update
+endf
 nnoremap <silent> <leader>tg :GenClangConf<CR>:Leaderf gtags --update<CR>
-nnoremap <silent> <leader>tr :ClearClangConf<CR>:Leaderf gtags --remove<CR>y<CR>
+nnoremap <silent> <leader>tr :call ReGentags()<CR>
 
 if (HasPlug('indentLine') != -1) "{{{
   let g:indentLine_setColors = 1

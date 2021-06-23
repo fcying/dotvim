@@ -36,7 +36,7 @@ export LESS='-F -g -i -M -R -S -w -X -z-4'
         export WSL2_AGENT=true
         export SSH_AUTH_SOCK=$HOME/.ssh/agent.sock
         if [ "$(ss -a | grep -c "$SSH_AUTH_SOCK")" -eq 0 ]; then
-            rm -vf "$SSH_AUTH_SOCK"
+            rm -f "$SSH_AUTH_SOCK"
             ( setsid socat UNIX-LISTEN:"$SSH_AUTH_SOCK",fork EXEC:"$HOME/sync/bin/npiperelay.exe -ei -s //./pipe/openssh-ssh-agent",nofork & ) >/dev/null 2>&1
         elif [ ! -f "$SSH_AUTH_SOCK" ]; then
             kill "$(pgrep -f "[s]ocat.*$SSH_AUTH_SOCK")" 2>/dev/null
@@ -332,9 +332,9 @@ else
     PROMPT=$CUSTOM_PROMPT
 fi
 
-# SSH_AUTH_SOCK {{{
 old_sock=
-function precmd() {
+function myprecmd() {
+    # SSH_AUTH_SOCK {{{
     if [ -n "$TMUX" ] && [ -n "$SSH_AUTH_SOCK" ] && [ "$WSL2_AGENT" != "true" ]; then
         new_sock=$(find /tmp/ssh-* -type s -perm -700 -user "$USER" 2>/dev/null)
         if [ -n "$new_sock" ]; then
@@ -346,7 +346,13 @@ function precmd() {
             fi
         fi
     fi
+
+    # alert when a process completes in tmux
+    if [ -n "$TMUX" ]; then
+        echo -n -e "\a"
+    fi
 }
+add-zsh-hook precmd myprecmd
 
 # setting {{{
 stty -ixon                              # disable terminal <c-s>
@@ -452,16 +458,16 @@ test_true_color() {
 #export REPO_URL='https://gerrit-googlesource.proxy.ustclug.org/git-repo'
 alias repo_sync='while true; do repo sync; if [ $? -eq 0 ]; then echo "sync ok"; break; fi; done'
 export USE_CCACHE=1
-function adb_logcat {
+function adb_logcat() {
     local search_opt
-    [ -n "$1" ] && search_opt="| grep $*" || search_opt=""
+    [ -n "$1" ] && search_opt="| rg \"$*\"" || search_opt=""
     eval "while true; do adb logcat -v time $search_opt; sleep 3; done;"
 }
-function kmsg {
+function kmsg() {
     local search_opt
     adb wait-for-device && adb root && adb wait-for-device
-    [ -n "$1" ] && search_opt="| grep $*" || search_opt=""
-    eval "adb shell \"while true; do (cat proc/kmsg $search_opt); done;\""
+    [ -n "$1" ] && search_opt="| rg \"$*\"" || search_opt=""
+    eval "adb shell \"while true; do (cat proc/kmsg); done;\" $search_opt"
 }
 
 #zprof

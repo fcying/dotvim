@@ -1,5 +1,5 @@
-" ncm2 asyncomplete coc ycm vap
-let g:complete_func = get(g:, 'complete_func', 'coc')
+" coc ycm easycomplete
+let g:complete_engine = get(g:, 'complete_engine', 'coc')
 
 " for spacevim plugin
 let g:spacevim_data_dir = g:config_dir . '/.cache/spacevim'
@@ -13,7 +13,7 @@ if filereadable(expand(g:plug_dir . '/vim-plug/plug.vim')) == 0
   if executable('git')
     if filereadable(expand(g:file_vimrc_local)) == 0
       call writefile([
-            \ 'let g:complete_func=''coc''',
+            \ 'let g:complete_engine=''coc''',
             \ '"let g:colorscheme=''solarized8''',
             \ '"let g:background=''light''',
             \ 'function! LoadAfter()',
@@ -128,7 +128,7 @@ Plug 'tomasr/molokai'
 Plug 'lifepillar/vim-solarized8'
 Plug 'lifepillar/vim-gruvbox8'
 
-" complete_func
+" complete_engine
 function! UpdateLsp() abort
   "silent !rustup update
   "silent !rustup component add rls rust-analysis rust-src
@@ -141,70 +141,18 @@ function! UpdateLsp() abort
   endif
 endfunction
 
-function! InstallLanguageClient(info) abort
-  if a:info.status !=# 'unchanged' || a:info.force
-    if g:is_win
-      silent !powershell -executionpolicy bypass -File install.ps1
-    else
-      silent !bash install.sh
-    endif
-    call UpdateLsp()
-  endif
-endfunction
-
-if g:complete_func ==# 'ncm2'
-  function! InstallNcm2(info) abort
-    if a:info.status !=# 'unchanged' || a:info.force
-      silent !echo "InstallNcm2"
-      if g:is_nvim ==# 0
-        silent !pip3 install neovim --upgrade
-      endif
-    endif
-  endfunction
-  if g:is_nvim ==# 0
-    Plug 'roxma/vim-hug-neovim-rpc'
-  endif
-  Plug 'roxma/nvim-yarp'
-  Plug 'ncm2/ncm2', {'do': function('InstallNcm2')}
-  "Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': function('InstallLanguageClient')}
-  Plug 'ncm2/ncm2-vim-lsp'
-  Plug 'prabirshrestha/async.vim'
-  Plug 'prabirshrestha/vim-lsp', {'do': function('UpdateLsp')}
-  Plug 'mattn/vim-lsp-settings'
-  Plug 'ncm2/ncm2-bufword'
-  Plug 'ncm2/ncm2-path'
-  Plug 'ncm2/ncm2-gtags'
-  Plug 'yuki-ycino/ncm2-dictionary'
-  Plug 'ncm2/ncm2-cssomni'
-  Plug 'ncm2/ncm2-html-subscope'
-  Plug 'ncm2/ncm2-neoinclude' | Plug 'Shougo/neoinclude.vim'
-  "Plug 'ncm2/ncm2-syntax' | Plug 'Shougo/neco-syntax'
-  Plug 'ncm2/ncm2-ultisnips' | Plug 'SirVer/ultisnips'
-elseif g:complete_func ==# 'coc'
+if g:complete_engine ==# 'coc'
   function! InstallCoc(info) abort
     if a:info.status !=# 'unchanged' || a:info.force
       call UpdateLsp()
     endif
   endfunction
   Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': function('InstallCoc')}
-elseif g:complete_func ==# 'asyncomplete'
-  Plug 'prabirshrestha/async.vim'
-  Plug 'prabirshrestha/vim-lsp', {'do': function('UpdateLsp')}
-  Plug 'prabirshrestha/asyncomplete.vim'
-  Plug 'prabirshrestha/asyncomplete-lsp.vim'
-  Plug 'mattn/vim-lsp-settings'
-  Plug 'SirVer/ultisnips'
-  Plug 'prabirshrestha/asyncomplete-buffer.vim'
-  Plug 'prabirshrestha/asyncomplete-file.vim'
-  Plug 'kyouryuukunn/asyncomplete-neoinclude.vim'
-  Plug 'yami-beta/asyncomplete-omni.vim'
-  Plug 'prabirshrestha/asyncomplete-tags.vim'
-  Plug 'prabirshrestha/asyncomplete-necosyntax.vim'
-  Plug 'prabirshrestha/asyncomplete-necovim.vim'
-elseif g:complete_func ==# 'ycm'
+elseif g:complete_engine ==# 'ycm'
   Plug 'ycm-core/YouCompleteMe', {'do': 'python3 install.py --all'}
-elseif g:complete_func ==# 'vap'
-  Plug 'skywind3000/vim-auto-popmenu', {'do': 'python3 install.py --all'}
+elseif g:complete_engine ==# 'easycomplete'
+  Plug 'jayli/vim-easycomplete'
+  Plug 'SirVer/ultisnips'
 endif
 
 if g:is_win ==# 0
@@ -226,8 +174,8 @@ nnoremap <leader>pc :PlugClean<CR>
 " gen tags {{{
 func! ReGentags()
   ClearClangConf
-  call feedkeys(":Leaderf gtags --remove\<CR>y\<CR>\<CR>", "tx")
-  GenClangConf
+  call feedkeys(":Leaderf gtags --remove\<CR>y\<CR>", "tx")
+  silent GenClangConf
   Leaderf gtags --update
 endf
 nnoremap <silent> <leader>tg :GenClangConf<CR>:Leaderf gtags --update<CR>
@@ -379,74 +327,6 @@ if (HasPlug('ultisnips') != -1) "{{{
   let g:UltiSnipsRemoveSelectModeMappings = 0
 endif "}}}
 
-if (HasPlug('asyncomplete.vim') != -1) "{{{
-  let g:asyncomplete_remove_duplicates = 1
-
-  "let g:lsp_log_verbose = 1
-  "let g:lsp_log_file = expand('/tmp/vim-lsp.log')
-  "let g:asyncomplete_log_file = expand('/tmp/asyncomplete.log')
-
-  if (HasPlug('asyncomplete-buffer.vim') != -1)
-    call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
-          \ 'name': 'buffer',
-          \ 'whitelist': ['*'],
-          \ 'blacklist': ['go'],
-          \ 'completor': function('asyncomplete#sources#buffer#completor'),
-          \ 'config': {
-          \    'max_buffer_size': 5000000,
-          \  },
-          \ }))
-  endif
-  if (HasPlug('asyncomplete-file.vim') != -1)
-    au myau User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#file#get_source_options({
-          \ 'name': 'file',
-          \ 'whitelist': ['*'],
-          \ 'priority': 10,
-          \ 'completor': function('asyncomplete#sources#file#completor')
-          \ }))
-  endif
-  if (HasPlug('asyncomplete-neoinclude.vim') != -1)
-    au myau User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#neoinclude#get_source_options({
-          \ 'name': 'neoinclude',
-          \ 'whitelist': ['cpp'],
-          \ 'refresh_pattern': '\(<\|"\|/\)$',
-          \ 'completor': function('asyncomplete#sources#neoinclude#completor'),
-          \ }))
-  endif
-  if (HasPlug('asyncomplete-omni.vim') != -1)
-    call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
-          \ 'name': 'omni',
-          \ 'whitelist': ['*'],
-          \ 'blacklist': ['c', 'cpp', 'html'],
-          \ 'completor': function('asyncomplete#sources#omni#completor')
-          \  }))
-  endif
-  if (HasPlug('asyncomplete-tags.vim') != -1)
-    au myau User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#tags#get_source_options({
-          \ 'name': 'tags',
-          \ 'whitelist': ['c'],
-          \ 'completor': function('asyncomplete#sources#tags#completor'),
-          \ 'config': {
-          \    'max_file_size': 50000000,
-          \  },
-          \ }))
-  endif
-  if (HasPlug('asyncomplete-necosyntax.vim') != -1)
-    autocmd myau User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necosyntax#get_source_options({
-          \ 'name': 'necosyntax',
-          \ 'whitelist': ['*'],
-          \ 'completor': function('asyncomplete#sources#necosyntax#completor'),
-          \ }))
-  endif
-  if (HasPlug('asyncomplete-necovim.vim') != -1)
-    autocmd myau User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#necovim#get_source_options({
-          \ 'name': 'necovim',
-          \ 'whitelist': ['vim'],
-          \ 'completor': function('asyncomplete#sources#necovim#completor'),
-          \ }))
-  endif
-endif "}}}
-
 if (HasPlug('coc.nvim') != -1) "{{{
   let g:coc_data_home = g:cache_dir . '/coc'
   let $NVIM_COC_LOG_FILE=g:coc_data_home . '/log'
@@ -521,27 +401,6 @@ if (HasPlug('coc.nvim') != -1) "{{{
         \ }
 endif "}}}
 
-if (HasPlug('ncm2') != -1) "{{{
-  "let $NVIM_PYTHON_LOG_FILE="/tmp/ncm2_log"
-  "let $NVIM_NCM_LOG_LEVEL="DEBUG"
-  "let $NVIM_NCM_MULTI_THREAD=0
-
-  " note that must keep noinsert in completeopt, the others is optional
-  let g:ncm2#complete_length = [[1,2],[7,1]]
-
-  "autocmd myau BufEnter * call ncm2#enable_for_buffer()
-  autocmd myau InsertEnter * call ncm2#enable_for_buffer()
-
-  let g:ncm2#matcher = 'substrfuzzy'
-  "let g:ncm2#sorter = 'abbrfuzzy'
-endif "}}}
-
-if (HasPlug('vim-auto-popmenu') != -1) "{{{
-  let g:apc_enable_ft = {'*':1}
-  set completeopt=menu,menuone,noselect
-  set shortmess+=c
-endif "}}}
-
 if (HasPlug('YouCompleteMe') != -1) "{{{
   let g:ycm_confirm_extra_conf = 0
   let g:ycm_add_preview_to_completeopt = 0
@@ -561,22 +420,34 @@ if (HasPlug('YouCompleteMe') != -1) "{{{
         \ }
 
 let g:ycm_filetype_whitelist = {
-			\ 'c':1, 'cpp':1, 'objc':1, 'objcpp':1,
-			\ 'go':1, 'rust':1, 'python':1, 'vim':1,
-			\ 'lua':1, 'java':1, 'ruby':1, 'php':1,
-			\ 'javascript':1, 'typedscript':1, 'coffee':1,
-			\ 'perl':1, 'perl6':1, 'erlang':1,
-			\ 'asm':1, 'nasm':1, 'masm':1, 'tasm':1, 'asm68k':1, 'asmh8300':1,
-			\ 'basic':1, 'cs':1, 'vb':1,
-			\ 'make':1, 'cmake':1,
-			\ 'html':1, 'css':1, 'less':1,
-			\ 'dosini':1, 'conf':1, 'config':1, 'json':1, 'cson':1,
-			\ 'haskell':1, 'lhaskell':1, 'lisp':1,
-			\ 'scheme':1, 'sdl':1,
-			\ 'sh':1, 'zsh':1, 'bash':1, 'ps1':1, 'bat':1,
-			\ 'asciidoc':1, 'man':1, 'markdown':1, 'matlab':1, 'maxima':1,
-			\ }
+      \ 'c':1, 'cpp':1, 'objc':1, 'objcpp':1,
+      \ 'go':1, 'rust':1, 'python':1, 'vim':1,
+      \ 'lua':1, 'java':1, 'ruby':1, 'php':1,
+      \ 'javascript':1, 'typedscript':1, 'coffee':1,
+      \ 'perl':1, 'perl6':1, 'erlang':1,
+      \ 'asm':1, 'nasm':1, 'masm':1, 'tasm':1, 'asm68k':1, 'asmh8300':1,
+      \ 'basic':1, 'cs':1, 'vb':1,
+      \ 'make':1, 'cmake':1,
+      \ 'html':1, 'css':1, 'less':1,
+      \ 'dosini':1, 'conf':1, 'config':1, 'json':1, 'cson':1,
+      \ 'haskell':1, 'lhaskell':1, 'lisp':1,
+      \ 'scheme':1, 'sdl':1,
+      \ 'sh':1, 'zsh':1, 'bash':1, 'ps1':1, 'bat':1,
+      \ 'asciidoc':1, 'man':1, 'markdown':1, 'matlab':1, 'maxima':1,
+      \ }
 endif "}}}
+
+if (HasPlug('easycomplete') != -1) "{{{
+  "au User easycomplete_plugin call easycomplete#RegisterSource({
+  "      \ 'name': 'cpp',
+  "      \ 'whitelist': ["c", "cc", "cpp", "c++", "objc", "objcpp"],
+  "      \ 'completor': 'easycomplete#sources#cpp#completor',
+  "      \ 'constructor' :'easycomplete#sources#cpp#constructor',
+  "      \ 'gotodefinition': 'easycomplete#sources#cpp#GotoDefinition',
+  "      \ 'command': 'clangd',
+  "      \ 'semantic_triggers':["->$", "::$"]
+  "      \  })
+endif
 
 if (HasPlug('tmux-complete.vim') != -1) "{{{
   let g:tmuxcomplete#trigger = 'omnifunc'

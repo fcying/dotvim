@@ -15,4 +15,4 @@ git clone https://github.com/fcying/dotvim.git ~/.vim
 
 项目配置保存在对应的`.git/.pvimrc`, 如果没有`scm`文件夹, 保存在工作目录下,使用`<leader>ep`修改.
 
-补全框架默认用`coc`, 可以修改`g:complete_func`更改.
+补全框架默认用`coc`, 可以修改`g:complete_engine`更改.

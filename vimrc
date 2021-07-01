@@ -32,6 +32,7 @@ let g:etc_dir = g:config_dir . '/etc'
 let g:file_plug = g:config_dir . '/plug.vim'
 let g:file_vimrc = g:config_dir . '/vimrc'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
+let g:file_log = g:cache_dir . '/vim.log'
 let g:root_markers = ['.root', '.git', '.svn']
 let g:scm_dir = ''
 
@@ -287,6 +288,44 @@ function! s:add_dict()
   endif
 endfunction
 autocmd myau FileType * :call s:add_dict()
+
+" Redir
+function! Redir(cmd, rng, start, end)
+  for win in range(1, winnr('$'))
+    if getwinvar(win, 'scratch')
+      execute win . 'windo close'
+    endif
+  endfor
+  if a:cmd =~ '^!'
+    let cmd = a:cmd =~' %'
+          \ ? matchstr(substitute(a:cmd, ' %', ' ' . expand('%:p'), ''), '^!\zs.*')
+          \ : matchstr(a:cmd, '^!\zs.*')
+    if a:rng == 0
+      let output = systemlist(cmd)
+    else
+      let joined_lines = join(getline(a:start, a:end), '\n')
+      let cleaned_lines = substitute(shellescape(joined_lines), "'\\\\''", "\\\\'", 'g')
+      let output = systemlist(cmd . " <<< $" . cleaned_lines)
+    endif
+  else
+    redir => output
+    execute a:cmd
+    redir END
+    let output = split(output, "\n")
+  endif
+  vnew
+  let w:scratch = 1
+  setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile
+  call setline(1, output)
+endfunction
+command! -nargs=1 -complete=command -bar -range Redir silent call Redir(<q-args>, <range>, <line1>, <line2>)
+
+" Log
+function! Log(cmd)
+  let l:ret = execute('echo "' . a:cmd . '"')
+  call writefile([l:ret], expand(g:file_log), 'a')
+endfunction
+command! -nargs=1 Log silent call Log(<args>)
 
 " session
 set sessionoptions-=help

@@ -438,15 +438,6 @@ let g:ycm_filetype_whitelist = {
 endif "}}}
 
 if (HasPlug('easycomplete') != -1) "{{{
-  "au User easycomplete_plugin call easycomplete#RegisterSource({
-  "      \ 'name': 'cpp',
-  "      \ 'whitelist': ["c", "cc", "cpp", "c++", "objc", "objcpp"],
-  "      \ 'completor': 'easycomplete#sources#cpp#completor',
-  "      \ 'constructor' :'easycomplete#sources#cpp#constructor',
-  "      \ 'gotodefinition': 'easycomplete#sources#cpp#GotoDefinition',
-  "      \ 'command': 'clangd',
-  "      \ 'semantic_triggers':["->$", "::$"]
-  "      \  })
 endif
 
 if (HasPlug('tmux-complete.vim') != -1) "{{{

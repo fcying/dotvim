@@ -214,7 +214,11 @@ augroup END
 set nobackup
 set nowritebackup
 set undofile
-execute 'set undodir=' . g:cache_dir . '/undodir'
+if g:is_nvim
+  execute 'set undodir=' . g:cache_dir . '/undodir-nvim'
+else
+  execute 'set undodir=' . g:cache_dir . '/undodir'
+endif
 set noswapfile
 
 " display

@@ -469,5 +469,12 @@ function kmsg() {
     [ -n "$1" ] && search_opt="| rg \"$*\"" || search_opt=""
     eval "adb shell \"while true; do (cat proc/kmsg); done;\" $search_opt"
 }
+function adb_setenforce0() {
+    adb wait-for-device
+    adb root
+    adb wait-for-device
+    adb remount
+    adb shell setenforce 0
+}
 
 #zprof

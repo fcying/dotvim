@@ -1,21 +1,44 @@
 set nocompatible
-set encoding=utf-8
 set mouse=n
+set encoding=utf-8
+set fileencodings=ucs-bom,utf-8,gbk,gb18030,big5,euc-jp,euc-kr,latin1
+set fileformats=unix,dos,mac
+set number
+set ruler
+set laststatus=0
+set wildmenu
+set wildmode=longest:full,full
 
-set runtimepath^=~/.vim/.plugged/vim-matchup
-filetype plugin indent on
-syntax on
-set hidden
+set magic
+set incsearch
+set hlsearch
+set wrapscan    "search loop
+set ignorecase
+set smartcase
 
+set expandtab        "%retab
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+
+set tags=tags,tags;
+set cscopetag
+set cscopeprg='gtags-cscope'
+set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
+
+set completeopt=longest,menu
+autocmd FileType python set omnifunc=pythoncomplete#Complete
+autocmd FileType c set omnifunc=ccomplete#Complete
+autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+if &omnifunc == ""
+  setlocal omnifunc=syntaxcomplete#Complete
+endif
+
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
+
+autocmd! bufwritepost .vimrc source $MYVIMRC
 filetype plugin indent on
 syntax enable
 
-
-" color
-set runtimepath^=~/.vim/.plugged/vim-solarized8
-let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-set termguicolors
-set t_ut=
-set background=light
-colorscheme solarized8
+colorscheme desert

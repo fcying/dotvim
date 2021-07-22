@@ -1,6 +1,7 @@
 {
   "coc.preferences.rootPatterns": [".root", ".git", ".svn"],
   "coc.source.file.ignoreHidden": false,
+  "coc.preferences.semanticTokensHighlights": false,
   "suggest.enablePreview": true,
   "diagnostic.displayByAle": false,
   "diagnostic.errorSign": "X",
@@ -16,20 +17,15 @@
     "javascriptreact": ["javascript"],
     "typescript": ["javascript"]
   },
-  "vimlsp.diagnostic.enable": true,
-  "vimlsp.indexes.count": 1,
-  "vimlsp.indexes.gap": 200,
-  //"python.jediEnabled": true,
-  //"python.analysis.diagnosticEnabled": true,
   //https://github.com/clangd/clangd/releases
   "clangd.enabled": true,
   "clangd.disableDiagnostics": true,
   "clangd.path": "clangd",
   "clangd.disableSnippetCompletion": true,
+  "clangd.semanticHighlighting": false,
   "clangd.arguments": [],
   //wget -Ojls.tgz https://download.eclipse.org/jdtls/milestones/0.57.0/jdt-language-server-0.57.0-202006172108.tar.gz
   //tar xzvf jls.tgz -C ~/.vim/.cache/coc/extensions/coc-java-data/server
-  "java.completion.enabled": true,
   "go.enable": true,
   "go.goplsOptions": {
     "completeUnimported": true

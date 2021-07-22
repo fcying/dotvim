@@ -54,7 +54,7 @@ Plug 'skywind3000/vim-quickui'
 Plug 'liuchengxu/vim-which-key'
 "Plug 'roxma/vim-paste-easy'
 
-" FIXME
+" FIXME nvim cursorhold bug https://github.com/neovim/neovim/issues/12587
 if g:is_nvim
   Plug 'antoinemadec/FixCursorHold.nvim'
 endif
@@ -77,6 +77,7 @@ Plug 'cespare/vim-toml'
 Plug 'peterhoeg/vim-qml'
 Plug 'neoclide/jsonc.vim'
 Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
+Plug 'othree/xml.vim'
 
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown', {'for':'markdown'}
@@ -114,7 +115,6 @@ Plug 'skywind3000/asyncrun.vim', {'on': ['AsyncRun', 'AsyncStop'] }
 Plug 'skywind3000/asynctasks.vim', {'on': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] }
 
 Plug 'fcying/gen_clang_conf.vim'
-Plug 'mattn/emmet-vim'
 Plug 'honza/vim-snippets'
 "Plug 'w0rp/ale'
 
@@ -251,43 +251,6 @@ if (HasPlug('vim-fugitive') != -1) "{{{
   autocmd myau FileType fugitive* nmap <buffer> q gq
 endif "}}}
 
-if (HasPlug('LanguageClient-neovim') != -1) "{{{
-  " Required for operations modifying multiple buffers like rename.
-  set hidden
-  nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
-  nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
-  nnoremap <silent> <leader>ld :call LanguageClient#textDocument_definition()<CR>
-  nnoremap <silent> <leader>lr :call LanguageClient#textDocument_rename()<CR>
-  nnoremap <silent> <leader>lf :call LanguageClient#textDocument_formatting()<CR>
-  nnoremap <silent> <leader>lt :call LanguageClient#textDocument_typeDefinition()<CR>
-  nnoremap <silent> <leader>lx :call LanguageClient#textDocument_references()<CR>
-  nnoremap <silent> <leader>la :call LanguageClient_workspace_applyEdit()<CR>
-  nnoremap <silent> <leader>lc :call LanguageClient#textDocument_completion()<CR>
-  nnoremap <silent> <leader>lh :call LanguageClient#textDocument_hover()<CR>
-  nnoremap <silent> <leader>ls :call LanguageClient_textDocument_documentSymbol()<CR>
-  nnoremap <silent> <leader>lm :call LanguageClient_contextMenu()<CR>
-
-  let g:LanguageClient_rootMarkers = {
-        \ 'go': ['.root', '.git', 'go.mod'],
-        \ 'c': ['.root', '.git'],
-        \ 'cpp': ['.root', '.git'],
-        \ }
-
-  let g:LanguageClient_diagnosticsEnable = get(g:, 'LanguageClient_diagnosticsEnable', 0)
-
-  let g:LanguageClient_serverCommands = {
-        \ 'c': ['ccls'],
-        \ 'cpp': ['ccls'],
-        \ 'go' : ['gopls'],
-        \ 'python': ['pyls'],
-        \ 'rust': ['rustup', 'run', 'stable', 'rls'],
-        \ 'javascript': ['javascript-typescript-stdio'],
-        \ 'typescript': ['javascript-typescript-stdio'],
-        \ 'dockerfile': ['docker-langserver --stdio'],
-        \ }
-
-endif "}}}
-
 if (HasPlug('vim-lsp') != -1) "{{{
   let g:lsp_diagnostics_enabled = 0
   nnoremap <silent> <leader>ld :LspDefinition<CR>
@@ -329,22 +292,26 @@ endif "}}}
 
 if (HasPlug('coc.nvim') != -1) "{{{
   let g:coc_data_home = g:cache_dir . '/coc'
-  let $NVIM_COC_LOG_FILE=g:coc_data_home . '/log'
   let g:coc_config_home = g:config_dir
+  let $NVIM_COC_LOG_FILE=g:coc_data_home . '/log'
   "'coc-pairs', 'coc-syntax'
-  let g:coc_global_extensions = ['coc-vimlsp',
+  let g:coc_global_extensions = [
         \ 'coc-dictionary', 'coc-syntax',
         \ 'coc-rls', 'coc-go', 'coc-lua',
-        \ 'coc-clangd', 'coc-cmake',
-        \ 'coc-yaml', 'coc-toml', 'coc-xml', 'coc-json',
-        \ 'coc-css', 'coc-html',
-        \ 'coc-tsserver', 'coc-docker',
+        \ 'coc-clangd', 'coc-cmake', 'coc-json',
         \ 'coc-marketplace'
         \ ]
-  call add(g:coc_global_extensions, 'coc-snippets')
-  "call add(g:coc_global_extensions, 'coc-python')
-  call add(g:coc_global_extensions, 'coc-pyright')
+  "call add(g:coc_global_extensions, 'coc-vimlsp')
+  "call add(g:coc_global_extensions, 'coc-tsserver')
+  "call add(g:coc_global_extensions, 'coc-docker')
+  "call add(g:coc_global_extensions, 'coc-yaml')
+  "call add(g:coc_global_extensions, 'coc-toml')
+  "call add(g:coc_global_extensions, 'coc-css')
+  "call add(g:coc_global_extensions, 'coc-html')
+  "call add(g:coc_global_extensions, 'coc-xml')
   "call add(g:coc_global_extensions, 'coc-java')
+  call add(g:coc_global_extensions, 'coc-snippets')
+  call add(g:coc_global_extensions, 'coc-pyright')
 
   "if exists('*complete_info')
   "  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
@@ -528,11 +495,9 @@ if (HasPlug('LeaderF') != -1) "{{{
   let g:Lf_GtagsSource = 2
   let g:Lf_GtagsStoreInRootMarker = 1
   "let g:Lf_GtagsStoreInProject = 1
-  "let $GTAGSLABEL = 'native-pygments'
-  "let $GTAGSCONF = g:etc_dir . '/gtags.conf'
-  "let g:Lf_Gtagslabel = 'native-pygments'
-  let g:Lf_Gtagslabel = 'ctags'
-  let g:Lf_Gtagsconf = get(g:, 'Lf_Gtagsconf', g:etc_dir . '/gtags.conf')
+  let g:Lf_Gtagslabel = 'native-pygments'
+  "let g:Lf_Gtagslabel = 'ctags'
+  "let g:Lf_Gtagsconf = get(g:, 'Lf_Gtagsconf', g:etc_dir . '/gtags.conf')
 
   let g:Lf_PreviewInPopup = 1
   "let g:Lf_WindowPosition = 'popup'
@@ -624,9 +589,8 @@ if (HasPlug('LeaderF') != -1) "{{{
   endfunction
 
   "noremap <C-]> :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-  noremap tr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+  noremap tr :<C-U><C-R>=printf("Leaderf! gtags -r %s", expand("<cword>"))<CR><CR>
   noremap td :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-  "noremap to :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
   noremap tn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
   noremap tp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 endif "}}}
@@ -785,11 +749,6 @@ if (HasPlug('vim-fswitch') != -1) "{{{
   if (HasPlug('coc.nvim') ==# -1)
     autocmd myau FileType c,cpp nnoremap <silent> <buffer> <Leader>h <ESC>:FSHere<CR>
   endif
-endif "}}}
-
-if (HasPlug('emmet-vim') != -1) "{{{
-  let g:user_emmet_install_global = 0
-  autocmd myau FileType html,css EmmetInstall
 endif "}}}
 
 if (HasPlug('vim-template') != -1) "{{{

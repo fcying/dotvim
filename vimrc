@@ -19,6 +19,7 @@ let g:has_go = executable('go') ? 1 : 0
 let g:is_gui = has('gui_running') || !empty($NVIM_GUI)
 let g:is_tmux = exists('$TMUX')
 let g:is_conemu = !empty($CONEMUBUILD)
+let g:is_wsl = isdirectory("/mnt/c")
 
 if executable('pip3') ==# 0
   echohl WarningMsg
@@ -106,7 +107,7 @@ nnoremap <silent> <leader>ep  :execute 'e '  . g:pvimrc_path<CR>
 execute 'autocmd myau BufWritePost .pvimrc nested sandbox so ' . g:pvimrc_path
 "autocmd! bufwritepost _vimrc source $MYVIMRC
 
-" cursor
+" cursor FIXME nvim will modify terminal cursorshape
 if g:is_nvim
   au VimEnter,VimResume * set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
   \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
@@ -161,11 +162,10 @@ set noerrorbells
 " encoding {{{
 let $LANG='en' "zh-cn gina work error
 set encoding=utf-8
-set fileencoding=utf-8
+set fileencodings=ucs-bom,utf-8,gbk,gb18030,big5,euc-jp,euc-kr,latin1
 scriptencoding utf-8
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
-set fileencodings=ucs-bom,utf-8,gbk,gb18030,big5,euc-jp,euc-kr,latin1
 if g:is_win
   set fileformats=dos,unix,mac
 else
@@ -189,17 +189,22 @@ set cinkeys-=0#
 autocmd myau FileType * setlocal formatoptions-=o
 set formatoptions+=mM
 set virtualedit=onemore        "onemore all
-set tags=tags,tags;
-if g:is_win
-  let $PATH = g:config_dir . '\lib' . ';' . $PATH
-elseif g:is_linux
-  let $PATH = g:config_dir . '/lib' . ':' . $PATH
-endif
 set history=2000
 set scrolloff=3
 set hidden
 set noautochdir
 set updatetime=300
+
+" tags path cscope gtags {{{
+set tags=tags,tags;
+set cscopetag
+set cscopeprg='gtags-cscope'
+set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
+if g:is_win
+  let $PATH = g:config_dir . '\lib' . ';' . $PATH
+elseif g:is_linux
+  let $PATH = g:config_dir . '/lib' . ':' . $PATH
+endif
 
 " autoread {{{
 set autoread
@@ -264,11 +269,6 @@ set shiftwidth=4
 set softtabstop=4
 
 " quickfix {{{
-"if g:is_vim8
-"  set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
-"else
-"  set cscopequickfix=s+,c+,d+,i+,t+,e+
-"endif
 au myau FileType qf setlocal nonumber
 set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
 function! ShowQuickfix()
@@ -646,7 +646,7 @@ autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
 autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
 autocmd myau BufNewFile,BufRead .tasks setl filetype=conf
 
-" completion
+" completion {{{
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
 " close menu and start a new line
@@ -658,7 +658,7 @@ if has('patch-8.1.1902')
   set completepopup=border:off
 endif
 
-" large file
+" large file {{{
 let g:LargeFile = 1024 * 1024 * 10
 autocmd myau BufReadPre * let f=getfsize(expand("<afile>")) | if f > g:LargeFile || f == -2 | call LargeFile() | endif
 function! LargeFile()
@@ -669,8 +669,19 @@ function! LargeFile()
   autocmd myau VimEnter *  echo "The file is larger than " . (g:LargeFile / 1024 / 1024) . " MB, so some options are changed (see .vimrc for details)."
 endfunction
 
-" paste without overwrite register
+" paste without overwrite register {{{
 xnoremap p "_dP
+
+" wsl clip {{{
+if is_wsl
+  let s:clip = '/mnt/c/Windows/System32/clip.exe'
+  if executable(s:clip)
+    augroup WSLYank
+      autocmd!
+      autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
+    augroup END
+  endif
+endif
 
 
 " }}}

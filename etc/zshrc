@@ -8,14 +8,16 @@ fi
 CONFIG_DIR=${CONFIG_DIR:-"$HOME/.vim/etc"}
 
 export PAGER=${PAGER:-"less"}
-export VISUAL=${VISUAL:-"nvim"}
 export EDITOR="$VISUAL"
 export BASH_ENV="$HOME/.bashenv"
 
-alias vim='nvim'
-alias vi='nvim'
-alias vimdiff='nvim -d'
-alias nvim-qt="NVIM_GUI=1 nvim-qt"
+type nvim >/dev/null 2>&1 && {
+    export VISUAL=${VISUAL:-"nvim"}
+    alias vim='nvim'
+    alias vi='nvim'
+    alias vimdiff='nvim -d'
+    alias nvim-qt="NVIM_GUI=1 nvim-qt"
+}
 
 # Set the default Less options.
 # Mouse-wheel scrolling has been disabled by -X (disable screen clearing).

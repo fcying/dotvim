@@ -54,9 +54,11 @@ Plug 'skywind3000/vim-quickui'
 Plug 'liuchengxu/vim-which-key'
 "Plug 'roxma/vim-paste-easy'
 
-" FIXME nvim cursorhold bug https://github.com/neovim/neovim/issues/12587
 if g:is_nvim
+  " FIXME nvim cursorhold bug https://github.com/neovim/neovim/issues/12587
   Plug 'antoinemadec/FixCursorHold.nvim'
+  " FIXME https://github.com/neovim/neovim/issues/14967 in 0.5.0
+  Plug 'https://github.com/kevinhwang91/nvim-hclipboard'
 endif
 
 Plug 'tpope/vim-surround'
@@ -227,6 +229,10 @@ endif "}}}
 
 if (HasPlug('FixCursorHold.nvim') != -1) "{{{
   let g:cursorhold_updatetime = 300
+endif "}}}
+
+if (HasPlug('nvim-hclipboard') != -1) "{{{
+  lua require('hclipboard').start()
 endif "}}}
 
 if (HasPlug('vim-expand-region') != -1) "{{{

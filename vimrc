@@ -97,6 +97,10 @@ if filereadable(g:file_plug)
   execute 'source ' . g:file_plug
 endif
 
+if g:is_nvim
+  exec 'luafile ' . g:config_dir . '/init.lua'
+endif
+
 
 nnoremap <silent> <leader>evv :execute 'e '  . g:file_vimrc<CR>
 nnoremap <silent> <leader>evl :execute 'e '  . g:file_vimrc_local<CR>

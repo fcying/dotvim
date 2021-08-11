@@ -23,7 +23,7 @@
   "clangd.path": "clangd",
   "clangd.disableSnippetCompletion": true,
   "clangd.semanticHighlighting": false,
-  "clangd.arguments": [],
+  "clangd.arguments": ["--background-index"],
   //wget -Ojls.tgz https://download.eclipse.org/jdtls/milestones/0.57.0/jdt-language-server-0.57.0-202006172108.tar.gz
   //tar xzvf jls.tgz -C ~/.vim/.cache/coc/extensions/coc-java-data/server
   "go.enable": true,

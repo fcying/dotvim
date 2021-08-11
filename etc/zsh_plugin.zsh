@@ -64,6 +64,7 @@ alias gapa='git add --patch'
 alias gau='git add --update'
 alias gav='git add --verbose'
 alias gap='git apply'
+alias gar='git archive -o diff.zip HEAD $(git diff --name-only HEAD~1)'
 
 alias gb='git branch'
 alias gba='git branch -a'

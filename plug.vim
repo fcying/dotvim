@@ -1,5 +1,5 @@
-" coc ycm easycomplete
-let g:complete_engine = get(g:, 'complete_engine', 'coc')
+" coc ycm easycomplete nvimlsp
+let g:complete_engine = get(g:, 'complete_engine', 'nvimlsp')
 
 " for spacevim plugin
 let g:spacevim_data_dir = g:config_dir . '/.cache/spacevim'
@@ -138,18 +138,29 @@ function! UpdateLsp() abort
   silent !pip3 install jedi pylint --upgrade
   call mkdir($HOME . '/.npm', 'p')
   silent !cd ~/.npm; npm install dockerfile-language-server-nodejs
+  silent !cd ~/.npm; npm install pyright
+  silent !cd ~/.npm; npm install vim-language-server
   if g:has_go
     GoGetTools
   endif
 endfunction
 
+function! InstallCoc(info) abort
+  if a:info.status !=# 'unchanged' || a:info.force
+    call UpdateLsp()
+  endif
+endfunction
+
 if g:complete_engine ==# 'coc'
-  function! InstallCoc(info) abort
+  Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': function('InstallCoc')}
+elseif g:complete_engine ==# 'nvimlsp'
+  function! InstallNvimLsp(info) abort
     if a:info.status !=# 'unchanged' || a:info.force
       call UpdateLsp()
     endif
   endfunction
-  Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': function('InstallCoc')}
+  Plug 'neovim/nvim-lspconfig', {'do': function('InstallCoc')}
+  Plug 'hrsh7th/nvim-compe'
 elseif g:complete_engine ==# 'ycm'
   Plug 'ycm-core/YouCompleteMe', {'do': 'python3 install.py --all'}
 elseif g:complete_engine ==# 'easycomplete'
@@ -372,6 +383,38 @@ if (HasPlug('coc.nvim') != -1) "{{{
   let g:lightline.component_function ={
         \   'cocstatus': 'coc#status'
         \ }
+endif "}}}
+
+if (HasPlug('nvim-lspconfig') != -1) "{{{
+  set completeopt=menuone,noselect
+  let g:compe = {}
+  let g:compe.enabled = v:true
+  let g:compe.autocomplete = v:true
+  let g:compe.debug = v:false
+  let g:compe.min_length = 1
+  let g:compe.preselect = 'enable'
+  let g:compe.throttle_time = 80
+  let g:compe.source_timeout = 200
+  let g:compe.resolve_timeout = 800
+  let g:compe.incomplete_delay = 400
+  let g:compe.max_abbr_width = 100
+  let g:compe.max_kind_width = 100
+  let g:compe.max_menu_width = 100
+  let g:compe.documentation = v:true
+
+  let g:compe.source = {}
+  let g:compe.source.path = v:true
+  let g:compe.source.buffer = v:true
+  let g:compe.source.calc = v:true
+  let g:compe.source.nvim_lsp = v:true
+  let g:compe.source.nvim_lua = v:true
+  let g:compe.source.vsnip = v:true
+  let g:compe.source.ultisnips = v:true
+  let g:compe.source.luasnip = v:true
+  let g:compe.source.emoji = v:true
+  inoremap <silent><expr> <C-e>     compe#close('<C-e>')
+  inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
+  inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
 endif "}}}
 
 if (HasPlug('YouCompleteMe') != -1) "{{{

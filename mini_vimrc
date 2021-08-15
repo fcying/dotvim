@@ -1,3 +1,4 @@
+" vim: set et fenc=utf-8 ff=unix sts=4 sw=4 ts=4 :
 set nocompatible
 set mouse=n
 set encoding=utf-8
@@ -5,7 +6,11 @@ set fileencodings=ucs-bom,utf-8,gbk,gb18030,big5,euc-jp,euc-kr,latin1
 set fileformats=unix,dos,mac
 set number
 set ruler
-set laststatus=0
+set splitright
+set splitbelow
+set laststatus=2
+set nobackup
+set undofile
 set wildmenu
 set wildmode=longest:full,full
 
@@ -15,30 +20,66 @@ set hlsearch
 set wrapscan    "search loop
 set ignorecase
 set smartcase
+set cinkeys-=0#
 
-set expandtab        "%retab
+set expandtab        "retab
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 
 set tags=tags,tags;
 set cscopetag
-set cscopeprg='gtags-cscope'
-set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
+if executable('gtags')
+    set cscopeprg='gtags-cscope'
+endif
+set cscopequickfix=s+,c+,d+,i+,t+,e+
 
-set completeopt=longest,menu
-autocmd FileType python set omnifunc=pythoncomplete#Complete
-autocmd FileType c set omnifunc=ccomplete#Complete
-autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
-if &omnifunc == ""
-  setlocal omnifunc=syntaxcomplete#Complete
+set cpt=.,k,w,b,i,d,t
+if has('patch-7.4.775')
+    set completeopt=menuone,noselect,noinsert
+    so ~/.vim/apc.vim
+else
+    set completeopt=menuone
+    let g:apc_no_select = 1
+    so ~/.vim/apc.vim
+endif
+if has('patch-7.4.314')
+    set shortmess+=c
 endif
 
+autocmd! BufReadPost,BufNewFile * if &omnifunc == "" | setlocal omnifunc=syntaxcomplete#Complete | endif
+
+nnoremap <space>tg :silent !ctags -R --c++-kinds=+p --fields=+iaS --language-force=C++<cr>
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
 
-autocmd! bufwritepost .vimrc source $MYVIMRC
+
 filetype plugin indent on
 syntax enable
 
 colorscheme desert
+
+" auto pairs
+"inoremap ( ()<ESC>i
+"inoremap ) <c-r>=ClosePair(')')<CR>
+inoremap {<CR> {<CR>}<c-o><s-o>
+inoremap } <c-r>=ClosePair('}')<CR>
+"inoremap [ []<ESC>i
+"inoremap ] <c-r>=ClosePair(']')<CR>
+"inoremap " <c-r>=CloseSamePair('"')<CR>
+"inoremap ' <c-r>=CloseSamePair('''')<CR>
+function! CloseSamePair(char)
+    if getline('.')[col('.') - 1] == a:char
+        return "\<Right>"
+    else
+        let l:char=a:char . a:char . "\<Left>"
+        return l:char
+    endif
+endf
+function! ClosePair(char)
+    if getline('.')[col('.') - 1] == a:char
+        return "\<Right>"
+    else
+        return a:char
+    endif
+endfunction

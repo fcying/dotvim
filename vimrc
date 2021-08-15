@@ -449,16 +449,16 @@ cnoremap <expr> <c-p> pumvisible() ? "<c-p>" : "<up>"
 
 " tab
 function! s:tab_moveleft()
-	let l:tabnr = tabpagenr() - 2
-	if l:tabnr >= 0
-		exec 'tabmove '.l:tabnr
-	endif
+  let l:tabnr = tabpagenr() - 2
+  if l:tabnr >= 0
+    exec 'tabmove '.l:tabnr
+  endif
 endfunc
 function! s:tab_moveright()
-	let l:tabnr = tabpagenr() + 1
-	if l:tabnr <= tabpagenr('$')
-		exec 'tabmove '.l:tabnr
-	endif
+  let l:tabnr = tabpagenr() + 1
+  if l:tabnr <= tabpagenr('$')
+    exec 'tabmove '.l:tabnr
+  endif
 endfunc
 command! -nargs=0 TabMoveRight call s:tab_moveright()
 command! -nargs=0 TabMoveLeft call s:tab_moveleft()
@@ -536,22 +536,20 @@ inoremap } <c-r>=ClosePair('}')<CR>
 "inoremap ] <c-r>=ClosePair(']')<CR>
 "inoremap " <c-r>=CloseSamePair('"')<CR>
 "inoremap ' <c-r>=CloseSamePair('''')<CR>
-
 function! CloseSamePair(char)
-    if getline('.')[col('.') - 1] == a:char
-        return "\<Right>"
-    else
-        let l:char=a:char . a:char . "\<Left>"
-        return l:char
-    endif
+  if getline('.')[col('.') - 1] == a:char
+    return "\<Right>"
+  else
+    let l:char=a:char . a:char . "\<Left>"
+    return l:char
+  endif
 endf
-
 function! ClosePair(char)
-    if getline('.')[col('.') - 1] == a:char
-        return "\<Right>"
-    else
-        return a:char
-    endif
+  if getline('.')[col('.') - 1] == a:char
+    return "\<Right>"
+  else
+    return a:char
+  endif
 endfunction
 
 " Without any arguments the current buffer is kept.  With an argument the buffer name/number supplied is kept.
@@ -727,10 +725,10 @@ else
 endif
 
 if $TERM =~# '256color' && g:is_tmux
-	" disable Background Color Erase (BCE) so that color schemes
-	" render properly when inside 256-color tmux and GNU screen.
-	" see also http://snk.tuxfamily.org/log/vim-256color-bce.html
-	set t_ut=
+  " disable Background Color Erase (BCE) so that color schemes
+  " render properly when inside 256-color tmux and GNU screen.
+  " see also http://snk.tuxfamily.org/log/vim-256color-bce.html
+  set t_ut=
 elseif $TERM ==# 'linux'
   let g:colorscheme = 'desert'
   let g:background='dark'

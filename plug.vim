@@ -1,6 +1,13 @@
 " coc ycm easycomplete nvimlsp
 let g:complete_engine = get(g:, 'complete_engine', 'nvimlsp')
 
+if g:complete_engine ==# 'nvimlsp'
+  if g:is_nvim ==# 0
+    let g:complete_engine = 'other'
+    execute 'so ' . g:config_dir . '/apc.vim'
+  endif
+endif
+
 " for spacevim plugin
 let g:spacevim_data_dir = g:config_dir . '/.cache/spacevim'
 
@@ -42,16 +49,15 @@ Plug 'junegunn/vim-plug'
 Plug 'mbbill/fencview'
 Plug 'adah1972/tellenc'
 Plug 'wsdjeg/vim-fetch'
-"Plug 'tpope/vim-eunuch'
 Plug 'lambdalisue/suda.vim'
 Plug 'moll/vim-bbye', {'on':'Bdelete'}
 Plug 'itchyny/lightline.vim'
 Plug 'simnalamburt/vim-mundo'
-Plug 'tpope/vim-apathy'
 Plug 'chrisbra/Colorizer'
-"Plug 'RRethy/vim-hexokinase', { 'do': 'make hexokinase' }
 Plug 'skywind3000/vim-quickui'
 Plug 'liuchengxu/vim-which-key'
+Plug 'dstein64/vim-startuptime', {'on':'StartupTime'}
+Plug 'tpope/vim-apathy'
 "Plug 'roxma/vim-paste-easy'
 
 if g:is_nvim
@@ -64,14 +70,17 @@ endif
 Plug 'tpope/vim-surround'
 Plug 'terryma/vim-expand-region'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
+
 Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}
 "Plug 'preservim/nerdtree', {'on':['NERDTree', 'NERDTreeFocus', 'NERDTreeToggle', 'NERDTreeCWD', 'NERDTreeFind']}
 Plug 'lambdalisue/fern.vim'
 Plug 'preservim/nerdcommenter'
 Plug 'preservim/tagbar', {'on':'TagbarToggle'}
-"Plug 'Krasjet/auto.pairs'
 Plug 'andymass/vim-matchup'
 Plug 'fcying/vim-foldsearch'
+"Plug 'Krasjet/auto.pairs'
+Plug 'easymotion/vim-easymotion'
+"Plug 'justinmk/vim-sneak'
 
 Plug 'aperezdc/vim-template', {'on':'TemplateHere'}
 Plug 'Vimjas/vim-python-pep8-indent', {'for':'python'}
@@ -80,15 +89,9 @@ Plug 'peterhoeg/vim-qml'
 Plug 'neoclide/jsonc.vim'
 Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
 Plug 'othree/xml.vim'
-
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown', {'for':'markdown'}
 
-Plug 'easymotion/vim-easymotion'
-"Plug 'justinmk/vim-sneak'
-if exists('*popup_menu') || g:is_nvim
-  Plug 'pechorin/any-jump.vim'
-endif
 function! InstallLeaderF(info) abort
   if a:info.status !=# 'unchanged' || a:info.force
     silent !echo "InstallLeaderF"
@@ -101,11 +104,8 @@ function! InstallLeaderF(info) abort
   endif
 endfunction
 Plug 'Yggdroot/LeaderF', {'do': function('InstallLeaderF')}
-Plug 'brooth/far.vim'
 
-Plug 'dstein64/vim-startuptime', {'on':'StartupTime'}
 Plug 'MattesGroeger/vim-bookmarks'
-Plug 'thinca/vim-ref'
 Plug 'derekwyatt/vim-fswitch'
 Plug 'Yggdroot/indentLine' ", {'on':'IndentLinesToggle'}
 Plug 'xolox/vim-session'
@@ -519,12 +519,6 @@ if (HasPlug('vim-session') != -1) "{{{
   let g:session_directory = g:cache_dir . '/sessions'
 endif "}}}
 
-if (HasPlug('far.vim') != -1) "{{{
-  let g:far#enable_undo = 1
-  let g:far#source = 'rg'
-  let g:far#ignore_files = [g:etc_dir . '/farignore']
-endif "}}}
-
 if (HasPlug('LeaderF') != -1) "{{{
   let g:Lf_ShowDevIcons = 0
   let g:Lf_ShowHidden = 1
@@ -658,43 +652,6 @@ if (HasPlug('vim-bookmarks') != -1) "{{{
   nmap <Leader>mx <Plug>BookmarkClearAll
 endif "}}}
 
-if (HasPlug('vim-ref') != -1) "{{{
-  let g:ref_source_webdict_sites = {
-        \   'je': {
-        \     'url': 'http://dictionary.infoseek.ne.jp/jeword/%s',
-        \   },
-        \   'ej': {
-        \     'url': 'http://dictionary.infoseek.ne.jp/ejword/%s',
-        \   },
-        \   'wiki': {
-        \     'url': 'http://ja.wikipedia.org/wiki/%s',
-        \   },
-        \   'cn': {
-        \     'url': 'http://www.iciba.com/%s',
-        \   },
-        \   'wikipedia:en':{'url': 'http://en.wikipedia.org/wiki/%s',  },
-        \   'bing':{'url': 'http://cn.bing.com/search?q=%s', },
-        \ }
-  let g:ref_source_webdict_sites.default = 'cn'
-  "let g:ref_source_webdict_cmd='lynx -dump -nonumbers %s'
-  "let g:ref_source_webdict_cmd='w3m -dump %s'
-  "The filter on the output. Remove the first few lines
-  function! g:ref_source_webdict_sites.je.filter(output)
-    return join(split(a:output, "\n")[15 :], "\n")
-  endfunction
-  function! g:ref_source_webdict_sites.ej.filter(output)
-    return join(split(a:output, "\n")[15 :], "\n")
-  endfunction
-  function! g:ref_source_webdict_sites.wiki.filter(output)
-    return join(split(a:output, "\n")[17 :], "\n")
-  endfunction
-  nnoremap <Leader>rj :<C-u>Ref webdict je<Space>
-  nnoremap <Leader>re :<C-u>Ref webdict ej<Space>
-  nnoremap <Leader>rc :<C-u>Ref webdict cn<Space>
-  nnoremap <Leader>rw :<C-u>Ref webdict wikipedia:en<Space>
-  nnoremap <Leader>rb :<C-u>Ref webdict bing<Space>
-endif "}}}
-
 if (HasPlug('fencview') != -1) "{{{
   let g:fencview_autodetect = 1
   let g:fencview_checklines = 10
@@ -790,10 +747,6 @@ if (HasPlug('vim-easymotion') != -1) "{{{
   "nmap <Leader>w <Plug>(easymotion-overwin-w)
 endif "}}}
 
-if (HasPlug('vim-sneak') != -1) "{{{
-  let g:sneak#label = 1
-endif "}}}
-
 if (HasPlug('vim-fswitch') != -1) "{{{
   if (HasPlug('coc.nvim') ==# -1)
     autocmd myau FileType c,cpp nnoremap <silent> <buffer> <Leader>h <ESC>:FSHere<CR>
@@ -807,14 +760,6 @@ if (HasPlug('vim-template') != -1) "{{{
   exe 'let g:templates_directory = [''' . g:etc_dir . '/template'']'
   let g:user = get(g:, 'user', 'fcying')
   let g:email = get(g:, 'email', 'fcying@gmail.com')
-endif "}}}
-
-if (HasPlug('any-jump.vim') != -1) "{{{
-  let g:any_jump_disable_default_keybindings = 1
-  nnoremap <leader>aj :AnyJump<CR>
-  xnoremap <leader>aj :AnyJumpVisual<CR>
-  nnoremap <leader>ab :AnyJumpBack<CR>
-  nnoremap <leader>al :AnyJumpLastResults<CR>
 endif "}}}
 
 if (HasPlug('gen_clang_conf.vim') != -1) "{{{
@@ -843,15 +788,6 @@ if (HasPlug('Colorizer') != -1) "{{{
     ColorHighlight!
     au myau BufRead <buffer> :ColorHighlight!<CR>
   endfunction
-endif "}}}
-
-if (HasPlug('vim-hexokinase') != -1) "{{{
-  "let g:Hexokinase_ftEnabled = []
-  let g:Hexokinase_termDisabled = 1
-  let g:Hexokinase_highlighters = ['backgroundfull']
-  let g:Hexokinase_refreshEvents = ['BufWrite', 'BufRead', 'TextChanged', 'InsertLeave']
-  let g:Hexokinase_palettes = [g:etc_dir . '/hexokinase.json']
-  nnoremap <silent> <leader>ch :HexokinaseTurnOn<CR>
 endif "}}}
 
 if (HasPlug('vim-which-key') != -1) "{{{

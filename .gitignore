@@ -1,16 +1,11 @@
 *.pyc
 .cache/
-.neobundle/
-/log
 /*.log
 /vim*/
-/plugged/
 /.plugged/
 /.netrwhist
-/autoload
-/ftplugin
 /sessions
-*.zwc
 *vim_origin
 compile_flags.txt
 .ccls
+s

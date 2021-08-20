@@ -1,10 +1,4 @@
 " check environment {{{
-if get(s:, 'loaded', 0) != 0
-  finish
-else
-  let s:loaded = 1
-endif
-
 if &compatible
   " vint: -ProhibitSetNoCompatible
   set nocompatible
@@ -43,6 +37,9 @@ if !isdirectory(g:cache_dir)
   call mkdir(g:cache_dir)
 endif
 
+" for spacevim plugin
+let g:spacevim_data_dir = g:config_dir . '/.cache/spacevim'
+
 " find project root dir
 function! GetRootDir()
   for l:item in g:root_markers
@@ -75,6 +72,15 @@ if filereadable(g:file_vimrc_local)
   execute 'source ' . g:file_vimrc_local
 endif
 
+" complete_engine: coc ycm easycomplete nvimlsp  {{{
+let g:complete_engine = get(g:, 'complete_engine', 'nvimlsp')
+if g:complete_engine ==# 'nvimlsp'
+  if g:is_nvim ==# 0
+    let g:complete_engine = 'coc'
+  endif
+endif
+
+
 " find project vimrc
 let g:pvimrc_path = findfile('.pvimrc', g:scm_dir . ';' . g:scm_dir . '..')
 if g:pvimrc_path !=# ''
@@ -84,23 +90,9 @@ else
   let g:pvimrc_path = g:scm_dir . '/.pvimrc'
 endif
 
-
-" add plugin
-if !exists('g:plugs_order')
-  let g:plugs_order = []
-endif
-function! HasPlug(plugname) abort
-  return index(g:plugs_order, a:plugname)
-endfunction
-
 if filereadable(g:file_plug)
   execute 'source ' . g:file_plug
 endif
-
-if g:is_nvim
-  exec 'luafile ' . g:config_dir . '/init.lua'
-endif
-
 
 nnoremap <silent> <leader>evv :execute 'e '  . g:file_vimrc<CR>
 nnoremap <silent> <leader>evl :execute 'e '  . g:file_vimrc_local<CR>
@@ -435,19 +427,20 @@ xnoremap > >gv|
 nnoremap > >>_
 nnoremap < <<_
 
-" q --> Q
+" remap q Q {{{
+nnoremap gQ Q
 nnoremap Q q
 nnoremap q <nop>
 
-" insert mode emacs
+" insert mode emacs {{{
 inoremap <c-a> <home>
 inoremap <c-e> <end>
 
-" cmd history search
+" cmd history search {{{
 cnoremap <expr> <c-n> pumvisible() ? "<c-n>" : "<down>"
 cnoremap <expr> <c-p> pumvisible() ? "<c-p>" : "<up>"
 
-" tab
+" tab {{{
 function! s:tab_moveleft()
   let l:tabnr = tabpagenr() - 2
   if l:tabnr >= 0
@@ -515,7 +508,7 @@ nnoremap <leader>da :%s/\%x1b\[[0-9;]*m//g<CR>:noh<CR>
 nnoremap <silent> <leader>cdt :tcd %:p:h<CR>:pwd<CR>
 nnoremap <silent> <leader>cda :cd %:p:h<CR>:pwd<CR>
 
-" virtual mode search
+" virtual mode search {{{
 vnoremap <silent> * :<C-U>
       \let old_reg=getreg('"')<Bar>let old_regtype=getregtype('"')<CR>
       \gvy/<C-R><C-R>=substitute(
@@ -685,6 +678,30 @@ if is_wsl
   endif
 endif
 
+" update lsp {{{
+function! UpdateLsp() abort
+  "silent !rustup update
+  "silent !rustup component add rls rust-analysis rust-src
+  silent !pip3 install python-language-server --upgrade
+  silent !pip3 install jedi pylint --upgrade
+  call mkdir($HOME . '/.npm', 'p')
+  silent !cd ~/.npm; npm install dockerfile-language-server-nodejs
+  silent !cd ~/.npm; npm install pyright
+  silent !cd ~/.npm; npm install vim-language-server
+  if g:has_go
+    GoGetTools
+  endif
+endfunction
+
+" gen tags {{{
+func! ReGentags()
+  ClearClangConf
+  call feedkeys(":Leaderf gtags --remove\<CR>y\<CR>", "tx")
+  silent GenClangConf
+  Leaderf gtags --update
+endf
+nnoremap <silent> <leader>tg :GenClangConf<CR>:Leaderf gtags --update<CR>
+nnoremap <silent> <leader>tr :call ReGentags()<CR>
 
 " }}}
 
@@ -706,13 +723,6 @@ if g:colorscheme ==# 'molokai'
   let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'wombat')
 else
   let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'solarized')
-endif
-
-if strlen(globpath(&rtp, 'colors/' . g:colorscheme . '.vim')) ==# 0
-  "echom "use default colorscheme"
-  let g:colorscheme = 'default'
-  let g:background=get(g:, 'background', 'light')
-  let g:lightline.colorscheme=get(g:, 'lightline.colorscheme', 'solarized')
 endif
 
 if has('termguicolors')
@@ -764,4 +774,64 @@ syntax enable
 
 if (HasPlug('LeaderF') != -1)
   autocmd myau Syntax * hi Lf_hl_cursorline guifg=fg
+endif
+
+
+
+" ============================================================================
+" pvimrc {{{
+" ============================================================================
+" auto update pvimrc var
+" init backup
+if (HasPlug('LeaderF') != -1)
+  let g:b_Lf_MruFileExclude = deepcopy(g:Lf_MruFileExclude)
+  let g:b_Lf_WildIgnore = deepcopy(g:Lf_WildIgnore)
+  let g:b_Lf_RgConfig = deepcopy(g:Lf_RgConfig)
+  let g:b_gen_clang_conf#ignore_dirs = deepcopy(g:gen_clang_conf#ignore_dirs)
+
+  function! s:update_ignore()
+    " init var
+    if !exists('g:custom_ignore')
+      let g:custom_ignore = {}
+    endif
+    if !exists('g:custom_ignore["dir"]')
+      let g:custom_ignore['dir'] = []
+    endif
+    if !exists('g:custom_ignore["file"]')
+      let g:custom_ignore['file'] = []
+    endif
+    if !exists('g:custom_ignore["rg"]')
+      let g:custom_ignore['rg'] = []
+    endif
+
+    let g:Lf_MruFileExclude = deepcopy(g:b_Lf_MruFileExclude)
+    let g:Lf_WildIgnore = deepcopy(g:b_Lf_WildIgnore)
+    let g:Lf_RgConfig = deepcopy(g:b_Lf_RgConfig)
+    let g:gen_clang_conf#ignore_dirs = deepcopy(g:b_gen_clang_conf#ignore_dirs)
+    for i in g:custom_ignore['file']
+      call add(g:Lf_MruFileExclude, i)
+      call add(g:Lf_WildIgnore['file'], i)
+      call add(g:Lf_RgConfig, '--glob=!' . i)
+    endfor
+    for i in g:custom_ignore['dir']
+      call add(g:Lf_WildIgnore['dir'], i)
+      call add(g:Lf_RgConfig, '--glob=!' . i)
+      call add(g:gen_clang_conf#ignore_dirs, i)
+    endfor
+    for i in g:custom_ignore['rg']
+      call add(g:Lf_RgConfig, i)
+    endfor
+
+    let l:cmd=''
+    for i in g:Lf_RgConfig
+      let l:cmd = l:cmd . i . ' '
+    endfor
+    let g:Lf_GtagsfilesCmd = {
+          \ '.git': 'rg --no-messages --files ' . l:cmd,
+          \ '.hg': 'rg --no-messages --files ' . l:cmd,
+          \ 'default': 'rg --no-messages --files ' . l:cmd
+          \}
+  endfunction
+  au myau SourcePost .pvimrc call s:update_ignore()
+  call s:update_ignore()
 endif

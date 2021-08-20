@@ -1,198 +1,403 @@
-" coc ycm easycomplete nvimlsp
-let g:complete_engine = get(g:, 'complete_engine', 'nvimlsp')
+let g:plug_list = []
+let g:plug_name_list = []
 
-if g:complete_engine ==# 'nvimlsp'
-  if g:is_nvim ==# 0
-    let g:complete_engine = 'other'
-    execute 'so ' . g:config_dir . '/apc.vim'
-  endif
+" vim-plug vim-packager packer.nvim
+"let s:plug_manager = 'vim-plug'
+let s:plug_manager = 'packer'
+"let s:plug_manager = 'vim-packager'
+"let s:plug_manager = 'none'
+
+if g:is_nvim ==# 0 && s:plug_manager ==# 'packer'
+  let s:plug_manager = 'vim-packager'
 endif
 
-" for spacevim plugin
-let g:spacevim_data_dir = g:config_dir . '/.cache/spacevim'
-
-
-" ============================================================================
-" plugin init {{{
-" ============================================================================
 let g:plug_dir = g:config_dir . '/.plugged'
-if filereadable(expand(g:plug_dir . '/vim-plug/plug.vim')) == 0
+let s:plug_pack_dir = g:plug_dir . '/pack/packager'
+let s:plug_check_dir = []
+let s:plug_init = 0
+let s:plug_pack_en = 1
+
+" init env {{{
+if s:plug_manager ==# 'packer'
+  exec 'set packpath=' . g:plug_dir
+  exec 'set runtimepath^=' . s:plug_pack_dir
+  call add(s:plug_check_dir, s:plug_pack_dir . '/opt')
+  call add(s:plug_check_dir, s:plug_pack_dir . '/start')
+  let s:plug_manager_file = s:plug_pack_dir . '/opt/packer.nvim/lua/packer.lua'
+  let s:plug_manager_download =
+        \ 'silent !git clone --depth 1 https://github.com/wbthomason/packer.nvim '
+        \ . s:plug_pack_dir . '/opt/packer.nvim'
+elseif s:plug_manager ==# 'vim-packager'
+  exec 'set packpath=' . g:plug_dir
+  call add(s:plug_check_dir, s:plug_pack_dir . '/opt')
+  call add(s:plug_check_dir, s:plug_pack_dir . '/start')
+  let s:plug_manager_file = s:plug_pack_dir . '/opt/vim-packager/plugin/packager.vim'
+  let s:plug_manager_download =
+        \ 'silent !git clone --depth 1 https://github.com/kristijanhusak/vim-packager '
+        \ . s:plug_pack_dir . '/opt/vim-packager'
+elseif s:plug_manager ==# 'vim-plug'
+  let s:plug_pack_en = 0
+  call add(s:plug_check_dir, g:plug_dir)
+  let s:plug_manager_file = g:plug_dir . '/vim-plug/plug.vim'
+  let s:plug_manager_download =
+        \ 'silent !git clone --depth 1 https://github.com/junegunn/vim-plug '
+        \ . g:plug_dir . '/vim-plug'
+else
+  "not plugin
+  let g:plug_dir = g:config_dir
+  let s:plug_manager_file = g:file_vimrc
+endif
+
+" find plugin {{{
+function! HasPlug(name) abort
+  if index(g:plug_name_list, a:name) != -1
+    for dir in s:plug_check_dir
+      if isdirectory(dir . '/' . a:name)
+        return 0
+      endif
+    endfor
+  endif
+  "echom a:name
+  return -1
+endfunction
+
+function! s:add_plug(path, ...)
+  let l:plug = []
+  " packer.nvim
+  if s:plug_manager ==# 'packer'
+    call add(l:plug, a:path)
+    let l:options = {}
+    let l:options.opt = 'false'
+    if a:0 != 0
+      for key in keys(a:1)
+        if key ==# 'keys'
+          exec "let l:options." . key . "= a:1[key]"
+          let l:options.opt = 'true'
+        elseif key ==# 'rtp' || key ==# 'branch'
+          exec "let l:options." . key . "= a:1[key]"
+        elseif key ==# 'opt'
+          if a:1[key] ==# 'true'
+            let l:options.opt = 'true'
+          endif
+        elseif key ==# 'for'
+          let l:options.opt = 'true'
+          let l:options.ft = a:1[key]
+        elseif key ==# 'on'
+          let l:options.opt = 'true'
+          let l:options.cmd = a:1[key]
+        elseif key ==# 'do'
+          let l:options.run = string(funcref(a:1[key]))
+        endif
+      endfor
+    endif
+    call add(l:plug, l:options)
+    call add(g:plug_list, l:plug)
+    "echo l:plug
+
+  " vim-packager
+  elseif s:plug_manager ==# 'vim-packager'
+    call add(l:plug, a:path)
+    let l:options = {}
+    let l:options.type = 'opt'
+    let l:options.opt = 'false'
+    if a:0 != 0
+      for key in keys(a:1)
+        if key ==# 'do' || key ==# 'branch' || key ==# 'rtp'
+          exec "let l:options." . key . "= a:1[key]"
+        elseif key ==# 'for'
+          let l:options.opt = 'true'
+        elseif key ==# 'type'
+          if a:1[key] ==# 'opt'
+            let l:options.opt = 'true'
+          endif
+        endif
+      endfor
+    endif
+    call add(l:plug, l:options)
+    call add(g:plug_list, l:plug)
+  elseif s:plug_manager ==# 'vim-plug'
+    call add(l:plug, a:path)
+    if a:0 != 0
+      let l:options = {}
+      for key in keys(a:1)
+        if key ==# 'on' || key ==# 'do' || key ==# 'branch' || key ==# 'for'
+          exec "let l:options." . key . "= a:1[key]"
+        endif
+      endfor
+      call add(l:plug, l:options)
+    endif
+    call add(g:plug_list, l:plug)
+  endif
+endfunction
+
+" install function {{{
+function! InstallLeaderF(info) abort
+  if s:plug_manager ==# 'packer'
+    if g:is_win
+      exe 'silent !cd /d ' . g:plug_dir . '\pack\packager\opt\LeaderF && .\install.bat'
+    else
+      exe 'silent !cd ' . g:plug_dir . '/pack/packager/opt/LeaderF && ./install.sh'
+    endif
+  elseif s:plug_manager ==# 'vim-packager'
+    if g:is_win
+      exe 'silent !cd /d ' . a:info.dir . '&& .\install.bat'
+    else
+      exe 'silent !cd ' . a:info.dir . '&& ./install.sh'
+    endif
+  else
+    if g:is_win
+      silent !.\install.bat
+    else
+      silent !./install.sh
+    endif
+  endif
+  silent !pip3 install pygments --upgrade
+endfunction
+
+function! InstallCoc(info) abort
+  call UpdateLsp()
+endfunction
+
+call s:add_plug('mbbill/fencview', {'on':['FencView','FencAutoDetect']})
+call s:add_plug('wsdjeg/vim-fetch')
+call s:add_plug('lambdalisue/suda.vim', {'on':['SudaRead', 'SudaWrite']})
+call s:add_plug('moll/vim-bbye', {'on':'Bdelete'})
+call s:add_plug('itchyny/lightline.vim', {'opt': 'false'})
+call s:add_plug('simnalamburt/vim-mundo')
+call s:add_plug('chrisbra/Colorizer')
+call s:add_plug('skywind3000/vim-quickui')
+call s:add_plug('liuchengxu/vim-which-key')
+call s:add_plug('dstein64/vim-startuptime', {'on':'StartupTime'})
+"call s:add_plug('tpope/vim-apathy')
+"call s:add_plug('roxma/vim-paste-easy')
+
+if g:is_nvim
+  " FIXME nvim cursorhold bug https://github.com/neovim/neovim/issues/12587
+  call s:add_plug('antoinemadec/FixCursorHold.nvim', {'opt': 'false'})
+  " FIXME https://github.com/neovim/neovim/issues/14967 in 0.5.0
+  "call s:add_plug('kevinhwang91/nvim-hclipboard')
+endif
+
+call s:add_plug('machakann/vim-sandwich')
+call s:add_plug('terryma/vim-expand-region')
+call s:add_plug('mg979/vim-visual-multi', {'branch': 'master'})
+
+call s:add_plug('t9md/vim-choosewin', {'on':'<Plug>(choosewin)'})
+"call s:add_plug('preservim/nerdtree', {'on':['NERDTree', 'NERDTreeFocus', 'NERDTreeToggle', 'NERDTreeCWD', 'NERDTreeFind']})
+call s:add_plug('lambdalisue/fern.vim', {'on':'Fern'})
+call s:add_plug('preservim/nerdcommenter', {'keys':'<plug>NERDCommenter'})
+call s:add_plug('preservim/tagbar', {'on':'TagbarToggle'})
+call s:add_plug('andymass/vim-matchup', {'keys':'%'})
+call s:add_plug('fcying/vim-foldsearch')
+"call s:add_plug('Krasjet/auto.pairs')
+call s:add_plug('easymotion/vim-easymotion', {'keys':'<Plug>(easymotion'})
+"call s:add_plug('justinmk/vim-sneak')
+call s:add_plug('aperezdc/vim-template', {'on':'TemplateHere'})
+
+call s:add_plug('Vimjas/vim-python-pep8-indent', {'for':'python'})
+call s:add_plug('cespare/vim-toml', {'for': 'toml'})
+call s:add_plug('peterhoeg/vim-qml', {'for': 'qml'})
+call s:add_plug('neoclide/jsonc.vim', {'for': 'jsonc'})
+call s:add_plug('othree/xml.vim', {'for': 'xml'})
+call s:add_plug('wsdjeg/vim-autohotkey', {'for':'autohotkey'})
+call s:add_plug('godlygeek/tabular', {'for':'markdown'})
+call s:add_plug('plasticboy/vim-markdown', {'for':'markdown'})
+
+call s:add_plug('Yggdroot/LeaderF', {'do': function('InstallLeaderF'), 'on':'Leaderf'})
+
+call s:add_plug('MattesGroeger/vim-bookmarks')
+call s:add_plug('derekwyatt/vim-fswitch')
+call s:add_plug('Yggdroot/indentLine', {'on': 'IndentLinesToggle'})
+if g:is_nvim ==# 0
+  call s:add_plug('xolox/vim-misc')
+  call s:add_plug('xolox/vim-session')
+endif
+call s:add_plug('tpope/vim-fugitive')
+
+call s:add_plug('skywind3000/vim-preview')
+call s:add_plug('skywind3000/asyncrun.vim', {'on': ['AsyncRun', 'AsyncStop'] })
+call s:add_plug('skywind3000/asynctasks.vim', {'on': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] })
+
+call s:add_plug('fcying/gen_clang_conf.vim', {'on': ['GenClangConf', 'EditClangExt', 'ClearClangConf'] })
+call s:add_plug('honza/vim-snippets')
+"call s:add_plug('w0rp/ale')
+
+if g:is_nvim ==# 0
+  call s:add_plug('tmux-plugins/vim-tmux-focus-events')
+  call s:add_plug('roxma/vim-tmux-clipboard')
+endif
+
+" color {{{
+call s:add_plug('tomasr/molokai', {'opt': 'true'})
+call s:add_plug('lifepillar/vim-solarized8', {'opt': 'true'})
+call s:add_plug('lifepillar/vim-gruvbox8', {'opt': 'true'})
+
+" complete_engine
+if g:complete_engine ==# 'coc'
+  call s:add_plug('neoclide/coc.nvim', {'branch': 'release', 'do': function('InstallCoc')})
+elseif g:complete_engine ==# 'nvimlsp'
+  call s:add_plug('neovim/nvim-lspconfig', {'do': function('InstallCoc'), 'opt': 'false'})
+  call s:add_plug('hrsh7th/nvim-compe', {'opt': 'false'})
+  call s:add_plug('SirVer/ultisnips')
+elseif g:complete_engine ==# 'ycm'
+  call s:add_plug('ycm-core/YouCompleteMe', {'do': 'python3 install.py --all'})
+elseif g:complete_engine ==# 'easycomplete'
+  call s:add_plug('jayli/vim-easycomplete')
+  call s:add_plug('SirVer/ultisnips')
+endif
+
+if g:is_win ==# 0
+  call s:add_plug('wellle/tmux-complete.vim')
+endif
+
+
+" downlaod plug manager {{{
+if filereadable(expand(s:plug_manager_file)) == 0
   if executable('git')
     if filereadable(expand(g:file_vimrc_local)) == 0
       call writefile([
-            \ 'let g:complete_engine=''coc''',
+            \ '"let g:complete_engine=''nvimlsp''',
             \ '"let g:colorscheme=''solarized8''',
             \ '"let g:background=''light''',
             \ 'function! LoadAfter()',
             \ 'endfunc',
             \ ], expand(g:file_vimrc_local), 'a')
     endif
-    call mkdir(g:plug_dir, 'p')
-    exec 'silent !git clone --depth 1 https://github.com/junegunn/vim-plug '
-          \ . g:plug_dir . '/vim-plug'
-    autocmd myau VimEnter * PlugInstall --sync | source $MYVIMRC
+    exec s:plug_manager_download
+    if filereadable(expand(s:plug_manager_file)) == 0
+      echohl WarningMsg
+      echom 'install plug manager failed!'
+      echohl None
+    else
+      let s:plug_init = 1
+    endif
   else
     echohl WarningMsg
     echom 'You need install git!'
     echohl None
   endif
-else
+endif
+
+" plugin manager setting {{{
+if s:plug_manager ==# 'packer'
+  packadd packer.nvim
+lua << EOF
+  local packer = require("packer")
+  local use = packer.use
+
+  packer.init({
+    package_root = vim.g.plug_dir .. '/pack',
+    compile_path  = vim.g.plug_dir .. '/pack/packager/plugin/packer_compiled.lua',
+    plugin_package = 'packager',
+    auto_clean = false,
+  })
+
+  use({'wbthomason/packer.nvim', opt = true})
+  for key, value in ipairs(vim.g.plug_list) do
+    local path, opt
+    local options = {value[1]}
+    options['opt'] = true
+    if (value[2] ~= "nil") then
+      if (value[2]['ft'] ~= nil) then
+        options['ft'] = value[2]['ft']
+      end
+      if (value[2]['cmd'] ~= nil) then
+        options['cmd'] = value[2]['cmd']
+      end
+      if (value[2]['keys'] ~= nil) then
+        options['keys'] = value[2]['keys']
+      end
+      if (value[2]['branch'] ~= nil) then
+        options['branch'] = value[2]['branch']
+      end
+      if (value[2]['rtp'] ~= nil) then
+        options['rtp'] = value[2]['rtp']
+      end
+      if (value[2]['run'] ~= nil) then
+        --string remove "function('')"
+        options['run'] = function()
+          vim.fn[string.sub(value[2]['run'], 11, -3)](0)
+        end
+      end
+    end
+    use(options)
+  end
+EOF
+
+  nnoremap <leader>pu :PackerSync<CR>
+  nnoremap <leader>pi :PackerInstall<CR>
+  nnoremap <leader>pc :PackerClean<CR>
+  nnoremap <leader>pg :PackerCompile<CR>
+
+elseif s:plug_manager ==# 'vim-packager'
+  packadd vim-packager
+
+  function! s:packager_init(packager) abort
+    call a:packager.add('kristijanhusak/vim-packager', { 'type': 'opt' })
+
+    for plug in g:plug_list
+      if len(plug) ==# 2
+        exec "call a:packager.add(plug[0], plug[1])"
+      else
+        exec "call a:packager.add(plug[0])"
+      endif
+    endfor
+  endfunction
+  call packager#setup(function('s:packager_init'))
+
+  nnoremap <leader>pu :PackagerUpdate<CR>
+  nnoremap <leader>pi :PackagerInstall<CR>
+  nnoremap <leader>pc :PackagerClean<CR>
+
+elseif s:plug_manager ==# 'vim-plug'
+  exec 'source '. g:plug_dir . '/vim-plug/plug.vim'
+  call plug#begin(expand(g:plug_dir))
+  Plug 'junegunn/vim-plug'
+
+  for plug in g:plug_list
+    if len(plug) ==# 2
+      exec "Plug plug[0], plug[1]"
+    else
+      exec "Plug plug[0]"
+    endif
+  endfor
+
+  call plug#end()
+  delc PlugUpgrade
+  nnoremap <leader>pu :PlugUpdate<CR>
+  nnoremap <leader>pi :PlugInstall<CR>
+  nnoremap <leader>pc :PlugClean<CR>
   autocmd myau VimEnter *
         \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
-        \|   PlugInstall --sync | q
+        \|   PlugUpdate --sync | q
         \| endif
 endif
-exec 'source '. g:plug_dir . '/vim-plug/plug.vim'
-call plug#begin(expand(g:plug_dir))
 
-Plug 'junegunn/vim-plug'
-Plug 'mbbill/fencview'
-Plug 'adah1972/tellenc'
-Plug 'wsdjeg/vim-fetch'
-Plug 'lambdalisue/suda.vim'
-Plug 'moll/vim-bbye', {'on':'Bdelete'}
-Plug 'itchyny/lightline.vim'
-Plug 'simnalamburt/vim-mundo'
-Plug 'chrisbra/Colorizer'
-Plug 'skywind3000/vim-quickui'
-Plug 'liuchengxu/vim-which-key'
-Plug 'dstein64/vim-startuptime', {'on':'StartupTime'}
-Plug 'tpope/vim-apathy'
-"Plug 'roxma/vim-paste-easy'
+" generate plugin name list,  packadd {{{
+if len(g:plug_list) > 0
+  for plug in g:plug_list
+    let s:plug_name = fnamemodify(plug[0], ':t:s?\.git$??')
+    call add(g:plug_name_list, s:plug_name)
+    if s:plug_pack_en ==# 1 && plug[1].opt ==# 'false' && s:plug_init ==# 0
+        exe 'packadd! '. s:plug_name
+    endif
+  endfor
+endif
 
+" init plugin {{{
+if s:plug_init ==# 1
+  let g:colorscheme = 'default'
+  autocmd myau VimEnter * call feedkeys("\<space>pu", "tx")
+endif
+
+
+
+" ============================================================================
+" plug setting
+" ============================================================================
 if g:is_nvim
-  " FIXME nvim cursorhold bug https://github.com/neovim/neovim/issues/12587
-  Plug 'antoinemadec/FixCursorHold.nvim'
-  " FIXME https://github.com/neovim/neovim/issues/14967 in 0.5.0
-  Plug 'https://github.com/kevinhwang91/nvim-hclipboard'
+  exec 'luafile ' . g:config_dir . '/config.lua'
 endif
-
-Plug 'tpope/vim-surround'
-Plug 'terryma/vim-expand-region'
-Plug 'mg979/vim-visual-multi', {'branch': 'master'}
-
-Plug 't9md/vim-choosewin', {'on':'<Plug>(choosewin)'}
-"Plug 'preservim/nerdtree', {'on':['NERDTree', 'NERDTreeFocus', 'NERDTreeToggle', 'NERDTreeCWD', 'NERDTreeFind']}
-Plug 'lambdalisue/fern.vim'
-Plug 'preservim/nerdcommenter'
-Plug 'preservim/tagbar', {'on':'TagbarToggle'}
-Plug 'andymass/vim-matchup'
-Plug 'fcying/vim-foldsearch'
-"Plug 'Krasjet/auto.pairs'
-Plug 'easymotion/vim-easymotion'
-"Plug 'justinmk/vim-sneak'
-
-Plug 'aperezdc/vim-template', {'on':'TemplateHere'}
-Plug 'Vimjas/vim-python-pep8-indent', {'for':'python'}
-Plug 'cespare/vim-toml'
-Plug 'peterhoeg/vim-qml'
-Plug 'neoclide/jsonc.vim'
-Plug 'wsdjeg/vim-autohotkey', {'for':'autohotkey'}
-Plug 'othree/xml.vim'
-Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown', {'for':'markdown'}
-
-function! InstallLeaderF(info) abort
-  if a:info.status !=# 'unchanged' || a:info.force
-    silent !echo "InstallLeaderF"
-    if g:is_win
-      silent !.\install.bat
-    else
-      silent !./install.sh
-    endif
-    silent !pip3 install pygments --upgrade
-  endif
-endfunction
-Plug 'Yggdroot/LeaderF', {'do': function('InstallLeaderF')}
-
-Plug 'MattesGroeger/vim-bookmarks'
-Plug 'derekwyatt/vim-fswitch'
-Plug 'Yggdroot/indentLine' ", {'on':'IndentLinesToggle'}
-Plug 'xolox/vim-session'
-Plug 'xolox/vim-misc'
-Plug 'tpope/vim-fugitive'
-
-Plug 'skywind3000/vim-preview'
-Plug 'skywind3000/asyncrun.vim', {'on': ['AsyncRun', 'AsyncStop'] }
-Plug 'skywind3000/asynctasks.vim', {'on': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] }
-
-Plug 'fcying/gen_clang_conf.vim'
-Plug 'honza/vim-snippets'
-"Plug 'w0rp/ale'
-
-if g:is_nvim ==# 0
-  Plug 'tmux-plugins/vim-tmux-focus-events'
-  Plug 'roxma/vim-tmux-clipboard'
-endif
-
-" color {{{
-Plug 'tomasr/molokai'
-Plug 'lifepillar/vim-solarized8'
-Plug 'lifepillar/vim-gruvbox8'
-
-" complete_engine
-function! UpdateLsp() abort
-  "silent !rustup update
-  "silent !rustup component add rls rust-analysis rust-src
-  silent !pip3 install python-language-server --upgrade
-  silent !pip3 install jedi pylint --upgrade
-  call mkdir($HOME . '/.npm', 'p')
-  silent !cd ~/.npm; npm install dockerfile-language-server-nodejs
-  silent !cd ~/.npm; npm install pyright
-  silent !cd ~/.npm; npm install vim-language-server
-  if g:has_go
-    GoGetTools
-  endif
-endfunction
-
-function! InstallCoc(info) abort
-  if a:info.status !=# 'unchanged' || a:info.force
-    call UpdateLsp()
-  endif
-endfunction
-
-if g:complete_engine ==# 'coc'
-  Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': function('InstallCoc')}
-elseif g:complete_engine ==# 'nvimlsp'
-  function! InstallNvimLsp(info) abort
-    if a:info.status !=# 'unchanged' || a:info.force
-      call UpdateLsp()
-    endif
-  endfunction
-  Plug 'neovim/nvim-lspconfig', {'do': function('InstallCoc')}
-  Plug 'hrsh7th/nvim-compe'
-elseif g:complete_engine ==# 'ycm'
-  Plug 'ycm-core/YouCompleteMe', {'do': 'python3 install.py --all'}
-elseif g:complete_engine ==# 'easycomplete'
-  Plug 'jayli/vim-easycomplete'
-  Plug 'SirVer/ultisnips'
-endif
-
-if g:is_win ==# 0
-  Plug 'wellle/tmux-complete.vim'
-endif
-
-call plug#end()
-delc PlugUpgrade
-
-nnoremap <leader>pu :PlugUpdate<CR>
-nnoremap <leader>pi :PlugInstall<CR>
-nnoremap <leader>pc :PlugClean<CR>
-
-
-
-" ============================================================================
-" plugin settings
-" ============================================================================
-" gen tags {{{
-func! ReGentags()
-  ClearClangConf
-  call feedkeys(":Leaderf gtags --remove\<CR>y\<CR>", "tx")
-  silent GenClangConf
-  Leaderf gtags --update
-endf
-nnoremap <silent> <leader>tg :GenClangConf<CR>:Leaderf gtags --update<CR>
-nnoremap <silent> <leader>tr :call ReGentags()<CR>
 
 if (HasPlug('indentLine') != -1) "{{{
   let g:indentLine_setColors = 1
@@ -373,6 +578,14 @@ if (HasPlug('coc.nvim') != -1) "{{{
     endif
   endfunction
 
+  " Remap for scroll float windows/popups.
+  if has('nvim-0.4.0') || has('patch-8.2.0750')
+    nnoremap <silent><nowait><expr> <C-j> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-j>"
+    nnoremap <silent><nowait><expr> <C-k> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-k>"
+    vnoremap <silent><nowait><expr> <C-j> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-j>"
+    vnoremap <silent><nowait><expr> <C-k> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-k>"
+  endif
+
   if !exists('g:lightline')
     let g:lightline = {}
   endif
@@ -469,6 +682,23 @@ if (HasPlug('vim-visual-multi') != -1) "{{{
   "let g:VM_manual_infoline = 1
 endif "}}}
 
+if (HasPlug('vim-sandwich') != -1) "{{{
+  let g:sandwich_no_default_key_mappings = 1
+  nmap <leader>srb <Plug>(operator-sandwich-replace)
+        \<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
+  nmap <leader>sdb <Plug>(operator-sandwich-delete)
+        \<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
+  nmap <leader>sr <Plug>(operator-sandwich-replace)
+        \<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
+  nmap <leader>sd <Plug>(operator-sandwich-delete)
+        \<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
+  xmap <leader>sr <Plug>(operator-sandwich-replace)
+  xmap <leader>sd <Plug>(operator-sandwich-delete)
+  omap <leader>sa <Plug>(operator-sandwich-g@)
+  xmap <leader>sa <Plug>(operator-sandwich-add)
+  nmap <leader>sa <Plug>(operator-sandwich-add)
+endif
+
 if (HasPlug('nerdtree') != -1) "{{{
   nmap <leader>wf :NERDTreeToggle<cr>
   nmap <leader>wl :NERDTreeFind<cr>
@@ -513,11 +743,11 @@ if (HasPlug('fern.vim') != -1) "{{{
   endfunction
 endif "}}}
 
-if (HasPlug('vim-session') != -1) "{{{
+"if (HasPlug('vim-session') != -1) "{{{
   let g:session_autosave = 'no'
   let g:session_autoload = 'no'
   let g:session_directory = g:cache_dir . '/sessions'
-endif "}}}
+"endif "}}}
 
 if (HasPlug('LeaderF') != -1) "{{{
   let g:Lf_ShowDevIcons = 0
@@ -632,8 +862,10 @@ if (HasPlug('LeaderF') != -1) "{{{
   endfunction
 
   "noremap <C-]> :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+  noremap ta :<C-U>Leaderf gtags --all<CR>
   noremap tr :<C-U><C-R>=printf("Leaderf! gtags -r %s", expand("<cword>"))<CR><CR>
   noremap td :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+  noremap tD :<C-U><C-R>=printf("Leaderf! gtags -d %s --right --auto-jump", expand("<cword>"))<CR><CR>
   noremap tn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
   noremap tp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 endif "}}}
@@ -749,7 +981,7 @@ endif "}}}
 
 if (HasPlug('vim-fswitch') != -1) "{{{
   if (HasPlug('coc.nvim') ==# -1)
-    autocmd myau FileType c,cpp nnoremap <silent> <buffer> <Leader>h <ESC>:FSHere<CR>
+    autocmd myau FileType c,cpp nnoremap <silent> <buffer> <leader>h <ESC>:FSHere<CR>
   endif
 endif "}}}
 
@@ -881,62 +1113,4 @@ if (HasPlug('vim-quickui') != -1) "{{{
   noremap <space><space> :call quickui#menu#open()<cr>
 endif "}}}
 
-"}}}
 
-
-
-" ============================================================================
-" pvimrc {{{
-" ============================================================================
-" auto update pvimrc var
-" init backup
-let g:b_Lf_MruFileExclude = deepcopy(g:Lf_MruFileExclude)
-let g:b_Lf_WildIgnore = deepcopy(g:Lf_WildIgnore)
-let g:b_Lf_RgConfig = deepcopy(g:Lf_RgConfig)
-let g:b_gen_clang_conf#ignore_dirs = deepcopy(g:gen_clang_conf#ignore_dirs)
-
-function! s:update_ignore()
-  " init var
-  if !exists('g:custom_ignore')
-    let g:custom_ignore = {}
-  endif
-  if !exists('g:custom_ignore["dir"]')
-    let g:custom_ignore['dir'] = []
-  endif
-  if !exists('g:custom_ignore["file"]')
-    let g:custom_ignore['file'] = []
-  endif
-  if !exists('g:custom_ignore["rg"]')
-    let g:custom_ignore['rg'] = []
-  endif
-
-  let g:Lf_MruFileExclude = deepcopy(g:b_Lf_MruFileExclude)
-  let g:Lf_WildIgnore = deepcopy(g:b_Lf_WildIgnore)
-  let g:Lf_RgConfig = deepcopy(g:b_Lf_RgConfig)
-  let g:gen_clang_conf#ignore_dirs = deepcopy(g:b_gen_clang_conf#ignore_dirs)
-  for i in g:custom_ignore['file']
-    call add(g:Lf_MruFileExclude, i)
-    call add(g:Lf_WildIgnore['file'], i)
-    call add(g:Lf_RgConfig, '--glob=!' . i)
-  endfor
-  for i in g:custom_ignore['dir']
-    call add(g:Lf_WildIgnore['dir'], i)
-    call add(g:Lf_RgConfig, '--glob=!' . i)
-    call add(g:gen_clang_conf#ignore_dirs, i)
-  endfor
-  for i in g:custom_ignore['rg']
-    call add(g:Lf_RgConfig, i)
-  endfor
-
-  let l:cmd=''
-  for i in g:Lf_RgConfig
-    let l:cmd = l:cmd . i . ' '
-  endfor
-  let g:Lf_GtagsfilesCmd = {
-        \ '.git': 'rg --no-messages --files ' . l:cmd,
-        \ '.hg': 'rg --no-messages --files ' . l:cmd,
-        \ 'default': 'rg --no-messages --files ' . l:cmd
-        \}
-endfunction
-au myau SourcePost .pvimrc call s:update_ignore()
-call s:update_ignore()

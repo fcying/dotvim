@@ -1,10 +1,12 @@
-plugs_order = vim.inspect(vim.g.plugs_order)
+plug_name_list = vim.inspect(vim.g.plug_name_list)
 
-function HasPlug(plugname)
-    return string.find(plugs_order, plugname)
+function HasPlug(name)
+    ret = vim.fn.HasPlug(name)
+    --print(ret)
+    return ret
 end
 
-if (HasPlug('nvim%-lspconfig')) then    --{{{
+if (HasPlug('nvim-lspconfig') ~= -1) then    --{{{
     local nvim_lsp = require('lspconfig')
 
     -- Use an on_attach function to only map the following keys

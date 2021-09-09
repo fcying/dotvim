@@ -50,7 +50,8 @@ function! GetRootDir()
   endfor
   if !empty(l:dir)
     let g:scm_dir = fnamemodify(l:dir, ':p:h')
-    "echom g:scm_dir
+  else
+    let g:scm_dir = getcwd()
   endif
 endfunction
 call GetRootDir()
@@ -191,16 +192,6 @@ set hidden
 set noautochdir
 set updatetime=300
 
-" tags path cscope gtags {{{
-set tags=tags,tags;
-set cscopetag
-set cscopeprg='gtags-cscope'
-set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
-if g:is_win
-  let $PATH = g:config_dir . '\lib' . ';' . $PATH
-elseif g:is_linux
-  let $PATH = g:config_dir . '/lib' . ':' . $PATH
-endif
 
 " autoread {{{
 set autoread
@@ -693,15 +684,52 @@ function! UpdateLsp() abort
   endif
 endfunction
 
-" gen tags {{{
-func! ReGentags()
+" tags path cscope gtags {{{
+set tags=tags,tags;
+set cscopetag
+set cscopeprg='gtags-cscope'
+set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
+if g:is_win
+  let $PATH = g:config_dir . '\lib' . ';' . $PATH
+elseif g:is_linux
+  let $PATH = g:config_dir . '/lib' . ':' . $PATH
+endif
+
+function! AddGtags()
+  if filereadable(expand(g:scm_dir . '/.LfGtags/GTAGS')) != 0
+    silent cs kill -1
+    exec 'cd ' . g:scm_dir . '/.LfGtags'
+    exec 'silent cs add ' . g:scm_dir . '/.LfGtags/GTAGS'
+    exec 'cd -'
+  endif
+  if filereadable(expand(g:scm_dir . '/.LfGtags/tags')) != 0
+    exec 'set tags=' . g:scm_dir . '/.LfGtags/tags'
+  endif
+endfunction
+
+func! Removetags()
   ClearClangConf
   call feedkeys(":Leaderf gtags --remove\<CR>y\<CR>", "tx")
+endf
+
+func! Gentags()
   silent GenClangConf
   Leaderf gtags --update
+
+  "if executable('ctags')
+  "  let l:file_list = systemlist('rg --no-messages --files ' . g:rg_ignore . getcwd())
+  "  let l:files = ''
+  "  for i in l:file_list
+  "    let l:files = l:files . i . ' '
+  "  endfor
+  "  exec 'silent !ctags -f '. g:scm_dir . '/.LfGtags/tags ' . l:files
+  "endif
+
+  call AddGtags()
 endf
-nnoremap <silent> <leader>tg :GenClangConf<CR>:Leaderf gtags --update<CR>
-nnoremap <silent> <leader>tr :call ReGentags()<CR>
+nnoremap <silent> tg :call Gentags()<CR>
+nnoremap <silent> tc :call Removetags()<CR>
+call AddGtags()
 
 " }}}
 
@@ -782,13 +810,14 @@ endif
 " pvimrc {{{
 " ============================================================================
 " auto update pvimrc var
-" init backup
 if (HasPlug('LeaderF') != -1)
+  " init backup
   let g:b_Lf_MruFileExclude = deepcopy(g:Lf_MruFileExclude)
   let g:b_Lf_WildIgnore = deepcopy(g:Lf_WildIgnore)
   let g:b_Lf_RgConfig = deepcopy(g:Lf_RgConfig)
   let g:b_gen_clang_conf#ignore_dirs = deepcopy(g:gen_clang_conf#ignore_dirs)
 
+  " update ignore from pvimrc
   function! s:update_ignore()
     " init var
     if !exists('g:custom_ignore')
@@ -822,14 +851,14 @@ if (HasPlug('LeaderF') != -1)
       call add(g:Lf_RgConfig, i)
     endfor
 
-    let l:cmd=''
+    let g:rg_ignore=''
     for i in g:Lf_RgConfig
-      let l:cmd = l:cmd . i . ' '
+      let g:rg_ignore = g:rg_ignore . i . ' '
     endfor
     let g:Lf_GtagsfilesCmd = {
-          \ '.git': 'rg --no-messages --files ' . l:cmd,
-          \ '.hg': 'rg --no-messages --files ' . l:cmd,
-          \ 'default': 'rg --no-messages --files ' . l:cmd
+          \ '.git': 'rg --no-messages --files ' . g:rg_ignore,
+          \ '.hg': 'rg --no-messages --files ' . g:rg_ignore,
+          \ 'default': 'rg --no-messages --files ' . g:rg_ignore
           \}
   endfunction
   au myau SourcePost .pvimrc call s:update_ignore()

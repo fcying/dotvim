@@ -195,7 +195,7 @@ call s:add_plug('easymotion/vim-easymotion', {'keys':'<Plug>(easymotion'})
 call s:add_plug('aperezdc/vim-template', {'on':'TemplateHere'})
 
 call s:add_plug('Vimjas/vim-python-pep8-indent', {'for':'python'})
-call s:add_plug('cespare/vim-toml', {'for': 'toml'})
+call s:add_plug('cespare/vim-toml', {'for': 'toml', 'branch': 'main'})
 call s:add_plug('peterhoeg/vim-qml', {'for': 'qml'})
 call s:add_plug('neoclide/jsonc.vim', {'for': 'jsonc'})
 call s:add_plug('othree/xml.vim', {'for': 'xml'})
@@ -203,7 +203,7 @@ call s:add_plug('wsdjeg/vim-autohotkey', {'for':'autohotkey'})
 call s:add_plug('godlygeek/tabular', {'for':'markdown'})
 call s:add_plug('plasticboy/vim-markdown', {'for':'markdown'})
 
-call s:add_plug('Yggdroot/LeaderF', {'do': function('InstallLeaderF'), 'on':'Leaderf'})
+call s:add_plug('Yggdroot/LeaderF', {'do': function('InstallLeaderF')})
 
 call s:add_plug('MattesGroeger/vim-bookmarks')
 call s:add_plug('derekwyatt/vim-fswitch')
@@ -218,7 +218,7 @@ call s:add_plug('skywind3000/vim-preview')
 call s:add_plug('skywind3000/asyncrun.vim', {'on': ['AsyncRun', 'AsyncStop'] })
 call s:add_plug('skywind3000/asynctasks.vim', {'on': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] })
 
-call s:add_plug('fcying/gen_clang_conf.vim', {'on': ['GenClangConf', 'EditClangExt', 'ClearClangConf'] })
+call s:add_plug('fcying/gen_clang_conf.vim', {'on': ['GenClangConf', 'EditClangExt'] })
 call s:add_plug('honza/vim-snippets')
 "call s:add_plug('w0rp/ale')
 
@@ -861,8 +861,7 @@ if (HasPlug('LeaderF') != -1) "{{{
     return l:strip_include
   endfunction
 
-  "noremap <C-]> :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-  noremap ta :<C-U>Leaderf gtags --all<CR>
+  noremap ts :<C-U>Leaderf gtags --all<CR>
   noremap tr :<C-U><C-R>=printf("Leaderf! gtags -r %s", expand("<cword>"))<CR><CR>
   noremap td :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
   noremap tD :<C-U><C-R>=printf("Leaderf! gtags -d %s --right --auto-jump", expand("<cword>"))<CR><CR>

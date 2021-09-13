@@ -16,3 +16,8 @@ git clone https://github.com/fcying/dotvim.git ~/.vim
 项目配置保存在对应的`.git/.pvimrc`, 如果没有`scm`文件夹, 保存在工作目录下,使用`<leader>ep`修改.
 
 补全框架默认用`coc`, 可以修改`g:complete_engine`更改.
+
+#### mini_config.zip
+release里面提供`mini_config.zip`下载, 精简配置.  
+只使用`vim script`和`lua`插件, 无依赖(nvim 0.5).  
+解压缩, 把`nvim`目录复制到`~/.config`下即可使用.

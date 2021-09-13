@@ -112,32 +112,6 @@ if g:is_nvim
   au VimLeave,VimSuspend * set guicursor=a:hor50-blinkon200
 endif
 
-" gui
-set mouse=nv
-if g:is_nvim
-  function! s:nvim_gui_enter()
-    call rpcnotify(0, "Gui", "Option", "Popupmenu", 0)
-    "nnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>
-    "inoremap <silent><RightMouse> <Esc>:call GuiShowContextMenu()<CR>
-    "vnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>gv
-    set mouse=a
-  endfunction
-  au myau UiEnter * call s:nvim_gui_enter()
-  unlet $DISPLAY  "some platform have DISPLAY make clipboard.vim slow
-  set clipboard+=unnamedplus
-else
-  set clipboard=exclude:.*    "some platform setup clipboard make startup slow
-  if g:is_gui
-    set guioptions -=T
-    set guioptions -=m
-    set mouse=a
-    if g:is_win
-      set guifont=Consolas:h11
-    endif
-    autocmd myau GUIEnter * simalt ~x
-  endif
-endif
-
 " tmux
 if g:is_tmux
   " tmux knows the extended mouse mode
@@ -170,6 +144,8 @@ else
 endif
 
 " basic {{{
+set mouse=nv
+set clipboard+=unnamedplus
 set autoindent
 set smartindent
 set cindent
@@ -192,6 +168,30 @@ set hidden
 set noautochdir
 set updatetime=300
 
+" gui
+if g:is_nvim
+  function! s:nvim_gui_enter()
+    call rpcnotify(0, "Gui", "Option", "Popupmenu", 0)
+    "nnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>
+    "inoremap <silent><RightMouse> <Esc>:call GuiShowContextMenu()<CR>
+    "vnoremap <silent><RightMouse> :call GuiShowContextMenu()<CR>gv
+    set mouse=a
+  endfunction
+  au myau UiEnter * call s:nvim_gui_enter()
+  unlet $DISPLAY  "some platform have DISPLAY make clipboard.vim slow
+  set clipboard+=unnamedplus
+else
+  set clipboard=exclude:.*    "some platform setup clipboard make startup slow
+  if g:is_gui
+    set guioptions -=T
+    set guioptions -=m
+    set mouse=a
+    if g:is_win
+      set guifont=Consolas:h11
+    endif
+    autocmd myau GUIEnter * simalt ~x
+  endif
+endif
 
 " autoread {{{
 set autoread
@@ -250,7 +250,7 @@ if g:is_nvim
 endif
 
 " tab shift {{{
-set expandtab        "%retab
+set expandtab        "retab
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
@@ -359,7 +359,7 @@ augroup vimStartup
 
 augroup END
 
-" get file realpath
+" get file realpath {{{
 function! GetCurFileRealPath()
   echo expand('%:p')
 endfunc
@@ -404,7 +404,7 @@ vnoremap <C-s> :<C-u>update<CR>
 cnoremap <C-s> <C-u>update<CR>
 inoremap <C-s> <C-o>:update<CR>
 
-" save with sudo;  use vim-eunuch instead
+" save with sudo;  use vim-eunuch instead {{{
 "nnoremap <leader>ws :w !sudo tee %<CR>
 
 " Wrapped lines goes down/up to next row, rather than next line in file
@@ -413,6 +413,7 @@ inoremap <C-s> <C-o>:update<CR>
 "nnoremap j gj
 "nnoremap gj j
 
+" fast ident {{{
 xnoremap < <gv
 xnoremap > >gv|
 nnoremap > >>_
@@ -488,11 +489,9 @@ endif
 " Start new line
 inoremap <S-Return> <C-o>o
 
-" delete space
+" delete space, ^M, ansi escape codes {{{
 nnoremap <leader>ds :%s/\s\+$//g<CR>:noh<CR>
-" delete ^M
 nnoremap <leader>dm :%s/\r$//g<CR>:noh<CR>
-" delete ansi escape codes
 nnoremap <leader>da :%s/\%x1b\[[0-9;]*m//g<CR>:noh<CR>
 
 " set working directory to the current file
@@ -500,18 +499,19 @@ nnoremap <silent> <leader>cdt :tcd %:p:h<CR>:pwd<CR>
 nnoremap <silent> <leader>cda :cd %:p:h<CR>:pwd<CR>
 
 " virtual mode search {{{
-vnoremap <silent> * :<C-U>
-      \let old_reg=getreg('"')<Bar>let old_regtype=getregtype('"')<CR>
-      \gvy/<C-R><C-R>=substitute(
-      \escape(@", '/\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
-      \gV:call setreg('"', old_reg, old_regtype)<CR>
-vnoremap <silent> # :<C-U>
-      \let old_reg=getreg('"')<Bar>let old_regtype=getregtype('"')<CR>
-      \gvy?<C-R><C-R>=substitute(
-      \escape(@", '?\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
-      \gV:call setreg('"', old_reg, old_regtype)<CR>
+function! VisualSelection() abort
+  try
+    let reg_save = @"
+    noautocmd silent! normal! gvy
+    return @"
+  finally
+    let @" = reg_save
+  endtry
+endfunction
+xnoremap * <ESC>/\V<C-R>=escape(VisualSelection(), '/\')<CR><CR>
+xnoremap # <ESC>?\V<C-R>=escape(VisualSelection(), '?\')<CR><CR>
 
-" auto pairs
+" auto pairs {{{
 "inoremap ( ()<ESC>i
 "inoremap ) <c-r>=ClosePair(')')<CR>
 inoremap {<CR> {<CR>}<c-o><s-o>
@@ -637,7 +637,7 @@ inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
 " close menu and start a new line
 inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>": "\<cr>"
-set completeopt=noinsert,menuone,noselect
+set completeopt=menuone,noselect
 set shortmess+=c
 if has('patch-8.1.1902')
   set completeopt+=popup
@@ -687,7 +687,9 @@ endfunction
 " tags path cscope gtags {{{
 set tags=tags,tags;
 set cscopetag
-set cscopeprg='gtags-cscope'
+if executable('gtags')
+  set cscopeprg='gtags-cscope'
+endif
 set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
 if g:is_win
   let $PATH = g:config_dir . '\lib' . ';' . $PATH
@@ -789,17 +791,6 @@ exec 'set background=' . g:background
 " }}}
 
 
-if exists('*LoadAfter')
-  call LoadAfter()
-endif
-
-if exists('*LoadAfterProject')
-  call LoadAfterProject()
-endif
-
-filetype plugin indent on
-syntax enable
-
 if (HasPlug('LeaderF') != -1)
   autocmd myau Syntax * hi Lf_hl_cursorline guifg=fg
 endif
@@ -864,3 +855,15 @@ if (HasPlug('LeaderF') != -1)
   au myau SourcePost .pvimrc call s:update_ignore()
   call s:update_ignore()
 endif
+
+" post load vimrc config {{{
+if exists('*LoadAfter')
+  call LoadAfter()
+endif
+if exists('*LoadAfterProject')
+  call LoadAfterProject()
+endif
+
+filetype plugin indent on
+syntax enable
+

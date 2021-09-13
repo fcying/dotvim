@@ -1,0 +1,50 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master, test ]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install neovim
+        run: |
+          pwd
+          new_ver=$(curl -s "https://github.com/neovim/neovim/releases/latest" | grep -Po "v(\d+\.){2}\d+")
+          wget -o/dev/null -Onvim.tgz "https://github.com/neovim/neovim/releases/download/$new_ver/nvim-linux64.tar.gz"
+          tar xzf nvim.tgz
+          sudo cp -rf ./nvim-linux64/* /usr/local
+          nvim --version
+      - uses: actions/checkout@v2
+      - name: Prepare mini config
+        run: |
+          mkdir -p ~/.config
+          cp -r mini_config ~/.config/nvim
+          nvim --headless -c 'PlugUpdate --sync|qa'
+          pushd ~/.config
+          zip -rq9 mini_config.zip ./nvim
+          popd
+          mv ~/.config/mini_config.zip .
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          delete_release: true
+          tag_name: mini_config
+      - uses: meeDamian/github-release@v2.0.3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: mini_config
+          allow_override: true
+          gzip: false
+          draft: false
+          files: |
+            mini_config.zip:./mini_config.zip
+
+

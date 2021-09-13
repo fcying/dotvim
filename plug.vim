@@ -962,7 +962,7 @@ if (HasPlug('tagbar') != -1) "{{{
 endif "}}}
 
 if (HasPlug('vim-bbye') != -1) "{{{
-  :nnoremap <Leader>q :Bdelete<CR>
+  nnoremap <Leader>q :Bdelete<CR>
 endif "}}}
 
 if (HasPlug('vim-easymotion') != -1) "{{{

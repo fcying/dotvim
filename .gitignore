@@ -2,10 +2,12 @@
 .cache/
 /*.log
 /vim*/
-/.plugged/
+.plugged/
+plugged/
 /.netrwhist
 /sessions
 *vim_origin
 compile_flags.txt
 .ccls
 s
+tags

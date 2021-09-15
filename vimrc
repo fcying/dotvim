@@ -73,7 +73,7 @@ if filereadable(g:file_vimrc_local)
   execute 'source ' . g:file_vimrc_local
 endif
 
-" complete_engine: coc ycm easycomplete nvimlsp  {{{
+" complete_engine: coc ycm nvimlsp  {{{
 let g:complete_engine = get(g:, 'complete_engine', 'nvimlsp')
 if g:complete_engine ==# 'nvimlsp'
   if g:is_nvim ==# 0
@@ -161,7 +161,7 @@ set cinkeys-=0#
 "set iskeyword -=#
 autocmd myau FileType * setlocal formatoptions-=o
 set formatoptions+=mM
-set virtualedit=onemore        "onemore all
+set virtualedit=all        "onemore all
 set history=2000
 set scrolloff=3
 set hidden
@@ -697,15 +697,15 @@ elseif g:is_linux
   let $PATH = g:config_dir . '/lib' . ':' . $PATH
 endif
 
-function! AddGtags()
+function! AddTags()
   if filereadable(expand(g:scm_dir . '/.LfGtags/GTAGS')) != 0
     silent cs kill -1
     exec 'cd ' . g:scm_dir . '/.LfGtags'
     exec 'silent cs add ' . g:scm_dir . '/.LfGtags/GTAGS'
     exec 'cd -'
   endif
-  if filereadable(expand(g:scm_dir . '/.LfGtags/tags')) != 0
-    exec 'set tags=' . g:scm_dir . '/.LfGtags/tags'
+  if filereadable(expand(g:scm_dir . '/tags')) != 0
+    exec 'set tags=' . g:scm_dir . '/tags'
   endif
 endfunction
 
@@ -727,11 +727,11 @@ func! Gentags()
   "  exec 'silent !ctags -f '. g:scm_dir . '/.LfGtags/tags ' . l:files
   "endif
 
-  call AddGtags()
+  call AddTags()
 endf
 nnoremap <silent> tg :call Gentags()<CR>
 nnoremap <silent> tc :call Removetags()<CR>
-call AddGtags()
+call AddTags()
 
 " }}}
 

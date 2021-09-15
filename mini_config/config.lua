@@ -59,3 +59,40 @@ nvim_lsp.clangd.setup {
         ),
     };
 }
+
+local cmp = require'cmp'
+cmp.setup({
+    mapping = {
+        ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+    },
+    sources = {
+        { name = 'nvim_lsp' },
+        { name = 'nvim_lua' },
+        {
+            name = 'tmux',
+            opts = {
+                all_panes = false,
+                label = '[tmux]',
+                trigger_characters = { '.' },
+                trigger_characters_ft = {}
+            }
+        },
+        { name = 'tags' },
+        { name = 'path' },
+        { name = 'buffer' },
+    },
+    formatting = {
+        format = function(entry, vim_item)
+            -- set a name for each source
+            vim_item.menu = ({
+                buffer = '[Buf]',
+                nvim_lsp = '[Lsp]',
+                nvim_lua = '[Lua]',
+                tags = '[Tag]',
+                tmux = '[Tmux]',
+            })[entry.source.name]
+            return vim_item
+        end,
+    },
+})
+

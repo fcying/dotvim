@@ -78,7 +78,7 @@ set cinkeys-=0#
 "set iskeyword -=#
 autocmd myau FileType * setlocal formatoptions-=o
 set formatoptions+=mM
-set virtualedit=onemore        "onemore all
+set virtualedit=all        "onemore all
 set history=2000
 set scrolloff=3
 set hidden
@@ -243,6 +243,38 @@ inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
 xnoremap p "_dP
 
 
+" tags path cscope gtags {{{
+set tags=tags,tags;
+set cscopetag
+if executable('gtags')
+  set cscopeprg='gtags-cscope'
+endif
+set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
+
+function! AddTags()
+  if filereadable(expand(g:scm_dir . '/tags')) != 0
+    exec 'set tags=' . g:scm_dir . '/tags'
+  endif
+endfunction
+
+func! Removetags()
+  ClearClangConf
+endf
+
+func! Gentags()
+  silent GenClangConf
+
+  if executable('ctags')
+    silent !ctags -R --c++-kinds=+p --fields=+iaS --language-force=C++
+  endif
+
+  call AddTags()
+endf
+nnoremap <silent> tg :call Gentags()<CR>
+nnoremap <silent> tc :call Removetags()<CR>
+call AddTags()
+
+
 " plugins {{{
 let g:plug_dir = g:config_dir . '/plugged'
 let s:plug_init = 0
@@ -276,11 +308,15 @@ Plug 'easymotion/vim-easymotion'
 Plug 'fcying/gen_clang_conf.vim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
-Plug 'neovim/nvim-lspconfig'
-Plug 'hrsh7th/nvim-compe'
 Plug 'itchyny/lightline.vim'
 Plug 'joshdick/onedark.vim'
 Plug 'lifepillar/vim-solarized8'
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'andersevenrud/compe-tmux'
 call plug#end()
 delc PlugUpgrade
 
@@ -291,35 +327,12 @@ autocmd VimEnter *
       \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
       \|   PlugUpdate --sync | q
       \| endif
-
-
-
-" tags path cscope gtags {{{
-set tags=tags,tags;
-set cscopetag
-if executable('gtags')
-  set cscopeprg='gtags-cscope'
-endif
-set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
-func! Removetags()
-  ClearClangConf
-endf
-func! Gentags()
-  silent GenClangConf
-
-  if executable('ctags')
-    silent !ctags -R --c++-kinds=+p --fields=+iaS --language-force=C++
-  endif
-endf
-nnoremap <silent> tg :call Gentags()<CR>
-nnoremap <silent> tc :call Removetags()<CR>
-
 if s:plug_init ==# 1
   finish
 endif
 
 
-" plugins======================================================================
+" plugin setting {{{
 " easymotion {{{
 let g:EasyMotion_smartcase = 0
 let g:EasyMotion_do_mapping = 0   " Disable default mappings

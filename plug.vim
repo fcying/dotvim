@@ -16,9 +16,11 @@ let s:plug_pack_dir = g:plug_dir . '/pack/packager'
 let s:plug_check_dir = []
 let s:plug_init = 0
 let s:plug_pack_en = 1
+let s:plug_need_update = 0
 
 " init env {{{
 if s:plug_manager ==# 'packer'
+  let s:plug_install_dir = g:plug_dir . '/pack/packager/opt'
   exec 'set packpath=' . g:plug_dir
   exec 'set runtimepath^=' . s:plug_pack_dir
   call add(s:plug_check_dir, s:plug_pack_dir . '/opt')
@@ -28,6 +30,7 @@ if s:plug_manager ==# 'packer'
         \ 'silent !git clone --depth 1 https://github.com/wbthomason/packer.nvim '
         \ . s:plug_pack_dir . '/opt/packer.nvim'
 elseif s:plug_manager ==# 'vim-packager'
+  let s:plug_install_dir = g:plug_dir . '/pack/packager/opt'
   exec 'set packpath=' . g:plug_dir
   call add(s:plug_check_dir, s:plug_pack_dir . '/opt')
   call add(s:plug_check_dir, s:plug_pack_dir . '/start')
@@ -36,6 +39,7 @@ elseif s:plug_manager ==# 'vim-packager'
         \ 'silent !git clone --depth 1 https://github.com/kristijanhusak/vim-packager '
         \ . s:plug_pack_dir . '/opt/vim-packager'
 elseif s:plug_manager ==# 'vim-plug'
+  let s:plug_install_dir = g:plug_dir
   let s:plug_pack_en = 0
   call add(s:plug_check_dir, g:plug_dir)
   let s:plug_manager_file = g:plug_dir . '/vim-plug/plug.vim'
@@ -63,6 +67,9 @@ endfunction
 
 function! s:add_plug(path, ...)
   let l:plug = []
+  let l:plug_name = fnamemodify(a:path, ':t:s?\.git$??')
+  call add(g:plug_name_list, l:plug_name)
+
   " packer.nvim
   if s:plug_manager ==# 'packer'
     call add(l:plug, a:path)
@@ -94,6 +101,14 @@ function! s:add_plug(path, ...)
     call add(g:plug_list, l:plug)
     "echo l:plug
 
+    if isdirectory(s:plug_install_dir . '/' . l:plug_name)
+      if l:options.opt ==# 'false'
+        exe 'packadd! '. l:plug_name
+      endif
+    else
+      let s:plug_need_update = 1
+    endif
+
   " vim-packager
   elseif s:plug_manager ==# 'vim-packager'
     call add(l:plug, a:path)
@@ -106,15 +121,18 @@ function! s:add_plug(path, ...)
           exec "let l:options." . key . "= a:1[key]"
         elseif key ==# 'for'
           let l:options.opt = 'true'
-        elseif key ==# 'type'
-          if a:1[key] ==# 'opt'
-            let l:options.opt = 'true'
-          endif
         endif
       endfor
     endif
     call add(l:plug, l:options)
     call add(g:plug_list, l:plug)
+    if isdirectory(s:plug_install_dir . '/' . l:plug_name)
+      if l:options.opt ==# 'false'
+        exe 'packadd! '. l:plug_name
+      endif
+    else
+      let s:plug_need_update = 1
+    endif
   elseif s:plug_manager ==# 'vim-plug'
     call add(l:plug, a:path)
     if a:0 != 0
@@ -127,6 +145,9 @@ function! s:add_plug(path, ...)
       call add(l:plug, l:options)
     endif
     call add(g:plug_list, l:plug)
+    if !isdirectory(s:plug_install_dir . '/' . l:plug_name)
+      let s:plug_need_update = 1
+    endif
   endif
 endfunction
 
@@ -158,6 +179,7 @@ function! InstallCoc(info) abort
   call UpdateLsp()
 endfunction
 
+" plugin list {{{
 call s:add_plug('mbbill/fencview', {'on':['FencView','FencAutoDetect']})
 call s:add_plug('wsdjeg/vim-fetch')
 call s:add_plug('lambdalisue/suda.vim', {'on':['SudaRead', 'SudaWrite']})
@@ -235,20 +257,25 @@ call s:add_plug('lifepillar/vim-gruvbox8', {'opt': 'true'})
 " complete_engine
 if g:complete_engine ==# 'coc'
   call s:add_plug('neoclide/coc.nvim', {'branch': 'release', 'do': function('InstallCoc')})
+  if g:is_win ==# 0
+    call s:add_plug('wellle/tmux-complete.vim')
+  endif
+
 elseif g:complete_engine ==# 'nvimlsp'
   call s:add_plug('neovim/nvim-lspconfig', {'do': function('InstallCoc'), 'opt': 'false'})
-  call s:add_plug('hrsh7th/nvim-compe', {'opt': 'false'})
   call s:add_plug('SirVer/ultisnips')
+  call s:add_plug('hrsh7th/nvim-cmp')
+  call s:add_plug('hrsh7th/cmp-nvim-lsp')
+  call s:add_plug('hrsh7th/cmp-buffer')
+  call s:add_plug('hrsh7th/cmp-path')
+  call s:add_plug('hrsh7th/cmp-nvim-lua', {'for': 'lua'})
+  call s:add_plug('quangnguyen30192/cmp-nvim-tags')
+  "call s:add_plug('andersevenrud/compe-tmux', {'branch': 'cmp'})
+
 elseif g:complete_engine ==# 'ycm'
   call s:add_plug('ycm-core/YouCompleteMe', {'do': 'python3 install.py --all'})
-elseif g:complete_engine ==# 'easycomplete'
-  call s:add_plug('jayli/vim-easycomplete')
-  call s:add_plug('SirVer/ultisnips')
 endif
 
-if g:is_win ==# 0
-  call s:add_plug('wellle/tmux-complete.vim')
-endif
 
 
 " downlaod plug manager {{{
@@ -367,28 +394,17 @@ elseif s:plug_manager ==# 'vim-plug'
   nnoremap <leader>pu :PlugUpdate<CR>
   nnoremap <leader>pi :PlugInstall<CR>
   nnoremap <leader>pc :PlugClean<CR>
-  autocmd myau VimEnter *
-        \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
-        \|   PlugUpdate --sync | q
-        \| endif
 endif
 
-" generate plugin name list,  packadd {{{
-if len(g:plug_list) > 0
-  for plug in g:plug_list
-    let s:plug_name = fnamemodify(plug[0], ':t:s?\.git$??')
-    call add(g:plug_name_list, s:plug_name)
-    if s:plug_pack_en ==# 1 && plug[1].opt ==# 'false' && s:plug_init ==# 0
-        exe 'packadd! '. s:plug_name
-    endif
-  endfor
-endif
 
 " init plugin {{{
 if s:plug_init ==# 1
   let g:colorscheme = 'default'
-  autocmd myau VimEnter * call feedkeys("\<space>pu", "tx")
 endif
+autocmd myau VimEnter *
+      \ if s:plug_need_update ==# 1
+      \ |   call feedkeys("\<space>pu", "tx")
+      \ | endif
 
 
 
@@ -598,8 +614,7 @@ if (HasPlug('coc.nvim') != -1) "{{{
         \ }
 endif "}}}
 
-if (HasPlug('nvim-lspconfig') != -1) "{{{
-  set completeopt=menuone,noselect
+if (HasPlug('nvim-cmp') != -1) "{{{
   let g:compe = {}
   let g:compe.enabled = v:true
   let g:compe.autocomplete = v:true
@@ -625,9 +640,6 @@ if (HasPlug('nvim-lspconfig') != -1) "{{{
   let g:compe.source.ultisnips = v:true
   let g:compe.source.luasnip = v:true
   let g:compe.source.emoji = v:true
-  inoremap <silent><expr> <C-e>     compe#close('<C-e>')
-  inoremap <silent><expr> <C-f>     compe#scroll({ 'delta': +4 })
-  inoremap <silent><expr> <C-d>     compe#scroll({ 'delta': -4 })
 endif "}}}
 
 if (HasPlug('YouCompleteMe') != -1) "{{{
@@ -665,9 +677,6 @@ let g:ycm_filetype_whitelist = {
       \ 'asciidoc':1, 'man':1, 'markdown':1, 'matlab':1, 'maxima':1,
       \ }
 endif "}}}
-
-if (HasPlug('easycomplete') != -1) "{{{
-endif
 
 if (HasPlug('tmux-complete.vim') != -1) "{{{
   let g:tmuxcomplete#trigger = 'omnifunc'

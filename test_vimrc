@@ -3,20 +3,20 @@ set mouse=n
 let g:config_dir = '~/.vim'
 let g:cache_dir = '~/.vim/.cache'
 
-set runtimepath^=~/.vim/.plugged/coc.nvim
-
-let g:coc_global_extensions = ['coc-clangd']
-let g:coc_data_home = g:cache_dir . '/coc'
-let g:coc_config_home = g:config_dir
+let s:plug_install_dir = '~/.vim/.plugged/pack/packager/opt'
+exec 'source '. s:plug_install_dir . '/vim-plug/plug.vim'
+call plug#begin(expand(s:plug_install_dir))
+Plug 'lifepillar/vim-solarized8'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-path'
+Plug 'andersevenrud/compe-tmux', { 'branch': 'cmp' }
+call plug#end()
+delc PlugUpgrade
 
 filetype plugin indent on
 syntax enable
 
 " color
-set runtimepath^=~/.vim/.plugged/vim-solarized8
-let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 set termguicolors
-set t_ut=
 set background=light
 colorscheme solarized8

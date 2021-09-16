@@ -7,45 +7,35 @@ let s:plug_manager = 'packer'
 "let s:plug_manager = 'vim-packager'
 "let s:plug_manager = 'none'
 
-if g:is_nvim ==# 0 && s:plug_manager ==# 'packer'
-  let s:plug_manager = 'vim-packager'
+if g:is_nvim ==# 0
+  let s:plug_manager = 'vim-plug'
 endif
 
 let g:plug_dir = g:config_dir . '/.plugged'
-let s:plug_pack_dir = g:plug_dir . '/pack/packager'
-let s:plug_check_dir = []
+let s:plug_install_dir = g:plug_dir . '/pack/packager/opt'
 let s:plug_init = 0
-let s:plug_pack_en = 1
 let s:plug_need_update = 0
 
 " init env {{{
 if s:plug_manager ==# 'packer'
-  let s:plug_install_dir = g:plug_dir . '/pack/packager/opt'
+  "for packer_compiled.lua
+  exec 'set runtimepath^=' . g:plug_dir
   exec 'set packpath=' . g:plug_dir
-  exec 'set runtimepath^=' . s:plug_pack_dir
-  call add(s:plug_check_dir, s:plug_pack_dir . '/opt')
-  call add(s:plug_check_dir, s:plug_pack_dir . '/start')
-  let s:plug_manager_file = s:plug_pack_dir . '/opt/packer.nvim/lua/packer.lua'
+  let s:plug_manager_file = s:plug_install_dir . '/packer.nvim/lua/packer.lua'
   let s:plug_manager_download =
         \ 'silent !git clone --depth 1 https://github.com/wbthomason/packer.nvim '
-        \ . s:plug_pack_dir . '/opt/packer.nvim'
+        \ . s:plug_install_dir . '/packer.nvim'
 elseif s:plug_manager ==# 'vim-packager'
-  let s:plug_install_dir = g:plug_dir . '/pack/packager/opt'
   exec 'set packpath=' . g:plug_dir
-  call add(s:plug_check_dir, s:plug_pack_dir . '/opt')
-  call add(s:plug_check_dir, s:plug_pack_dir . '/start')
-  let s:plug_manager_file = s:plug_pack_dir . '/opt/vim-packager/plugin/packager.vim'
+  let s:plug_manager_file = s:plug_install_dir . '/vim-packager/plugin/packager.vim'
   let s:plug_manager_download =
         \ 'silent !git clone --depth 1 https://github.com/kristijanhusak/vim-packager '
-        \ . s:plug_pack_dir . '/opt/vim-packager'
+        \ . s:plug_install_dir . '/vim-packager'
 elseif s:plug_manager ==# 'vim-plug'
-  let s:plug_install_dir = g:plug_dir
-  let s:plug_pack_en = 0
-  call add(s:plug_check_dir, g:plug_dir)
-  let s:plug_manager_file = g:plug_dir . '/vim-plug/plug.vim'
+  let s:plug_manager_file = s:plug_install_dir . '/vim-plug/plug.vim'
   let s:plug_manager_download =
         \ 'silent !git clone --depth 1 https://github.com/junegunn/vim-plug '
-        \ . g:plug_dir . '/vim-plug'
+        \ . s:plug_install_dir . '/vim-plug'
 else
   "not plugin
   let g:plug_dir = g:config_dir
@@ -55,11 +45,9 @@ endif
 " find plugin {{{
 function! HasPlug(name) abort
   if index(g:plug_name_list, a:name) != -1
-    for dir in s:plug_check_dir
-      if isdirectory(dir . '/' . a:name)
-        return 0
-      endif
-    endfor
+    if isdirectory(s:plug_install_dir . '/' . a:name)
+      return 0
+    endif
   endif
   "echom a:name
   return -1
@@ -155,9 +143,9 @@ endfunction
 function! InstallLeaderF(info) abort
   if s:plug_manager ==# 'packer'
     if g:is_win
-      exe 'silent !cd /d ' . g:plug_dir . '\pack\packager\opt\LeaderF && .\install.bat'
+      exe 'silent !cd /d ' . s:plug_install_dir . '\LeaderF && .\install.bat'
     else
-      exe 'silent !cd ' . g:plug_dir . '/pack/packager/opt/LeaderF && ./install.sh'
+      exe 'silent !cd ' . s:plug_install_dir . '/LeaderF && ./install.sh'
     endif
   elseif s:plug_manager ==# 'vim-packager'
     if g:is_win
@@ -209,7 +197,7 @@ call s:add_plug('t9md/vim-choosewin', {'on':'<Plug>(choosewin)'})
 call s:add_plug('lambdalisue/fern.vim', {'on':'Fern'})
 call s:add_plug('preservim/nerdcommenter', {'keys':'<plug>NERDCommenter'})
 call s:add_plug('preservim/tagbar', {'on':'TagbarToggle'})
-call s:add_plug('andymass/vim-matchup', {'keys':'%'})
+call s:add_plug('andymass/vim-matchup')
 call s:add_plug('fcying/vim-foldsearch')
 "call s:add_plug('Krasjet/auto.pairs')
 call s:add_plug('easymotion/vim-easymotion', {'keys':'<Plug>(easymotion'})
@@ -270,12 +258,11 @@ elseif g:complete_engine ==# 'nvimlsp'
   call s:add_plug('hrsh7th/cmp-path')
   call s:add_plug('hrsh7th/cmp-nvim-lua', {'for': 'lua'})
   call s:add_plug('quangnguyen30192/cmp-nvim-tags')
-  "call s:add_plug('andersevenrud/compe-tmux', {'branch': 'cmp'})
+  call s:add_plug('andersevenrud/compe-tmux', {'branch': 'cmp'})
 
 elseif g:complete_engine ==# 'ycm'
   call s:add_plug('ycm-core/YouCompleteMe', {'do': 'python3 install.py --all'})
 endif
-
 
 
 " downlaod plug manager {{{
@@ -305,6 +292,7 @@ if filereadable(expand(s:plug_manager_file)) == 0
   endif
 endif
 
+
 " plugin manager setting {{{
 if s:plug_manager ==# 'packer'
   packadd packer.nvim
@@ -314,7 +302,7 @@ lua << EOF
 
   packer.init({
     package_root = vim.g.plug_dir .. '/pack',
-    compile_path  = vim.g.plug_dir .. '/pack/packager/plugin/packer_compiled.lua',
+    compile_path  = vim.g.plug_dir .. '/plugin/packer_compiled.lua',
     plugin_package = 'packager',
     auto_clean = false,
   })
@@ -377,8 +365,8 @@ elseif s:plug_manager ==# 'vim-packager'
   nnoremap <leader>pc :PackagerClean<CR>
 
 elseif s:plug_manager ==# 'vim-plug'
-  exec 'source '. g:plug_dir . '/vim-plug/plug.vim'
-  call plug#begin(expand(g:plug_dir))
+  exec 'source '. s:plug_install_dir . '/vim-plug/plug.vim'
+  call plug#begin(expand(s:plug_install_dir))
   Plug 'junegunn/vim-plug'
 
   for plug in g:plug_list
@@ -860,7 +848,7 @@ if (HasPlug('LeaderF') != -1) "{{{
   nnoremap fhs :<C-u>Leaderf searchHistory --fuzzy<CR>
   nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w %s", expand("<cword>"))<CR>
   nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w ")<CR>
-  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w -F %s", leaderf#Rg#visual())<CR>
+  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F %s", leaderf#Rg#visual())<CR>
   nnoremap fr :<C-U>Leaderf --recall<CR><TAB>
   nnoremap f/ :<C-U>Leaderf rg<CR>
 
@@ -999,11 +987,8 @@ if (HasPlug('vim-template') != -1) "{{{
 endif "}}}
 
 if (HasPlug('gen_clang_conf.vim') != -1) "{{{
-  " compile_flags.txt, .ccls
-  let g:gen_clang_conf#conf_name = get(g:, 'gen_clang_conf#conf_name', 'compile_flags.txt')
-
-  if !exists('g:gen_clang_conf#ignore_dirs')
-    let g:gen_clang_conf#ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
+  if !exists('g:gencconf_ignore_dirs')
+    let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
           \ 'cache', 'doc', 'docs']
   endif
 endif "}}}
@@ -1116,5 +1101,4 @@ if (HasPlug('vim-quickui') != -1) "{{{
 
   noremap <space><space> :call quickui#menu#open()<cr>
 endif "}}}
-
 

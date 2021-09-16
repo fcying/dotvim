@@ -1,12 +1,4 @@
-plug_name_list = vim.inspect(vim.g.plug_name_list)
-
-function HasPlug(name)
-    ret = vim.fn.HasPlug(name)
-    --print(ret)
-    return ret
-end
-
-if (HasPlug('nvim-lspconfig') ~= -1) then    --{{{
+if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
     local nvim_lsp = require('lspconfig')
 
     -- Use an on_attach function to only map the following keys
@@ -67,9 +59,23 @@ if (HasPlug('nvim-lspconfig') ~= -1) then    --{{{
             ),
         };
     }
+    --nvim_lsp.ccls.setup {
+        --on_attach = on_attach;
+        --flags = { debounce_text_changes = 150 };
+        --handlers = {
+            --["textDocument/publishDiagnostics"] = vim.lsp.with(
+            --vim.lsp.diagnostic.on_publish_diagnostics, {
+                --underline = false,
+                --virtual_text = false,
+                --signs = false,
+                --update_in_insert = false,
+            --}
+            --),
+        --};
+    --}
 end
 
-if (HasPlug('nvim-cmp') ~= -1) then    --{{{
+if (vim.fn.HasPlug('nvim-cmp') ~= -1) then    --{{{
     local cmp = require'cmp'
     cmp.setup({
         mapping = {
@@ -82,7 +88,6 @@ if (HasPlug('nvim-cmp') ~= -1) then    --{{{
                 name = 'tmux',
                 opts = {
                     all_panes = false,
-                    label = '[tmux]',
                     trigger_characters = { '.' },
                     trigger_characters_ft = {}
                 }
@@ -93,7 +98,6 @@ if (HasPlug('nvim-cmp') ~= -1) then    --{{{
         },
         formatting = {
             format = function(entry, vim_item)
-                -- set a name for each source
                 vim_item.menu = ({
                     buffer = '[Buf]',
                     nvim_lsp = '[Lsp]',

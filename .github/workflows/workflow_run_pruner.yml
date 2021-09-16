@@ -40,11 +40,11 @@ jobs:
             }
           }
 
-    - name: Prune runs older than 7 days
+    - name: Prune runs older than 3 days
       uses: actions/github-script@v4.1.0
       with:
         script: |
-          const days_to_expiration = 7;
+          const days_to_expiration = 3;
           const ms_in_day = 86400000;
           const now = Date.now();
           const pages = 5;

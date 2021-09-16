@@ -240,7 +240,7 @@ call s:add_plug('skywind3000/vim-preview')
 call s:add_plug('skywind3000/asyncrun.vim', {'on': ['AsyncRun', 'AsyncStop'] })
 call s:add_plug('skywind3000/asynctasks.vim', {'on': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] })
 
-call s:add_plug('fcying/gen_clang_conf.vim', {'on': ['GenClangConf', 'EditClangExt'] })
+call s:add_plug('fcying/gen_clang_conf.vim')
 call s:add_plug('honza/vim-snippets')
 "call s:add_plug('w0rp/ale')
 
@@ -855,7 +855,7 @@ if (HasPlug('LeaderF') != -1) "{{{
   nnoremap fo :<C-u>Leaderf function --fullPath<CR>
   nnoremap fm :<C-u>Leaderf mru --fullPath<CR>
   nnoremap fl :<C-u>Leaderf line --fuzzy<CR>
-  nnoremap ft :<C-u>Leaderf gtags --fuzzy<CR>
+  nnoremap ft :<C-u>Leaderf tag --fuzzy<CR>
   nnoremap fhc :<C-u>Leaderf cmdHistory --fuzzy<CR>
   nnoremap fhs :<C-u>Leaderf searchHistory --fuzzy<CR>
   nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w %s", expand("<cword>"))<CR>
@@ -870,12 +870,12 @@ if (HasPlug('LeaderF') != -1) "{{{
     return l:strip_include
   endfunction
 
-  noremap ts :<C-U>Leaderf gtags --all<CR>
-  noremap tr :<C-U><C-R>=printf("Leaderf! gtags -r %s", expand("<cword>"))<CR><CR>
-  noremap td :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-  noremap tD :<C-U><C-R>=printf("Leaderf! gtags -d %s --right --auto-jump", expand("<cword>"))<CR><CR>
-  noremap tn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
-  noremap tp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+  "noremap ts :<C-U>Leaderf gtags --all<CR>
+  "noremap tr :<C-U><C-R>=printf("Leaderf! gtags -r %s", expand("<cword>"))<CR><CR>
+  "noremap td :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+  "noremap tD :<C-U><C-R>=printf("Leaderf! gtags -d %s --right --auto-jump", expand("<cword>"))<CR><CR>
+  "noremap tn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+  "noremap tp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 endif "}}}
 
 if (HasPlug('vim-choosewin') != -1) "{{{
@@ -928,10 +928,6 @@ if (HasPlug('nerdcommenter') != -1) "{{{
   vmap <leader>gi <plug>NERDCommenterInvert
   nmap <leader>gs <plug>NERDCommenterSexy
   vmap <leader>gs <plug>NERDCommenterSexy
-endif "}}}
-
-if (HasPlug('vim-matchup') != -1) "{{{
-  let g:loaded_matchit = 1
 endif "}}}
 
 if (HasPlug('vim-foldsearch') != -1) "{{{

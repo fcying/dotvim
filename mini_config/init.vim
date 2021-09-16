@@ -78,7 +78,7 @@ set cinkeys-=0#
 "set iskeyword -=#
 autocmd myau FileType * setlocal formatoptions-=o
 set formatoptions+=mM
-set virtualedit=all        "onemore all
+set virtualedit=onemore        "onemore all
 set history=2000
 set scrolloff=3
 set hidden
@@ -245,11 +245,37 @@ xnoremap p "_dP
 
 " tags path cscope gtags {{{
 set tags=tags,tags;
-set cscopetag
-if executable('gtags')
-  set cscopeprg='gtags-cscope'
-endif
-set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
+set cscopequickfix=s-,c-,d-,i-,t-,e-,a-
+
+function! Go2Def(name)
+  if &ft ==# 'help'
+    exec 'tag ' . a:name
+  else
+    try
+      let l:wv = winsaveview()
+      let l:bufnr = bufnr('%')
+      exec 'silent ltag ' . a:name
+      let l:size = getloclist(0, {'size': 0}).size
+      if l:size > 1
+        if l:bufnr !=# bufnr('%')
+          exec 'buf ' . l:bufnr
+        endif
+        call winrestview(l:wv)
+        "leftabove lwindow
+        rightbelow lwindow
+      elseif l:size ==# 1
+        lclose
+        call search(a:name, 'cs')
+      endif
+    catch
+      call searchdecl(a:name)
+    endtry
+  endif
+endfunction
+nnoremap g<c-]> <c-]>
+vnoremap g<c-]> <c-]>
+nnoremap <silent> <c-]> :call Go2Def(expand('<cword>'))<CR>
+vnoremap <silent> <c-]> :call Go2Def(expand('<cword>'))<CR>
 
 function! AddTags()
   if filereadable(expand(g:scm_dir . '/tags')) != 0
@@ -258,17 +284,18 @@ function! AddTags()
 endfunction
 
 func! Removetags()
-  ClearClangConf
+  silent ClearCtags
+  silent ClearClangConf
+  "call feedkeys(":Leaderf gtags --remove\<CR>y\<CR>", "tx")
+  echo "clear tags success"
 endf
 
 func! Gentags()
+  silent GenCtags
   silent GenClangConf
 
-  if executable('ctags')
-    silent !ctags -R --c++-kinds=+p --fields=+iaS --language-force=C++
-  endif
-
   call AddTags()
+  echo "gen tags success"
 endf
 nnoremap <silent> tg :call Gentags()<CR>
 nnoremap <silent> tc :call Removetags()<CR>
@@ -303,9 +330,10 @@ endif
 exec 'source '. g:plug_dir . '/vim-plug/plug.vim'
 call plug#begin(expand(g:plug_dir))
 Plug 'junegunn/vim-plug'
+Plug 'fcying/gen_clang_conf.vim'
 Plug 'moll/vim-bbye'
 Plug 'easymotion/vim-easymotion'
-Plug 'fcying/gen_clang_conf.vim'
+Plug 'andymass/vim-matchup'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'itchyny/lightline.vim'
@@ -316,7 +344,7 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
-Plug 'andersevenrud/compe-tmux'
+"Plug 'andersevenrud/compe-tmux', { 'branch': 'cmp' }
 call plug#end()
 delc PlugUpgrade
 

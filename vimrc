@@ -161,7 +161,7 @@ set cinkeys-=0#
 "set iskeyword -=#
 autocmd myau FileType * setlocal formatoptions-=o
 set formatoptions+=mM
-set virtualedit=all        "onemore all
+set virtualedit=onemore        "onemore all
 set history=2000
 set scrolloff=3
 set hidden
@@ -686,48 +686,73 @@ endfunction
 
 " tags path cscope gtags {{{
 set tags=tags,tags;
-set cscopetag
-if executable('gtags')
-  set cscopeprg='gtags-cscope'
-endif
-set cscopequickfix=s+,c+,d+,i+,t+,e+,a+
+"set cscopetag
+"if executable('gtags')
+"  set cscopeprg='gtags-cscope'
+"endif
+set cscopequickfix=s-,c-,d-,i-,t-,e-,a-
 if g:is_win
   let $PATH = g:config_dir . '\lib' . ';' . $PATH
 elseif g:is_linux
   let $PATH = g:config_dir . '/lib' . ':' . $PATH
 endif
 
-function! AddTags()
-  if filereadable(expand(g:scm_dir . '/.LfGtags/GTAGS')) != 0
-    silent cs kill -1
-    exec 'cd ' . g:scm_dir . '/.LfGtags'
-    exec 'silent cs add ' . g:scm_dir . '/.LfGtags/GTAGS'
-    exec 'cd -'
+function! Go2Def(name)
+  if &ft ==# 'help'
+    exec 'tag ' . a:name
+  else
+    try
+      let l:wv = winsaveview()
+      let l:bufnr = bufnr('%')
+      exec 'silent ltag ' . a:name
+      let l:size = getloclist(0, {'size': 0}).size
+      if l:size > 1
+        if l:bufnr !=# bufnr('%')
+          exec 'buf ' . l:bufnr
+        endif
+        call winrestview(l:wv)
+        "leftabove lwindow
+        rightbelow lwindow
+      elseif l:size ==# 1
+        lclose
+        call search(a:name, 'cs')
+      endif
+    catch
+      call searchdecl(a:name)
+    endtry
   endif
+endfunction
+nnoremap g<c-]> <c-]>
+vnoremap g<c-]> <c-]>
+nnoremap <silent> <c-]> :call Go2Def(expand('<cword>'))<CR>
+vnoremap <silent> <c-]> :call Go2Def(expand('<cword>'))<CR>
+
+function! AddTags()
+  "if filereadable(expand(g:scm_dir . '/.LfGtags/GTAGS')) != 0
+  "  silent cs kill -1
+  "  exec 'cd ' . g:scm_dir . '/.LfGtags'
+  "  exec 'silent cs add ' . g:scm_dir . '/.LfGtags/GTAGS'
+  "  exec 'cd -'
+  "endif
   if filereadable(expand(g:scm_dir . '/tags')) != 0
     exec 'set tags=' . g:scm_dir . '/tags'
   endif
 endfunction
 
 func! Removetags()
-  ClearClangConf
-  call feedkeys(":Leaderf gtags --remove\<CR>y\<CR>", "tx")
+  silent ClearCtags
+  silent ClearClangConf
+  "call feedkeys(":Leaderf gtags --remove\<CR>y\<CR>", "tx")
+  echo "clear tags success"
 endf
 
 func! Gentags()
+  silent GenCtags
   silent GenClangConf
-  Leaderf gtags --update
-
-  "if executable('ctags')
-  "  let l:file_list = systemlist('rg --no-messages --files ' . g:rg_ignore . getcwd())
-  "  let l:files = ''
-  "  for i in l:file_list
-  "    let l:files = l:files . i . ' '
-  "  endfor
-  "  exec 'silent !ctags -f '. g:scm_dir . '/.LfGtags/tags ' . l:files
-  "endif
+  ""Leaderf gtags --update
 
   call AddTags()
+  echo "gen tags success"
 endf
 nnoremap <silent> tg :call Gentags()<CR>
 nnoremap <silent> tc :call Removetags()<CR>

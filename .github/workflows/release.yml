@@ -48,5 +48,7 @@ jobs:
           draft: false
           files: |
             mini_config.zip:./mini_config.zip
+          body: |
+            mini_config only for [NeoVim](https://github.com/neovim/neovim/releases/latest)
 
 

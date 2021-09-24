@@ -2,12 +2,8 @@
 
 set nocompatible
 
-let g:is_osx = has('macunix')
-let g:is_linux = has('unix') && !has('macunix') && !has('win32unix')
 let g:is_win = has('win32')
 let g:is_nvim = has('nvim')
-let g:is_vim8 = v:version >= 800 ? 1 : 0
-let g:has_go = executable('go') ? 1 : 0
 let g:is_gui = has('gui_running') || !empty($NVIM_GUI)
 let g:is_tmux = exists('$TMUX')
 let g:is_conemu = !empty($CONEMUBUILD)
@@ -33,9 +29,9 @@ function! GetRootDir()
     endif
   endfor
   if !empty(l:dir)
-    let g:scm_dir = fnamemodify(l:dir, ':p:h')
+    let g:root_marker = fnamemodify(l:dir, ':p:h')
   else
-    let g:scm_dir = getcwd()
+    let g:root_marker = getcwd()
   endif
 endfunction
 call GetRootDir()
@@ -46,15 +42,16 @@ if filereadable(g:file_vimrc_local)
   execute 'source ' . g:file_vimrc_local
 endif
 
-let g:pvimrc_path = findfile('.pvimrc', g:scm_dir . ';' . g:scm_dir . '..')
+let g:pvimrc_path = findfile('.pvimrc', g:root_marker . ';' . g:root_marker . '..')
 if g:pvimrc_path !=# ''
   exec 'sandbox source ' . g:pvimrc_path
 else
-  let g:pvimrc_path = g:scm_dir . '/.pvimrc'
+  let g:pvimrc_path = g:root_marker . '/.pvimrc'
 endif
 nnoremap <silent> <leader>ep  :execute 'e '  . g:pvimrc_path<CR>
 execute 'autocmd myau BufWritePost .pvimrc nested sandbox so ' . g:pvimrc_path
 nnoremap <silent> <leader>evv :execute 'e '  . g:file_vimrc<CR>
+nnoremap <silent> <leader>evb :execute 'e '  . g:file_basic_config<CR>
 nnoremap <silent> <leader>evl :execute 'e '  . g:file_vimrc_local<CR>
 " }}}
 
@@ -106,7 +103,7 @@ set noautochdir
 set updatetime=300
 if g:is_win
   let $PATH = g:config_dir . '\lib' . ';' . $PATH
-elseif g:is_linux
+else
   let $PATH = g:config_dir . '/lib' . ':' . $PATH
 endif
 
@@ -181,6 +178,7 @@ nnoremap <silent> <leader>lo :lopen<CR>
 nnoremap <silent> <leader>lc :lclose<CR>
 nnoremap <silent> <leader>ln :lnext<CR>
 nnoremap <silent> <leader>lp :lprevious<CR>
+autocmd myau FileType qf noremap <silent> q :q<CR>
 
 " foldmethod {{{
 set foldmethod=manual
@@ -416,7 +414,10 @@ function! ClosePair(char)
 endfunction
 
 
-" tag ltag {{{
+" tags ltag {{{
+set tags=tags,tags;
+set cscopequickfix=s-,c-,d-,i-,t-,e-,a-
+
 function! Go2Def(name)
   if &ft ==# 'help'
     exec 'tag ' . a:name
@@ -446,6 +447,22 @@ nnoremap g<c-]> <c-]>
 vnoremap g<c-]> <c-]>
 nnoremap <silent> <c-]> :call Go2Def(expand('<cword>'))<CR>
 vnoremap <silent> <c-]> :call Go2Def(expand('<cword>'))<CR>
+
+func! Removetags()
+  ClearClangConf
+  ClearCtags
+endf
+
+func! Gentags()
+  ClearClangConf
+  GenClangConf
+  GenCtags
+  if g:is_nvim
+    LspRestart
+  endif
+endf
+nnoremap <silent> tg :call Gentags()<CR>
+nnoremap <silent> tc :call Removetags()<CR>
 
 
 " Without any arguments the current buffer is kept.  With an argument the buffer name/number supplied is kept.
@@ -508,4 +525,5 @@ function! s:add_dict()
   endif
 endfunction
 autocmd myau FileType * :call s:add_dict()
+
 

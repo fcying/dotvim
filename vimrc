@@ -6,10 +6,11 @@ let g:cache_dir = g:config_dir . '/.cache'
 let g:etc_dir = g:config_dir . '/etc'
 let g:file_plug = g:config_dir . '/plug.vim'
 let g:file_vimrc = g:config_dir . '/vimrc'
+let g:file_basic_config = g:config_dir . '/basic.vim'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
 let g:file_log = g:cache_dir . '/vim.log'
 let g:root_markers = ['.root', '.git', '.svn']
-let g:scm_dir = ''
+let g:root_marker = ''
 let g:mapleader = get(g:,'mapleader',' ')
 
 if executable('pip3') ==# 0
@@ -108,7 +109,7 @@ nnoremap <silent> <leader>cda :cd %:p:h<CR>:pwd<CR>
 
 " golang
 function! s:getgotools()
-  if g:has_go
+  if executable('go')
     silent !GO111MODULE=on go get -v golang.org/x/tools/cmd/goimports
     silent !GO111MODULE=on go get -v golang.org/x/tools/gopls@latest
   endif
@@ -164,52 +165,17 @@ endif
 
 " update lsp {{{
 function! UpdateLsp() abort
-  "silent !rustup update
-  "silent !rustup component add rls rust-analysis rust-src
-  silent !pip3 install python-language-server --upgrade
-  silent !pip3 install jedi pylint --upgrade
-  call mkdir($HOME . '/.npm', 'p')
-  silent !cd ~/.npm; npm install dockerfile-language-server-nodejs
-  silent !cd ~/.npm; npm install pyright
-  silent !cd ~/.npm; npm install vim-language-server
-  if g:has_go
-    GoGetTools
+  if executable('npm')
+    call mkdir($HOME . '/.npm', 'p')
+    silent !cd ~/.npm; npm install pyright
+    silent !cd ~/.npm; npm install vim-language-server
+  endif
+  GoGetTools
+  if executable('rustup')
+    silent !rustup update
+    silent !rustup component add rust-analysis rust-src
   endif
 endfunction
-
-" tags cscope gtags {{{
-set tags=tags,tags;
-"set cscopetag
-"if executable('gtags')
-"  set cscopeprg='gtags-cscope'
-"endif
-set cscopequickfix=s-,c-,d-,i-,t-,e-,a-
-
-function! AddTags()
-  "if filereadable(expand(g:scm_dir . '/.LfGtags/GTAGS')) != 0
-  "  silent cs kill -1
-  "  exec 'cd ' . g:scm_dir . '/.LfGtags'
-  "  exec 'silent cs add ' . g:scm_dir . '/.LfGtags/GTAGS'
-  "  exec 'cd -'
-  "endif
-endfunction
-
-func! Removetags()
-  ClearClangConf
-  ClearCtags
-  "call feedkeys(":Leaderf gtags --remove\<CR>y\<CR>", "tx")
-endf
-
-func! Gentags()
-  GenClangConf
-  GenCtags
-  ""Leaderf gtags --update
-
-  call AddTags()
-endf
-nnoremap <silent> tg :call Gentags()<CR>
-nnoremap <silent> tc :call Removetags()<CR>
-call AddTags()
 
 " }}}
 

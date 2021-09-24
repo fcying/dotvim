@@ -1,5 +1,8 @@
 if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
+    --vim.lsp.set_log_level('debug')
+
     local nvim_lsp = require('lspconfig')
+    local util = require('lspconfig/util')
 
     -- Use an on_attach function to only map the following keys
     -- after the language server attaches to the current buffer
@@ -35,17 +38,28 @@ if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
 
     -- Use a loop to conveniently call 'setup' on multiple servers and
     -- map buffer local keybindings when the language server attaches
-    local servers = { 'pyright', 'gopls', 'vimls' }
+    local servers = { 'pyright', 'vimls' }
     for _, lsp in ipairs(servers) do
         nvim_lsp[lsp].setup {
             on_attach = on_attach;
-            flags = {
-                debounce_text_changes = 150,
-            }
+            flags = { debounce_text_changes = 150 }
         }
     end
 
+    nvim_lsp.gopls.setup {
+        root_dir = function(fname)
+            return util.root_pattern 'go.work'(fname) or util.root_pattern('go.mod', '.git', '.root')(fname) or util.path.dirname(fname)
+        end,
+        on_attach = on_attach;
+        flags = { debounce_text_changes = 150 };
+    }
+
+    local clangd_cmd = { "clangd", "--background-index" }
+    if vim.g.gencconf_storein_rootmarker == 1 then
+        table.insert(clangd_cmd, "--compile-commands-dir=" .. vim.g.root_marker)
+    end
     nvim_lsp.clangd.setup {
+        cmd = clangd_cmd;
         on_attach = on_attach;
         flags = { debounce_text_changes = 150 };
         handlers = {
@@ -59,20 +73,6 @@ if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
             ),
         };
     }
-    --nvim_lsp.ccls.setup {
-        --on_attach = on_attach;
-        --flags = { debounce_text_changes = 150 };
-        --handlers = {
-            --["textDocument/publishDiagnostics"] = vim.lsp.with(
-            --vim.lsp.diagnostic.on_publish_diagnostics, {
-                --underline = false,
-                --virtual_text = false,
-                --signs = false,
-                --update_in_insert = false,
-            --}
-            --),
-        --};
-    --}
 end
 
 if (vim.fn.HasPlug('nvim-cmp') ~= -1) then    --{{{

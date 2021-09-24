@@ -851,6 +851,7 @@ if (HasPlug('LeaderF') != -1) "{{{
   xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F %s", leaderf#Rg#visual())<CR>
   nnoremap fr :<C-U>Leaderf --recall<CR><TAB>
   nnoremap f/ :<C-U>Leaderf rg<CR>
+  nnoremap fj :<C-U>Leaderf jumps<CR>
 
   nnoremap fi :exec "Leaderf file --fullPath --input " . <SID>strip_include(getline("."))<CR>
   function! s:strip_include(line)

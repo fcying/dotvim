@@ -4,10 +4,11 @@
 let g:config_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let g:cache_dir = g:config_dir . '/.cache'
 let s:plug_install_dir = g:config_dir . '/plugged'
-let g:file_vimrc_local = $HOME .'/.vimrc.local'
 let g:file_vimrc = g:config_dir . '/init.vim'
+let g:file_basic_config = g:config_dir . '/basic.vim'
+let g:file_vimrc_local = $HOME .'/.vimrc.local'
 let g:root_markers = ['.root', '.git', '.svn']
-let g:scm_dir = ''
+let g:root_marker = ''
 let g:mapleader = ' '
 
 if filereadable(g:file_vimrc_local)
@@ -15,24 +16,6 @@ if filereadable(g:file_vimrc_local)
 else
   execute 'source ' . g:config_dir . '/../basic.vim'
 endif
-
-" tags cscope gtags {{{
-set tags=tags,tags;
-set cscopequickfix=s-,c-,d-,i-,t-,e-,a-
-
-func! Removetags()
-  silent ClearCtags
-  silent ClearClangConf
-  echo "clear tags success"
-endf
-
-func! Gentags()
-  silent GenCtags
-  silent GenClangConf
-  echo "gen tags success"
-endf
-nnoremap <silent> tg :call Gentags()<CR>
-nnoremap <silent> tc :call Removetags()<CR>
 
 
 " plugins {{{
@@ -79,7 +62,7 @@ Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'quangnguyen30192/cmp-nvim-tags'
-"Plug 'andersevenrud/compe-tmux', { 'branch': 'cmp' }
+Plug 'andersevenrud/compe-tmux', { 'branch': 'cmp' }
 call plug#end()
 delc PlugUpgrade
 

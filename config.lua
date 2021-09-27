@@ -1,3 +1,7 @@
+if (vim.fn.HasPlug('filetype.nvim') ~= -1) then    --{{{
+    vim.g.did_load_filetypes = 1
+end
+
 if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
     --vim.lsp.set_log_level('debug')
 

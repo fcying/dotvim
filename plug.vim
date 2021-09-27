@@ -82,6 +82,8 @@ function! s:add_plug(path, ...)
           let l:options.cmd = a:1[key]
         elseif key ==# 'do'
           let l:options.run = string(funcref(a:1[key]))
+        elseif key ==# 'event'
+          let l:options.event = a:1[key]
         endif
       endfor
     endif
@@ -170,6 +172,9 @@ endfunction
 " plugin list {{{
 call s:add_plug('mbbill/fencview', {'on':['FencView','FencAutoDetect']})
 call s:add_plug('wsdjeg/vim-fetch')
+"if g:is_nvim
+"  call s:add_plug('nathom/filetype.nvim', {'event':['BufNewFile', 'BufReadPre']})
+"endif
 call s:add_plug('lambdalisue/suda.vim', {'on':['SudaRead', 'SudaWrite']})
 call s:add_plug('moll/vim-bbye', {'on':'Bdelete'})
 call s:add_plug('itchyny/lightline.vim', {'opt': 'false'})
@@ -177,7 +182,7 @@ call s:add_plug('simnalamburt/vim-mundo')
 call s:add_plug('chrisbra/Colorizer')
 call s:add_plug('skywind3000/vim-quickui')
 call s:add_plug('liuchengxu/vim-which-key')
-call s:add_plug('dstein64/vim-startuptime', {'on':'StartupTime'})
+call s:add_plug('tweekmonster/startuptime.vim', {'on':'StartupTime'})
 "call s:add_plug('tpope/vim-apathy')
 "call s:add_plug('roxma/vim-paste-easy')
 
@@ -327,6 +332,9 @@ lua << EOF
       end
       if (value[2]['rtp'] ~= nil) then
         options['rtp'] = value[2]['rtp']
+      end
+      if (value[2]['event'] ~= nil) then
+        options['event'] = value[2]['rtp']
       end
       if (value[2]['run'] ~= nil) then
         --string remove "function('')"

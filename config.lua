@@ -77,6 +77,20 @@ if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
             ),
         };
     }
+    --nvim_lsp.ccls.setup {
+        --on_attach = on_attach;
+        --flags = { debounce_text_changes = 150 };
+        --handlers = {
+            --["textDocument/publishDiagnostics"] = vim.lsp.with(
+            --vim.lsp.diagnostic.on_publish_diagnostics, {
+                --underline = false,
+                --virtual_text = false,
+                --signs = false,
+                --update_in_insert = false,
+            --}
+            --),
+        --};
+    --}
 end
 
 if (vim.fn.HasPlug('nvim-cmp') ~= -1) then    --{{{
@@ -86,6 +100,7 @@ if (vim.fn.HasPlug('nvim-cmp') ~= -1) then    --{{{
             ['<C-y>'] = cmp.mapping.confirm({ select = true }),
         },
         sources = {
+            { name = 'vsnip' },
             { name = 'nvim_lsp' },
             { name = 'nvim_lua' },
             {
@@ -108,6 +123,7 @@ if (vim.fn.HasPlug('nvim-cmp') ~= -1) then    --{{{
                     nvim_lua = '[Lua]',
                     tags = '[Tag]',
                     tmux = '[Tmux]',
+                    vsnip = '[Snip]',
                 })[entry.source.name]
                 return vim_item
             end,

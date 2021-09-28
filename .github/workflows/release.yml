@@ -1,9 +1,11 @@
 name: Publish
 
 on:
-  workflow_dispatch:
+  schedule:
+  - cron: '0 3 * * *'
   push:
     branches: [ master, test ]
+  workflow_dispatch:
 
 defaults:
   run:
@@ -26,6 +28,7 @@ jobs:
         run: |
           mkdir -p ~/.config
           cp -r mini_config ~/.config/nvim
+          cp -r snippets ~/.config/nvim
           cp config.lua basic.vim ~/.config/nvim
           nvim --headless -c 'PlugUpdate --sync|qa'
           pushd ~/.config

@@ -1,0 +1,21 @@
+{
+  "if": {
+    "prefix": "if",
+    "body": "if ${1:condition} \n\t${0}\nendif",
+    "description": "An IF statement."
+  },
+  "function": {
+    "prefix": "fu",
+    "body": "function! ${1:name} \n\t${0}\nendfunction",
+    "description": "function."
+  },
+  "for": {
+    "prefix": "for",
+    "body": [
+      "for ${1:VAR} in ${2:LIST}",
+      "\t${0}",
+      "endfor"
+    ],
+    "description": "Code snippet for 'for' loop"
+  }
+}

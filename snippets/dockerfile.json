@@ -1,0 +1,15 @@
+{
+  "head": {
+    "prefix": ["head", "he"],
+    "body": [
+      "FROM debian:stable-slim",
+      "LABEL maintainer fcying fcyingmk2@gmail.com",
+      "ENV DEBIAN_FRONTEND noninteractive\n",
+      "RUN echo \"deb http://ftp.cn.debian.org/debian stretch main\" > /etc/apt/sources.list \\",
+      "\t&& apt-get update && apt-get upgrade -y \\",
+      "\t&& apt-get clean && rm -rf /var/lib/apt/lists/*",
+      "$0"
+    ],
+    "description": "head"
+  }
+}

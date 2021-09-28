@@ -11,7 +11,7 @@ let g:root_markers = ['.root', '.git', '.svn']
 let g:root_marker = ''
 let g:mapleader = ' '
 
-if filereadable(g:file_vimrc_local)
+if filereadable(g:file_basic_config)
   execute 'source ' . g:config_dir . '/basic.vim'
 else
   execute 'source ' . g:config_dir . '/../basic.vim'
@@ -61,6 +61,8 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-vsnip'
+Plug 'hrsh7th/vim-vsnip'
 Plug 'quangnguyen30192/cmp-nvim-tags'
 Plug 'andersevenrud/compe-tmux', { 'branch': 'cmp' }
 call plug#end()
@@ -107,7 +109,6 @@ if (HasPlug('vim-bbye') != -1) "{{{
   nnoremap <Leader>q :Bdelete<CR>
 endif "}}}
 
-" telescope {{{
 if (HasPlug('telescope.nvim') != -1) "{{{
   nnoremap ff <cmd>Telescope find_files<cr>
   nnoremap f/ <cmd>Telescope live_grep<cr>
@@ -115,6 +116,14 @@ if (HasPlug('telescope.nvim') != -1) "{{{
   nnoremap fh <cmd>Telescope help_tags<cr>
   nnoremap ft <cmd>Telescope tags<cr>
   nnoremap ts <cmd>Telescope tags<cr>
+endif "}}}
+
+if (HasPlug('vim-vsnip') != -1) "{{{
+  let g:vsnip_snippet_dir = g:config_dir . '/snippets'
+  imap <expr> <c-j> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<c-j>'
+  smap <expr> <c-j> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<c-j>'
+  imap <expr> <c-k> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<c-k>'
+  smap <expr> <c-k> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<c-k>'
 endif "}}}
 
 if filereadable(g:config_dir . '/config.lua')

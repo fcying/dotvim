@@ -7,7 +7,9 @@ let g:is_nvim = has('nvim')
 let g:is_gui = has('gui_running') || !empty($NVIM_GUI)
 let g:is_tmux = exists('$TMUX')
 let g:is_conemu = !empty($CONEMUBUILD)
-let g:is_wsl = isdirectory("/mnt/c")
+let g:is_wsl = isdirectory('/mnt/c')
+let g:has_ccls = executable('ccls')
+let g:has_go = executable('go')
 
 exec 'set rtp+=' . g:config_dir
 

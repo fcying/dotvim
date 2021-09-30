@@ -58,39 +58,52 @@ if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
         flags = { debounce_text_changes = 150 };
     }
 
-    local clangd_cmd = { "clangd", "--background-index" }
-    if vim.g.gencconf_storein_rootmarker == 1 then
-        table.insert(clangd_cmd, "--compile-commands-dir=" .. vim.g.root_marker)
+    if vim.g.has_ccls == 1 then
+        local cache_dir = ".ccls-cache"
+        local config_dir = ""
+        if vim.g.gencconf_storein_rootmarker == 1 then
+            config_dir = vim.g.root_marker
+            cache_dir = vim.g.root_marker .. "/.ccls-cache"
+        end
+        nvim_lsp.ccls.setup {
+            on_attach = on_attach;
+            init_options = {
+                compilationDatabaseDirectory = config_dir;
+                cache = { directory = cache_dir };
+            };
+            flags = { debounce_text_changes = 150 };
+            handlers = {
+                ["textDocument/publishDiagnostics"] = vim.lsp.with(
+                vim.lsp.diagnostic.on_publish_diagnostics, {
+                    underline = false,
+                    virtual_text = false,
+                    signs = false,
+                    update_in_insert = false,
+                }
+                ),
+            };
+        }
+    else
+        local clangd_cmd = { "clangd", "--background-index" }
+        if vim.g.gencconf_storein_rootmarker == 1 then
+            table.insert(clangd_cmd, "--compile-commands-dir=" .. vim.g.root_marker)
+        end
+        nvim_lsp.clangd.setup {
+            cmd = clangd_cmd;
+            on_attach = on_attach;
+            flags = { debounce_text_changes = 150 };
+            handlers = {
+                ["textDocument/publishDiagnostics"] = vim.lsp.with(
+                vim.lsp.diagnostic.on_publish_diagnostics, {
+                    underline = false,
+                    virtual_text = false,
+                    signs = false,
+                    update_in_insert = false,
+                }
+                ),
+            };
+        }
     end
-    nvim_lsp.clangd.setup {
-        cmd = clangd_cmd;
-        on_attach = on_attach;
-        flags = { debounce_text_changes = 150 };
-        handlers = {
-            ["textDocument/publishDiagnostics"] = vim.lsp.with(
-            vim.lsp.diagnostic.on_publish_diagnostics, {
-                underline = false,
-                virtual_text = false,
-                signs = false,
-                update_in_insert = false,
-            }
-            ),
-        };
-    }
-    --nvim_lsp.ccls.setup {
-        --on_attach = on_attach;
-        --flags = { debounce_text_changes = 150 };
-        --handlers = {
-            --["textDocument/publishDiagnostics"] = vim.lsp.with(
-            --vim.lsp.diagnostic.on_publish_diagnostics, {
-                --underline = false,
-                --virtual_text = false,
-                --signs = false,
-                --update_in_insert = false,
-            --}
-            --),
-        --};
-    --}
 end
 
 if (vim.fn.HasPlug('nvim-cmp') ~= -1) then    --{{{

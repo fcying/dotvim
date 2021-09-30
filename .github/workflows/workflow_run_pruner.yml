@@ -1,4 +1,4 @@
-name: Workflow Run Pruner
+name: workflow run pruner
 
 on:
   schedule:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   prune:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     timeout-minutes: 10
 
     steps:
@@ -53,6 +53,7 @@ jobs:
           // because we track the duration of runs over time
 
           const workflows = [
+            'ccls.yml',
             'release.yml',
             'workflow_run_pruner.yml'
           ]

@@ -92,6 +92,14 @@ endif
 
 
 " plugin setting {{{
+if (HasPlug('gen_clang_conf.vim') != -1) "{{{
+  if !exists('g:gencconf_ignore_dirs')
+    let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
+          \ 'cache', 'doc', 'docs']
+  endif
+  let g:gencconf_storein_rootmarker = get(g:,'gencconf_storein_rootmarker',1)
+endif "}}}
+
 if (HasPlug('vim-easymotion') != -1) "{{{
   let g:EasyMotion_smartcase = 0
   let g:EasyMotion_do_mapping = 0   " Disable default mappings

@@ -348,11 +348,15 @@ autocmd myau VimEnter *
 
 
 " ============================================================================
-" plug setting
+" plug setting {{{
 " ============================================================================
-if g:is_nvim
-  exec 'luafile ' . g:config_dir . '/config.lua'
-endif
+if (HasPlug('gen_clang_conf.vim') != -1) "{{{
+  if !exists('g:gencconf_ignore_dirs')
+    let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
+          \ 'cache', 'doc', 'docs']
+  endif
+  let g:gencconf_storein_rootmarker = get(g:,'gencconf_storein_rootmarker',1)
+endif "}}}
 
 if (HasPlug('indentLine') != -1) "{{{
   let g:indentLine_setColors = 1
@@ -955,13 +959,6 @@ if (HasPlug('vim-template') != -1) "{{{
   let g:email = get(g:, 'email', 'fcying@gmail.com')
 endif "}}}
 
-if (HasPlug('gen_clang_conf.vim') != -1) "{{{
-  if !exists('g:gencconf_ignore_dirs')
-    let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
-          \ 'cache', 'doc', 'docs']
-  endif
-endif "}}}
-
 if (HasPlug('preview-markdown.vim') != -1) "{{{
   let g:preview_markdown_vertical=1
   let g:preview_markdown_auto_update=1
@@ -1070,4 +1067,8 @@ if (HasPlug('vim-quickui') != -1) "{{{
 
   noremap <space><space> :call quickui#menu#open()<cr>
 endif "}}}
+
+if g:is_nvim
+  exec 'luafile ' . g:config_dir . '/config.lua'
+endif
 

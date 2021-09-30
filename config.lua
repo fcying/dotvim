@@ -1,3 +1,6 @@
+local cmd = vim.cmd
+local fn = vim.fn
+
 if (vim.fn.HasPlug('filetype.nvim') ~= -1) then    --{{{
     vim.g.did_load_filetypes = 1
 end

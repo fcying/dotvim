@@ -367,7 +367,7 @@ inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
 " close menu and start a new line
 inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>": "\<cr>"
-set completeopt=menuone,noselect
+set completeopt=menuone,noselect,noinsert
 set shortmess+=c
 if has('patch-8.1.1902')
   set completeopt+=popup

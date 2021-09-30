@@ -1,0 +1,49 @@
+name: ccls
+
+on:
+  schedule:
+  - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Download llvm
+        run: |
+          ver=$(curl -s "https://github.com/llvm/llvm-project/releases/latest" | grep -Po "(\d+\.){2}\d+")
+          ver=12.0.1
+          wget -Ollvm.tar.xz "https://github.com/llvm/llvm-project/releases/download/llvmorg-${ver}/clang+llvm-${ver}-x86_64-linux-gnu-ubuntu-16.04.tar.xz"
+          tar xJf llvm.tar.xz
+          mv clang+llvm-${ver}-x86_64-linux-gnu-ubuntu- llvm
+      - name: Build ccls
+        run: |
+          git clone --depth=1 --recursive https://github.com/MaskRay/ccls
+          cd ccls
+          cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../llvm -DCMAKE_CXX_FLAGS="-static-libgcc -static-libstdc++"
+          cmake --build Release -j
+          mv Release/ccls .
+          zip -vrq9 ../ccls.zip ./ccls
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          delete_release: true
+          tag_name: ccls
+      - uses: meeDamian/github-release@v2.0.3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ccls
+          name: ccls
+          allow_override: true
+          gzip: false
+          draft: false
+          files: |
+            ccls.zip:./ccls.zip
+          body: |
+            ### Requirement
+              os >= ubuntu 14.04
+              or
+              glibc >= 2.17
+
+

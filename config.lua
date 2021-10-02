@@ -5,6 +5,29 @@ if (vim.fn.HasPlug('filetype.nvim') ~= -1) then    --{{{
     vim.g.did_load_filetypes = 1
 end
 
+if (vim.fn.HasPlug('telescope.nvim') ~= -1) then    --{{{
+    vim.api.nvim_set_keymap('n', 'ff', '<cmd>Telescope find_files<cr>', { noremap = true })
+    vim.api.nvim_set_keymap('n', 'ft', '<cmd>Telescope tags<cr>', { noremap = true })
+    vim.api.nvim_set_keymap('n', 'fb', '<cmd>Telescope buffers<cr>', { noremap = true })
+    vim.api.nvim_set_keymap('n', 'fh', '<cmd>Telescope help_tags<cr>', { noremap = true })
+    vim.api.nvim_set_keymap('n', 'f/', '<cmd>Telescope live_grep<cr>', { noremap = true })
+    vim.api.nvim_set_keymap('n', 'fg', '<cmd>Telescope grep_string<cr>', { noremap = true })
+
+    local actions = require('telescope.actions')
+    require('telescope').setup{
+        defaults = {
+            mappings = {
+                i = {
+                    --["<esc>"] = actions.close
+                },
+                n = {
+                    ["q"] = actions.close
+                },
+            },
+        }
+    }
+end
+
 if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
     --vim.lsp.set_log_level('debug')
 

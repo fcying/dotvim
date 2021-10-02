@@ -1,5 +1,4 @@
-let g:custom_ignore = {
-      \ 'dir': ['plugged', '.plugged', '.vim_origin',
-      \ ],
+let g:ignore = {
+      \ 'dir': ['plugged', '.plugged', '.vim_origin' ],
       \ 'file': []
       \}

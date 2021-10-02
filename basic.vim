@@ -2,6 +2,7 @@
 
 set nocompatible
 
+" init var {{{
 let g:is_win = has('win32')
 let g:is_nvim = has('nvim')
 let g:is_gui = has('gui_running') || !empty($NVIM_GUI)
@@ -10,6 +11,14 @@ let g:is_conemu = !empty($CONEMUBUILD)
 let g:is_wsl = isdirectory('/mnt/c')
 let g:has_ccls = executable('ccls')
 let g:has_go = executable('go')
+
+let g:ignore_default = {
+      \ 'dir':['.root','.svn','.git','.repo','.ccls-cache','.cache','.ccache'],
+      \ 'file':['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]',
+      \ 'GTAGS', 'GRTAGS', 'GPATH', 'prj_tag','tag'],
+      \ 'mru':['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll'],
+      \ 'rg':['--max-columns=300', '--iglob=!obj', '--iglob=!out']}
+let g:ignore = {'dir':[], 'file':[], 'rg':[], 'mru':[]}
 
 exec 'set rtp+=' . g:config_dir
 
@@ -50,11 +59,11 @@ if g:pvimrc_path !=# ''
 else
   let g:pvimrc_path = g:root_marker . '/.pvimrc'
 endif
-nnoremap <silent> <leader>ep  :execute 'e '  . g:pvimrc_path<CR>
-execute 'autocmd myau BufWritePost .pvimrc nested sandbox so ' . g:pvimrc_path
+
 nnoremap <silent> <leader>evv :execute 'e '  . g:file_vimrc<CR>
 nnoremap <silent> <leader>evb :execute 'e '  . g:file_basic_config<CR>
 nnoremap <silent> <leader>evl :execute 'e '  . g:file_vimrc_local<CR>
+
 " }}}
 
 
@@ -529,3 +538,49 @@ endfunction
 autocmd myau FileType * :call s:add_dict()
 
 
+" ============================================================================
+" auto update pvimrc var {{{
+" ============================================================================
+function! UpdateIgnore()
+  " init ignore config
+  let l:ignore_full = {}
+  if !exists('g:ignore.dir')
+    let g:ignore.dir = []
+  endif
+  if !exists('g:ignore.file')
+    let g:ignore.file = []
+  endif
+  if !exists('g:ignore.mru')
+    let g:ignore.mru = []
+  endif
+  if !exists('g:ignore.rg')
+    let g:ignore.rg = []
+  endif
+  let l:ignore_full.dir = g:ignore_default.dir + g:ignore.dir
+  let l:ignore_full.file = g:ignore_default.file + g:ignore.file
+  let l:ignore_full.rg = g:ignore_default.rg + g:ignore.rg
+  let l:ignore_full.mru = g:ignore_default.mru + g:ignore.mru
+
+  " update rg config
+  for i in l:ignore_full.file
+    call add(l:ignore_full.rg, '--glob=!' . i)
+  endfor
+  for i in l:ignore_full.dir
+    call add(l:ignore_full.rg, '--glob=!' . i)
+  endfor
+
+  if (HasPlug('LeaderF') != -1)
+    let g:Lf_WildIgnore = {}
+    let g:Lf_MruFileExclude = deepcopy(l:ignore_full.mru)
+    let g:Lf_WildIgnore.dir = deepcopy(l:ignore_full.dir)
+    let g:Lf_WildIgnore.file = deepcopy(l:ignore_full.file)
+    let g:Lf_RgConfig = deepcopy(l:ignore_full.rg)
+  endif
+
+  if (HasPlug('gen_clang_conf.vim') != -1) "{{{
+    let g:gencconf_ignore_dir = deepcopy(l:ignore_full.dir)
+  endif
+endfunction
+execute 'autocmd myau BufWritePost .pvimrc nested sandbox so ' . g:pvimrc_path
+au myau SourcePost .pvimrc call UpdateIgnore()
+nnoremap <silent> <leader>ep  :execute 'e '  . g:pvimrc_path<CR>

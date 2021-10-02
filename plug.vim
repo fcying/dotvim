@@ -351,10 +351,6 @@ autocmd myau VimEnter *
 " plug setting {{{
 " ============================================================================
 if (HasPlug('gen_clang_conf.vim') != -1) "{{{
-  if !exists('g:gencconf_ignore_dirs')
-    let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
-          \ 'cache', 'doc', 'docs']
-  endif
   let g:gencconf_storein_rootmarker = get(g:,'gencconf_storein_rootmarker',1)
 endif "}}}
 
@@ -746,10 +742,14 @@ if (HasPlug('LeaderF') != -1) "{{{
   "let g:Lf_WindowPosition = 'popup'
   "let g:Lf_PreviewHorizontalPosition = 'right'
 
-  let g:Lf_CommandMap = {'<F5>': ['<C-L>']}
+  let g:Lf_CommandMap = {
+        \ '<C-j>': ['<C-n>'],
+        \ '<C-k>': ['<C-p>'],
+        \ '<F5>': ['<C-L>'],
+        \ }
   let g:Lf_NormalMap = {
-        \ '_':        [['<C-j>', 'j'],
-        \              ['<C-k>', 'k'],
+        \ '_':        [['<C-n>', 'j'],
+        \              ['<C-p>', 'k'],
         \             ],
         \ 'File':     [['<ESC>', ':exec g:Lf_py "fileExplManager.quit()"<CR>']],
         \ 'Buffer':   [['<ESC>', ':exec g:Lf_py "bufExplManager.quit()"<CR>']],
@@ -775,40 +775,6 @@ if (HasPlug('LeaderF') != -1) "{{{
         \ 'Gtags': 0
         \}
 
-  if !exists('g:Lf_MruFileExclude')
-    let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll']
-  endif
-
-  if !exists('g:Lf_WildIgnore')
-    let g:Lf_WildIgnore = {
-          \ 'dir': ['.root','.svn','.git','.hg','.ccls-cache'],
-          \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
-          \}
-  endif
-
-  if !exists('g:Lf_RgConfig')
-    let g:Lf_RgConfig = [
-          \ '--max-columns=300',
-          \ '--glob=!.git',
-          \ '--glob=!.svn',
-          \ '--glob=!.repo',
-          \ '--glob=!.root',
-          \ '--glob=!.ccache',
-          \ '--glob=!.cache',
-          \ '--glob=!.ccls-cache',
-          \ '--glob=!.clangd',
-          \ '--glob=!GTAGS',
-          \ '--glob=!GRTAGS',
-          \ '--glob=!GPATH',
-          \ '--glob=!tags',
-          \ '--glob=!.pyc',
-          \ '--glob=!.tmp',
-          \ '--glob=!.swp',
-          \ '--iglob=!obj',
-          \ '--iglob=!out'
-          \ ]
-  endif
-
   let g:Lf_ShortcutF = ''
   let g:Lf_ShortcutB = ''
   nnoremap ff :<C-u>Leaderf file --fullPath<CR>
@@ -830,13 +796,6 @@ if (HasPlug('LeaderF') != -1) "{{{
     let l:strip_include = substitute(a:line, '\v.*[\<"]([a-zA-Z0-9_/\.]+)[\>"]', '\1', 'g')
     return l:strip_include
   endfunction
-
-  "noremap ts :<C-U>Leaderf gtags --all<CR>
-  "noremap tr :<C-U><C-R>=printf("Leaderf! gtags -r %s", expand("<cword>"))<CR><CR>
-  "noremap td :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-  "noremap tD :<C-U><C-R>=printf("Leaderf! gtags -d %s --right --auto-jump", expand("<cword>"))<CR><CR>
-  "noremap tn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
-  "noremap tp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 endif "}}}
 
 if (HasPlug('vim-choosewin') != -1) "{{{

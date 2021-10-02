@@ -51,6 +51,10 @@ jobs:
           files: |
             mini_config.zip:./mini_config.zip
           body: |
-            mini_config only for [NeoVim](https://github.com/neovim/neovim/releases/latest)
+            mini_config only work with [NeoVim](https://github.com/neovim/neovim/releases/latest)
+
+            ### Optional dependencies
+            [ripgrep](https://github.com/BurntSushi/ripgrep)
+            [ccls](https://github.com/MaskRay/ccls)
 
 

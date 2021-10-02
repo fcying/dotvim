@@ -1,18 +1,18 @@
 {
   "if": {
     "prefix": "if",
-    "body": "if ${1:condition} \n\t${0}\nendif",
+    "body": "if ${1:condition}\n\t${0}\nendif",
     "description": "An IF statement."
   },
   "function": {
     "prefix": "fu",
-    "body": "function! ${1:name} \n\t${0}\nendfunction",
+    "body": "function! ${1:name}\n\t${0}\nendfunction",
     "description": "function."
   },
   "for": {
     "prefix": "for",
     "body": [
-      "for ${1:VAR} in ${2:LIST}",
+      "for ${1:var} in ${2:list}",
       "\t${0}",
       "endfor"
     ],

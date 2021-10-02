@@ -73,7 +73,7 @@ nnoremap <leader>pi :PlugInstall<CR>
 nnoremap <leader>pc :PlugClean<CR>
 autocmd VimEnter *
       \  if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
-      \|   PlugUpdate --sync | q
+      \|   PlugUpdate --sync
       \| endif
 
 function! HasPlug(name) abort
@@ -93,10 +93,6 @@ endif
 
 " plugin setting {{{
 if (HasPlug('gen_clang_conf.vim') != -1) "{{{
-  if !exists('g:gencconf_ignore_dirs')
-    let g:gencconf_ignore_dirs = ['__pycache__', 'out', 'lib', 'build',
-          \ 'cache', 'doc', 'docs']
-  endif
   let g:gencconf_storein_rootmarker = get(g:,'gencconf_storein_rootmarker',1)
 endif "}}}
 
@@ -115,15 +111,6 @@ endif "}}}
 
 if (HasPlug('vim-bbye') != -1) "{{{
   nnoremap <Leader>q :Bdelete<CR>
-endif "}}}
-
-if (HasPlug('telescope.nvim') != -1) "{{{
-  nnoremap ff <cmd>Telescope find_files<cr>
-  nnoremap f/ <cmd>Telescope live_grep<cr>
-  nnoremap fb <cmd>Telescope buffers<cr>
-  nnoremap fh <cmd>Telescope help_tags<cr>
-  nnoremap ft <cmd>Telescope tags<cr>
-  nnoremap ts <cmd>Telescope tags<cr>
 endif "}}}
 
 if (HasPlug('vim-vsnip') != -1) "{{{
@@ -164,3 +151,4 @@ endif
 filetype plugin indent on
 syntax enable
 
+call UpdateIgnore()

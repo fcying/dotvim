@@ -17,6 +17,7 @@ type nvim >/dev/null 2>&1 && {
     alias vi='nvim'
     alias vimdiff='nvim -d'
     alias nvim-qt="NVIM_GUI=1 nvim-qt"
+    alias mvim='nvim -u ~/.vim/mini_config/init.vim'
 }
 
 # Set the default Less options.

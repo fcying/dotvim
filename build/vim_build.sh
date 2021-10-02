@@ -6,7 +6,7 @@ cd `dirname $0`
 
 cd ..
 vim_home=$PWD
-vim_src=.vim_origin
+vim_src=build/.vim_origin
 
 sudo=true
 update=false

@@ -23,7 +23,7 @@ jobs:
           cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../llvm -DCMAKE_CXX_FLAGS="-static-libgcc -static-libstdc++"
           cmake --build Release -j
           mv Release/ccls .
-          zip -vrq9 ../ccls.zip ./ccls
+          zip -9 ../ccls_linux_amd64.zip ./ccls
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,7 +39,7 @@ jobs:
           gzip: false
           draft: false
           files: |
-            ccls.zip:./ccls.zip
+            ccls_linux_amd64.zip:./ccls_linux_amd64.zip
           body: |
             ### Requirement
               os >= ubuntu 14.04

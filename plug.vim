@@ -269,7 +269,7 @@ elseif g:complete_engine ==# 'nvimlsp'
   MyPlug 'hrsh7th/cmp-path'
   MyPlug 'hrsh7th/cmp-nvim-lua', {'ft': 'lua'}
   MyPlug 'quangnguyen30192/cmp-nvim-tags'
-  MyPlug 'andersevenrud/compe-tmux', {'branch': 'cmp'}
+  "MyPlug 'andersevenrud/compe-tmux', {'branch': 'cmp'}
   MyPlug 'hrsh7th/cmp-vsnip'
   MyPlug 'hrsh7th/vim-vsnip'
 
@@ -730,26 +730,17 @@ if (HasPlug('LeaderF') != -1) "{{{
   if g:is_win ==# 0
     let g:Lf_Ctags = 'ctags 2>/dev/null'
   endif
-  let g:Lf_GtagsAutoGenerate = 0
-  let g:Lf_GtagsSource = 2
-  let g:Lf_GtagsStoreInRootMarker = 1
-  "let g:Lf_GtagsStoreInProject = 1
-  let g:Lf_Gtagslabel = 'native-pygments'
-  "let g:Lf_Gtagslabel = 'ctags'
-  "let g:Lf_Gtagsconf = get(g:, 'Lf_Gtagsconf', g:etc_dir . '/gtags.conf')
 
   let g:Lf_PreviewInPopup = 1
   "let g:Lf_WindowPosition = 'popup'
   "let g:Lf_PreviewHorizontalPosition = 'right'
 
   let g:Lf_CommandMap = {
-        \ '<C-j>': ['<C-n>'],
-        \ '<C-k>': ['<C-p>'],
         \ '<F5>': ['<C-L>'],
         \ }
   let g:Lf_NormalMap = {
-        \ '_':        [['<C-n>', 'j'],
-        \              ['<C-p>', 'k'],
+        \ '_':        [['<C-j>', 'j'],
+        \              ['<C-k>', 'k'],
         \             ],
         \ 'File':     [['<ESC>', ':exec g:Lf_py "fileExplManager.quit()"<CR>']],
         \ 'Buffer':   [['<ESC>', ':exec g:Lf_py "bufExplManager.quit()"<CR>']],

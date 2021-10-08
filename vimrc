@@ -110,8 +110,8 @@ nnoremap <silent> <leader>cda :cd %:p:h<CR>:pwd<CR>
 " golang
 function! s:getgotools()
   if g:has_go
-    silent !GO111MODULE=on go get -v golang.org/x/tools/cmd/goimports
-    silent !GO111MODULE=on go get -v golang.org/x/tools/gopls@latest
+    silent !go install -v golang.org/x/tools/cmd/goimports@latest
+    silent !go install -v golang.org/x/tools/gopls@latest
   endif
 endfunction
 function! s:goformat()

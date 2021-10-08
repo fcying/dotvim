@@ -136,20 +136,25 @@ if (vim.fn.HasPlug('nvim-cmp') ~= -1) then    --{{{
     local cmp = require'cmp'
     cmp.setup({
         mapping = {
-            ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+            ['<TAB>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+            ['<S-TAB>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+            ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+            ['<C-f>'] = cmp.mapping.scroll_docs(4),
+            ['<C-e>'] = cmp.mapping.close(),
+            ['<CR>'] = cmp.mapping.confirm({ select = false }),
         },
         sources = {
             { name = 'vsnip' },
             { name = 'nvim_lsp' },
             { name = 'nvim_lua' },
-            {
-                name = 'tmux',
-                opts = {
-                    all_panes = false,
-                    trigger_characters = { '.' },
-                    trigger_characters_ft = {}
-                }
-            },
+            --{
+            --    name = 'tmux',
+            --    opts = {
+            --        all_panes = false,
+            --        trigger_characters = { '.' },
+            --        trigger_characters_ft = {}
+            --    }
+            --},
             { name = 'tags' },
             { name = 'path' },
             { name = 'buffer' },

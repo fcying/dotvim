@@ -3,10 +3,12 @@ name: ccls
 on:
   schedule:
   - cron: '0 2 * * *'
+  push:
+    branches: [ master, test ]
   workflow_dispatch:
 
 jobs:
-  build:
+  linux:
     runs-on: ubuntu-18.04
     steps:
       - name: Download llvm
@@ -24,12 +26,24 @@ jobs:
           cmake --build Release -j
           mv Release/ccls .
           zip -9 ../ccls_linux_amd64.zip ./ccls
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ccls_linux
+          path: ./ccls_linux_amd64.zip
+          retention-days: 1
+  publish:
+    needs: [linux]
+    runs-on: ubuntu-18.04
+    steps:
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           delete_release: true
           tag_name: ccls
+      - uses: actions/download-artifact@v2
+      - name: Ls
+        run: ls -la
       - uses: meeDamian/github-release@v2.0.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -39,7 +53,7 @@ jobs:
           gzip: false
           draft: false
           files: |
-            ccls_linux_amd64.zip:./ccls_linux_amd64.zip
+            ccls_linux_amd64.zip:./ccls_linux/ccls_linux_amd64.zip
           body: |
             ### Requirement
               os >= ubuntu 14.04

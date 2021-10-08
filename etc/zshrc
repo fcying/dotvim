@@ -11,15 +11,6 @@ export PAGER=${PAGER:-"less"}
 export EDITOR="$VISUAL"
 export BASH_ENV="$HOME/.bashenv"
 
-type nvim >/dev/null 2>&1 && {
-    export VISUAL=${VISUAL:-"nvim"}
-    alias vim='nvim'
-    alias vi='nvim'
-    alias vimdiff='nvim -d'
-    alias nvim-qt="NVIM_GUI=1 nvim-qt"
-    alias mvim='nvim -u ~/.vim/mini_config/init.vim'
-}
-
 # Set the default Less options.
 # Mouse-wheel scrolling has been disabled by -X (disable screen clearing).
 # Remove -X and -F (exit if the content fits on one screen) to enable it.
@@ -61,9 +52,9 @@ export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
 # Ensure path arrays do not contain duplicates.
 typeset -gU cdpath fpath mailpath PATH path
 
-export GO111MODULE=on
-export GOPROXY=https://goproxy.cn,direct
+#export GO111MODULE=on
 export GOPATH=$HOME/go
+export GOPROXY=https://goproxy.cn,direct
 export QT_DIR=${QT_DIR:-"$HOME/tool/Qt"}
 export QT_VERSION=${QT_VERSION:-"5.15.2"}
 #export QT_WEBKIT=true
@@ -92,6 +83,15 @@ fpath=(
     "$HOME"/.vim/etc/fpath
     $fpath
 )
+
+type nvim >/dev/null 2>&1 && {
+    export VISUAL=${VISUAL:-"nvim"}
+    alias vim='nvim'
+    alias vi='nvim'
+    alias vimdiff='nvim -d'
+    alias nvim-qt="NVIM_GUI=1 nvim-qt"
+    alias mvim='nvim -u ~/.vim/mini_config/init.vim'
+}
 
 
 # key bindings {{{

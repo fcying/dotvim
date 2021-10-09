@@ -7,21 +7,26 @@ end
 
 if (vim.fn.HasPlug('telescope.nvim') ~= -1) then    --{{{
     vim.api.nvim_set_keymap('n', 'ff', '<cmd>Telescope find_files<cr>', { noremap = true })
-    vim.api.nvim_set_keymap('n', 'ft', '<cmd>Telescope tags<cr>', { noremap = true })
+    vim.api.nvim_set_keymap('n', 'fm', '<cmd>Telescope oldfiles<cr>', { noremap = true })
     vim.api.nvim_set_keymap('n', 'fb', '<cmd>Telescope buffers<cr>', { noremap = true })
+    vim.api.nvim_set_keymap('n', 'fo', '<cmd>Telescope lsp_document_symbols<cr>', { noremap = true })
+    vim.api.nvim_set_keymap('n', 'fl', '<cmd>Telescope current_buffer_fuzzy_find<cr>', { noremap = true })
     vim.api.nvim_set_keymap('n', 'fh', '<cmd>Telescope help_tags<cr>', { noremap = true })
+    vim.api.nvim_set_keymap('n', 'ft', '<cmd>Telescope tags<cr>', { noremap = true })
     vim.api.nvim_set_keymap('n', 'f/', '<cmd>Telescope live_grep<cr>', { noremap = true })
     vim.api.nvim_set_keymap('n', 'fg', '<cmd>Telescope grep_string<cr>', { noremap = true })
+    vim.api.nvim_set_keymap('n', 'fj', '<cmd>Telescope jumplist<cr>', { noremap = true })
+    vim.api.nvim_set_keymap('n', 'fr', '<cmd>Telescope resume<cr>', { noremap = true })
 
     local actions = require('telescope.actions')
     require('telescope').setup{
         defaults = {
+            layout_strategy='vertical',
             mappings = {
                 i = {
-                    --["<esc>"] = actions.close
-                },
-                n = {
-                    ["q"] = actions.close
+                    ["<esc>"] = actions.close,
+                    ["<c-j>"] = actions.move_selection_next,
+                    ["<c-k>"] = actions.move_selection_previous,
                 },
             },
         }
@@ -54,7 +59,7 @@ if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
         buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
         buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
         buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-        buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+        --buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
         buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
         buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
         buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)

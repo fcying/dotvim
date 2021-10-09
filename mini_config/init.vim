@@ -7,14 +7,11 @@ let s:plug_install_dir = g:config_dir . '/plugged'
 let g:file_vimrc = g:config_dir . '/init.vim'
 let g:file_basic_config = g:config_dir . '/basic.vim'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
-let g:root_markers = ['.root', '.git', '.svn']
-let g:root_marker = ''
-let g:mapleader = ' '
 
 "let g:python3_host_prog = g:config_dir . '/venv/bin/python3'
 
 if filereadable(g:file_basic_config)
-  execute 'source ' . g:config_dir . '/basic.vim'
+  execute 'source ' . file_basic_config
 else
   execute 'source ' . g:config_dir . '/../basic.vim'
 endif
@@ -54,11 +51,9 @@ Plug 'itchyny/lightline.vim'
 Plug 'terryma/vim-expand-region'
 Plug 'andymass/vim-matchup'
 Plug 'easymotion/vim-easymotion'
+Plug 'preservim/nerdcommenter'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
-"Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension' }
-Plug 'joshdick/onedark.vim'
-Plug 'lifepillar/vim-solarized8'
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -68,6 +63,8 @@ Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'quangnguyen30192/cmp-nvim-tags'
 "Plug 'andersevenrud/compe-tmux', { 'branch': 'cmp' }
+Plug 'joshdick/onedark.vim'
+Plug 'lifepillar/vim-solarized8'
 call plug#end()
 delc PlugUpgrade
 
@@ -99,80 +96,6 @@ if (HasPlug('gen_clang_conf.vim') != -1) "{{{
   let g:gencconf_storein_rootmarker = get(g:,'gencconf_storein_rootmarker',1)
 endif "}}}
 
-if (HasPlug('LeaderF') != -1) "{{{
-  let g:Lf_ShowDevIcons = 0
-  let g:Lf_ShowHidden = 1
-  let g:Lf_HideHelp = 1
-  let g:Lf_DefaultMode = 'FullPath'
-  let g:Lf_UseCache = 0
-  let g:Lf_PreviewCode = 0
-  let g:Lf_WorkingDirectoryMode = 'c'
-  let g:Lf_UseVersionControlTool = 0
-  let g:Lf_JumpToExistingWindow = 0
-  let g:Lf_CacheDirectory = g:cache_dir
-  let g:Lf_RootMarkers = ['.root', '.git', '.svn']
-  if g:is_win ==# 0
-    let g:Lf_Ctags = 'ctags 2>/dev/null'
-  endif
-
-  let g:Lf_PreviewInPopup = 1
-  "let g:Lf_WindowPosition = 'popup'
-  "let g:Lf_PreviewHorizontalPosition = 'right'
-
-  let g:Lf_CommandMap = {
-        \ '<F5>': ['<C-L>'],
-        \ }
-  let g:Lf_NormalMap = {
-        \ '_':        [['<C-j>', 'j'],
-        \              ['<C-k>', 'k'],
-        \             ],
-        \ 'File':     [['<ESC>', ':exec g:Lf_py "fileExplManager.quit()"<CR>']],
-        \ 'Buffer':   [['<ESC>', ':exec g:Lf_py "bufExplManager.quit()"<CR>']],
-        \ 'BufTag':   [['<ESC>', ':exec g:Lf_py "bufTagExplManager.quit()"<CR>']],
-        \ 'Mru':      [['<ESC>', ':exec g:Lf_py "mruExplManager.quit()"<CR>']],
-        \ 'Line':     [['<ESC>', ':exec g:Lf_py "lineExplManager.quit()"<CR>']],
-        \ 'Function': [['<ESC>', ':exec g:Lf_py "functionExplManager.quit()"<CR>']],
-        \ 'Tag':      [['<ESC>', ':exec g:Lf_py "tagExplManager.quit()"<CR>']],
-        \ 'Rg':       [['<ESC>', ':exec g:Lf_py "rgExplManager.quit()"<CR>']],
-        \ 'Gtags':    [['<ESC>', ':exec g:Lf_py "gtagsExplManager.quit()"<CR>']],
-        \ }
-
-  let g:Lf_PreviewResult = {
-        \ 'File': 0,
-        \ 'Buffer': 0,
-        \ 'Mru': 0,
-        \ 'Tag': 0,
-        \ 'BufTag': 0,
-        \ 'Function': 0,
-        \ 'Line': 0,
-        \ 'Colorscheme': 0,
-        \ 'Rg': 0,
-        \ 'Gtags': 0
-        \}
-
-  let g:Lf_ShortcutF = ''
-  let g:Lf_ShortcutB = ''
-  nnoremap ff :<C-u>Leaderf file --fullPath<CR>
-  nnoremap fb :<C-u>Leaderf buffer --fullPath<CR>
-  nnoremap fo :<C-u>Leaderf function --fullPath<CR>
-  nnoremap fm :<C-u>Leaderf mru --fullPath<CR>
-  nnoremap fl :<C-u>Leaderf line --fuzzy<CR>
-  nnoremap ft :<C-u>Leaderf tag --fuzzy<CR>
-  nnoremap fh :<C-u>Leaderf help --fuzzy<CR>
-  nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w %s", expand("<cword>"))<CR>
-  nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w ")<CR>
-  xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F %s", leaderf#Rg#visual())<CR>
-  nnoremap fr :<C-U>Leaderf --recall<CR><TAB>
-  nnoremap f/ :<C-U>Leaderf rg<CR>
-  nnoremap fj :<C-U>Leaderf jumps<CR>
-
-  nnoremap fi :exec "Leaderf file --fullPath --input " . <SID>strip_include(getline("."))<CR>
-  function! s:strip_include(line)
-    let l:strip_include = substitute(a:line, '\v.*[\<"]([a-zA-Z0-9_/\.]+)[\>"]', '\1', 'g')
-    return l:strip_include
-  endfunction
-endif "}}}
-
 if (HasPlug('vim-easymotion') != -1) "{{{
   let g:EasyMotion_smartcase = 0
   let g:EasyMotion_do_mapping = 0   " Disable default mappings
@@ -188,6 +111,57 @@ endif "}}}
 
 if (HasPlug('vim-bbye') != -1) "{{{
   nnoremap <Leader>q :Bdelete<CR>
+endif "}}}
+
+if (HasPlug('vim-expand-region') != -1) "{{{
+  xmap v <Plug>(expand_region_expand)
+  xmap V <Plug>(expand_region_shrink)
+  let g:expand_region_text_objects = {
+        \ 'iw'  :0,
+        \ 'iW'  :0,
+        \ 'i"'  :0,
+        \ 'i''' :0,
+        \ 'i]'  :1,
+        \ 'ib'  :1,
+        \ 'iB'  :1,
+        \ 'il'  :1,
+        \ 'ii'  :1,
+        \ 'ip'  :0,
+        \ 'ie'  :0,
+        \ }
+endif "}}}
+
+if (HasPlug('nerdcommenter') != -1) "{{{
+  " set default delimiter
+  set commentstring=#%s
+  let g:NERDCreateDefaultMappings = 0
+  let g:NERDSpaceDelims = 0
+  "let g:NERDRemoveExtraSpaces = 0
+  let g:NERDCommentEmptyLines = 1
+  let g:NERDDefaultAlign = 'left'
+  let g:NERDToggleCheckAllLines = 1
+  let g:NERDCustomDelimiters = {
+        \ 'c': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
+        \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
+        \ 'go': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
+        \ 'qml': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
+        \ 'conf': { 'left': '#' },
+        \ 'aptconf': { 'left': '//' },
+        \ 'json': { 'left': '//' },
+        \ 'jsonc': { 'left': '//' },
+        \ 'rc': { 'left': '#' },
+        \ '*': { 'left': '#' },
+        \ }
+  nmap <A-/> <plug>NERDCommenterToggle
+  vmap <A-/> <plug>NERDCommenterToggle gv
+  nmap <leader>gc <plug>NERDCommenterToggle
+  vmap <leader>gc <plug>NERDCommenterToggle
+  vmap <leader>gC <plug>NERDCommenterComment
+  vmap <leader>gU <plug>NERDCommenterUncomment
+  nmap <leader>gi <plug>NERDCommenterInvert
+  vmap <leader>gi <plug>NERDCommenterInvert
+  nmap <leader>gs <plug>NERDCommenterSexy
+  vmap <leader>gs <plug>NERDCommenterSexy
 endif "}}}
 
 if (HasPlug('vim-vsnip') != -1) "{{{
@@ -206,10 +180,10 @@ endif
 
 set termguicolors
 
-"colorscheme onedark
-colorscheme solarized8
-"set background=dark
-set background=light
+colorscheme onedark
+set background=dark
+"colorscheme solarized8
+"set background=light
 
 if trim(execute(":color")) ==# 'solarized8'
   let g:lightline = { 'colorscheme': 'solarized' }

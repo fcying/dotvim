@@ -2,10 +2,13 @@ name: ccls
 
 on:
   schedule:
-  - cron: '0 2 * * *'
-  push:
-    branches: [ master, test ]
+  - cron: '0 18 * * *'
+  #push:
+  #  branches: [ master, test ]
   workflow_dispatch:
+
+env:
+  llvm_ver: 13.0.0
 
 jobs:
   linux:
@@ -13,51 +16,84 @@ jobs:
     steps:
       - name: Download llvm
         run: |
-          ver=$(curl -s "https://github.com/llvm/llvm-project/releases/latest" | grep -Po "(\d+\.){2}\d+")
-          ver=12.0.1
-          wget -Ollvm.tar.xz "https://github.com/llvm/llvm-project/releases/download/llvmorg-${ver}/clang+llvm-${ver}-x86_64-linux-gnu-ubuntu-16.04.tar.xz"
+          wget -qOllvm.tar.xz "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm_ver}/clang+llvm-${llvm_ver}-x86_64-linux-gnu-ubuntu-16.04.tar.xz"
           tar xJf llvm.tar.xz
-          mv clang+llvm-${ver}-x86_64-linux-gnu-ubuntu- llvm
+          pwd && ls
+          mv clang* llvm
       - name: Build ccls
         run: |
+          cat /proc/cpuinfo | grep processor
           git clone --depth=1 --recursive https://github.com/MaskRay/ccls
           cd ccls
           cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../llvm -DCMAKE_CXX_FLAGS="-static-libgcc -static-libstdc++"
-          cmake --build Release -j
+          cmake --build Release
           mv Release/ccls .
           zip -9 ../ccls_linux_amd64.zip ./ccls
       - uses: actions/upload-artifact@v2
         with:
-          name: ccls_linux
+          name: ccls
           path: ./ccls_linux_amd64.zip
           retention-days: 1
-  publish:
-    needs: [linux]
-    runs-on: ubuntu-18.04
+
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: cmd
     steps:
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+      - name: Download llvm
+        run: |
+          cd /d c:\
+          curl -L -ollvm.7z https://github.com/fcying/llvm-msvc-prebuild/releases/download/v${{ env.llvm_ver }}/llvm_msvc.7z
+          7z x llvm.7z
+          dir
+      - name: Build ccls
+        run: |
+          git clone --depth=1 --recursive https://github.com/MaskRay/ccls
+          cd ccls
+          cmake -H. -BRelease -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_PREFIX_PATH="c:/llvm/Release"
+          ninja -C Release
+
+          mkdir ccls
+          copy Release\ccls.exe .\ccls\
+          copy c:\Windows\System32\vcruntime140_1.dll .\ccls\
+          copy c:\Windows\System32\vcruntime140.dll .\ccls\
+          copy c:\Windows\System32\msvcp140.dll .\ccls\
+
+          7z a ..\ccls_windows_amd64.zip -mx9 ccls
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ccls
+          path: ./ccls_windows_amd64.zip
+          retention-days: 1
+
+  publish:
+    needs: [linux, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+      - name: Download data
+        run: ls -la
+
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           delete_release: true
           tag_name: ccls
-      - uses: actions/download-artifact@v2
-      - name: Ls
-        run: ls -la
-      - uses: meeDamian/github-release@v2.0.3
+
+      - uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ccls
-          name: ccls
-          allow_override: true
-          gzip: false
-          draft: false
-          files: |
-            ccls_linux_amd64.zip:./ccls_linux/ccls_linux_amd64.zip
+          artifactErrorsFailBuild: true
+          allowUpdates: true
+          replacesArtifacts: true
+          removeArtifacts: true
+          artifacts: "./ccls/*"
           body: |
             ### Requirement
-              os >= ubuntu 14.04
-              or
-              glibc >= 2.17
-
-
+            Linux: os >= ubuntu 14.04 &ensp;&ensp; glibc >= 2.17

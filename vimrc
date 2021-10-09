@@ -9,9 +9,6 @@ let g:file_vimrc = g:config_dir . '/vimrc'
 let g:file_basic_config = g:config_dir . '/basic.vim'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
 let g:file_log = g:cache_dir . '/vim.log'
-let g:root_markers = ['.root', '.git', '.svn']
-let g:root_marker = ''
-let g:mapleader = get(g:,'mapleader',' ')
 
 if executable('pip3') ==# 0
   echohl WarningMsg
@@ -35,9 +32,6 @@ if filereadable(g:file_plug)
   execute 'source ' . g:file_plug
 endif
 
-nnoremap <silent> <leader>evp :execute 'e '  . g:file_plug<CR>
-nnoremap <silent> <leader>evz :execute 'e '  . g:etc_dir . '/zshrc'<CR>
-"autocmd! bufwritepost _vimrc source $MYVIMRC
 
 " cursor FIXME nvim will modify terminal cursorshape {{{
 if g:is_nvim
@@ -139,17 +133,6 @@ augroup go_lang
   command! -nargs=0 GoGetTools call s:getgotools()
   "autocmd FileType go autocmd BufWritePre <buffer> GoSave
 augroup END
-
-" filetype {{{
-autocmd myau FileType go setlocal noexpandtab nolist
-autocmd myau FileType vim,json,jsonc,yaml,toml,dosbatch
-      \ setlocal shiftwidth=2
-      \ softtabstop=2
-      \ tabstop=2
-      \ expandtab
-autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
-autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
-autocmd myau BufNewFile,BufRead .tasks setl filetype=conf
 
 
 " wsl clip {{{

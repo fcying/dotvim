@@ -769,18 +769,18 @@ if (HasPlug('LeaderF') != -1) "{{{
   let g:Lf_ShortcutF = ''
   let g:Lf_ShortcutB = ''
   nnoremap ff :<C-u>Leaderf file --fullPath<CR>
+  nnoremap fm :<C-u>Leaderf mru --fullPath<CR>
   nnoremap fb :<C-u>Leaderf buffer --fullPath<CR>
   nnoremap fo :<C-u>Leaderf function --fullPath<CR>
-  nnoremap fm :<C-u>Leaderf mru --fullPath<CR>
   nnoremap fl :<C-u>Leaderf line --fuzzy<CR>
-  nnoremap ft :<C-u>Leaderf tag --fuzzy<CR>
   nnoremap fh :<C-u>Leaderf help --fuzzy<CR>
+  nnoremap ft :<C-u>Leaderf tag --fuzzy<CR>
   nnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w %s", expand("<cword>"))<CR>
   nnoremap fG :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -w ")<CR>
   xnoremap fg :<C-u><C-R>=printf("Leaderf! rg --wd-mode=c -F %s", leaderf#Rg#visual())<CR>
-  nnoremap fr :<C-U>Leaderf --recall<CR><TAB>
   nnoremap f/ :<C-U>Leaderf rg<CR>
   nnoremap fj :<C-U>Leaderf jumps<CR>
+  nnoremap fr :<C-U>Leaderf --recall<CR><TAB>
 
   nnoremap fi :exec "Leaderf file --fullPath --input " . <SID>strip_include(getline("."))<CR>
   function! s:strip_include(line)

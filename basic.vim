@@ -11,6 +11,9 @@ let g:is_conemu = !empty($CONEMUBUILD)
 let g:is_wsl = isdirectory('/mnt/c')
 let g:has_ccls = executable('ccls')
 let g:has_go = executable('go')
+let g:mapleader = get(g:,'mapleader',' ')
+let g:root_markers = ['.root', '.git', '.repo', '.svn']
+let g:root_marker = ''
 
 let g:ignore_default = {
       \ 'dir':['.root','.svn','.git','.repo','.ccls-cache','.cache','.ccache'],
@@ -56,11 +59,12 @@ endif
 let g:pvimrc_path = findfile('.pvimrc', g:root_marker . ';' . g:root_marker . '..')
 if g:pvimrc_path !=# ''
   exec 'sandbox source ' . g:pvimrc_path
+  "exec 'source ' . g:pvimrc_path
 else
   let g:pvimrc_path = g:root_marker . '/.pvimrc'
 endif
 
-nnoremap <silent> <leader>evv :execute 'e '  . g:file_vimrc<CR>
+nnoremap <silent> <leader>evc :execute 'e '  . g:config_dir<CR>
 nnoremap <silent> <leader>evb :execute 'e '  . g:file_basic_config<CR>
 nnoremap <silent> <leader>evl :execute 'e '  . g:file_vimrc_local<CR>
 
@@ -191,6 +195,17 @@ nnoremap <silent> <leader>ln :lnext<CR>
 nnoremap <silent> <leader>lp :lprevious<CR>
 autocmd myau FileType qf noremap <silent> q :q<CR>
 
+" filetype {{{
+autocmd myau FileType go setlocal noexpandtab nolist
+autocmd myau FileType vim,json,jsonc,yaml,toml,dosbatch
+      \ setlocal shiftwidth=2
+      \ softtabstop=2
+      \ tabstop=2
+      \ expandtab
+autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
+autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
+autocmd myau BufNewFile,BufRead .tasks setl filetype=conf
+
 " foldmethod {{{
 set foldmethod=manual
 set nofoldenable
@@ -255,18 +270,21 @@ endf
 nnoremap <F2> :set number! number?<CR>
 nnoremap <F3> :set list! list?<CR>
 nnoremap <F4> :set wrap! wrap?<CR>
+nnoremap <F6> :exec exists('syntax_on') ? 'syn off' : 'syn on'<CR>
+
 set pastetoggle=<F5>
-"set pastetoggle=<leader>z
+set pastetoggle=<leader>z
 " disbale paste mode when leaving insert mode
 autocmd myau InsertLeave * set nopaste
+
+" make Telescope <esc> actions.close slow
 " Automatically set paste mode in Vim when pasting in insert mode
-function! XTermPasteBegin()
-  set pastetoggle=<Esc>[201~
-  set paste
-  return ''
-endfunction
-inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
-nnoremap <F6> :exec exists('syntax_on') ? 'syn off' : 'syn on'<CR>
+"function! XTermPasteBegin()
+"  set pastetoggle=<Esc>[201~
+"  set paste
+"  return ''
+"endfunction
+"inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 
 " fast save ctrl-s {{{
 nnoremap <C-s> :update<CR>
@@ -468,7 +486,7 @@ func! Gentags()
   ClearClangConf
   GenClangConf
   GenCtags
-  if g:is_nvim
+  if exists(':LspRestart')
     LspRestart
   endif
 endf
@@ -581,6 +599,6 @@ function! UpdateIgnore()
     let g:gencconf_ignore_dir = deepcopy(l:ignore_full.dir)
   endif
 endfunction
-execute 'autocmd myau BufWritePost .pvimrc nested sandbox so ' . g:pvimrc_path
+execute 'autocmd myau BufWritePost .pvimrc nested sandbox source ' . g:pvimrc_path
 au myau SourcePost .pvimrc call UpdateIgnore()
 nnoremap <silent> <leader>ep  :execute 'e '  . g:pvimrc_path<CR>

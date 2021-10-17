@@ -7,8 +7,9 @@ let s:plug_install_dir = g:config_dir . '/plugged'
 let g:file_vimrc = g:config_dir . '/init.vim'
 let g:file_basic_config = g:config_dir . '/basic.vim'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
-
-"let g:python3_host_prog = g:config_dir . '/venv/bin/python3'
+if !exists('g:lsp_servers')
+  let g:lsp_servers = ['ccls', 'vimls']
+endif
 
 if filereadable(g:file_basic_config)
   execute 'source ' . file_basic_config
@@ -55,6 +56,7 @@ Plug 'preservim/nerdcommenter'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'neovim/nvim-lspconfig'
+Plug 'williamboman/nvim-lsp-installer'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
@@ -180,10 +182,13 @@ endif
 
 set termguicolors
 
-colorscheme onedark
-set background=dark
-"colorscheme solarized8
-"set background=light
+if g:colorscheme == 'solarized8'
+  colorscheme solarized8
+  set background=light
+else
+  colorscheme onedark
+  set background=dark
+endif
 
 if trim(execute(":color")) ==# 'solarized8'
   let g:lightline = { 'colorscheme': 'solarized' }

@@ -9,6 +9,11 @@ let g:file_vimrc = g:config_dir . '/vimrc'
 let g:file_basic_config = g:config_dir . '/basic.vim'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
 let g:file_log = g:cache_dir . '/vim.log'
+if !exists('g:lsp_servers')
+  let g:lsp_servers = ['pylsp', 'vimls', 'bashls', 'gopls', 'dockerls', 'rust_analyzer', 'ccls']
+endif
+
+let g:test = ['a','b']
 
 if executable('pip3') ==# 0
   echohl WarningMsg
@@ -105,7 +110,6 @@ nnoremap <silent> <leader>cda :cd %:p:h<CR>:pwd<CR>
 function! s:getgotools()
   if g:has_go
     silent !go install -v golang.org/x/tools/cmd/goimports@latest
-    silent !go install -v golang.org/x/tools/gopls@latest
   endif
 endfunction
 function! s:goformat()
@@ -145,20 +149,6 @@ if g:is_wsl
     augroup END
   endif
 endif
-
-" update lsp {{{
-function! UpdateLsp() abort
-  if executable('npm')
-    call mkdir($HOME . '/.npm', 'p')
-    silent !cd ~/.npm; npm install pyright
-    silent !cd ~/.npm; npm install vim-language-server
-  endif
-  GoGetTools
-  if executable('rustup')
-    silent !rustup update
-    silent !rustup component add rust-analysis rust-src
-  endif
-endfunction
 
 " }}}
 
@@ -234,4 +224,3 @@ endif
 filetype plugin indent on
 syntax enable
 
-call UpdateIgnore()

@@ -1,24 +1,51 @@
-local cmd = vim.cmd
-local fn = vim.fn
+local map = vim.api.nvim_set_keymap
+local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
 if (vim.fn.HasPlug('filetype.nvim') ~= -1) then    --{{{
-    vim.g.did_load_filetypes = 1
+    if vim.fn.has('nvim-0.6') == 0 then
+        vim.g.did_load_filetypes = 1
+    end
+
+    require('filetype').setup({
+        complex = {
+            [".*git/config"] = "gitconfig",
+        },
+    })
 end
 
 if (vim.fn.HasPlug('telescope.nvim') ~= -1) then    --{{{
-    vim.api.nvim_set_keymap('n', 'ff', '<cmd>Telescope find_files<cr>', { noremap = true })
-    vim.api.nvim_set_keymap('n', 'fm', '<cmd>Telescope oldfiles<cr>', { noremap = true })
-    vim.api.nvim_set_keymap('n', 'fb', '<cmd>Telescope buffers<cr>', { noremap = true })
-    vim.api.nvim_set_keymap('n', 'fo', '<cmd>Telescope lsp_document_symbols<cr>', { noremap = true })
-    vim.api.nvim_set_keymap('n', 'fl', '<cmd>Telescope current_buffer_fuzzy_find<cr>', { noremap = true })
-    vim.api.nvim_set_keymap('n', 'fh', '<cmd>Telescope help_tags<cr>', { noremap = true })
-    vim.api.nvim_set_keymap('n', 'ft', '<cmd>Telescope tags<cr>', { noremap = true })
-    vim.api.nvim_set_keymap('n', 'f/', '<cmd>Telescope live_grep<cr>', { noremap = true })
-    vim.api.nvim_set_keymap('n', 'fg', '<cmd>Telescope grep_string<cr>', { noremap = true })
-    vim.api.nvim_set_keymap('n', 'fj', '<cmd>Telescope jumplist<cr>', { noremap = true })
-    vim.api.nvim_set_keymap('n', 'fr', '<cmd>Telescope resume<cr>', { noremap = true })
+    map('n', 'fm', '<cmd>Telescope oldfiles<cr>', { noremap = true })
+    map('n', 'fb', '<cmd>Telescope buffers<cr>', { noremap = true })
+    map('n', 'fo', '<cmd>Telescope lsp_document_symbols<cr>', { noremap = true })
+    map('n', 'fl', '<cmd>Telescope current_buffer_fuzzy_find<cr>', { noremap = true })
+    map('n', 'fh', '<cmd>Telescope help_tags<cr>', { noremap = true })
+    map('n', 'ft', '<cmd>Telescope tags<cr>', { noremap = true })
+    map('n', 'f/', '<cmd>Telescope live_grep<cr>', { noremap = true })
+    map('n', 'fg', '<cmd>Telescope grep_string<cr>', { noremap = true })
+    map('n', 'fj', '<cmd>Telescope jumplist<cr>', { noremap = true })
+    map('n', 'fr', '<cmd>Telescope resume<cr>', { noremap = true })
+
+    local find_command = ''
+    if (vim.g.has_rg == 1) then
+        find_command = 'find_command=rg,--ignore,--hidden,--files'
+        if (vim.g.ignore_full.rg) then
+            find_command = find_command .. ',' .. table.concat(vim.g.ignore_full.rg,',')
+        end
+    end
+    map('n', 'ff', '<cmd>Telescope find_files ' .. find_command .. '<cr>', { noremap = true })
 
     local actions = require('telescope.actions')
+    local toggle_modes = function()
+        local mode = vim.api.nvim_get_mode().mode
+        if mode == "n" then
+            vim.cmd [[startinsert]]
+            return
+        elseif mode == "i" then
+            vim.cmd [[stopinsert]]
+            return
+        end
+    end
     require('telescope').setup{
         defaults = {
             layout_strategy='vertical',
@@ -27,7 +54,13 @@ if (vim.fn.HasPlug('telescope.nvim') ~= -1) then    --{{{
                     ["<esc>"] = actions.close,
                     ["<c-j>"] = actions.move_selection_next,
                     ["<c-k>"] = actions.move_selection_previous,
+                    ["<tab>"] = toggle_modes,
+                    ["<c-s>"] = actions.toggle_selection,
                 },
+                n = {
+                    ["<tab>"] = toggle_modes,
+                    ["<c-s>"] = actions.toggle_selection,
+                }
             },
         }
     }
@@ -39,11 +72,11 @@ if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
     local nvim_lsp = require('lspconfig')
     local util = require('lspconfig/util')
 
+    vim.cmd([[ autocmd myau FileType lspinfo nnoremap <silent><buffer> q :q<cr> ]])
+
     -- Use an on_attach function to only map the following keys
     -- after the language server attaches to the current buffer
     local on_attach = function(client, bufnr)
-        local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-        local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
         --Enable completion triggered by <c-x><c-o>
         buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
@@ -71,69 +104,106 @@ if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
         --buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
     end
 
-    -- Use a loop to conveniently call 'setup' on multiple servers and
-    -- map buffer local keybindings when the language server attaches
-    local servers = { 'pyright', 'vimls' }
-    for _, lsp in ipairs(servers) do
-        nvim_lsp[lsp].setup {
-            on_attach = on_attach;
-            flags = { debounce_text_changes = 150 }
+    local use_lsp_installer = 0
+    local lsp_installer, server, path, platform, std
+    if (vim.fn.HasPlug('nvim-lsp-installer') ~= -1) then
+        use_lsp_installer = 1
+        lsp_installer = require'nvim-lsp-installer'
+        server = require "nvim-lsp-installer.server"
+        path = require "nvim-lsp-installer.path"
+        platform = require "nvim-lsp-installer.platform"
+        std = require "nvim-lsp-installer.installers.std"
+
+        lsp_installer.settings {
+            install_root_dir = path.concat { vim.g.cache_dir, "lsp_servers" },
         }
+
+        --register ccls
+        local root_dir = server.get_server_root_path('ccls')
+        local ccls_server = server.Server:new {
+            name = 'ccls',
+            root_dir = root_dir,
+            homepage = "https://github.com/MaskRay/ccls",
+            installer = {
+                std.download_file("https://github.com/fcying/dotvim/releases/download/ccls/ccls_linux_amd64.zip", "ccls.zip"),
+                std.unzip("ccls.zip", root_dir),
+            },
+            default_options = {
+                cmd = { path.concat { root_dir, 'ccls' } }
+            },
+        }
+        lsp_installer.register(ccls_server)
     end
 
-    nvim_lsp.gopls.setup {
-        root_dir = function(fname)
-            return util.root_pattern 'go.work'(fname) or util.root_pattern('go.mod', '.git', '.root')(fname) or util.path.dirname(fname)
-        end,
-        on_attach = on_attach;
-        flags = { debounce_text_changes = 150 };
+    local disalbe_diagnostics = vim.lsp.with(
+    vim.lsp.diagnostic.on_publish_diagnostics, {
+        underline = false,
+        virtual_text = false,
+        signs = false,
+        update_in_insert = false,
+    })
+
+    local server_opts = {
+        ['gopls'] = {
+            on_attach = on_attach;
+            flags = { debounce_text_changes = 150 };
+            root_dir = function(fname)
+                return util.root_pattern 'go.work'(fname) or util.root_pattern('go.mod', '.git', '.root')(fname) or util.path.dirname(fname)
+            end;
+        },
+        ['default'] = {
+            on_attach = on_attach;
+            flags = { debounce_text_changes = 150 };
+        },
     }
 
-    if vim.g.has_ccls == 1 then
-        local cache_dir = ".ccls-cache"
-        local config_dir = ""
-        if vim.g.gencconf_storein_rootmarker == 1 then
-            config_dir = vim.g.root_marker
-            cache_dir = vim.g.root_marker .. "/.ccls-cache"
-        end
-        nvim_lsp.ccls.setup {
-            on_attach = on_attach;
-            init_options = {
-                compilationDatabaseDirectory = config_dir;
-                cache = { directory = cache_dir };
-            };
-            flags = { debounce_text_changes = 150 };
-            handlers = {
-                ["textDocument/publishDiagnostics"] = vim.lsp.with(
-                vim.lsp.diagnostic.on_publish_diagnostics, {
-                    underline = false,
-                    virtual_text = false,
-                    signs = false,
-                    update_in_insert = false,
-                }
-                ),
-            };
-        }
+    --ccls config
+    local cache_dir = ".ccls-cache"
+    local config_dir = ""
+    if vim.g.gencconf_storein_rootmarker == 1 then
+        config_dir = vim.g.root_marker
+        cache_dir = vim.g.root_marker .. "/.ccls-cache"
+    end
+    server_opts.ccls = {
+        on_attach = on_attach;
+        flags = { debounce_text_changes = 150 };
+        handlers = { ["textDocument/publishDiagnostics"] = disalbe_diagnostics };
+        init_options = {
+            compilationDatabaseDirectory = config_dir;
+            cache = { directory = cache_dir };
+        };
+    }
+
+    --clangd config
+    if (use_lsp_installer == 1) then
+        clangd_cmd = { path.concat { server.get_server_root_path('clangd'), 'clangd' } }
     else
-        local clangd_cmd = { "clangd", "--background-index" }
-        if vim.g.gencconf_storein_rootmarker == 1 then
-            table.insert(clangd_cmd, "--compile-commands-dir=" .. vim.g.root_marker)
+        clangd_cmd = { "clangd" }
+    end
+    table.insert(clangd_cmd, "--background-index")
+    if vim.g.gencconf_storein_rootmarker == 1 then
+        table.insert(clangd_cmd, "--compile-commands-dir=" .. vim.g.root_marker)
+    end
+    server_opts.clangd = {
+        on_attach = on_attach;
+        flags = { debounce_text_changes = 150 };
+        handlers = { ["textDocument/publishDiagnostics"] = disalbe_diagnostics };
+        cmd = clangd_cmd;
+    }
+
+    --server setup
+    if (use_lsp_installer == 1) then
+        lsp_installer.on_server_ready(function(server)
+            if vim.fn.index(vim.g.lsp_servers, server.name) ~= -1 then
+                server:setup(server_opts[server.name] or server_opts['default'])
+                --vim.cmd [[ do User LspAttachBuffers ]]
+                vim.cmd [[ do FileType ]]
+            end
+        end)
+    else
+        for _, lsp in ipairs(vim.g.lsp_servers) do
+            nvim_lsp[lsp].setup(server_opts[lsp] or server_opts['default'])
         end
-        nvim_lsp.clangd.setup {
-            cmd = clangd_cmd;
-            on_attach = on_attach;
-            flags = { debounce_text_changes = 150 };
-            handlers = {
-                ["textDocument/publishDiagnostics"] = vim.lsp.with(
-                vim.lsp.diagnostic.on_publish_diagnostics, {
-                    underline = false,
-                    virtual_text = false,
-                    signs = false,
-                    update_in_insert = false,
-                }
-                ),
-            };
-        }
     end
 end
 

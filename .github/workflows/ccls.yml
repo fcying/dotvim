@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  llvm_ver: 13.0.0
+  llvm_ver: 12.0.1
 
 jobs:
   linux:
@@ -28,7 +28,7 @@ jobs:
           cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=../llvm -DCMAKE_CXX_FLAGS="-static-libgcc -static-libstdc++"
           cmake --build Release
           mv Release/ccls .
-          zip -9 ../ccls_linux_amd64.zip ./ccls
+          7z -mx9 a ../ccls_linux_amd64.zip ./ccls
       - uses: actions/upload-artifact@v2
         with:
           name: ccls
@@ -63,7 +63,7 @@ jobs:
           copy c:\Windows\System32\vcruntime140.dll .\ccls\
           copy c:\Windows\System32\msvcp140.dll .\ccls\
 
-          7z a ..\ccls_windows_amd64.zip -mx9 ccls
+          7z -mx9 a ..\ccls_windows_amd64.zip ccls
       - uses: actions/upload-artifact@v2
         with:
           name: ccls
@@ -95,5 +95,6 @@ jobs:
           removeArtifacts: true
           artifacts: "./ccls/*"
           body: |
-            ### Requirement
+            build with llvm ${{ env.llvm_ver }}
+            #### Requirement
             Linux: os >= ubuntu 14.04 &ensp;&ensp; glibc >= 2.17

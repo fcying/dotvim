@@ -30,11 +30,13 @@ jobs:
           cp -r mini_config ~/.config/nvim
           cp -r snippets ~/.config/nvim
           cp config.lua basic.vim ~/.config/nvim
-          nvim --headless -c 'PlugUpdate --sync|qa'
           pushd ~/.config
-          zip -rq9 mini_config.zip ./nvim
+          nvim --headless -c 'PlugUpdate --sync|qa'
+          7z -mx9 a mini_config.zip ./nvim
+          nvim --headless -c "LspInstall ccls" -c "sleep 10" -c "qa"
+          7z -mx9 a mini_config_with_ccls.zip ./nvim
           popd
-          mv ~/.config/mini_config.zip .
+          mv ~/.config/*.zip .
 
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         env:
@@ -51,7 +53,7 @@ jobs:
           allowUpdates: true
           replacesArtifacts: true
           removeArtifacts: true
-          artifacts: "mini_config.zip"
+          artifacts: "*.zip"
           body: |
             mini_config only work with [NeoVim](https://github.com/neovim/neovim/releases/latest)
 

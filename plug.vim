@@ -79,7 +79,6 @@ function! MyPlug(repo, ...)
     call add(l:plug, a:repo)
     let l:options = {}
     let l:options.opt = 'false'
-    let l:pack_add = 0
     if a:0 != 0
       for key in keys(a:1)
         if key ==# 'keys'
@@ -94,10 +93,6 @@ function! MyPlug(repo, ...)
         elseif key ==# 'event'
           let l:options.opt = 'true'
           let l:options.event = a:1[key]
-        elseif key ==# 'opt'
-          if a:1['opt'] ==# 'false'
-            let l:pack_add = 1
-          endif
         elseif key ==# 'run'
           let l:options.run = substitute(string(a:1[key]), 'function(''\(.*\)'')', '\1', 'g')
         elseif key ==# 'rtp'
@@ -113,11 +108,7 @@ function! MyPlug(repo, ...)
     if isdirectory(s:plug_install_dir . '/' . l:plug_name)
       exec 'let g:plug_names[''' . l:plug_name . '''] = 1'
       if l:options.opt ==# 'false'
-        if l:pack_add
           exe 'packadd! '. l:plug_name
-        else
-          let l:options.event = 'VimEnter'
-        endif
       endif
     else
       exec 'let g:plug_names[''' . l:plug_name . '''] = 0'
@@ -174,16 +165,12 @@ function! InstallLeaderF(info) abort
   silent !pip3 install pygments --upgrade
 endfunction
 
-function! InstallCoc(info) abort
-  call UpdateLsp()
-endfunction
-
 " plugin list {{{
 MyPlug 'mbbill/fencview', {'cmd':['FencView','FencAutoDetect']}
-MyPlug 'wsdjeg/vim-fetch', {'opt': 'false'}
+MyPlug 'wsdjeg/vim-fetch'
 MyPlug 'lambdalisue/suda.vim', {'cmd':['SudaRead', 'SudaWrite']}
 MyPlug 'moll/vim-bbye', {'cmd':'Bdelete'}
-MyPlug 'itchyny/lightline.vim', {'opt': 'false'}
+MyPlug 'itchyny/lightline.vim'
 MyPlug 'simnalamburt/vim-mundo'
 MyPlug 'chrisbra/Colorizer'
 MyPlug 'skywind3000/vim-quickui'
@@ -193,7 +180,7 @@ MyPlug 'tweekmonster/startuptime.vim', {'cmd':'StartupTime'}
 "MyPlug 'roxma/vim-paste-easy'
 
 if g:is_nvim
-  "MyPlug 'nathom/filetype.nvim', {'event':['BufNewFile', 'BufReadPre']}
+  "MyPlug 'nathom/filetype.nvim'
   " FIXME nvim cursorhold bug https://github.com/neovim/neovim/issues/12587
   MyPlug 'antoinemadec/FixCursorHold.nvim'
   " FIXME https://github.com/neovim/neovim/issues/14967 in 0.5.0
@@ -209,7 +196,8 @@ MyPlug 't9md/vim-choosewin', {'cmd':'<Plug>(choosewin)'}
 MyPlug 'lambdalisue/fern.vim', {'cmd':'Fern'}
 MyPlug 'preservim/nerdcommenter', {'keys':'<plug>NERDCommenter'}
 MyPlug 'preservim/tagbar', {'cmd':'TagbarToggle'}
-MyPlug 'andymass/vim-matchup', {'commit':'0a93cee'}
+MyPlug 'andymass/vim-matchup'
+"MyPlug 'andymass/vim-matchup', {'event': 'VimEnter'}
 MyPlug 'fcying/vim-foldsearch'
 "MyPlug 'Krasjet/auto.pairs'
 MyPlug 'easymotion/vim-easymotion', {'keys':'<Plug>(easymotion'}
@@ -255,15 +243,16 @@ MyPlug 'lifepillar/vim-gruvbox8'
 
 " complete_engine
 if g:complete_engine ==# 'coc'
-  MyPlug 'neoclide/coc.nvim', {'branch': 'release', 'run': function('InstallCoc')}
+  MyPlug 'neoclide/coc.nvim', {'branch': 'release'}
   if g:is_win ==# 0
     MyPlug 'wellle/tmux-complete.vim'
   endif
   MyPlug 'honza/vim-snippets'
 
 elseif g:complete_engine ==# 'nvimlsp'
-  MyPlug 'neovim/nvim-lspconfig', {'run': function('InstallCoc'), 'opt': 'false'}
-  MyPlug 'hrsh7th/nvim-cmp', {'opt': 'false'}
+  MyPlug 'neovim/nvim-lspconfig'
+  MyPlug 'williamboman/nvim-lsp-installer'
+  MyPlug 'hrsh7th/nvim-cmp'
   MyPlug 'hrsh7th/cmp-nvim-lsp'
   MyPlug 'hrsh7th/cmp-buffer'
   MyPlug 'hrsh7th/cmp-path'
@@ -312,8 +301,8 @@ EOF
 
   nnoremap <leader>pu :PackerSync<CR>
   nnoremap <leader>pi :PackerInstall<CR>
-  nnoremap <leader>pc :PackerClean<CR>
-  nnoremap <leader>pg :PackerCompile<CR>
+  nnoremap <leader>pr :PackerClean<CR>
+  nnoremap <leader>pc :PackerCompile<CR>
 
 elseif s:plug_manager ==# 'vim-plug'
   exec 'source '. s:plug_install_dir . '/vim-plug/plug.vim'

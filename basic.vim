@@ -9,8 +9,8 @@ let g:is_gui = has('gui_running') || !empty($NVIM_GUI)
 let g:is_tmux = exists('$TMUX')
 let g:is_conemu = !empty($CONEMUBUILD)
 let g:is_wsl = isdirectory('/mnt/c')
-let g:has_ccls = executable('ccls')
 let g:has_go = executable('go')
+let g:has_rg = executable('rg')
 let g:mapleader = get(g:,'mapleader',' ')
 let g:root_markers = ['.root', '.git', '.repo', '.svn']
 let g:root_marker = ''
@@ -377,17 +377,21 @@ nnoremap <leader>da :%s/\%x1b\[[0-9;]*m//g<CR>:noh<CR>
 xnoremap p "_dP
 
 " virtual mode search {{{
-function! VisualSelection() abort
-  try
-    let reg_save = @"
-    noautocmd silent! normal! gvy
-    return @"
-  finally
-    let @" = reg_save
-  endtry
+" From https://github.com/bronson/vim-visual-star-search/blob/master/plugin/visual-star-search.vim
+function! VisualStarSearchSet(cmdtype,...)
+  let temp = @"
+  normal! gvy
+  if !a:0 || a:1 != 'raw'
+    let @" = escape(@", a:cmdtype.'\*')
+  endif
+  let @/ = substitute(@", '\n', '\\n', 'g')
+  let @/ = substitute(@/, '\[', '\\[', 'g')
+  let @/ = substitute(@/, '\~', '\\~', 'g')
+  let @/ = substitute(@/, '\.', '\\.', 'g')
+  let @" = temp
 endfunction
-xnoremap * <ESC>/\V<C-R>=escape(VisualSelection(), '/\')<CR><CR>
-xnoremap # <ESC>?\V<C-R>=escape(VisualSelection(), '?\')<CR><CR>
+xnoremap * :<C-u>call VisualStarSearchSet('/')<CR>/<C-R>=@/<CR><CR>
+xnoremap # :<C-u>call VisualStarSearchSet('?')<CR>?<C-R>=@/<CR><CR>
 
 " completion {{{
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -561,7 +565,7 @@ autocmd myau FileType * :call s:add_dict()
 " ============================================================================
 function! UpdateIgnore()
   " init ignore config
-  let l:ignore_full = {}
+  let g:ignore_full = {}
   if !exists('g:ignore.dir')
     let g:ignore.dir = []
   endif
@@ -574,31 +578,30 @@ function! UpdateIgnore()
   if !exists('g:ignore.rg')
     let g:ignore.rg = []
   endif
-  let l:ignore_full.dir = g:ignore_default.dir + g:ignore.dir
-  let l:ignore_full.file = g:ignore_default.file + g:ignore.file
-  let l:ignore_full.rg = g:ignore_default.rg + g:ignore.rg
-  let l:ignore_full.mru = g:ignore_default.mru + g:ignore.mru
+  let g:ignore_full.dir = g:ignore_default.dir + g:ignore.dir
+  let g:ignore_full.file = g:ignore_default.file + g:ignore.file
+  let g:ignore_full.rg = g:ignore_default.rg + g:ignore.rg
+  let g:ignore_full.mru = g:ignore_default.mru + g:ignore.mru
 
   " update rg config
-  for i in l:ignore_full.file
-    call add(l:ignore_full.rg, '--glob=!' . i)
+  for i in g:ignore_full.file
+    call add(g:ignore_full.rg, '-g=!' . i)
   endfor
-  for i in l:ignore_full.dir
-    call add(l:ignore_full.rg, '--glob=!' . i)
+  for i in g:ignore_full.dir
+    call add(g:ignore_full.rg, '-g=!' . i)
   endfor
 
-  if (HasPlug('LeaderF') != -1)
-    let g:Lf_WildIgnore = {}
-    let g:Lf_MruFileExclude = deepcopy(l:ignore_full.mru)
-    let g:Lf_WildIgnore.dir = deepcopy(l:ignore_full.dir)
-    let g:Lf_WildIgnore.file = deepcopy(l:ignore_full.file)
-    let g:Lf_RgConfig = deepcopy(l:ignore_full.rg)
-  endif
+  " leaderf
+  let g:Lf_WildIgnore = {}
+  let g:Lf_MruFileExclude = g:ignore_full.mru
+  let g:Lf_WildIgnore.dir = g:ignore_full.dir
+  let g:Lf_WildIgnore.file = g:ignore_full.file
+  let g:Lf_RgConfig = g:ignore_full.rg
 
-  if (HasPlug('gen_clang_conf.vim') != -1) "{{{
-    let g:gencconf_ignore_dir = deepcopy(l:ignore_full.dir)
-  endif
+  " gen_clang_conf.vim
+  let g:gencconf_ignore_dir = g:ignore_full.dir
 endfunction
 execute 'autocmd myau BufWritePost .pvimrc nested sandbox source ' . g:pvimrc_path
 au myau SourcePost .pvimrc call UpdateIgnore()
 nnoremap <silent> <leader>ep  :execute 'e '  . g:pvimrc_path<CR>
+call UpdateIgnore()

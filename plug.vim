@@ -415,6 +415,7 @@ endif "}}}
 
 if (HasPlug('vim-fugitive') != -1) "{{{
   autocmd myau FileType fugitive* nmap <buffer> q gq
+  autocmd myau FileType git nmap <buffer> q :q<CR>
 endif "}}}
 
 if (HasPlug('vim-lsp') != -1) "{{{

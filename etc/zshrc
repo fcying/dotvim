@@ -115,7 +115,7 @@ ZINIT_DIR=$HOME/.zinit
 if [ ! -f "$ZINIT_DIR/bin/zinit.zsh" ]; then
     zinit_inited="true"
     mkdir ~/.zinit
-    git clone --depth 1 https://github.com/zdharma/zinit.git "$ZINIT_DIR"/bin
+    git clone --depth 1 https://github.com/zdharma-continuum/zinit "$ZINIT_DIR"/bin
 fi
 source "$ZINIT_DIR/bin/zinit.zsh"
 autoload -Uz _zinit
@@ -150,8 +150,7 @@ function PluginFinish() {
     type LoadAfter >/dev/null 2>&1 && LoadAfter
 }
 zinit ice wait'0' lucid atload'PluginFinish'
-
-zinit load zdharma/null
+zinit snippet /dev/null
 
 
 # third party software {{{
@@ -221,8 +220,8 @@ if [[ "$BREW_REMOTE" == "cn" ]]; then
     #export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/linuxbrew-core.git"
     #export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/linuxbrew-bottles/bottles"
     export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.ustc.edu.cn/brew.git"
-    export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.ustc.edu.cn/linuxbrew-core.git"
-    export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.ustc.edu.cn/linuxbrew-bottles/bottles"
+    export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.ustc.edu.cn/homebrew-core.git"
+    export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.ustc.edu.cn/homebrew-bottles/bottles"
 fi
 BREW_PREFIX=""
 if [ -d "$HOME/.linuxbrew/bin" ]; then
@@ -469,7 +468,7 @@ function adb_logcat() {
 function kmsg() {
     local search_opt
     adb wait-for-device && adb root && adb wait-for-device
-    [ -n "$1" ] && search_opt="| rg \"$*\"" || search_opt=""
+    [ -n "$1" ] && search_opt="| rg -a \"$*\"" || search_opt=""
     eval "adb shell \"while true; do (cat proc/kmsg); done;\" $search_opt"
 }
 function adb_setenforce0() {

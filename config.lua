@@ -125,8 +125,8 @@ if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
             root_dir = root_dir,
             homepage = "https://github.com/MaskRay/ccls",
             installer = {
-                std.download_file("https://github.com/fcying/dotvim/releases/download/ccls/ccls_linux_amd64.zip", "ccls.zip"),
-                std.unzip("ccls.zip", root_dir),
+                std.download_file("https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.zip", "ccls.zip"),
+                std.unzip('ccls.zip', '.'),
             },
             default_options = {
                 cmd = { path.concat { root_dir, 'ccls' } }
@@ -196,8 +196,6 @@ if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
         lsp_installer.on_server_ready(function(server)
             if vim.fn.index(vim.g.lsp_servers, server.name) ~= -1 then
                 server:setup(server_opts[server.name] or server_opts['default'])
-                --vim.cmd [[ do User LspAttachBuffers ]]
-                vim.cmd [[ do FileType ]]
             end
         end)
     else
@@ -211,8 +209,8 @@ if (vim.fn.HasPlug('nvim-cmp') ~= -1) then    --{{{
     local cmp = require'cmp'
     cmp.setup({
         mapping = {
-            ['<TAB>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-            ['<S-TAB>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+            ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
+            ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's' }),
             ['<C-d>'] = cmp.mapping.scroll_docs(-4),
             ['<C-f>'] = cmp.mapping.scroll_docs(4),
             ['<C-e>'] = cmp.mapping.close(),

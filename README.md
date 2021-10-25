@@ -3,6 +3,7 @@
 #### 安装
 ```
 git clone https://github.com/fcying/dotvim.git ~/.vim
+ln -svf ~/.vim/vimrc ~/.config/nvim/init.vim
 ```
 
 #### 快捷键

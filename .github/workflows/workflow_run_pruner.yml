@@ -53,7 +53,6 @@ jobs:
           // because we track the duration of runs over time
 
           const workflows = [
-            'ccls.yml',
             'release.yml',
             'workflow_run_pruner.yml'
           ]

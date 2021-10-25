@@ -51,6 +51,7 @@ Plug 'moll/vim-bbye'
 Plug 'itchyny/lightline.vim'
 Plug 'terryma/vim-expand-region'
 Plug 'andymass/vim-matchup'
+Plug 'tpope/vim-fugitive'
 Plug 'easymotion/vim-easymotion'
 Plug 'preservim/nerdcommenter'
 Plug 'nvim-lua/plenary.nvim'
@@ -172,6 +173,11 @@ if (HasPlug('vim-vsnip') != -1) "{{{
   smap <expr> <c-j> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<c-j>'
   imap <expr> <c-k> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<c-k>'
   smap <expr> <c-k> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<c-k>'
+endif "}}}
+
+if (HasPlug('vim-fugitive') != -1) "{{{
+  autocmd myau FileType fugitive* nmap <buffer> q gq
+  autocmd myau FileType git nmap <buffer> q :q<CR>
 endif "}}}
 
 if filereadable(g:config_dir . '/config.lua')

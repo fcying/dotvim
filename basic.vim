@@ -243,12 +243,6 @@ set wildignore+=*.msi,*.crx,*.deb,*.vfd,*.apk,*.ipa,*.bin,*.msu
 set wildignore+=*.gba,*.sfc,*.078,*.nds,*.smd,*.smc
 set wildignore+=*.linux2,*.win32,*.darwin,*.freebsd,*.linux,*.android
 
-" get file realpath {{{
-function! GetCurFileRealPath()
-  echo expand('%:p')
-endfunc
-nnoremap <leader>F :call GetCurFileRealPath()<CR>
-
 " get visual selection {{{
 func! GetVisualSelection() abort
     let [lnum1, col1] = getpos("'<")[1:2]

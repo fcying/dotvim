@@ -18,7 +18,7 @@ ln -svf ~/.vim/vimrc ~/.config/nvim/init.vim
 
 补全框架默认用`coc`, 可以修改`g:complete_engine`更改.
 
-#### mini_config.zip
-release里面提供`mini_config.zip`下载, 精简配置.  
+#### nvim_config.zip
+release里面提供`nvim_config.zip`下载.  
 只使用`vim script`和`lua`插件, 无依赖(nvim 0.5).  
 解压缩, 把`nvim`目录复制到`~/.config`下即可使用.

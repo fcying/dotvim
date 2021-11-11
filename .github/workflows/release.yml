@@ -23,18 +23,18 @@ jobs:
           nvim --version
 
       - uses: actions/checkout@v2
-      - name: Prepare mini config
+      - name: Prepare nvim config
         run: |
           pwd && ls
           mkdir -p ~/.config
-          cp -r mini_config ~/.config/nvim
+          cp -r nvim_config ~/.config/nvim
           cp -r snippets ~/.config/nvim
           cp config.lua basic.vim ~/.config/nvim
           pushd ~/.config
           nvim --headless -c 'PlugUpdate --sync|qa'
-          7z -mx9 a mini_config.zip ./nvim
+          7z -mx9 a nvim_config.zip ./nvim
           nvim --headless -c 'LspInstall --sync ccls' -c 'q'
-          7z -mx9 a mini_config_with_ccls.zip ./nvim
+          7z -mx9 a nvim_config_with_ccls.zip ./nvim
           popd
           mv ~/.config/*.zip .
 
@@ -43,19 +43,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           delete_release: true
-          tag_name: mini_config
+          tag_name: nvim_config
 
       - uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: mini_config
+          tag: nvim_config
           artifactErrorsFailBuild: true
           allowUpdates: true
           replacesArtifacts: true
           removeArtifacts: true
           artifacts: "*.zip"
           body: |
-            mini_config only work with [NeoVim](https://github.com/neovim/neovim/releases/latest)
+            nvim_config only work with [NeoVim](https://github.com/neovim/neovim/releases/latest)
 
             ### Optional dependencies
             [ripgrep](https://github.com/BurntSushi/ripgrep)

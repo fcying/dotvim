@@ -52,6 +52,7 @@ Plug 'itchyny/lightline.vim'
 Plug 'terryma/vim-expand-region'
 Plug 'andymass/vim-matchup'
 Plug 'tpope/vim-fugitive'
+Plug 'mg979/vim-visual-multi'
 Plug 'easymotion/vim-easymotion'
 Plug 'preservim/nerdcommenter'
 Plug 'nvim-lua/plenary.nvim'
@@ -95,90 +96,11 @@ endif
 
 
 " plugin setting {{{
-if (HasPlug('gen_clang_conf.vim') != -1) "{{{
-  let g:gencconf_storein_rootmarker = get(g:,'gencconf_storein_rootmarker',1)
-endif "}}}
-
-if (HasPlug('vim-easymotion') != -1) "{{{
-  let g:EasyMotion_smartcase = 0
-  let g:EasyMotion_do_mapping = 0   " Disable default mappings
-  " move to {char}
-  nmap s <Plug>(easymotion-overwin-f)
-  " move to {char}{char}
-  nmap S <Plug>(easymotion-overwin-f2)
-  " Move to line
-  nmap L <Plug>(easymotion-overwin-line)
-  " Move to word
-  "nmap <Leader>w <Plug>(easymotion-overwin-w)
-endif "}}}
-
-if (HasPlug('vim-bbye') != -1) "{{{
-  nnoremap <Leader>q :Bdelete<CR>
-endif "}}}
-
-if (HasPlug('vim-expand-region') != -1) "{{{
-  xmap v <Plug>(expand_region_expand)
-  xmap V <Plug>(expand_region_shrink)
-  let g:expand_region_text_objects = {
-        \ 'iw'  :0,
-        \ 'iW'  :0,
-        \ 'i"'  :0,
-        \ 'i''' :0,
-        \ 'i]'  :1,
-        \ 'ib'  :1,
-        \ 'iB'  :1,
-        \ 'il'  :1,
-        \ 'ii'  :1,
-        \ 'ip'  :0,
-        \ 'ie'  :0,
-        \ }
-endif "}}}
-
-if (HasPlug('nerdcommenter') != -1) "{{{
-  " set default delimiter
-  set commentstring=#%s
-  let g:NERDCreateDefaultMappings = 0
-  let g:NERDSpaceDelims = 0
-  "let g:NERDRemoveExtraSpaces = 0
-  let g:NERDCommentEmptyLines = 1
-  let g:NERDDefaultAlign = 'left'
-  let g:NERDToggleCheckAllLines = 1
-  let g:NERDCustomDelimiters = {
-        \ 'c': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-        \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-        \ 'go': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-        \ 'qml': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-        \ 'conf': { 'left': '#' },
-        \ 'aptconf': { 'left': '//' },
-        \ 'json': { 'left': '//' },
-        \ 'jsonc': { 'left': '//' },
-        \ 'rc': { 'left': '#' },
-        \ '*': { 'left': '#' },
-        \ }
-  nmap <A-/> <plug>NERDCommenterToggle
-  vmap <A-/> <plug>NERDCommenterToggle gv
-  nmap <leader>gc <plug>NERDCommenterToggle
-  vmap <leader>gc <plug>NERDCommenterToggle
-  vmap <leader>gC <plug>NERDCommenterComment
-  vmap <leader>gU <plug>NERDCommenterUncomment
-  nmap <leader>gi <plug>NERDCommenterInvert
-  vmap <leader>gi <plug>NERDCommenterInvert
-  nmap <leader>gs <plug>NERDCommenterSexy
-  vmap <leader>gs <plug>NERDCommenterSexy
-endif "}}}
-
-if (HasPlug('vim-vsnip') != -1) "{{{
-  let g:vsnip_snippet_dir = g:config_dir . '/snippets'
-  imap <expr> <c-j> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<c-j>'
-  smap <expr> <c-j> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<c-j>'
-  imap <expr> <c-k> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<c-k>'
-  smap <expr> <c-k> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<c-k>'
-endif "}}}
-
-if (HasPlug('vim-fugitive') != -1) "{{{
-  autocmd myau FileType fugitive* nmap <buffer> q gq
-  autocmd myau FileType git nmap <buffer> q :q<CR>
-endif "}}}
+if filereadable(g:config_dir . '/config.vim')
+  exec 'so ' . g:config_dir . '/config.vim'
+else
+  exec 'so ' . g:config_dir . '/../config.vim'
+endif
 
 if filereadable(g:config_dir . '/config.lua')
   exec 'luafile ' . g:config_dir . '/config.lua'
@@ -186,11 +108,12 @@ else
   exec 'luafile ' . g:config_dir . '/../config.lua'
 endif
 
-set termguicolors
+let g:colorscheme = get(g:, 'colorscheme', 'onedark')
 
 if g:colorscheme == 'solarized8'
   colorscheme solarized8
   set background=light
+  set termguicolors
 else
   colorscheme onedark
   set background=dark

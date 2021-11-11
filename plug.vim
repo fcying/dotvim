@@ -220,7 +220,7 @@ MyPlug 'derekwyatt/vim-fswitch'
 MyPlug 'Yggdroot/indentLine', {'cmd': 'IndentLinesToggle'}
 if g:is_nvim ==# 0
   MyPlug 'xolox/vim-misc'
-  MyPlug 'xolox/vim-session'
+  "MyPlug 'xolox/vim-session'
 endif
 MyPlug 'tpope/vim-fugitive'
 
@@ -339,9 +339,7 @@ autocmd myau VimEnter *
 " ============================================================================
 " plug setting {{{
 " ============================================================================
-if (HasPlug('gen_clang_conf.vim') != -1) "{{{
-  let g:gencconf_storein_rootmarker = get(g:,'gencconf_storein_rootmarker',1)
-endif "}}}
+execute 'source ' . g:config_dir . '/config.vim'
 
 if (HasPlug('indentLine') != -1) "{{{
   let g:indentLine_setColors = 1
@@ -378,15 +376,6 @@ if (HasPlug('vim-preview') != -1) "{{{
   autocmd myau FileType qf nnoremap <silent><buffer> P :PreviewClose<cr>
 endif "}}}
 
-if (HasPlug('lightline.vim') != -1) "{{{
-  set showtabline=1
-  let g:lightline = {}
-  let g:lightline.enable = {
-        \ 'statusline': 1,
-        \ 'tabline': 1
-        \ }
-endif "}}}
-
 if (HasPlug('FixCursorHold.nvim') != -1) "{{{
   let g:cursorhold_updatetime = 300
 endif "}}}
@@ -394,49 +383,6 @@ endif "}}}
 if (HasPlug('nvim-hclipboard') != -1) "{{{
   lua require('hclipboard').start()
 endif "}}}
-
-if (HasPlug('vim-expand-region') != -1) "{{{
-  xmap v <Plug>(expand_region_expand)
-  xmap V <Plug>(expand_region_shrink)
-  let g:expand_region_text_objects = {
-        \ 'iw'  :0,
-        \ 'iW'  :0,
-        \ 'i"'  :0,
-        \ 'i''' :0,
-        \ 'i]'  :1,
-        \ 'ib'  :1,
-        \ 'iB'  :1,
-        \ 'il'  :1,
-        \ 'ii'  :1,
-        \ 'ip'  :0,
-        \ 'ie'  :0,
-        \ }
-endif "}}}
-
-if (HasPlug('vim-fugitive') != -1) "{{{
-  autocmd myau FileType fugitive* nmap <buffer> q gq
-  autocmd myau FileType git nmap <buffer> q :q<CR>
-endif "}}}
-
-if (HasPlug('vim-lsp') != -1) "{{{
-  let g:lsp_diagnostics_enabled = 0
-  nnoremap <silent> <leader>ld :LspDefinition<CR>
-  nnoremap <silent> <leader>lr :LspRename<CR>
-  nnoremap <silent> <leader>lf :LspDocumentFormat<CR>
-  nnoremap <silent> <leader>lt :LspTypeDefinition<CR>
-  nnoremap <silent> <leader>lx :LspReferences<CR>
-  nnoremap <silent> <leader>lc :LspCodeAction<CR>
-  nnoremap <silent> <leader>lh :LspHover<CR>
-  nnoremap <silent> <leader>ls :LspWorkspaceSymbol<CR>
-  nnoremap <silent> <leader>lm :LspImplementation<CR>
-endif "}}}
-
-if (HasPlug('vim-lsp-settings') != -1) "{{{
-  let g:lsp_settings_servers_dir = g:cache_dir . '/lsp_settings'
-  let g:lsp_settings_root_markers = ['.root/', '.git', '.git/', '.svn/']
-  let g:lsp_settings_filetype_python = ['pyls-ms', 'pyls']
-endif "}}}
-
 
 if (HasPlug('ale') != -1) "{{{
   nmap <silent> <leader>aj :ALENext<cr>
@@ -455,22 +401,6 @@ if (HasPlug('ultisnips') != -1) "{{{
   let g:UltiSnipsJumpForwardTrigger = '<c-j>'
   let g:UltiSnipsJumpBackwardTrigger = '<c-k>'
   let g:UltiSnipsRemoveSelectModeMappings = 0
-endif "}}}
-
-if (HasPlug('vim-vsnip') != -1) "{{{
-  "function! Th()
-  "  call feedkeys("ihead\<c-h>", "ti")
-  "endfunction
-  "nmap <leader>tt :call Th()<CR>
-
-  let g:vsnip_snippet_dir = g:config_dir . '/snippets'
-  "imap <expr> <C-j> vsnip#expandable() ? '<Plug>(vsnip-expand)' : '<C-j>'
-  "smap <expr> <C-j> vsnip#expandable() ? '<Plug>(vsnip-expand)' : '<C-j>'
-  imap <expr> <c-j> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<c-j>'
-  smap <expr> <c-j> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<c-j>'
-  imap <expr> <c-k> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<c-k>'
-  smap <expr> <c-k> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<c-k>'
-
 endif "}}}
 
 if (HasPlug('coc.nvim') != -1) "{{{
@@ -559,82 +489,10 @@ if (HasPlug('coc.nvim') != -1) "{{{
         \ }
 endif "}}}
 
-if (HasPlug('nvim-cmp') != -1) "{{{
-  let g:compe = {}
-  let g:compe.enabled = v:true
-  let g:compe.autocomplete = v:true
-  let g:compe.debug = v:false
-  let g:compe.min_length = 1
-  let g:compe.preselect = 'enable'
-  let g:compe.throttle_time = 80
-  let g:compe.source_timeout = 200
-  let g:compe.resolve_timeout = 800
-  let g:compe.incomplete_delay = 400
-  let g:compe.max_abbr_width = 100
-  let g:compe.max_kind_width = 100
-  let g:compe.max_menu_width = 100
-  let g:compe.documentation = v:true
-
-  let g:compe.source = {}
-  let g:compe.source.path = v:true
-  let g:compe.source.buffer = v:true
-  let g:compe.source.calc = v:true
-  let g:compe.source.nvim_lsp = v:true
-  let g:compe.source.nvim_lua = v:true
-  let g:compe.source.vsnip = v:true
-  let g:compe.source.ultisnips = v:true
-  let g:compe.source.luasnip = v:true
-  let g:compe.source.emoji = v:true
-endif "}}}
-
-if (HasPlug('YouCompleteMe') != -1) "{{{
-  let g:ycm_confirm_extra_conf = 0
-  let g:ycm_add_preview_to_completeopt = 0
-
-  let g:ycm_show_diagnostics_ui = 0
-  let g:ycm_server_log_level = 'info'
-  let g:ycm_min_num_identifier_candidate_chars = 2
-  let g:ycm_collect_identifiers_from_comments_and_strings = 1
-  let g:ycm_complete_in_strings=1
-  let g:ycm_key_invoke_completion = '<c-l>'
-
-  let g:ycm_semantic_triggers =  {
-        \ 'c,cpp': [ '->', '.', 're!\w{2}'],
-        \ 'python,java,go,rust,lua': ['.', 're!\w{2}'],
-        \ 'cs,javascript': ['re!\w{2}'],
-        \ 'sh': ['re!\w{2}'],
-        \ }
-
-let g:ycm_filetype_whitelist = {
-      \ 'c':1, 'cpp':1, 'objc':1, 'objcpp':1,
-      \ 'go':1, 'rust':1, 'python':1, 'vim':1,
-      \ 'lua':1, 'java':1, 'ruby':1, 'php':1,
-      \ 'javascript':1, 'typedscript':1, 'coffee':1,
-      \ 'perl':1, 'perl6':1, 'erlang':1,
-      \ 'asm':1, 'nasm':1, 'masm':1, 'tasm':1, 'asm68k':1, 'asmh8300':1,
-      \ 'basic':1, 'cs':1, 'vb':1,
-      \ 'make':1, 'cmake':1,
-      \ 'html':1, 'css':1, 'less':1,
-      \ 'dosini':1, 'conf':1, 'config':1, 'json':1, 'cson':1,
-      \ 'haskell':1, 'lhaskell':1, 'lisp':1,
-      \ 'scheme':1, 'sdl':1,
-      \ 'sh':1, 'zsh':1, 'bash':1, 'ps1':1, 'bat':1,
-      \ 'asciidoc':1, 'man':1, 'markdown':1, 'matlab':1, 'maxima':1,
-      \ }
-endif "}}}
 
 if (HasPlug('tmux-complete.vim') != -1) "{{{
   let g:tmuxcomplete#trigger = 'omnifunc'
 endif
-
-if (HasPlug('vim-visual-multi') != -1) "{{{
-  let g:VM_no_meta_mappings = 1
-  let g:VM_maps = {}
-  let g:VM_maps['Find Under']         = '<C-n>'
-  let g:VM_maps['Find Subword Under'] = '<C-n>'
-  let g:VM_cmdheight = 1
-  "let g:VM_manual_infoline = 1
-endif "}}}
 
 if (HasPlug('vim-sandwich') != -1) "{{{
   let g:sandwich_no_default_key_mappings = 1
@@ -699,11 +557,11 @@ if (HasPlug('fern.vim') != -1) "{{{
   endfunction
 endif "}}}
 
-"if (HasPlug('vim-session') != -1) "{{{
+if (HasPlug('vim-session') != -1) "{{{
   let g:session_autosave = 'no'
   let g:session_autoload = 'no'
   let g:session_directory = g:cache_dir . '/sessions'
-"endif "}}}
+endif "}}}
 
 if (HasPlug('LeaderF') != -1) "{{{
   let g:Lf_ShowDevIcons = 0
@@ -798,54 +656,6 @@ if (HasPlug('fencview') != -1) "{{{
   let g:fencview_checklines = 10
 endif "}}}
 
-if (HasPlug('nerdcommenter') != -1) "{{{
-  " set default delimiter
-  set commentstring=#%s
-  let g:NERDCreateDefaultMappings = 0
-  let g:NERDSpaceDelims = 0
-  "let g:NERDRemoveExtraSpaces = 0
-  let g:NERDCommentEmptyLines = 1
-  let g:NERDDefaultAlign = 'left'
-  let g:NERDToggleCheckAllLines = 1
-  let g:NERDCustomDelimiters = {
-        \ 'c': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-        \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-        \ 'go': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-        \ 'qml': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-        \ 'conf': { 'left': '#' },
-        \ 'aptconf': { 'left': '//' },
-        \ 'json': { 'left': '//' },
-        \ 'jsonc': { 'left': '//' },
-        \ 'rc': { 'left': '#' },
-        \ '*': { 'left': '#' },
-        \ }
-  nmap <A-/> <plug>NERDCommenterToggle
-  vmap <A-/> <plug>NERDCommenterToggle gv
-  nmap <leader>gc <plug>NERDCommenterToggle
-  vmap <leader>gc <plug>NERDCommenterToggle
-  vmap <leader>gC <plug>NERDCommenterComment
-  vmap <leader>gU <plug>NERDCommenterUncomment
-  nmap <leader>gi <plug>NERDCommenterInvert
-  vmap <leader>gi <plug>NERDCommenterInvert
-  nmap <leader>gs <plug>NERDCommenterSexy
-  vmap <leader>gs <plug>NERDCommenterSexy
-endif "}}}
-
-if (HasPlug('vim-foldsearch') != -1) "{{{
-  let g:foldsearch_disable_mappings = 1
-  let g:foldsearch_highlight = 1
-
-  nmap <Leader>fg :<C-u><C-R>=printf("Fp %s", expand("<cword>"))<CR>
-  xmap <Leader>fg :<C-u><C-R>=printf("Fp %s", expand("<cword>"))<CR>
-  map <Leader>fw :call foldsearch#foldsearch#FoldCword()<CR>
-  map <Leader>fs :call foldsearch#foldsearch#FoldSearch()<CR>
-  map <Leader>fS :call foldsearch#foldsearch#FoldSpell()<CR>
-  map <Leader>fl :call foldsearch#foldsearch#FoldLast()<CR>
-  map <Leader>fi :call foldsearch#foldsearch#FoldContextAdd(+1)<CR>
-  map <Leader>fd :call foldsearch#foldsearch#FoldContextAdd(-1)<CR>
-  map <Leader>fe :call foldsearch#foldsearch#FoldSearchEnd()<CR>
-endif "}}}
-
 if (HasPlug('tagbar') != -1) "{{{
   nnoremap <silent><Leader>wt :TagbarToggle<CR>
   nnoremap <silent><F11> :TagbarToggle<CR>
@@ -865,23 +675,6 @@ if (HasPlug('tagbar') != -1) "{{{
         \ 'f:functions',
         \ ]
         \ }
-endif "}}}
-
-if (HasPlug('vim-bbye') != -1) "{{{
-  nnoremap <Leader>q :Bdelete<CR>
-endif "}}}
-
-if (HasPlug('vim-easymotion') != -1) "{{{
-  let g:EasyMotion_smartcase = 0
-  let g:EasyMotion_do_mapping = 0   " Disable default mappings
-  " move to {char}
-  nmap s <Plug>(easymotion-overwin-f)
-  " move to {char}{char}
-  nmap S <Plug>(easymotion-overwin-f2)
-  " Move to line
-  nmap L <Plug>(easymotion-overwin-line)
-  " Move to word
-  "nmap <Leader>w <Plug>(easymotion-overwin-w)
 endif "}}}
 
 if (HasPlug('vim-fswitch') != -1) "{{{

@@ -4,7 +4,6 @@
 let g:config_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let g:cache_dir = g:config_dir . '/.cache'
 let g:etc_dir = g:config_dir . '/etc'
-let g:file_plug = g:config_dir . '/plug.vim'
 let g:file_vimrc = g:config_dir . '/vimrc'
 let g:file_basic_config = g:config_dir . '/basic.vim'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
@@ -33,9 +32,8 @@ if g:complete_engine ==# 'nvimlsp'
   endif
 endif
 
-if filereadable(g:file_plug)
-  execute 'source ' . g:file_plug
-endif
+" load plugins
+execute 'source ' . g:config_dir . '/plug.vim'
 
 
 " cursor FIXME nvim will modify terminal cursorshape {{{

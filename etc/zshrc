@@ -90,7 +90,7 @@ type nvim >/dev/null 2>&1 && {
     alias vi='nvim'
     alias vimdiff='nvim -d'
     alias nvim-qt="NVIM_GUI=1 nvim-qt"
-    alias mvim='nvim -u ~/.vim/mini_config/init.vim'
+    alias mvim='nvim -u ~/.vim/nvim_config/init.vim'
 }
 
 
@@ -217,8 +217,8 @@ fi
 export BREW_REMOTE=${BREW_REMOTE:-"cn"}
 if [[ "$BREW_REMOTE" == "cn" ]]; then
     #export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
-    #export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/linuxbrew-core.git"
-    #export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/linuxbrew-bottles/bottles"
+    #export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
+    #export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles"
     export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.ustc.edu.cn/brew.git"
     export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.ustc.edu.cn/homebrew-core.git"
     export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.ustc.edu.cn/homebrew-bottles/bottles"
@@ -258,11 +258,6 @@ if [ ! -z "$BREW_PREFIX" ]; then
     function brew_disable() {
         export PATH=${PATH##*"linuxbrew/sbin:"}
     }
-    function brew_install_common() {
-        brew install ctags global tmux tig
-        #brew install --HEAD universal-ctags/universal-ctags/universal-ctags
-        "$CONFIG_DIR"/etc/homebrew_ln.sh
-    }
 fi
 unset BREW_PREFIX
 alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
@@ -278,7 +273,7 @@ function brew_install() {
 function brew_set_mirror() {
     if [[ "$1" == "origin" ]]; then
         git -C "$(brew --repo)" remote set-url origin https://github.com/Homebrew/brew.git
-        git -C "$(brew --repo homebrew/core)" remote set-url origin https://github.com/Homebrew/linuxbrew-core.git
+        git -C "$(brew --repo homebrew/core)" remote set-url origin https://github.com/Homebrew/homebrew-core.git
         brew update-reset
     else
         git -C "$(brew --repo)" remote set-url origin $HOMEBREW_BREW_GIT_REMOTE

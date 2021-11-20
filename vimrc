@@ -9,7 +9,7 @@ let g:file_basic_config = g:config_dir . '/basic.vim'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
 let g:file_log = g:cache_dir . '/vim.log'
 if !exists('g:lsp_servers')
-  let g:lsp_servers = ['pylsp', 'vimls', 'bashls', 'gopls', 'dockerls', 'rust_analyzer', 'ccls']
+  let g:lsp_servers = ['pylsp', 'vimls', 'bashls', 'gopls', 'dockerls', 'rust_analyzer', 'clangd']
 endif
 
 let g:test = ['a','b']

@@ -19,9 +19,9 @@
 --exclude=GPATH
 --exclude=tags
 --exclude=log
+--exclude=.log
 --exclude=tmp
---exclude=publish
---exclude=public
+--exclude=[pP]ublish
 --exclude=[bB]uild
 --exclude=[oO]ut
 --exclude=[lL]ib

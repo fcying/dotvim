@@ -8,7 +8,7 @@ let g:file_vimrc = g:config_dir . '/init.vim'
 let g:file_basic_config = g:config_dir . '/basic.vim'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
 if !exists('g:lsp_servers')
-  let g:lsp_servers = ['ccls', 'vimls']
+  let g:lsp_servers = ['clangd', 'vimls']
 endif
 
 if filereadable(g:file_basic_config)

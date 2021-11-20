@@ -124,6 +124,7 @@ if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
             name = 'ccls',
             root_dir = root_dir,
             homepage = "https://github.com/MaskRay/ccls",
+            languages = { "c", "c++" },
             installer = {
                 std.download_file("https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.zip", "ccls.zip"),
                 std.unzip('ccls.zip', '.'),

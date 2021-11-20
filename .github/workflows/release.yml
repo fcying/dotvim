@@ -33,30 +33,20 @@ jobs:
           pushd ~/.config
           nvim --headless -c 'PlugUpdate --sync|qa'
           7z -mx9 a nvim_config.zip ./nvim
-          nvim --headless -c 'LspInstall --sync ccls' -c 'q'
-          7z -mx9 a nvim_config_with_ccls.zip ./nvim
+          nvim --headless -c 'LspInstall --sync clangd' -c 'q'
+          7z -mx9 a nvim_config_with_lsp.zip ./nvim
           popd
           mv ~/.config/*.zip .
 
-      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+      - name: Publish release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          delete_release: true
-          tag_name: nvim_config
-
-      - uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: nvim_config
-          artifactErrorsFailBuild: true
-          allowUpdates: true
-          replacesArtifacts: true
-          removeArtifacts: true
-          artifacts: "*.zip"
-          body: |
-            nvim_config only work with [NeoVim](https://github.com/neovim/neovim/releases/latest)
-
-            ### Optional dependencies
-            [ripgrep](https://github.com/BurntSushi/ripgrep)
-
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "nvim_config work with [NeoVim](https://github.com/neovim/neovim/releases/latest)"
+            echo -e "\n"
+            echo "### Optional dependencies"
+            echo "[ripgrep](https://github.com/BurntSushi/ripgrep)"
+          } | tee /tmp/note.md
+          gh release delete nvim_config -y || true
+          gh release create nvim_config -t "nvim_config" -F "/tmp/note.md" --target $GITHUB_SHA *.zip

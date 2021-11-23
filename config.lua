@@ -177,7 +177,7 @@ if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
 
     --clangd config
     if (use_lsp_installer == 1) then
-        clangd_cmd = { path.concat { server.get_server_root_path('clangd'), 'clangd' } }
+        clangd_cmd = { vim.fn.expand(server.get_server_root_path('clangd') .. '/clangd_*/bin/clangd') }
     else
         clangd_cmd = { "clangd" }
     end

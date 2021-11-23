@@ -1,3 +1,5 @@
+#https://github.com/jonas/tig/blob/master/contrib/vim.tigrc
+
 set mouse           = true
 set wrap-lines      = yes
 set ignore-case     = smart-case
@@ -11,7 +13,7 @@ set main-view-id            = yes
 set main-options            = -n 1000
 
 
-# bind HOME END
+# bind HOME END for tmux+xshell
 bind generic <Esc>[1~ move-first-line
 bind generic <Esc>[4~ move-last-line
 
@@ -22,8 +24,6 @@ bind generic j move-down
 bind generic k move-up
 bind generic l scroll-right
 
-bind main    G move-last-line
-bind generic G move-last-line
 bind generic g  none
 bind generic gg move-first-line
 bind generic gj next
@@ -31,6 +31,9 @@ bind generic gk previous
 bind generic gp parent
 bind generic gP back
 bind generic gn view-next
+
+bind main    G move-last-line
+bind generic G move-last-line
 
 bind generic <C-f> move-page-down
 bind generic <C-b> move-page-up
@@ -76,6 +79,7 @@ bind generic uu status-update
 bind generic ur status-revert
 bind generic um status-merge
 bind generic ul stage-update-line
+bind generic up stage-update-part
 bind generic us stage-split-chunk
 
 bind generic c  none

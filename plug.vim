@@ -250,6 +250,8 @@ if g:complete_engine ==# 'coc'
   MyPlug 'honza/vim-snippets'
 
 elseif g:complete_engine ==# 'nvimlsp'
+  MyPlug 'nvim-lua/plenary.nvim'
+  MyPlug 'nvim-telescope/telescope.nvim'
   MyPlug 'neovim/nvim-lspconfig'
   MyPlug 'williamboman/nvim-lsp-installer'
   MyPlug 'hrsh7th/nvim-cmp'

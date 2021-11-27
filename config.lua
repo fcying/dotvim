@@ -15,25 +15,35 @@ if (vim.fn.HasPlug('filetype.nvim') ~= -1) then    --{{{
 end
 
 if (vim.fn.HasPlug('telescope.nvim') ~= -1) then    --{{{
-    map('n', 'fm', '<cmd>Telescope oldfiles<cr>', { noremap = true })
-    map('n', 'fb', '<cmd>Telescope buffers<cr>', { noremap = true })
-    map('n', 'fo', '<cmd>Telescope lsp_document_symbols<cr>', { noremap = true })
-    map('n', 'fl', '<cmd>Telescope current_buffer_fuzzy_find<cr>', { noremap = true })
-    map('n', 'fh', '<cmd>Telescope help_tags<cr>', { noremap = true })
-    map('n', 'ft', '<cmd>Telescope tags<cr>', { noremap = true })
-    map('n', 'f/', '<cmd>Telescope live_grep<cr>', { noremap = true })
-    map('n', 'fg', '<cmd>Telescope grep_string<cr>', { noremap = true })
-    map('n', 'fj', '<cmd>Telescope jumplist<cr>', { noremap = true })
-    map('n', 'fr', '<cmd>Telescope resume<cr>', { noremap = true })
 
-    local find_command = ''
-    if (vim.g.has_rg == 1) then
-        find_command = 'find_command=rg,--ignore,--hidden,--files'
-        if (vim.g.ignore_full.rg) then
-            find_command = find_command .. ',' .. table.concat(vim.g.ignore_full.rg,',')
+    if (vim.fn.HasPlug('LeaderF') == -1) then    --{{{
+        map('n', 'fm', '<cmd>Telescope oldfiles<cr>', { noremap = true })
+        map('n', 'fb', '<cmd>Telescope buffers<cr>', { noremap = true })
+        map('n', 'fo', '<cmd>Telescope lsp_document_symbols<cr>', { noremap = true })
+        map('n', 'fl', '<cmd>Telescope current_buffer_fuzzy_find<cr>', { noremap = true })
+        map('n', 'fh', '<cmd>Telescope help_tags<cr>', { noremap = true })
+        map('n', 'ft', '<cmd>Telescope tags<cr>', { noremap = true })
+        map('n', 'f/', '<cmd>Telescope live_grep<cr>', { noremap = true })
+        map('n', 'fg', '<cmd>Telescope grep_string<cr>', { noremap = true })
+        map('n', 'fj', '<cmd>Telescope jumplist<cr>', { noremap = true })
+        map('n', 'fr', '<cmd>Telescope resume<cr>', { noremap = true })
+        local find_command = ''
+        if (vim.g.has_rg == 1) then
+            find_command = 'find_command=rg,--ignore,--hidden,--files'
+            if (vim.g.ignore_full.rg) then
+                find_command = find_command .. ',' .. table.concat(vim.g.ignore_full.rg,',')
+            end
         end
+        map('n', 'ff', '<cmd>Telescope find_files ' .. find_command .. '<cr>', { noremap = true })
     end
-    map('n', 'ff', '<cmd>Telescope find_files ' .. find_command .. '<cr>', { noremap = true })
+
+    map('n', 'gr', '<cmd>Telescope lsp_references<cr>', { noremap = true })
+    map('n', 'gd', '<cmd>Telescope lsp_definitions<cr>', { noremap = true })
+    map('n', 'gt', '<cmd>Telescope lsp_type_definitions<cr>', { noremap = true })
+    map('n', 'gi', '<cmd>Telescope lsp_implementations<cr>', { noremap = true })
+    map('n', 'ga', '<cmd>Telescope lsp_code_actions<cr>', { noremap = true })
+    map('n', 'gs', '<cmd>Telescope lsp_document_symbols<cr>', { noremap = true })
+    map('n', 'ge', '<cmd>Telescope lsp_document_diagnostics<cr>', { noremap = true })
 
     local actions = require('telescope.actions')
     local toggle_modes = function()
@@ -84,24 +94,12 @@ if (vim.fn.HasPlug('nvim-lspconfig') ~= -1) then    --{{{
         -- Mappings.
         local opts = { noremap=true, silent=true }
 
-        -- See `:help vim.lsp.*` for documentation on any of the below functions
-        buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-        buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
         buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-        buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
         buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-        buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-        buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-        --buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-        buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
         buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-        buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-        buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
         buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
         buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
         buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-        --buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-        --buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
     end
 
     local use_lsp_installer = 0

@@ -223,6 +223,7 @@ if g:is_nvim ==# 0
   "MyPlug 'xolox/vim-session'
 endif
 MyPlug 'tpope/vim-fugitive'
+MyPlug 'rbong/vim-flog'
 
 MyPlug 'skywind3000/vim-preview'
 MyPlug 'skywind3000/asyncrun.vim', {'cmd': ['AsyncRun', 'AsyncStop'] }

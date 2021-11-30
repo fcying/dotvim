@@ -96,6 +96,7 @@ endif "}}}
 if (HasPlug('vim-fugitive') != -1) "{{{
   autocmd myau FileType fugitive* nmap <buffer> q gq
   autocmd myau FileType git nmap <buffer> q :q<CR>
+  "autocmd myau FileType floggraph nmap <buffer> q <c-w>lq
 endif "}}}
 
 if (HasPlug('lightline.vim') != -1) "{{{

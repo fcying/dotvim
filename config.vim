@@ -99,6 +99,20 @@ if (HasPlug('vim-fugitive') != -1) "{{{
   "autocmd myau FileType floggraph nmap <buffer> q <c-w>lq
 endif "}}}
 
+if (HasPlug('vim-grepper') != -1) "{{{
+  let g:grepper         = {}
+  let g:grepper.tools   = ['rg', 'git', 'grep', 'findstr']
+  let g:grepper.rg      = { 'grepprg': 'rg --no-config -H --vimgrep --no-heading' }
+  let g:grepper.git     = { 'grepprg': 'git grep -nI' }
+  let g:grepper.grep    = { 'grepprg': 'grep -rn --exclude-dir=.git --exclude-dir=.root --exclude-dir=.repo' }
+  let g:grepper.repo    = ['.root', '.git', '.hg', '.svn']
+  let g:grepper.dir     = 'repo,file'
+  let g:grepper.jump    = 0
+  let g:grepper.prompt  = 0
+  nnoremap <leader>* :Grepper -cword<cr>
+  xnoremap <leader>* :<C-u><C-R>=printf("Grepper -query %s", GetVisualSelection())<CR>
+endif "}}}
+
 if (HasPlug('lightline.vim') != -1) "{{{
   set showtabline=1
   let g:lightline = {}

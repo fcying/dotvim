@@ -193,7 +193,7 @@ nnoremap <silent> <leader>lo :lopen<CR>
 nnoremap <silent> <leader>lc :lclose<CR>
 nnoremap <silent> <leader>ln :lnext<CR>
 nnoremap <silent> <leader>lp :lprevious<CR>
-autocmd myau FileType qf noremap <silent> q :q<CR>
+autocmd myau FileType qf noremap <silent><buffer> q :q<CR>
 
 " filetype {{{
 autocmd myau FileType go setlocal noexpandtab nolist
@@ -244,6 +244,7 @@ set wildignore+=*.gba,*.sfc,*.078,*.nds,*.smd,*.smc
 set wildignore+=*.linux2,*.win32,*.darwin,*.freebsd,*.linux,*.android
 
 " get visual selection {{{
+" https://github.com/idanarye/vim-vebugger/blob/master/autoload/vebugger/util.vim
 func! GetVisualSelection() abort
     let [lnum1, col1] = getpos("'<")[1:2]
     let [lnum2, col2] = getpos("'>")[1:2]

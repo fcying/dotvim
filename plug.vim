@@ -203,6 +203,7 @@ MyPlug 'fcying/vim-foldsearch'
 MyPlug 'easymotion/vim-easymotion', {'keys':'<Plug>(easymotion'}
 "MyPlug 'justinmk/vim-sneak'
 "MyPlug 'aperezdc/vim-template', {'cmd':'TemplateHere'}
+MyPlug 'mhinz/vim-grepper'
 
 MyPlug 'Vimjas/vim-python-pep8-indent', {'ft':'python'}
 MyPlug 'cespare/vim-toml', {'ft': 'toml', 'branch': 'main'}
@@ -225,7 +226,7 @@ endif
 MyPlug 'tpope/vim-fugitive'
 MyPlug 'rbong/vim-flog'
 
-MyPlug 'skywind3000/vim-preview'
+"MyPlug 'skywind3000/vim-preview'
 MyPlug 'skywind3000/asyncrun.vim', {'cmd': ['AsyncRun', 'AsyncStop'] }
 MyPlug 'skywind3000/asynctasks.vim', {'cmd': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] }
 
@@ -255,6 +256,7 @@ elseif g:complete_engine ==# 'nvimlsp'
   MyPlug 'nvim-telescope/telescope.nvim'
   MyPlug 'neovim/nvim-lspconfig'
   MyPlug 'williamboman/nvim-lsp-installer'
+  MyPlug 'kevinhwang91/nvim-bqf', {'ft':'qf'}
   MyPlug 'hrsh7th/nvim-cmp'
   MyPlug 'hrsh7th/cmp-nvim-lsp'
   MyPlug 'hrsh7th/cmp-buffer'

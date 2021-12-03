@@ -221,12 +221,20 @@ if (vim.fn.HasPlug('nvim-cmp') ~= -1) then    --{{{
         mapping = {
             ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
             ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's' }),
-            ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-            ['<C-f>'] = cmp.mapping.scroll_docs(4),
-            ['<C-e>'] = cmp.mapping.close(),
+            ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
+            ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+            ['<C-e>'] = cmp.mapping({
+                i = cmp.mapping.abort(),
+                c = cmp.mapping.close(),
+            }),
             ['<CR>'] = cmp.mapping.confirm({ select = false }),
         },
-        sources = {
+        snippet = {
+            expand = function(args)
+                vim.fn["vsnip#anonymous"](args.body)
+            end,
+        },
+        sources = cmp.config.sources({
             { name = 'vsnip' },
             { name = 'nvim_lsp' },
             { name = 'nvim_lua' },
@@ -240,12 +248,15 @@ if (vim.fn.HasPlug('nvim-cmp') ~= -1) then    --{{{
             --},
             { name = 'tags' },
             { name = 'path' },
+            { name = 'cmdline' },
             { name = 'buffer' },
-        },
+        }),
         formatting = {
             format = function(entry, vim_item)
                 vim_item.menu = ({
                     buffer = '[Buf]',
+                    path = '[Path]',
+                    cmdline = '[Cmd]',
                     nvim_lsp = '[Lsp]',
                     nvim_lua = '[Lua]',
                     tags = '[Tag]',
@@ -255,5 +266,18 @@ if (vim.fn.HasPlug('nvim-cmp') ~= -1) then    --{{{
                 return vim_item
             end,
         },
+    })
+
+    cmp.setup.cmdline('/', {
+        sources = {
+            { name = 'buffer' }
+        }
+    })
+
+    cmp.setup.cmdline(':', {
+        sources = cmp.config.sources({
+            { name = 'path' },
+            { name = 'cmdline' },
+        })
     })
 end

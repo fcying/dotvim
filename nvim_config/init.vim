@@ -45,6 +45,7 @@ endif
 exec 'source '. s:plug_install_dir . '/vim-plug/plug.vim'
 call plug#begin(expand(s:plug_install_dir))
 Plug 'junegunn/vim-plug'
+Plug 'tweekmonster/startuptime.vim', {'on':'StartupTime'}
 Plug 'fcying/gen_clang_conf.vim'
 Plug 'wsdjeg/vim-fetch'
 Plug 'moll/vim-bbye'
@@ -64,8 +65,9 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'williamboman/nvim-lsp-installer'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'quangnguyen30192/cmp-nvim-tags'

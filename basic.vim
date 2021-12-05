@@ -1,8 +1,10 @@
 " vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2 :
 
-set nocompatible
-
 " init var {{{
+let g:file_vimrc_local = $HOME .'/.vimrc.local'
+let g:cache_dir = g:root_dir . '/.cache'
+let g:file_log = g:cache_dir . '/vim.log'
+
 let g:is_win = has('win32')
 let g:is_nvim = has('nvim')
 let g:is_gui = has('gui_running') || !empty($NVIM_GUI)
@@ -23,7 +25,7 @@ let g:ignore_default = {
       \ 'rg':['--max-columns=300', '--iglob=!obj', '--iglob=!out']}
 let g:ignore = {'dir':[], 'file':[], 'rg':[], 'mru':[]}
 
-exec 'set rtp+=' . g:config_dir
+exec 'set rtp+=' . g:root_dir
 
 if !isdirectory(g:cache_dir)
   call mkdir(g:cache_dir)
@@ -32,7 +34,6 @@ endif
 augroup myau
   autocmd!
 augroup END
-
 
 " find project root dir {{{
 function! GetRootDir()
@@ -64,8 +65,7 @@ else
   let g:pvimrc_path = g:root_marker . '/.pvimrc'
 endif
 
-nnoremap <silent> <leader>evc :execute 'e '  . g:config_dir<CR>
-nnoremap <silent> <leader>evb :execute 'e '  . g:file_basic_config<CR>
+nnoremap <silent> <leader>evc :execute 'e '  . g:root_dir<CR>
 nnoremap <silent> <leader>evl :execute 'e '  . g:file_vimrc_local<CR>
 
 " }}}
@@ -117,9 +117,9 @@ set hidden
 set noautochdir
 set updatetime=300
 if g:is_win
-  let $PATH = g:config_dir . '\lib' . ';' . $PATH
+  let $PATH = g:root_dir . '\lib' . ';' . $PATH
 else
-  let $PATH = g:config_dir . '/lib' . ':' . $PATH
+  let $PATH = g:root_dir . '/lib' . ':' . $PATH
 endif
 
 " backup {{{
@@ -545,14 +545,56 @@ function! BufOnly(buffer, bang)
 endfunction
 
 " dictionary {{{
-execute 'set dictionary+=' . g:config_dir . '/dict/dictionary'
+execute 'set dictionary+=' . g:root_dir . '/dict/dictionary'
 function! s:add_dict()
-  let l:dict = g:config_dir . '/dict/' . &filetype . '.dict'
+  let l:dict = g:root_dir . '/dict/' . &filetype . '.dict'
   if filereadable(expand(l:dict))
     execute 'setlocal dictionary+=' . l:dict
   endif
 endfunction
 autocmd myau FileType * :call s:add_dict()
+
+
+function! LoadAfterConfig()
+  if exists('*LoadAfter')
+    call LoadAfter()
+  endif
+  if exists('*LoadAfterProject')
+    call LoadAfterProject()
+  endif
+  filetype plugin indent on
+  syntax enable
+endfunction
+
+function! ColorConfig()
+  if g:colorscheme == 'solarized8'
+    set termguicolors
+    let g:background='light'
+  elseif g:colorscheme == 'default'
+    let g:background='dark'
+  else
+    let g:colorscheme = 'onedark'
+    let g:background='dark'
+  endif
+
+  if $TERM ==# 'linux'
+    let g:colorscheme = 'desert'
+    let g:background='dark'
+    set t_Co=256
+  endif
+
+  if !exists('g:lightline')
+    let g:lightline = {}
+  endif
+  if g:background ==# 'dark'
+    let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'wombat')
+  else
+    let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'solarized')
+  endif
+
+  exec 'colorscheme ' . g:colorscheme
+  exec 'set background=' . g:background
+endfunction
 
 
 " ============================================================================

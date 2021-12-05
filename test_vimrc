@@ -1,9 +1,9 @@
 set nocompatible
 set mouse=n
-let g:config_dir = '/tmp/vimtest'
+let g:root_dir = '/tmp/vimtest'
 let g:cache_dir = '/tmp/vimtest/.cache'
 
-let s:plug_install_dir = g:config_dir . '/plugged'
+let s:plug_install_dir = g:root_dir . '/plugged'
 let s:plug_manager_file = s:plug_install_dir . '/vim-plug/plug.vim'
 let s:plug_manager_download =
       \ 'silent !git clone --depth 1 https://github.com/junegunn/vim-plug '

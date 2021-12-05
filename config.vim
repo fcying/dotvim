@@ -71,22 +71,14 @@ if (HasPlug('nerdcommenter') != -1) "{{{
 endif "}}}
 
 if (HasPlug('vim-foldsearch') != -1) "{{{
-  let g:foldsearch_disable_mappings = 1
   let g:foldsearch_highlight = 1
 
   nmap <Leader>fp :<C-u><C-R>=printf("Fp %s", expand("<cword>"))<CR>
   xmap <Leader>fp :<C-u><C-R>=printf("Fp %s", expand("<cword>"))<CR>
-  map <Leader>fw :call foldsearch#foldsearch#FoldCword()<CR>
-  map <Leader>fs :call foldsearch#foldsearch#FoldSearch()<CR>
-  map <Leader>fS :call foldsearch#foldsearch#FoldSpell()<CR>
-  map <Leader>fl :call foldsearch#foldsearch#FoldLast()<CR>
-  map <Leader>fi :call foldsearch#foldsearch#FoldContextAdd(+1)<CR>
-  map <Leader>fd :call foldsearch#foldsearch#FoldContextAdd(-1)<CR>
-  map <Leader>fe :call foldsearch#foldsearch#FoldSearchEnd()<CR>
 endif "}}}
 
 if (HasPlug('vim-vsnip') != -1) "{{{
-  let g:vsnip_snippet_dir = g:config_dir . '/snippets'
+  let g:vsnip_snippet_dir = g:root_dir . '/snippets'
   imap <expr> <c-j> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<c-j>'
   smap <expr> <c-j> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<c-j>'
   imap <expr> <c-k> vsnip#jumpable(-1) ? '<Plug>(vsnip-jump-prev)' : '<c-k>'
@@ -100,17 +92,22 @@ if (HasPlug('vim-fugitive') != -1) "{{{
 endif "}}}
 
 if (HasPlug('vim-grepper') != -1) "{{{
-  let g:grepper         = {}
-  let g:grepper.tools   = ['rg', 'git', 'grep', 'findstr']
-  let g:grepper.rg      = { 'grepprg': 'rg --no-config -H --vimgrep --no-heading' }
-  let g:grepper.git     = { 'grepprg': 'git grep -nI' }
-  let g:grepper.grep    = { 'grepprg': 'grep -rn --exclude-dir=.git --exclude-dir=.root --exclude-dir=.repo' }
-  let g:grepper.repo    = ['.root', '.git', '.hg', '.svn']
-  let g:grepper.dir     = 'repo,file'
-  let g:grepper.jump    = 0
-  let g:grepper.prompt  = 0
-  nnoremap <leader>* :Grepper -cword<cr>
-  xnoremap <leader>* :<C-u><C-R>=printf("Grepper -query %s", GetVisualSelection())<CR>
+  let g:grepper           = {}
+  let g:grepper.tools     = ['rg', 'git', 'grep', 'findstr']
+  let g:grepper.rg        = { 'grepprg': 'rg --no-config -H --vimgrep --no-heading' }
+  let g:grepper.git       = { 'grepprg': 'git grep -nI' }
+  let g:grepper.grep      = { 'grepprg': 'grep -rn --exclude-dir=.git --exclude-dir=.root --exclude-dir=.repo' }
+  let g:grepper.repo      = ['.root', '.git', '.hg', '.svn']
+  let g:grepper.dir       = 'repo,file'
+  let g:grepper.jump      = 0
+  let g:grepper.prompt    = 0
+  let g:grepper.searchreg = 1
+  aug Grepper
+    au!
+    au User Grepper ++nested call setqflist([], 'r', {'context': {'bqf': {'pattern_hl': '\%#' . getreg('/')}}})
+  aug END
+  nmap gs  <plug>(GrepperOperator)
+  xmap gs  <plug>(GrepperOperator)
 endif "}}}
 
 if (HasPlug('lightline.vim') != -1) "{{{
@@ -195,7 +192,7 @@ endif "}}}
 
 if (HasPlug('coc.nvim') != -1) "{{{
   let g:coc_data_home = g:cache_dir . '/coc'
-  let g:coc_config_home = g:config_dir
+  let g:coc_config_home = g:root_dir
   let $NVIM_COC_LOG_FILE=g:coc_data_home . '/log'
   "'coc-pairs', 'coc-syntax'
   let g:coc_global_extensions = [
@@ -477,7 +474,7 @@ if (HasPlug('vim-template') != -1) "{{{
   nnoremap <silent> <Leader>th :TemplateHere<CR>
   nnoremap <silent> <Leader>tf :execute 'Template *.' . &filetype<CR>
   let g:templates_no_autocmd = 1
-  let g:templates_directory = g:config_dir . '/template'
+  let g:templates_directory = g:root_dir . '/template'
   let g:user = get(g:, 'user', 'fcying')
   let g:email = get(g:, 'email', 'fcying@gmail.com')
 endif "}}}
@@ -590,3 +587,15 @@ if (HasPlug('vim-quickui') != -1) "{{{
 
   noremap <space><space> :call quickui#menu#open()<cr>
 endif "}}}
+
+if (HasPlug('telescope.nvim') != -1) "{{{
+  lua require('config').telescope_map()
+endif
+
+if (HasPlug('nvim-lspconfig') != -1) "{{{
+  lua require('config').lspconfig()
+endif
+
+if (HasPlug('nvim-cmp') != -1) "{{{
+  lua require('config').cmp()
+endif

@@ -1,18 +1,13 @@
 " vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2 :
 
 " global var {{{
-let g:config_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
-let g:cache_dir = g:config_dir . '/.cache'
-let g:etc_dir = g:config_dir . '/etc'
-let g:file_vimrc = g:config_dir . '/vimrc'
-let g:file_basic_config = g:config_dir . '/basic.vim'
-let g:file_vimrc_local = $HOME .'/.vimrc.local'
-let g:file_log = g:cache_dir . '/vim.log'
+let g:root_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+let g:config_dir = g:root_dir
+let g:etc_dir = g:root_dir . '/etc'
 if !exists('g:lsp_servers')
-  let g:lsp_servers = ['pylsp', 'vimls', 'bashls', 'gopls', 'dockerls', 'rust_analyzer', 'clangd']
+  let g:lsp_servers = ['sumneko_lua', 'gopls', 'vimls', 'bashls', 'dockerls',
+        \ 'pylsp', 'rust_analyzer', 'clangd']
 endif
-
-let g:test = ['a','b']
 
 if executable('pip3') ==# 0
   echohl WarningMsg
@@ -20,11 +15,9 @@ if executable('pip3') ==# 0
   echohl None
 endif
 
+execute 'source ' . g:root_dir . '/basic.vim'
 
-execute 'source ' . g:config_dir . '/basic.vim'
-
-
-" complete_engine: coc ycm nvimlsp  {{{
+" complete_engine: coc nvimlsp  {{{
 let g:complete_engine = get(g:, 'complete_engine', 'nvimlsp')
 if g:complete_engine ==# 'nvimlsp'
   if g:is_nvim ==# 0
@@ -32,9 +25,54 @@ if g:complete_engine ==# 'nvimlsp'
   endif
 endif
 
-" load plugins
-execute 'source ' . g:config_dir . '/plug.vim'
+execute 'source ' . g:root_dir . '/plug.vim'
+" plugin list {{{
+MyPlug 'mbbill/fencview', {'cmd':['FencView','FencAutoDetect']}
+MyPlug 'lambdalisue/suda.vim', {'cmd':['SudaRead', 'SudaWrite']}
+MyPlug 'simnalamburt/vim-mundo'
+MyPlug 'chrisbra/Colorizer'
+"MyPlug 'skywind3000/vim-quickui'
+"MyPlug 'liuchengxu/vim-which-key'
+"MyPlug 'tweekmonster/startuptime.vim', {'cmd':'StartupTime'}
+MyPlug 'dstein64/vim-startuptime', {'cmd':'StartupTime'}
+"MyPlug 'tpope/vim-apathy'
+"MyPlug 'roxma/vim-paste-easy'
 
+if g:is_nvim
+  "MyPlug 'nathom/filetype.nvim'
+  " FIXME nvim cursorhold bug https://github.com/neovim/neovim/issues/12587
+  MyPlug 'antoinemadec/FixCursorHold.nvim'
+  " FIXME https://github.com/neovim/neovim/issues/14967 in 0.5.0
+  "MyPlug 'kevinhwang91/nvim-hclipboard'
+else
+  MyPlug 'xolox/vim-misc'
+  "MyPlug 'xolox/vim-session'
+  MyPlug 'tmux-plugins/vim-tmux-focus-events'
+  MyPlug 'roxma/vim-tmux-clipboard'
+endif
+
+MyPlug 'Yggdroot/LeaderF', {'run': function('InstallLeaderF')}
+MyPlug 'MattesGroeger/vim-bookmarks'
+MyPlug 'derekwyatt/vim-fswitch'
+MyPlug 'Yggdroot/indentLine', {'cmd': 'IndentLinesToggle'}
+
+"MyPlug 'skywind3000/vim-preview'
+MyPlug 'skywind3000/asyncrun.vim', {'cmd': ['AsyncRun', 'AsyncStop'] }
+MyPlug 'skywind3000/asynctasks.vim', {'cmd': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] }
+
+MyPlug 't9md/vim-choosewin', {'cmd':'<Plug>(choosewin)'}
+MyPlug 'preservim/tagbar', {'cmd':'TagbarToggle'}
+
+MyPlug 'Vimjas/vim-python-pep8-indent', {'ft':'python'}
+MyPlug 'cespare/vim-toml', {'ft': 'toml', 'branch': 'main'}
+MyPlug 'peterhoeg/vim-qml', {'ft': 'qml'}
+MyPlug 'neoclide/jsonc.vim', {'ft': 'jsonc'}
+MyPlug 'othree/xml.vim', {'ft': 'xml'}
+MyPlug 'wsdjeg/vim-autohotkey', {'ft':'autohotkey'}
+MyPlug 'godlygeek/tabular', {'ft':'markdown'}
+MyPlug 'plasticboy/vim-markdown', {'ft':'markdown'}
+
+execute 'source ' . g:root_dir . '/common_plug.vim'
 
 " cursor FIXME nvim will modify terminal cursorshape {{{
 if g:is_nvim
@@ -157,68 +195,13 @@ endif
 " ============================================================================
 " solarized8 gruvbox molokai
 let g:colorscheme = get(g:, 'colorscheme', 'solarized8')
-
-if !exists('g:lightline')
-  let g:lightline = {}
-endif
-
 let g:background=get(g:, 'background', 'light')
-if g:colorscheme ==# 'molokai'
-  let g:background='dark'
-  let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'wombat')
-else
-  let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'solarized')
-endif
 
-if g:is_nvim ==# 0
-  if g:is_win && !g:is_gui && g:is_conemu
-    "enable 256 colors in ConEmu on Win
-    set term=xterm
-    set t_Co=256
-    let &t_AB="\e[48;5;%dm"
-    let &t_AF="\e[38;5;%dm"
-  else
-    if has('termguicolors')
-      " :h xterm-true-color
-      let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-      let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-      set termguicolors
-    else
-      set t_Co=256
-    endif
-  endif
-else
-    set termguicolors
-endif
-
-if $TERM =~# '256color' && g:is_tmux && !g:is_nvim
-  " disable Background Color Erase (BCE) so that color schemes
-  " render properly when inside 256-color tmux and GNU screen.
-  " see also http://snk.tuxfamily.org/log/vim-256color-bce.html
-  set t_ut=
-elseif $TERM ==# 'linux'
-  let g:colorscheme = 'desert'
-  let g:background='dark'
-  set t_Co=256
-endif
-
-exec 'colorscheme ' . g:colorscheme
-exec 'set background=' . g:background
-" }}}
-
+call ColorConfig()
 
 if (HasPlug('LeaderF') != -1)
   autocmd myau Syntax * hi Lf_hl_cursorline guifg=fg
 endif
 
-" post load vimrc config {{{
-if exists('*LoadAfter')
-  call LoadAfter()
-endif
-if exists('*LoadAfterProject')
-  call LoadAfterProject()
-endif
-
-filetype plugin indent on
-syntax enable
+call LoadAfterConfig()
 

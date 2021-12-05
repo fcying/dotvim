@@ -29,9 +29,9 @@ jobs:
           mkdir -p ~/.config
           cp -r nvim_config ~/.config/nvim
           cp -r snippets ~/.config/nvim
-          cp config.lua basic.vim ~/.config/nvim
+          cp -rf lua/ *.vim ~/.config/nvim/
           pushd ~/.config
-          nvim --headless -c 'PlugUpdate --sync|qa'
+          nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
           7z -mx9 a nvim_config.zip ./nvim
           nvim --headless -c 'LspInstall --sync clangd' -c 'q'
           7z -mx9 a nvim_config_with_lsp.zip ./nvim

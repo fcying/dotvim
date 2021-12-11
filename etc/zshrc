@@ -130,8 +130,15 @@ zinit ice wait'0' lucid; zinit light zsh-users/zsh-history-substring-search
 bindkey -M emacs '^p' history-substring-search-up
 bindkey -M emacs '^n' history-substring-search-down
 
-zinit ice wait'0' lucid atload'_zsh_autosuggest_start'
-zinit light zsh-users/zsh-autosuggestions
+# https://github.com/zsh-users/zsh-autosuggestions/issues/364#issuecomment-481423232
+# some os 5.7.1 can't work also
+if is-at-least 5.8; then
+    zinit ice wait'0' lucid atload'_zsh_autosuggest_start'
+    zinit light zsh-users/zsh-autosuggestions
+else
+    zinit light zsh-users/zsh-autosuggestions
+    unset ZSH_AUTOSUGGEST_USE_ASYNC
+fi
 bindkey '^K' autosuggest-accept
 
 zinit ice wait'0' lucid atinit'zpcompinit; zpcdreplay'

@@ -4,13 +4,16 @@ local map = require('remap').map
 local bmap = require('remap').bmap
 local g, cmd, fn, lsp, api = vim.g, vim.cmd, vim.fn, vim.lsp, vim.api
 
+--for test
+--fn.writefile(fn.split(vim.inspect(_G),'\n'),g.cache_dir .. '/log','')
+
 function M.packer()
     cmd('packadd packer.nvim')
 
     local function conf(name)
         return string.format("require('config').%s()", name)
     end
-    local packer = require("packer")
+    local packer = require('packer')
     local use = packer.use
 
     packer.init({
@@ -28,7 +31,12 @@ function M.packer()
                 options[k] = v
             end
             if (value[2]['run'] ~= nil) then
-                options['run'] = function() fn[value[2]['run']](0) end
+                local s = value[2]['run']
+                if string.find(s, "^function") == nil then
+                    options['run'] = s
+                else
+                    options['run'] = function() fn[string.match(s, "function%('(.-)'%)")](0) end
+                end
             end
             if (value[2]['config'] ~= nil) then
                 options['config'] = conf(value[2]['config'])
@@ -56,22 +64,18 @@ function M.telescope_map()
     if (fn.HasPlug('LeaderF') == -1) then    --{{{
         map('n', 'fm', '<cmd>Telescope oldfiles<cr>', {})
         map('n', 'fb', '<cmd>Telescope buffers<cr>', {})
-        map('n', 'fo', '<cmd>Telescope lsp_document_symbols<cr>', {})
+        map('n', 'fo', '<cmd>Telescope ctags_outline outline<cr>', {})
         map('n', 'fl', '<cmd>Telescope current_buffer_fuzzy_find<cr>', {})
         map('n', 'fh', '<cmd>Telescope help_tags<cr>', {})
         map('n', 'ft', '<cmd>Telescope tags<cr>', {})
-        map('n', 'f/', '<cmd>Telescope live_grep<cr>', {})
-        map('n', 'fg', '<cmd>Telescope grep_string<cr>', {})
         map('n', 'fj', '<cmd>Telescope jumplist<cr>', {})
         map('n', 'fr', '<cmd>Telescope resume<cr>', {})
-        local find_command = ''
-        if (g.has_rg == 1) then
-            find_command = 'find_command=rg,--ignore,--hidden,--files'
-            if (g.ignore_full.rg) then
-                find_command = find_command .. ',' .. table.concat(g.ignore_full.rg,',')
-            end
-        end
-        map('n', 'ff', '<cmd>Telescope find_files ' .. find_command .. '<cr>', {})
+        map('n', 'f/', '<cmd>Telescope live_grep<cr>', {})
+        map('n', 'fg', '<cmd>Telescope grep_string<cr>', {})
+        cmd([[
+            vnoremap fg :<C-u>lua require("telescope.builtin.files").grep_string({search="<C-R>=GetVisualSelection()<CR>"})
+            nnoremap <silent>ff :<C-u><C-R>=g:find_command<CR><CR>
+        ]])
     end
 
     map('n', 'gd', '<cmd>Telescope lsp_definitions<cr>', {})
@@ -80,7 +84,25 @@ function M.telescope_map()
     map('n', '<leader>li', '<cmd>Telescope lsp_implementations<cr>', {})
     map('n', '<leader>la', '<cmd>Telescope lsp_code_actions<cr>', {})
     map('n', '<leader>ls', '<cmd>Telescope lsp_document_symbols<cr>', {})
-    map('n', '<leader>le', '<cmd>Telescope lsp_document_diagnostics<cr>', {})
+    map('n', '<leader>le', '<cmd>Telescope diagnostics bufnr=0<cr>', {})
+    map('n', '<leader>lo', '<cmd>Telescope ctags_outline outline<cr>', {})
+end
+function M.telescope_update_ignore()
+    g.find_command = 'Telescope find_files '
+    if (g.has_rg == 1) then
+        g.find_command = g.find_command .. 'find_command=rg,--files,--color=never'
+        if (g.ignore_full.rg) then
+            g.find_command = g.find_command .. ',' .. table.concat(g.ignore_full.rg,',')
+        end
+    end
+
+    if _G["TelescopeGlobalState"] ~= nil then
+        local conf = require('telescope.config').values
+        conf.vimgrep_arguments = {'rg','--color=never','--with-filename','--line-number','--column','--smart-case'}
+        for _,v in ipairs(g.ignore_full.rg) do
+            table.insert(conf.vimgrep_arguments, v)
+        end
+    end
 end
 function M.telescope()
     local actions = require('telescope.actions')
@@ -96,6 +118,7 @@ function M.telescope()
     end
     require('telescope').setup{
         defaults = {
+            --horizontal vertical flex center
             layout_strategy='vertical',
             mappings = {
                 i = {
@@ -104,14 +127,30 @@ function M.telescope()
                     ["<c-k>"] = actions.move_selection_previous,
                     ["<tab>"] = toggle_modes,
                     ["<c-s>"] = actions.toggle_selection,
+                    ["<C-q>"] = actions.send_to_qflist,
                 },
                 n = {
                     ["<tab>"] = toggle_modes,
                     ["<c-s>"] = actions.toggle_selection,
+                    ["<C-q>"] = actions.send_to_qflist,
                 }
             },
+        },
+        extensions = {
+            fzf = {
+                fuzzy = true,                    -- false will only do exact matching
+                override_generic_sorter = true,  -- override the generic sorter
+                override_file_sorter = true,     -- override the file sorter
+                case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+            },
+            ctags_outline = {
+                ctags_opt = {'ctags'}
+            }
         }
     }
+    require('telescope').load_extension('fzf')
+    require('telescope').load_extension('ctags_outline')
+    M.telescope_update_ignore()
 end
 
 function M.lspconfig()
@@ -124,10 +163,7 @@ function M.lspconfig()
 
     -- Use an on_attach function to only map the following keys
     -- after the language server attaches to the current buffer
-    local on_attach = function(_, bufnr)
-        --Enable completion triggered by <c-x><c-o>
-        api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.lsp.omnifunc')
-
+    local on_attach = function(_, _)
         --bmap('n', 'gD', '<cmd>lua lsp.buf.declaration()<CR>', {})
         --bmap('n', 'gd', '<cmd>lua lsp.buf.definition()<CR>', {})
         bmap('n', 'K', '<cmd>lua lsp.buf.hover()<CR>', {})
@@ -262,6 +298,7 @@ function M.lspconfig()
 end
 
 function M.cmp()
+    cmd([[autocmd myau BufEnter * setl omnifunc=syntaxcomplete#Complete]])
     local cmp = require'cmp'
     cmp.setup({
         mapping = {
@@ -283,11 +320,12 @@ function M.cmp()
         sources = cmp.config.sources({
             { name = 'vsnip' },
             { name = 'nvim_lsp' },
-            { name = 'tags' },
             { name = 'path' },
             { name = 'dictionary' },
             { name = 'cmdline' },
             { name = 'buffer' },
+            { name = 'tags' },
+            { name = 'omni', priority = -1 },
         }),
         formatting = {
             format = function(entry, vim_item)
@@ -300,6 +338,7 @@ function M.cmp()
                     tmux = '[Tmux]',
                     vsnip = '[Snip]',
                     dictionary = '[Dict]',
+                    omni = '[Omni]',
                 })[entry.source.name]
                 return vim_item
             end,
@@ -317,6 +356,17 @@ function M.cmp()
             { name = 'path' },
             { name = 'cmdline' },
         })
+    })
+
+    require("cmp_dictionary").setup({
+        dic = {
+            ['*'] = {g.root_dir .. '/dict/dictionary'},
+            ['go'] = {g.root_dir .. '/dict/go.dict'},
+        },
+        exact = 2,
+        async = false,
+        capacity = 5,
+        debug = false,
     })
 end
 

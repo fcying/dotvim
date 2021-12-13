@@ -4,16 +4,10 @@
 let g:root_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let g:config_dir = g:root_dir
 let g:etc_dir = g:root_dir . '/etc'
-if !exists('g:lsp_servers')
-  let g:lsp_servers = ['sumneko_lua', 'gopls', 'vimls', 'bashls', 'dockerls',
-        \ 'pylsp', 'rust_analyzer', 'clangd']
-endif
-
-if executable('pip3') ==# 0
-  echohl WarningMsg
-  echom 'You need install python3 && pip3!'
-  echohl None
-endif
+let g:lsp_servers = ['vimls', 'bashls', 'dockerls',
+      \ 'sumneko_lua', 'gopls', 'pylsp', 'rust_analyzer']
+"call add(g:lsp_servers, 'clangd')
+call add(g:lsp_servers, 'ccls')
 
 execute 'source ' . g:root_dir . '/basic.vim'
 
@@ -51,7 +45,6 @@ else
   MyPlug 'roxma/vim-tmux-clipboard'
 endif
 
-MyPlug 'Yggdroot/LeaderF', {'run': function('InstallLeaderF')}
 MyPlug 'MattesGroeger/vim-bookmarks'
 MyPlug 'derekwyatt/vim-fswitch'
 MyPlug 'Yggdroot/indentLine', {'cmd': 'IndentLinesToggle'}

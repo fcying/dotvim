@@ -86,7 +86,7 @@ function! MyPlug(repo, ...)
           let l:options.opt = 'true'
           exec 'let l:options.' . key . ' = a:1[key]'
         elseif key ==# 'run'
-          let l:options.run = substitute(string(a:1[key]), 'function(''\(.*\)'')', '\1', 'g')
+          exec 'let l:options.' . key . ' = string(a:1[key])'
         elseif key ==# 'rtp' || key ==# 'commit' || key ==# 'branch'
               \ || key ==# 'requires' || key ==# 'config'
           exec 'let l:options.' . key . ' = a:1[key]'
@@ -181,10 +181,11 @@ function! MyPlugUpgrade()
     delc PlugUpgrade
     nnoremap <leader>pu :PlugUpdate<CR>
     nnoremap <leader>pi :PlugInstall<CR>
-    nnoremap <leader>pc :PlugClean<CR>
+    nnoremap <leader>pr :PlugClean<CR>
   endif
 
   execute 'source ' . g:config_dir . '/config.vim'
+  call UpdateIgnore()
 endfunction
 
 
@@ -196,5 +197,4 @@ autocmd myau VimEnter *
       \ if s:plug_need_update ==# 1
       \ |   call feedkeys("\<space>pu", "tx")
       \ | endif
-
 

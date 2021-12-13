@@ -23,7 +23,14 @@ MyPlug 'fcying/vim-foldsearch', {'cmd': ['Fp', 'Fw', 'Fs', 'FS', 'Fl', 'Fi', 'Fd
 if g:is_nvim
   MyPlug 'nvim-lua/plenary.nvim'
   MyPlug 'nvim-telescope/telescope.nvim', {'config': 'telescope', 'cmd': 'Telescope'}
+  "MyPlug 'nvim-telescope/telescope.nvim'
+  MyPlug 'nvim-telescope/telescope-fzf-native.nvim', { 'run': 'make' }
+  MyPlug 'fcying/telescope-ctags-outline.nvim'
   MyPlug 'kevinhwang91/nvim-bqf', {'ft':'qf'}
+  MyPlug 'rcarriga/nvim-notify'
+  "MyPlug 'Yggdroot/LeaderF', {'run': function('InstallLeaderF')}
+else
+  MyPlug 'Yggdroot/LeaderF', {'run': function('InstallLeaderF')}
 endif
 
 " complete_engine
@@ -42,6 +49,7 @@ elseif g:complete_engine ==# 'nvimlsp'
   MyPlug 'hrsh7th/cmp-nvim-lsp'
   MyPlug 'hrsh7th/cmp-buffer'
   MyPlug 'hrsh7th/cmp-cmdline'
+  MyPlug 'hrsh7th/cmp-omni'
   MyPlug 'folke/lua-dev.nvim'
   MyPlug 'quangnguyen30192/cmp-nvim-tags'
   MyPlug 'uga-rosa/cmp-dictionary'

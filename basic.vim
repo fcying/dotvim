@@ -59,8 +59,8 @@ endif
 
 let g:pvimrc_path = findfile('.pvimrc', g:root_marker . ';' . g:root_marker . '..')
 if g:pvimrc_path !=# ''
-  exec 'sandbox source ' . g:pvimrc_path
-  "exec 'source ' . g:pvimrc_path
+  "exec 'sandbox source ' . g:pvimrc_path
+  exec 'source ' . g:pvimrc_path
 else
   let g:pvimrc_path = g:root_marker . '/.pvimrc'
 endif
@@ -243,21 +243,6 @@ set wildignore+=*.msi,*.crx,*.deb,*.vfd,*.apk,*.ipa,*.bin,*.msu
 set wildignore+=*.gba,*.sfc,*.078,*.nds,*.smd,*.smc
 set wildignore+=*.linux2,*.win32,*.darwin,*.freebsd,*.linux,*.android
 
-" get visual selection {{{
-" https://github.com/idanarye/vim-vebugger/blob/master/autoload/vebugger/util.vim
-func! GetVisualSelection() abort
-    let [lnum1, col1] = getpos("'<")[1:2]
-    let [lnum2, col2] = getpos("'>")[1:2]
-    let lines = getline(lnum1, lnum2)
-    if len(lines) == 0
-        return ''
-    endif
-    let lines[-1] = lines[-1][: col2 - (&selection ==# 'inclusive' ? 1 : 2)]
-    let lines[0] = lines[0][col1 - 1:]
-    "echo join(lines, "\n")
-    return join(lines, "\n")
-endf
-
 
 " ============================================================================
 " keymap
@@ -370,6 +355,21 @@ nnoremap <leader>da :%s/\%x1b\[[0-9;]*m//g<CR>:noh<CR>
 
 " paste without overwrite register {{{
 xnoremap p "_dP
+
+" get visual selection {{{
+" https://github.com/idanarye/vim-vebugger/blob/master/autoload/vebugger/util.vim
+func! GetVisualSelection() abort
+    let [lnum1, col1] = getpos("'<")[1:2]
+    let [lnum2, col2] = getpos("'>")[1:2]
+    let lines = getline(lnum1, lnum2)
+    if len(lines) == 0
+        return ''
+    endif
+    let lines[-1] = lines[-1][: col2 - (&selection ==# 'inclusive' ? 1 : 2)]
+    let lines[0] = lines[0][col1 - 1:]
+    "echo join(lines, "\n")
+    return join(lines, "\n")
+endf
 
 " virtual mode search {{{
 " From https://github.com/bronson/vim-visual-star-search/blob/master/plugin/visual-star-search.vim
@@ -545,14 +545,17 @@ function! BufOnly(buffer, bang)
 endfunction
 
 " dictionary {{{
-execute 'set dictionary+=' . g:root_dir . '/dict/dictionary'
-function! s:add_dict()
-  let l:dict = g:root_dir . '/dict/' . &filetype . '.dict'
-  if filereadable(expand(l:dict))
-    execute 'setlocal dictionary+=' . l:dict
-  endif
-endfunction
-autocmd myau FileType * :call s:add_dict()
+" nvim set dict in cmp_dictionary setup
+if !g:is_nvim
+  execute 'set dictionary+=' . g:root_dir . '/dict/dictionary'
+  function! s:add_dict()
+    let l:dict = g:root_dir . '/dict/' . &filetype . '.dict'
+    if filereadable(expand(l:dict))
+      execute 'setlocal dictionary+=' . l:dict
+    endif
+  endfunction
+  autocmd myau FileType * :call s:add_dict()
+endif
 
 
 function! LoadAfterConfig()
@@ -637,8 +640,14 @@ function! UpdateIgnore()
 
   " gen_clang_conf.vim
   let g:gencconf_ignore_dir = g:ignore_full.dir
+
+  if (HasPlug('telescope.nvim') != -1) "{{{
+    lua require('config').telescope_update_ignore()
+  endif
 endfunction
-execute 'autocmd myau BufWritePost .pvimrc nested sandbox source ' . g:pvimrc_path
+execute 'autocmd myau BufWritePost .pvimrc nested source ' . g:pvimrc_path
 au myau SourcePost .pvimrc call UpdateIgnore()
 nnoremap <silent> <leader>ep  :execute 'e '  . g:pvimrc_path<CR>
-call UpdateIgnore()
+
+" call in MyPlugUpgrade()
+"call UpdateIgnore()

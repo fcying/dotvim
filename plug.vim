@@ -83,6 +83,7 @@ function! MyPlug(repo, ...)
       for key in keys(a:1)
         if key ==# 'keys' || key ==# 'ft' || key ==# 'cmd' || key ==# 'event'
               \ || key ==# 'fn' || key ==# 'after'
+              \ || key ==# 'module' || key ==# 'module_pattern'
           let l:options.opt = 'true'
           exec 'let l:options.' . key . ' = a:1[key]'
         elseif key ==# 'run'

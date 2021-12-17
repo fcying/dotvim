@@ -34,6 +34,7 @@ jobs:
           nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
           7z -mx9 a nvim_config.zip ./nvim
           nvim --headless -c 'LspInstall --sync clangd' -c 'q'
+          #nvim --headless -c 'LspInstall --sync ccls' -c 'q'
           7z -mx9 a nvim_config_with_lsp.zip ./nvim
           popd
           mv ~/.config/*.zip .
@@ -49,4 +50,5 @@ jobs:
             echo "[ripgrep](https://github.com/BurntSushi/ripgrep)"
           } | tee /tmp/note.md
           gh release delete nvim_config -y || true
+          git push origin :nvim_config || true
           gh release create nvim_config -t "nvim_config" -F "/tmp/note.md" --target $GITHUB_SHA *.zip

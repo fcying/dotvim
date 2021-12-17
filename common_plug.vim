@@ -22,7 +22,7 @@ MyPlug 'fcying/vim-foldsearch', {'cmd': ['Fp', 'Fw', 'Fs', 'FS', 'Fl', 'Fi', 'Fd
 
 if g:is_nvim
   MyPlug 'nvim-lua/plenary.nvim'
-  MyPlug 'nvim-telescope/telescope.nvim', {'config': 'telescope', 'cmd': 'Telescope'}
+  MyPlug 'nvim-telescope/telescope.nvim', {'config': 'telescope', 'cmd': 'Telescope', 'module_pattern': 'telescope.*'}
   "MyPlug 'nvim-telescope/telescope.nvim'
   MyPlug 'nvim-telescope/telescope-fzf-native.nvim', { 'run': 'make' }
   MyPlug 'fcying/telescope-ctags-outline.nvim'
@@ -60,6 +60,4 @@ endif
 
 MyPlug 'lifepillar/vim-solarized8'
 MyPlug 'joshdick/onedark.vim'
-
-call MyPlugUpgrade()
 

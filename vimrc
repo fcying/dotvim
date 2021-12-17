@@ -6,8 +6,8 @@ let g:config_dir = g:root_dir
 let g:etc_dir = g:root_dir . '/etc'
 let g:lsp_servers = ['vimls', 'bashls', 'dockerls',
       \ 'sumneko_lua', 'gopls', 'pylsp', 'rust_analyzer']
-"call add(g:lsp_servers, 'clangd')
-call add(g:lsp_servers, 'ccls')
+call add(g:lsp_servers, 'clangd')
+"call add(g:lsp_servers, 'ccls')
 
 execute 'source ' . g:root_dir . '/basic.vim'
 
@@ -66,6 +66,8 @@ MyPlug 'godlygeek/tabular', {'ft':'markdown'}
 MyPlug 'plasticboy/vim-markdown', {'ft':'markdown'}
 
 execute 'source ' . g:root_dir . '/common_plug.vim'
+
+call MyPlugUpgrade()
 
 " cursor FIXME nvim will modify terminal cursorshape {{{
 if g:is_nvim

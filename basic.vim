@@ -356,7 +356,7 @@ nnoremap <leader>da :%s/\%x1b\[[0-9;]*m//g<CR>:noh<CR>
 " paste without overwrite register {{{
 xnoremap p "_dP
 
-" get visual selection {{{
+" get visual selection && virtual mode search {{{
 " https://github.com/idanarye/vim-vebugger/blob/master/autoload/vebugger/util.vim
 func! GetVisualSelection() abort
     let [lnum1, col1] = getpos("'<")[1:2]
@@ -367,26 +367,11 @@ func! GetVisualSelection() abort
     endif
     let lines[-1] = lines[-1][: col2 - (&selection ==# 'inclusive' ? 1 : 2)]
     let lines[0] = lines[0][col1 - 1:]
-    "echo join(lines, "\n")
+    "echom join(lines, "\n")
     return join(lines, "\n")
 endf
-
-" virtual mode search {{{
-" From https://github.com/bronson/vim-visual-star-search/blob/master/plugin/visual-star-search.vim
-function! VisualStarSearchSet(cmdtype,...)
-  let temp = @"
-  normal! gvy
-  if !a:0 || a:1 != 'raw'
-    let @" = escape(@", a:cmdtype.'\*')
-  endif
-  let @/ = substitute(@", '\n', '\\n', 'g')
-  let @/ = substitute(@/, '\[', '\\[', 'g')
-  let @/ = substitute(@/, '\~', '\\~', 'g')
-  let @/ = substitute(@/, '\.', '\\.', 'g')
-  let @" = temp
-endfunction
-xnoremap * :<C-u>call VisualStarSearchSet('/')<CR>/<C-R>=@/<CR><CR>
-xnoremap # :<C-u>call VisualStarSearchSet('?')<CR>?<C-R>=@/<CR><CR>
+xnoremap * :<C-u>let @/ = GetVisualSelection()<CR>/<C-R>=@/<CR><CR>
+xnoremap # :<C-u>let @/ = GetVisualSelection()<CR>?<C-R>=@/<CR><CR>
 
 " completion {{{
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"

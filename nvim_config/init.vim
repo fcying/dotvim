@@ -1,7 +1,7 @@
 " global var {{{
 let g:root_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let g:config_dir = g:root_dir
-let g:lsp_servers = ['pylsp', 'clangd']
+let g:lsp_servers = ['pylsp', 'clangd', 'ccls']
 let g:complete_engine = 'nvimlsp'
 
 if filereadable(g:root_dir . '/basic.vim') == 0
@@ -12,7 +12,7 @@ end
 execute 'source ' . g:config_dir . '/basic.vim'
 execute 'source ' . g:config_dir . '/plug.vim'
 execute 'source ' . g:config_dir . '/common_plug.vim'
-
+call MyPlugUpgrade()
 
 
 "colors && load after {{{

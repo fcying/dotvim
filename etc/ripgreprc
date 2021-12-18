@@ -1,4 +1,4 @@
---no-ignore
+#--no-ignore
 --hidden
 --color=auto
 #--vimgrep      #result is bigger
@@ -6,10 +6,7 @@
 --no-column
 --follow
 --binary
-#-a
 #--no-messages
-#--max-filesize=10M
-#--max-columns=150
 #--smart-case
 
 # --glob in cmd line must use '', ex: --glob='!test'

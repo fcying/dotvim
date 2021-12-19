@@ -340,6 +340,11 @@ function M.cmp()
                     dictionary = '[Dict]',
                     omni = '[Omni]',
                 })[entry.source.name]
+                vim_item.dup = ({
+                    nvim_lsp = 0,
+                    buffer = 1,
+                    path = 1,
+                })[entry.source.name] or 0
                 return vim_item
             end,
         },
@@ -358,6 +363,10 @@ function M.cmp()
         })
     })
 
+    require('config').cmp_dictionary()
+end
+
+function M.cmp_dictionary()
     require("cmp_dictionary").setup({
         dic = {
             ['*'] = {g.root_dir .. '/dict/dictionary'},

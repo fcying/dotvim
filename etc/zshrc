@@ -432,9 +432,20 @@ alias py2='python2'
 alias py3='python3'
 alias ls='ls --color=auto'
 alias ll='ls -alh'
-alias ta=' tmux a; [ $? == 1 ] && tmux'
+
+function tmux_attach {
+    if [ -n "$1" ]; then
+        tmux a -t $1
+        [ $? == 1 ] && tmux new -s $1
+    else
+        tmux a
+        [ $? == 1 ] && tmux
+    fi
+}
+alias ta=' tmux_attach'
 alias tl=' tmux ls'
 alias tk=' tmux kill-server'
+
 alias rs='rsync -rval --partial --delete --progress '
 alias cpa='cp -rfavx '
 alias rgn='rg --no-ignore '

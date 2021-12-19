@@ -65,8 +65,6 @@ MyPlug 'wsdjeg/vim-autohotkey', {'ft':'autohotkey'}
 MyPlug 'godlygeek/tabular', {'ft':'markdown'}
 MyPlug 'plasticboy/vim-markdown', {'ft':'markdown'}
 
-execute 'source ' . g:root_dir . '/common_plug.vim'
-
 call MyPlugUpgrade()
 
 " cursor FIXME nvim will modify terminal cursorshape {{{

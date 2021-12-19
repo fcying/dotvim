@@ -11,7 +11,6 @@ end
 
 execute 'source ' . g:config_dir . '/basic.vim'
 execute 'source ' . g:config_dir . '/plug.vim'
-execute 'source ' . g:config_dir . '/common_plug.vim'
 call MyPlugUpgrade()
 
 

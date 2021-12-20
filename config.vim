@@ -596,7 +596,3 @@ endif
 if (HasPlug('nvim-lspconfig') != -1) "{{{
   lua require('config').lspconfig()
 endif
-
-if (HasPlug('nvim-cmp') != -1) "{{{
-  lua require('config').cmp()
-endif

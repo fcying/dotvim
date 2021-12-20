@@ -248,16 +248,16 @@ elseif g:complete_engine ==# 'nvimlsp'
   MyPlug 'williamboman/nvim-lsp-installer'
   MyPlug 'neovim/nvim-lspconfig'
   MyPlug 'folke/lua-dev.nvim'
-  MyPlug 'hrsh7th/nvim-cmp'
-  MyPlug 'hrsh7th/cmp-path'
-  MyPlug 'hrsh7th/cmp-nvim-lsp'
-  MyPlug 'hrsh7th/cmp-vsnip'
-  MyPlug 'hrsh7th/vim-vsnip'
-  MyPlug 'hrsh7th/cmp-buffer'
-  MyPlug 'hrsh7th/cmp-cmdline'
-  MyPlug 'hrsh7th/cmp-omni'
-  MyPlug 'quangnguyen30192/cmp-nvim-tags'
-  MyPlug 'uga-rosa/cmp-dictionary'
+  MyPlug 'hrsh7th/nvim-cmp', {'config':'cmp', 'event':'InsertEnter'}
+  MyPlug 'hrsh7th/cmp-path', {'after':'nvim-cmp'}
+  MyPlug 'hrsh7th/cmp-nvim-lsp', {'after':'nvim-cmp'}
+  MyPlug 'hrsh7th/cmp-vsnip', {'after':'nvim-cmp'}
+  MyPlug 'hrsh7th/vim-vsnip', {'after':'nvim-cmp'}
+  MyPlug 'hrsh7th/cmp-buffer', {'after':'nvim-cmp'}
+  MyPlug 'hrsh7th/cmp-cmdline', {'after':'nvim-cmp'}
+  MyPlug 'hrsh7th/cmp-omni', {'after':'nvim-cmp'}
+  MyPlug 'quangnguyen30192/cmp-nvim-tags', {'after':'nvim-cmp'}
+  MyPlug 'uga-rosa/cmp-dictionary', {'after':'nvim-cmp', 'config':'cmp_dictionary'}
   "MyPlug 'andersevenrud/compe-tmux', {'branch': 'cmp'}
 endif
 

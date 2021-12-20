@@ -362,8 +362,6 @@ function M.cmp()
             { name = 'cmdline' },
         })
     })
-
-    require('config').cmp_dictionary()
 end
 
 function M.cmp_dictionary()

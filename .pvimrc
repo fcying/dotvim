@@ -1,4 +1,1 @@
-let g:ignore = {
-      \ 'dir': ['plugged', '.plugged', '.vim_origin' ],
-      \ 'file': []
-      \}
+let g:ignore.dir = ['plugged', '.plugged', '.vim_origin' ]

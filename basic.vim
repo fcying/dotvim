@@ -557,18 +557,24 @@ endfunction
 function! ColorConfig()
   if g:colorscheme == 'solarized8'
     set termguicolors
-    let g:background='light'
+    let g:background = get(g:,'background','light')
   elseif g:colorscheme == 'default'
-    let g:background='dark'
+    let g:background = get(g:,'background','dark')
   else
-    let g:colorscheme = 'onedark'
-    let g:background='dark'
+    let g:colorscheme = get(g:,'background','onedark')
+    let g:background = get(g:,'background','dark')
   endif
 
   if $TERM ==# 'linux'
     let g:colorscheme = 'desert'
     let g:background='dark'
     set t_Co=256
+  endif
+
+  if !g:is_nvim
+    " :h xterm-true-color
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
   endif
 
   if !exists('g:lightline')
@@ -591,18 +597,6 @@ endfunction
 function! UpdateIgnore()
   " init ignore config
   let g:ignore_full = {}
-  if !exists('g:ignore.dir')
-    let g:ignore.dir = []
-  endif
-  if !exists('g:ignore.file')
-    let g:ignore.file = []
-  endif
-  if !exists('g:ignore.mru')
-    let g:ignore.mru = []
-  endif
-  if !exists('g:ignore.rg')
-    let g:ignore.rg = []
-  endif
   let g:ignore_full.dir = g:ignore_default.dir + g:ignore.dir
   let g:ignore_full.file = g:ignore_default.file + g:ignore.file
   let g:ignore_full.rg = g:ignore_default.rg + g:ignore.rg

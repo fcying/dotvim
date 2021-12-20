@@ -161,7 +161,6 @@ function! MyPlugUpgrade()
     lua require('config').packer()
 
     nnoremap <leader>pu :PackerSync<CR>
-    nnoremap <leader>pi :PackerInstall<CR>
     nnoremap <leader>pr :PackerClean<CR>
     nnoremap <leader>pc :PackerCompile<CR>
 
@@ -181,7 +180,6 @@ function! MyPlugUpgrade()
     call plug#end()
     delc PlugUpgrade
     nnoremap <leader>pu :PlugUpdate<CR>
-    nnoremap <leader>pi :PlugInstall<CR>
     nnoremap <leader>pr :PlugClean<CR>
   endif
 
@@ -211,8 +209,10 @@ MyPlug 'moll/vim-bbye', {'cmd':'Bdelete'}
 MyPlug 'preservim/nerdcommenter', {'keys':'<plug>NERDCommenter'}
 MyPlug 'lambdalisue/fern.vim', {'cmd':'Fern'}
 MyPlug 'machakann/vim-sandwich'
+MyPlug 'dstein64/vim-startuptime', {'cmd':'StartupTime'}
+MyPlug 'mbbill/fencview', {'cmd':['FencView','FencAutoDetect']}
 
-MyPlug 'tpope/vim-fugitive', {'cmd': ['Git', 'Gedit', 'Gread', 'Gwrite', 'Gdiffsplit', 'Gvdiffsplit'],
+MyPlug 'tpope/vim-fugitive', {'cmd': ['G', 'Git', 'Gedit', 'Gread', 'Gwrite', 'Gdiffsplit', 'Gvdiffsplit'],
       \ 'fn': 'fugitive#*'}
 MyPlug 'rbong/vim-flog', {'cmd': ['Flog', 'Flogsplit'], 'require': 'tpope/vim-fugitive'}
 
@@ -261,5 +261,14 @@ elseif g:complete_engine ==# 'nvimlsp'
   "MyPlug 'andersevenrud/compe-tmux', {'branch': 'cmp'}
 endif
 
+" colorscheme
 MyPlug 'lifepillar/vim-solarized8'
 MyPlug 'joshdick/onedark.vim'
+
+" filetype
+MyPlug 'Vimjas/vim-python-pep8-indent', {'ft':'python'}
+MyPlug 'cespare/vim-toml', {'ft': 'toml', 'branch': 'main'}
+MyPlug 'peterhoeg/vim-qml', {'ft': 'qml'}
+MyPlug 'neoclide/jsonc.vim', {'ft': 'jsonc'}
+MyPlug 'othree/xml.vim', {'ft': 'xml'}
+MyPlug 'wsdjeg/vim-autohotkey', {'ft':'autohotkey'}

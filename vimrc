@@ -21,14 +21,11 @@ endif
 
 execute 'source ' . g:root_dir . '/plug.vim'
 " plugin list {{{
-MyPlug 'mbbill/fencview', {'cmd':['FencView','FencAutoDetect']}
 MyPlug 'lambdalisue/suda.vim', {'cmd':['SudaRead', 'SudaWrite']}
 MyPlug 'simnalamburt/vim-mundo'
 MyPlug 'chrisbra/Colorizer'
 "MyPlug 'skywind3000/vim-quickui'
 "MyPlug 'liuchengxu/vim-which-key'
-"MyPlug 'tweekmonster/startuptime.vim', {'cmd':'StartupTime'}
-MyPlug 'dstein64/vim-startuptime', {'cmd':'StartupTime'}
 "MyPlug 'tpope/vim-apathy'
 "MyPlug 'roxma/vim-paste-easy'
 
@@ -53,15 +50,9 @@ MyPlug 'Yggdroot/indentLine', {'cmd': 'IndentLinesToggle'}
 MyPlug 'skywind3000/asyncrun.vim', {'cmd': ['AsyncRun', 'AsyncStop'] }
 MyPlug 'skywind3000/asynctasks.vim', {'cmd': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] }
 
-MyPlug 't9md/vim-choosewin', {'cmd':'<Plug>(choosewin)'}
+MyPlug 't9md/vim-choosewin', {'keys':'<Plug>(choosewin)'}
 MyPlug 'preservim/tagbar', {'cmd':'TagbarToggle'}
 
-MyPlug 'Vimjas/vim-python-pep8-indent', {'ft':'python'}
-MyPlug 'cespare/vim-toml', {'ft': 'toml', 'branch': 'main'}
-MyPlug 'peterhoeg/vim-qml', {'ft': 'qml'}
-MyPlug 'neoclide/jsonc.vim', {'ft': 'jsonc'}
-MyPlug 'othree/xml.vim', {'ft': 'xml'}
-MyPlug 'wsdjeg/vim-autohotkey', {'ft':'autohotkey'}
 MyPlug 'godlygeek/tabular', {'ft':'markdown'}
 MyPlug 'plasticboy/vim-markdown', {'ft':'markdown'}
 

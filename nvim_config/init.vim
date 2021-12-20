@@ -1,7 +1,7 @@
 " global var {{{
 let g:root_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let g:config_dir = g:root_dir
-let g:lsp_servers = ['pylsp', 'clangd', 'ccls']
+let g:lsp_servers = ['pylsp', 'sumneko_lua', 'clangd', 'ccls']
 let g:complete_engine = 'nvimlsp'
 
 if filereadable(g:root_dir . '/basic.vim') == 0

@@ -26,11 +26,13 @@ jobs:
       - name: Prepare nvim config
         run: |
           pwd && ls
-          mkdir -p ~/.config/nvim
+          mkdir -p ~/.config/nvim/etc
 
           # init default nvim config
           cp -r nvim_config/init.vim lua/ *.vim ~/.config/nvim
           cp -r snippets vendor  ~/.config/nvim/
+          cp etc/ctags ~/.config/nvim/etc/
+
           pushd ~/.config
           nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
           7z -mx9 a nvim_config.zip ./nvim
@@ -38,6 +40,7 @@ jobs:
           # install vendor
           #nvim --headless -c 'LspInstall --sync clangd' -c 'q'
           nvim --headless -c 'LspInstall --sync ccls' -c 'q'
+          nvim --headless -c 'LspInstall --sync sumneko_lua' -c 'q'
 
           # get rg
           new_ver=$(curl -s "https://github.com/BurntSushi/ripgrep/releases/latest" | grep -Po "(\d+\.){2}\d+")

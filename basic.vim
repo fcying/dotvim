@@ -117,9 +117,9 @@ set hidden
 set noautochdir
 set updatetime=300
 if g:is_win
-  let $PATH = g:root_dir . '\lib' . ';' . $PATH
+  let $PATH = g:root_dir . '\vendor' . ';' . $PATH
 else
-  let $PATH = g:root_dir . '/lib' . ':' . $PATH
+  let $PATH = g:root_dir . '/vendor' . ':' . $PATH
 endif
 
 " backup {{{

@@ -26,16 +26,29 @@ jobs:
       - name: Prepare nvim config
         run: |
           pwd && ls
-          mkdir -p ~/.config
-          cp -r nvim_config ~/.config/nvim
-          cp -r snippets ~/.config/nvim
-          cp -rf lua/ *.vim ~/.config/nvim/
+          mkdir -p ~/.config/nvim
+
+          # init default nvim config
+          cp -r nvim_config/init.vim lua/ *.vim ~/.config/nvim
+          cp -r snippets vendor  ~/.config/nvim/
           pushd ~/.config
           nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
           7z -mx9 a nvim_config.zip ./nvim
-          nvim --headless -c 'LspInstall --sync clangd' -c 'q'
-          #nvim --headless -c 'LspInstall --sync ccls' -c 'q'
-          7z -mx9 a nvim_config_with_lsp.zip ./nvim
+
+          # install vendor
+          #nvim --headless -c 'LspInstall --sync clangd' -c 'q'
+          nvim --headless -c 'LspInstall --sync ccls' -c 'q'
+
+          # get rg
+          new_ver=$(curl -s "https://github.com/BurntSushi/ripgrep/releases/latest" | grep -Po "(\d+\.){2}\d+")
+          filename=ripgrep-${new_ver}-x86_64-unknown-linux-musl
+          wget -qOrg.tgz "https://github.com/BurntSushi/ripgrep/releases/download/$new_ver/$filename.tar.gz"
+          tar xzf rg.tgz
+          chmod a+x ./$filename/rg
+          mv ./$filename/rg ~/.config/nvim/vendor/
+          rm -r rg.tgz $filename
+
+          7z -mx9 a nvim_config_with_vendor.zip ./nvim
           popd
           mv ~/.config/*.zip .
 
@@ -46,8 +59,9 @@ jobs:
           {
             echo "nvim_config work with [NeoVim](https://github.com/neovim/neovim/releases/latest)"
             echo -e "\n"
-            echo "### Optional dependencies"
+            echo "### vendor"
             echo "[ripgrep](https://github.com/BurntSushi/ripgrep)"
+            echo "[ccls](https://github.com/MaskRay/ccls)"
           } | tee /tmp/note.md
           gh release delete nvim_config -y || true
           git push origin :nvim_config || true

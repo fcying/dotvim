@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Install neovim
         run: |
-          wget -o/dev/null -Onvim.tgz "https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz"
+          wget -qOnvim.tgz "https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz"
           tar xzf nvim.tgz
           sudo cp -rf ./nvim-linux64/* /usr/local
           nvim --version
@@ -34,7 +34,9 @@ jobs:
           cp etc/ctags ~/.config/nvim/etc/
 
           pushd ~/.config
-          nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
+          nvim --headless -c 'autocmd User PackerComplete quitall'
+          # gennerate packer_compiled.lua on first open
+          rm -vf ./nvim/.plugged/plugin/packer_compiled.lua
           7z -mx9 a nvim_config.zip ./nvim
 
           # install vendor
@@ -51,6 +53,13 @@ jobs:
           mv ./$filename/rg ~/.config/nvim/vendor/
           rm -r rg.tgz $filename
 
+          # get ctags
+          wget -qO ctags.zip https://github.com/fcying/tools/releases/download/tools/ctags_linux_amd64.zip
+          7z x -y ctags.zip
+          rm ctags.zip
+          mv ctags ~/.config/nvim/vendor/
+
+          rm -vf ./nvim/.plugged/plugin/packer_compiled.lua
           7z -mx9 a nvim_config_with_vendor.zip ./nvim
           popd
           mv ~/.config/*.zip .
@@ -65,6 +74,7 @@ jobs:
             echo "### vendor"
             echo "[ripgrep](https://github.com/BurntSushi/ripgrep)"
             echo "[ccls](https://github.com/MaskRay/ccls)"
+            echo "[universal-ctags](https://github.com/universal-ctags/ctags)"
           } | tee /tmp/note.md
           gh release delete nvim_config -y || true
           git push origin :nvim_config || true

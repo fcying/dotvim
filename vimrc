@@ -11,14 +11,6 @@ call add(g:lsp_servers, 'clangd')
 
 execute 'source ' . g:root_dir . '/basic.vim'
 
-" complete_engine: coc nvimlsp  {{{
-let g:complete_engine = get(g:, 'complete_engine', 'nvimlsp')
-if g:complete_engine ==# 'nvimlsp'
-  if g:is_nvim ==# 0
-    let g:complete_engine = 'coc'
-  endif
-endif
-
 execute 'source ' . g:root_dir . '/plug.vim'
 " plugin list {{{
 MyPlug 'lambdalisue/suda.vim', {'cmd':['SudaRead', 'SudaWrite']}

@@ -13,7 +13,7 @@ if !exists('g:plug_dir')
 endif
 let s:plug_install_dir = g:plug_dir . '/pack/packer/opt'
 let s:plug_init = 0
-let s:plug_need_update = 0
+let g:plug_need_update = 0
 
 " init env {{{
 if g:plug_manager ==# 'packer'
@@ -102,7 +102,7 @@ function! MyPlug(repo, ...)
       endif
     else
       exec 'let g:plug_names[''' . l:plug_name . '''] = 0'
-      let s:plug_need_update = 1
+      let g:plug_need_update = 1
     endif
     call add(l:plug, l:options)
     call add(g:plug_options, l:plug)
@@ -130,7 +130,7 @@ function! MyPlug(repo, ...)
       exec 'let g:plug_names[''' . l:plug_name . '''] = 1'
     else
       exec 'let g:plug_names[''' . l:plug_name . '''] = 0'
-      let s:plug_need_update = 1
+      let g:plug_need_update = 1
     endif
   endif
 endfunction
@@ -179,8 +179,14 @@ function! MyPlugUpgrade()
 
     call plug#end()
     delc PlugUpgrade
+
     nnoremap <leader>pu :PlugUpdate<CR>
     nnoremap <leader>pr :PlugClean<CR>
+
+    if g:plug_need_update ==# 1
+      PlugUpdate --sync
+    endif
+
   endif
 
   execute 'source ' . g:config_dir . '/config.vim'
@@ -192,10 +198,6 @@ endfunction
 if s:plug_init ==# 1
   let g:colorscheme = 'default'
 endif
-autocmd myau VimEnter *
-      \ if s:plug_need_update ==# 1
-      \ |   call feedkeys("\<space>pu", "tx")
-      \ | endif
 
 
 " ============================================================================
@@ -236,7 +238,15 @@ else
   MyPlug 'Yggdroot/LeaderF', {'run': function('InstallLeaderF')}
 endif
 
-" complete_engine
+
+" complete_engine: coc nvimlsp  {{{
+let g:complete_engine = get(g:, 'complete_engine', 'nvimlsp')
+if g:complete_engine ==# 'nvimlsp'
+  if g:is_nvim ==# 0
+    let g:complete_engine = 'coc'
+  endif
+endif
+
 if g:complete_engine ==# 'coc'
   MyPlug 'neoclide/coc.nvim', {'branch': 'release'}
   if g:is_win ==# 0

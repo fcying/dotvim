@@ -4,6 +4,7 @@
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
 let g:cache_dir = g:root_dir . '/.cache'
 let g:file_log = g:cache_dir . '/vim.log'
+let g:ctags_opt = '--options=' . g:root_dir . '/etc/ctags'
 
 let g:is_win = has('win32')
 let g:is_nvim = has('nvim')
@@ -16,6 +17,10 @@ let g:has_rg = executable('rg')
 let g:mapleader = get(g:,'mapleader',' ')
 let g:root_markers = ['.root', '.git', '.repo', '.svn']
 let g:root_marker = ''
+
+if !g:is_nvim
+  set nocompatible
+end
 
 let g:ignore_default = {
       \ 'dir':['.root','.svn','.git','.repo','.ccls-cache','.cache','.ccache'],
@@ -561,7 +566,7 @@ function! ColorConfig()
   elseif g:colorscheme == 'default'
     let g:background = get(g:,'background','dark')
   else
-    let g:colorscheme = get(g:,'background','onedark')
+    let g:colorscheme = get(g:,'colorscheme','onedark')
     let g:background = get(g:,'background','dark')
   endif
 

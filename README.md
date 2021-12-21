@@ -14,7 +14,7 @@ mv nvim ~/.config/
 ```
 
 #### nvim_config_with_vendor.zip
-`nvim_config.zip` with `rg` `lsp`
+`nvim_config.zip` with `rg` `ctags` `lsp`
 
 #### etc folder
 other tools config.  e.g.  

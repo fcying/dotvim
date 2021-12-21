@@ -15,7 +15,6 @@ if [[ $app == "all" ]]; then
     ln -sfv $PWD/bashenv ~/.bashenv
     ln -sfv $PWD/dircolors ~/.dircolors
     ln -sfv $PWD/inputrc ~/.inputrc
-    ln -sfv $PWD/ctags ~/.ctags
     ln -sfv $PWD/tmux.conf ~/.tmux.conf
     ln -sfv $PWD/npmrc ~/.npmrc
 

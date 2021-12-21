@@ -46,6 +46,14 @@ function M.packer()
         use(options)
         --print(vim.inspect(options))
     end
+
+    if g.plug_need_update == 1 then
+        packer.sync()
+    else
+        if fn.filereadable(g.plug_dir .. '/plugin/packer_compiled.lua') == 0 then
+            packer.compile()
+        end
+    end
 end
 
 function M.filetype()
@@ -143,7 +151,12 @@ function M.telescope()
                 case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
             },
             ctags_outline = {
-                ctags_opt = {'ctags'}
+                ctags = {'ctags', g.ctags_opt},
+                set_ft_opt = function(ft_opt)
+                    ft_opt.vim = '--vim-kinds=fk'
+                    ft_opt.sh = '--sh-kinds=fk'
+                    ft_opt.lua = '--lua-kinds=fk'
+                end
             }
         }
     }

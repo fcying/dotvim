@@ -26,7 +26,7 @@ packer.init({
     auto_clean = false,
 })
 
-use({'wbthomason/packer.nvim', opt = true})
+use {'wbthomason/packer.nvim', opt = true}
 
 if Bootstrap then
     packer.sync()

@@ -277,7 +277,7 @@ MyPlug 'joshdick/onedark.vim'
 
 " filetype
 MyPlug 'Vimjas/vim-python-pep8-indent', {'ft':'python'}
-MyPlug 'cespare/vim-toml', {'ft': 'toml', 'branch': 'main'}
+MyPlug 'cespare/vim-toml', {'ft': 'toml'}
 MyPlug 'peterhoeg/vim-qml', {'ft': 'qml'}
 MyPlug 'neoclide/jsonc.vim', {'ft': 'jsonc'}
 MyPlug 'othree/xml.vim', {'ft': 'xml'}

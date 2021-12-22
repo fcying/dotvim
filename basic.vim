@@ -22,6 +22,9 @@ if !g:is_nvim
   set nocompatible
 end
 
+let g:lsp_servers = ['vimls', 'sumneko_lua', 'gopls', 'rust_analyzer',
+      \ 'bashls', 'dockerls']
+
 let g:ignore_default = {
       \ 'dir':['.root','.svn','.git','.repo','.ccls-cache','.cache','.ccache'],
       \ 'file':['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]',
@@ -593,6 +596,10 @@ function! ColorConfig()
 
   exec 'colorscheme ' . g:colorscheme
   exec 'set background=' . g:background
+
+  if (HasPlug('LeaderF') != -1)
+    autocmd myau Syntax * hi Lf_hl_cursorline guifg=fg
+  endif
 endfunction
 
 

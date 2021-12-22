@@ -4,12 +4,11 @@
 let g:root_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let g:config_dir = g:root_dir
 let g:etc_dir = g:root_dir . '/etc'
-let g:lsp_servers = ['vimls', 'bashls', 'dockerls',
-      \ 'sumneko_lua', 'gopls', 'pylsp', 'rust_analyzer']
-call add(g:lsp_servers, 'clangd')
-"call add(g:lsp_servers, 'ccls')
 
 execute 'source ' . g:root_dir . '/basic.vim'
+
+"call add(g:lsp_servers, 'clangd')
+call add(g:lsp_servers, 'ccls')
 
 execute 'source ' . g:root_dir . '/plug.vim'
 " plugin list {{{
@@ -169,15 +168,9 @@ endif
 " ============================================================================
 " color {{{
 " ============================================================================
-" solarized8 gruvbox molokai
 let g:colorscheme = get(g:, 'colorscheme', 'solarized8')
-let g:background=get(g:, 'background', 'light')
 
 call ColorConfig()
-
-if (HasPlug('LeaderF') != -1)
-  autocmd myau Syntax * hi Lf_hl_cursorline guifg=fg
-endif
 
 call LoadAfterConfig()
 

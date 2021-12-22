@@ -29,9 +29,9 @@ jobs:
           mkdir -p ~/.config/nvim/etc
 
           # init default nvim config
-          cp -r nvim_config/init.vim lua/ *.vim ~/.config/nvim
+          cp -r nvim_config/init.vim lua/ dict/ *.vim ~/.config/nvim
           cp -r snippets vendor  ~/.config/nvim/
-          cp etc/ctags ~/.config/nvim/etc/
+          cp etc/ctags etc/tigrc etc/tmux.conf etc/ripgreprc ~/.config/nvim/etc/
 
           pushd ~/.config
           nvim --headless -c 'autocmd User PackerComplete quitall'

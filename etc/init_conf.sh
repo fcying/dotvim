@@ -3,9 +3,12 @@
 cd $(dirname $0)
 config_dir=$PWD
 
-app=${app:-"all"}
+app="ln"
+if [ -n "$1" ]; then
+    app=$1
+fi
 
-if [[ $app == "all" ]]; then
+if [[ $app == "ln" ]]; then
     if [ -f $HOME/.zshrc.local ]; then
         sed -i "/CONFIG_DIR/d" $HOME/.zshrc.local
     fi
@@ -16,17 +19,15 @@ if [[ $app == "all" ]]; then
     ln -sfv $PWD/dircolors ~/.dircolors
     ln -sfv $PWD/inputrc ~/.inputrc
     ln -sfv $PWD/tmux.conf ~/.tmux.conf
-    ln -sfv $PWD/npmrc ~/.npmrc
 
     mkdir -p ~/.config/tig
     ln -sfv $PWD/tigrc ~/.config/tig/config
 
     # nvim
     mkdir -p ~/.config/nvim
-    echo "set nvim init.vim"
-    #rm -f ~/.config/nvim/init.vim
-    #echo "source ~/.vim/vimrc" > ~/.config/nvim/init.vim
-    ln -svf $PWD/../vimrc ~/.config/nvim/init.vim
+    if [ $(echo $PWD | grep -c "\.vim") -eq 1 ]; then
+        ln -svf $PWD/../vimrc ~/.config/nvim/init.vim
+    fi
 fi
 
 # windows
@@ -37,9 +38,8 @@ fi
 # npm
 if [[ $app == "npm" ]]; then
     type npm >/dev/null 2>&1 && {
+        npm config set registry https://repo.huaweicloud.com/repository/npm/
         mkdir -p ~/.npm
-        cd ~/.npm
-        npm install cnpm
     }
 fi
 

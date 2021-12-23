@@ -26,12 +26,11 @@ jobs:
       - name: Prepare nvim config
         run: |
           pwd && ls
-          mkdir -p ~/.config/nvim/etc
+          mkdir -p ~/.config/nvim
 
           # init default nvim config
           cp -r nvim_config/init.vim lua/ dict/ *.vim ~/.config/nvim
-          cp -r snippets vendor  ~/.config/nvim/
-          cp etc/ctags etc/tigrc etc/tmux.conf etc/ripgreprc ~/.config/nvim/etc/
+          cp -r snippets/ vendor/ etc/  ~/.config/nvim/
 
           pushd ~/.config
           nvim --headless -c 'autocmd User PackerComplete quitall'

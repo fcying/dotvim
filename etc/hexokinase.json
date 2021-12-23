@@ -1,7 +1,0 @@
-{
-  "regex_pattern": "\\[\\d\\d;\\d\\dm",
-  "colour_table": {
-    "[00;34m": "#fb00ff",
-    "00;32m": "#0b00ff"
-  }
-}

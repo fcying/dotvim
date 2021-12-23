@@ -14,6 +14,7 @@ let g:is_conemu = !empty($CONEMUBUILD)
 let g:is_wsl = isdirectory('/mnt/c')
 let g:has_go = executable('go')
 let g:has_rg = executable('rg')
+let g:use_leaderf = get(g:,'use_leaderf','0')
 let g:mapleader = get(g:,'mapleader',' ')
 let g:root_markers = ['.root', '.git', '.repo', '.svn']
 let g:root_marker = ''

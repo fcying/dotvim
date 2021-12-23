@@ -1,6 +1,6 @@
 if (HasPlug('gen_clang_conf.vim') != -1) "{{{
   let g:gencconf_storein_rootmarker = get(g:,'gencconf_storein_rootmarker',1)
-  let g:gencconf_ctags_option = g:ctags_opt . '--languages=c++ --languages=+c'
+  let g:gencconf_ctags_option = '--languages=c++ --languages=+c'
 endif "}}}
 
 if (HasPlug('vim-easymotion') != -1) "{{{

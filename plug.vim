@@ -233,7 +233,9 @@ if g:is_nvim
   MyPlug 'fcying/telescope-ctags-outline.nvim'
   MyPlug 'kevinhwang91/nvim-bqf', {'ft':'qf'}
   MyPlug 'rcarriga/nvim-notify'
-  "MyPlug 'Yggdroot/LeaderF', {'run': function('InstallLeaderF')}
+  if g:use_leaderf ==# 1
+    MyPlug 'Yggdroot/LeaderF', {'run': function('InstallLeaderF')}
+  endif
 else
   MyPlug 'Yggdroot/LeaderF', {'run': function('InstallLeaderF')}
 endif

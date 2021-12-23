@@ -22,7 +22,6 @@ local use = packer.use
 packer.init({
     package_root = root_dir .. '/plugged/pack',
     compile_path  = root_dir .. '/plugged/plugin/packer_compiled.lua',
-    plugin_package = 'packer',
     auto_clean = false,
 })
 

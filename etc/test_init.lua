@@ -12,8 +12,6 @@ cmd([[
     set mouse=n
     packadd packer.nvim
     nnoremap <space>pu :PackerSync<CR>
-    nnoremap <space>pi :PackerInstall<CR>
-    nnoremap <space>pr :PackerClean<CR>
     nnoremap <space>pc :PackerCompile<CR>
 ]])
 

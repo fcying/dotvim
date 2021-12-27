@@ -18,9 +18,11 @@ let g:use_leaderf = get(g:,'use_leaderf','0')
 let g:mapleader = get(g:,'mapleader',' ')
 let g:root_markers = ['.root', '.git', '.repo', '.svn']
 let g:root_marker = ''
+let g:force_update = get(g:,'force_update','0')
 
 if !g:is_nvim
   set nocompatible
+  let g:use_leaderf = 1
 end
 
 let g:lsp_servers = ['vimls', 'sumneko_lua', 'gopls', 'rust_analyzer',
@@ -564,8 +566,8 @@ function! LoadAfterConfig()
 endfunction
 
 function! ColorConfig()
+  set termguicolors
   if g:colorscheme == 'solarized8'
-    set termguicolors
     let g:background = get(g:,'background','light')
   elseif g:colorscheme == 'default'
     let g:background = get(g:,'background','dark')
@@ -578,6 +580,7 @@ function! ColorConfig()
     let g:colorscheme = 'desert'
     let g:background='dark'
     set t_Co=256
+    set notgc
   endif
 
   if !g:is_nvim

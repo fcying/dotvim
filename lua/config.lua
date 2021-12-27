@@ -47,7 +47,7 @@ function M.packer()
         --print(vim.inspect(options))
     end
 
-    if g.plug_need_update == 1 then
+    if g.plug_need_update == 1 or g.force_update == 1 then
         packer.sync()
     else
         if fn.filereadable(g.plug_dir .. '/plugin/packer_compiled.lua') == 0 then
@@ -72,7 +72,6 @@ function M.telescope_map()
     if (fn.HasPlug('LeaderF') == -1) then    --{{{
         map('n', 'fm', '<cmd>Telescope oldfiles<cr>', {})
         map('n', 'fb', '<cmd>Telescope buffers<cr>', {})
-        map('n', 'fo', '<cmd>Telescope ctags_outline outline<cr>', {})
         map('n', 'fl', '<cmd>Telescope current_buffer_fuzzy_find<cr>', {})
         map('n', 'fh', '<cmd>Telescope help_tags<cr>', {})
         map('n', 'ft', '<cmd>Telescope tags<cr>', {})
@@ -85,6 +84,7 @@ function M.telescope_map()
             nnoremap <silent>ff :<C-u><C-R>=g:find_command<CR><CR>
         ]])
     end
+    map('n', 'fo', '<cmd>Telescope ctags_outline outline<cr>', {})
 
     map('n', 'gd', '<cmd>Telescope lsp_definitions<cr>', {})
     map('n', '<leader>lr', '<cmd>Telescope lsp_references<cr>', {})
@@ -93,6 +93,7 @@ function M.telescope_map()
     map('n', '<leader>la', '<cmd>Telescope lsp_code_actions<cr>', {})
     map('n', '<leader>ls', '<cmd>Telescope lsp_document_symbols<cr>', {})
     map('n', '<leader>le', '<cmd>Telescope diagnostics bufnr=0<cr>', {})
+    map('n', '<leader>lo', '<cmd>Telescope ctags_outline outline<cr>', {})
 end
 function M.telescope_update_ignore()
     g.find_command = 'Telescope find_files '

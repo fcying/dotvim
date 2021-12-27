@@ -87,7 +87,11 @@ function! MyPlug(repo, ...)
           let l:options.opt = 'true'
           exec 'let l:options.' . key . ' = a:1[key]'
         elseif key ==# 'run'
-          exec 'let l:options.' . key . ' = string(a:1[key])'
+          if type(a:1[key]) ==# 1
+            exec 'let l:options.' . key . ' = a:1[key]'
+          else
+            exec 'let l:options.' . key . ' = string(a:1[key])'
+          endif
         elseif key ==# 'rtp' || key ==# 'commit' || key ==# 'branch'
               \ || key ==# 'requires' || key ==# 'config'
           exec 'let l:options.' . key . ' = a:1[key]'
@@ -137,25 +141,6 @@ endfunction
 command! -nargs=+ -bar MyPlug call MyPlug(<args>)
 
 
-" install function {{{
-function! InstallLeaderF(info) abort
-  if g:plug_manager ==# 'packer'
-    if g:is_win
-      exe 'silent !cd /d ' . s:plug_install_dir . '\LeaderF && .\install.bat'
-    else
-      exe 'silent !cd ' . s:plug_install_dir . '/LeaderF && ./install.sh'
-    endif
-  else
-    if g:is_win
-      silent !.\install.bat
-    else
-      silent !./install.sh
-    endif
-  endif
-  silent !pip3 install pygments --upgrade
-endfunction
-
-
 function! MyPlugUpgrade()
   if g:plug_manager ==# 'packer'
     lua require('config').packer()
@@ -183,7 +168,7 @@ function! MyPlugUpgrade()
     nnoremap <leader>pu :PlugUpdate<CR>
     nnoremap <leader>pr :PlugClean<CR>
 
-    if g:plug_need_update ==# 1
+    if g:plug_need_update ==# 1 || g:force_update ==# 1
       PlugUpdate --sync
     endif
 
@@ -233,11 +218,10 @@ if g:is_nvim
   MyPlug 'fcying/telescope-ctags-outline.nvim'
   MyPlug 'kevinhwang91/nvim-bqf', {'ft':'qf'}
   MyPlug 'rcarriga/nvim-notify'
-  if g:use_leaderf ==# 1
-    MyPlug 'Yggdroot/LeaderF', {'run': function('InstallLeaderF')}
-  endif
-else
-  MyPlug 'Yggdroot/LeaderF', {'run': function('InstallLeaderF')}
+endif
+
+if g:use_leaderf ==# 1
+  MyPlug 'Yggdroot/LeaderF', {'run': ':LeaderfInstallCExtension', 'cmd': 'Leaderf'}
 endif
 
 
@@ -273,7 +257,7 @@ elseif g:complete_engine ==# 'nvimlsp'
   "MyPlug 'andersevenrud/compe-tmux', {'branch': 'cmp'}
 endif
 
-" colorscheme
+" colorscheme {{{
 MyPlug 'lifepillar/vim-solarized8'
 MyPlug 'joshdick/onedark.vim'
 

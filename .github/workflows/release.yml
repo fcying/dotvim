@@ -31,9 +31,12 @@ jobs:
           # init default nvim config
           cp -r nvim_config/init.vim lua/ dict/ *.vim ~/.config/nvim
           cp -r snippets/ vendor/ etc/  ~/.config/nvim/
-
           pushd ~/.config
-          nvim --headless -c 'autocmd User PackerComplete quitall'
+
+          echo "let g:use_leaderf = 1" >> ~/.vimrc.local
+          # sleep 10 for plugin run
+          timeout 120s nvim --headless -c 'autocmd User PackerComplete sleep 10 | quitall' -c 'let g:force_update=1'
+
           # gennerate packer_compiled.lua on first open
           rm -vf ./nvim/.plugged/plugin/packer_compiled.lua
           7z -mx9 a nvim_config.zip ./nvim

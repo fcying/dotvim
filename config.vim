@@ -357,6 +357,7 @@ if (HasPlug('LeaderF') != -1) "{{{
   let g:Lf_HideHelp = 1
   let g:Lf_DefaultMode = 'FullPath'
   let g:Lf_UseCache = 0
+  let g:Lf_UseMemoryCache = 0
   let g:Lf_PreviewCode = 0
   let g:Lf_WorkingDirectoryMode = 'c'
   let g:Lf_UseVersionControlTool = 0
@@ -368,7 +369,8 @@ if (HasPlug('LeaderF') != -1) "{{{
   endif
 
   let g:Lf_PreviewInPopup = 1
-  "let g:Lf_WindowPosition = 'popup'
+  " bottom popup
+  let g:Lf_WindowPosition = 'bottom'
   "let g:Lf_PreviewHorizontalPosition = 'right'
 
   let g:Lf_CommandMap = {
@@ -407,7 +409,7 @@ if (HasPlug('LeaderF') != -1) "{{{
   nnoremap ff :<C-u>Leaderf file --fullPath<CR>
   nnoremap fm :<C-u>Leaderf mru --fullPath<CR>
   nnoremap fb :<C-u>Leaderf buffer --fullPath<CR>
-  nnoremap fo :<C-u>Leaderf function --fullPath<CR>
+  "nnoremap fo :<C-u>Leaderf function --fullPath<CR>
   nnoremap fl :<C-u>Leaderf line --fuzzy<CR>
   nnoremap fh :<C-u>Leaderf help --fuzzy<CR>
   nnoremap ft :<C-u>Leaderf tag --fuzzy<CR>

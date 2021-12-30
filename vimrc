@@ -6,10 +6,6 @@ let g:config_dir = g:root_dir
 let g:etc_dir = g:root_dir . '/etc'
 
 execute 'source ' . g:root_dir . '/basic.vim'
-
-"call add(g:lsp_servers, 'clangd')
-call add(g:lsp_servers, 'ccls')
-
 execute 'source ' . g:root_dir . '/plug.vim'
 " plugin list {{{
 MyPlug 'lambdalisue/suda.vim', {'cmd':['SudaRead', 'SudaWrite']}

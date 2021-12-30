@@ -46,11 +46,6 @@ let g:ignore.rg = ['--max-columns=300', '--iglob=!obj', '--iglob=!out']
 * `g:complete_engine`
 default use `coc` in VIM, use `nvim-cmp` in NVIM.  
 
-* `g:lsp_servers`  
-```
-let g:lsp_servers = ['pylsp', 'sumneko_lua', 'ccls']
-```
-
 * `g:colorscheme`  
     e.g.  
     ```

@@ -170,7 +170,6 @@ end
 function M.lspconfig()
     --lsp.set_log_level('debug')
 
-    local nvim_lsp = require('lspconfig')
     local util = require('lspconfig/util')
 
     cmd([[ autocmd myau FileType lspinfo nnoremap <silent><buffer> q :q<cr> ]])
@@ -178,55 +177,38 @@ function M.lspconfig()
     -- Use an on_attach function to only map the following keys
     -- after the language server attaches to the current buffer
     local on_attach = function(_, _)
-        --bmap('n', 'gD', '<cmd>lua lsp.buf.declaration()<CR>', {})
-        --bmap('n', 'gd', '<cmd>lua lsp.buf.definition()<CR>', {})
         bmap('n', 'K', '<cmd>lua lsp.buf.hover()<CR>', {})
-        --bmap('n', 'gi', '<cmd>lua lsp.buf.implementation()<CR>', {})
         bmap('n', '<C-k>', '<cmd>lua lsp.buf.signature_help()<CR>', {})
-        --bmap('n', '<space>wa', '<cmd>lua lsp.buf.add_workspace_folder()<CR>', {})
-        --bmap('n', '<space>wr', '<cmd>lua lsp.buf.remove_workspace_folder()<CR>', {})
-        --bmap('n', '<space>wl', '<cmd>lua print(vim.inspect(lsp.buf.list_workspace_folders()))<CR>', {})
-        --bmap('n', '<space>D', '<cmd>lua lsp.buf.type_definition()<CR>', {})
         bmap('n', '<space>rn', '<cmd>lua lsp.buf.rename()<CR>', {})
-        --bmap('n', '<space>ca', '<cmd>lua lsp.buf.code_action()<CR>', {})
-        --bmap('n', 'gr', '<cmd>lua lsp.buf.references()<CR>', {})
-        --bmap('n', '<space>e', '<cmd>lua lsp.diagnostic.show_line_diagnostics()<CR>', {})
         bmap('n', '[d', '<cmd>lua lsp.diagnostic.goto_prev()<CR>', {})
         bmap('n', ']d', '<cmd>lua lsp.diagnostic.goto_next()<CR>', {})
-        --bmap('n', '<space>q', '<cmd>lua lsp.diagnostic.set_loclist()<CR>', {})
-        --bmap('n', '<space>f', '<cmd>lua lsp.buf.formatting()<CR>', {})
     end
 
-    local use_lsp_installer = 0
-    local lsp_installer, server, path, std
-    if (fn.HasPlug('nvim-lsp-installer') ~= -1) then
-        use_lsp_installer = 1
-        lsp_installer = require'nvim-lsp-installer'
-        server = require "nvim-lsp-installer.server"
-        path = require "nvim-lsp-installer.path"
-        std = require "nvim-lsp-installer.installers.std"
+    local lsp_installer = require'nvim-lsp-installer'
+    local server = require "nvim-lsp-installer.server"
+    local path = require "nvim-lsp-installer.path"
+    local std = require "nvim-lsp-installer.installers.std"
 
-        lsp_installer.settings {
-            install_root_dir = path.concat { g.cache_dir, "lsp_servers" },
-        }
+    lsp_installer.settings {
+        install_root_dir = path.concat { g.cache_dir, "lsp_servers" },
+    }
 
-        --register ccls
-        local root_dir = server.get_server_root_path('ccls')
-        local ccls_server = server.Server:new {
-            name = 'ccls',
-            root_dir = root_dir,
-            homepage = "https://github.com/MaskRay/ccls",
-            languages = { "c", "c++" },
-            installer = {
-                std.download_file("https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.zip", "ccls.zip"),
-                std.unzip('ccls.zip', '.'),
-            },
-            default_options = {
-                cmd = { path.concat { root_dir, 'ccls' } }
-            },
-        }
-        lsp_installer.register(ccls_server)
-    end
+    --register ccls
+    local root_dir = server.get_server_root_path('ccls')
+    local ccls_server = server.Server:new {
+        name = 'ccls',
+        root_dir = root_dir,
+        homepage = "https://github.com/MaskRay/ccls",
+        languages = { "c", "c++" },
+        installer = {
+            std.download_file("https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.zip", "ccls.zip"),
+            std.unzip('ccls.zip', '.'),
+        },
+        default_options = {
+            cmd = { path.concat { root_dir, 'ccls' } }
+        },
+    }
+    lsp_installer.register(ccls_server)
 
     local disalbe_diagnostics = lsp.with(
     lsp.diagnostic.on_publish_diagnostics, {
@@ -239,12 +221,26 @@ function M.lspconfig()
     --lsp gopls lua default config {{{
     local server_opts = {
         ['gopls'] = {
-            on_attach = on_attach;
-            flags = { debounce_text_changes = 150 };
+            on_attach = on_attach,
+            flags = { debounce_text_changes = 150 },
             root_dir = function(fname)
                 return util.root_pattern 'go.work'(fname) or
                 util.root_pattern('go.mod', '.git', '.root')(fname) or util.path.dirname(fname)
-            end;
+            end,
+        },
+        ['pylsp'] = {
+            on_attach = on_attach,
+            flags = { debounce_text_changes = 150 },
+            settings = {
+                pylsp = {
+                    plugins = {
+                        pycodestyle = {
+                            maxLineLength = 120,
+                            ignore = {'E302', 'E265', 'E231'}
+                        }
+                    }
+                }
+            }
         },
         ['sumneko_lua'] = require('lua-dev').setup({
             library = {
@@ -253,12 +249,12 @@ function M.lspconfig()
                 plugins = true,
             },
             lspconfig = {
-                on_attach = on_attach;
-                flags = { debounce_text_changes = 150 };
+                on_attach = on_attach,
+                flags = { debounce_text_changes = 150 },
             }}),
         ['default'] = {
-            on_attach = on_attach;
-            flags = { debounce_text_changes = 150 };
+            on_attach = on_attach,
+            flags = { debounce_text_changes = 150 },
         },
     }
 
@@ -270,51 +266,39 @@ function M.lspconfig()
         cache_dir = g.root_marker .. "/.ccls-cache"
     end
     server_opts.ccls = {
-        on_attach = on_attach;
-        flags = { debounce_text_changes = 150 };
-        handlers = { ["textDocument/publishDiagnostics"] = disalbe_diagnostics };
+        on_attach = on_attach,
+        flags = { debounce_text_changes = 150 },
+        handlers = { ["textDocument/publishDiagnostics"] = disalbe_diagnostics },
         init_options = {
-            compilationDatabaseDirectory = config_dir;
-            cache = { directory = cache_dir };
-        };
+            compilationDatabaseDirectory = config_dir,
+            cache = { directory = cache_dir },
+        },
     }
 
     --lsp clangd config {{{
-    local clangd_cmd = {}
-    if (use_lsp_installer == 1) then
-        clangd_cmd = { fn.expand(server.get_server_root_path('clangd') .. '/clangd_*/bin/clangd') }
-    else
-        clangd_cmd = { "clangd" }
-    end
+    local clangd_cmd = { fn.expand(server.get_server_root_path('clangd') .. '/clangd_*/bin/clangd') }
     table.insert(clangd_cmd, "--background-index")
     if g.gencconf_storein_rootmarker == 1 then
         table.insert(clangd_cmd, "--compile-commands-dir=" .. g.root_marker)
     end
     server_opts.clangd = {
-        on_attach = on_attach;
-        flags = { debounce_text_changes = 150 };
-        handlers = { ["textDocument/publishDiagnostics"] = disalbe_diagnostics };
-        cmd = clangd_cmd;
+        on_attach = on_attach,
+        flags = { debounce_text_changes = 150 },
+        handlers = { ["textDocument/publishDiagnostics"] = disalbe_diagnostics },
+        cmd = clangd_cmd,
     }
 
     --server setup
-    if (use_lsp_installer == 1) then
-        lsp_installer.on_server_ready(function(s)
-            if fn.index(g.lsp_servers, s.name) ~= -1 then
-                s:setup(server_opts[s.name] or server_opts['default'])
-            end
-        end)
-    else
-        for _, name in ipairs(g.lsp_servers) do
-            nvim_lsp[name].setup(server_opts[name] or server_opts['default'])
-        end
-    end
+    lsp_installer.on_server_ready(function(s)
+        s:setup(server_opts[s.name] or server_opts['default'])
+    end)
 end
 
 function M.cmp()
     cmd([[autocmd myau BufEnter * setl omnifunc=syntaxcomplete#Complete]])
     local cmp = require'cmp'
     cmp.setup({
+        preselect = cmp.PreselectMode.None,
         mapping = {
             ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
             ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's' }),

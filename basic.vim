@@ -25,9 +25,6 @@ if !g:is_nvim
   let g:use_leaderf = 1
 end
 
-let g:lsp_servers = ['vimls', 'sumneko_lua', 'gopls', 'rust_analyzer', 'pylsp',
-      \ 'bashls', 'dockerls']
-
 let g:ignore_default = {
       \ 'dir':['.root','.svn','.git','.repo','.ccls-cache','.cache','.ccache'],
       \ 'file':['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]',
@@ -226,11 +223,12 @@ if has('patch-8.1.0360') || g:is_nvim
   set diffopt+=internal,algorithm:patience
 endif
 
-" jump to the last position {{{
+" restore-cursor to the last position {{{
+" add only line(".") == 1 jump
 augroup vimStartup
   au!
   autocmd BufReadPost *
-        \ if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit'
+        \ if line("'\"") > 1 && line("'\"") <= line("$") && line(".") == 1 && &ft !~# 'commit'
         \ |   exe "normal! g`\""
         \ | endif
 augroup END

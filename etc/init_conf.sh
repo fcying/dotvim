@@ -9,10 +9,17 @@ if [ -n "$1" ]; then
 fi
 
 if [[ $app == "ln" ]]; then
+    # nvim
+    mkdir -p ~/.config/nvim
+    if [ $(echo $PWD | grep -c "\.vim") -eq 1 ]; then
+        ln -svf $PWD/../vimrc ~/.config/nvim/init.vim
+    fi
+
     if [ -f $HOME/.zshrc.local ]; then
         sed -i "/CONFIG_DIR/d" $HOME/.zshrc.local
     fi
     echo "CONFIG_DIR=$config_dir" | tee -a $HOME/.zshrc.local
+
     ln -sfv $PWD/zshrc ~/.zshrc
     ln -sfv $PWD/bashrc ~/.bashrc
     ln -sfv $PWD/bashenv ~/.bashenv
@@ -23,11 +30,6 @@ if [[ $app == "ln" ]]; then
     mkdir -p ~/.config/tig
     ln -sfv $PWD/tigrc ~/.config/tig/config
 
-    # nvim
-    mkdir -p ~/.config/nvim
-    if [ $(echo $PWD | grep -c "\.vim") -eq 1 ]; then
-        ln -svf $PWD/../vimrc ~/.config/nvim/init.vim
-    fi
 fi
 
 # windows

@@ -16,6 +16,10 @@ if (HasPlug('vim-easymotion') != -1) "{{{
   "nmap <Leader>w <Plug>(easymotion-overwin-w)
 endif "}}}
 
+if (HasPlug('vim-startuptime') != -1) "{{{
+  let g:startuptime_tries = 5
+endif "}}}
+
 if (HasPlug('vim-bbye') != -1) "{{{
   nnoremap <Leader>q :Bdelete<CR>
 endif "}}}

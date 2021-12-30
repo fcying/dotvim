@@ -199,8 +199,7 @@ MyPlug 'machakann/vim-sandwich'
 MyPlug 'dstein64/vim-startuptime', {'cmd':'StartupTime'}
 MyPlug 'mbbill/fencview', {'cmd':['FencView','FencAutoDetect']}
 
-MyPlug 'tpope/vim-fugitive', {'cmd': ['G', 'Git', 'Gedit', 'Gread', 'Gwrite', 'Gdiffsplit', 'Gvdiffsplit'],
-      \ 'fn': 'fugitive#*'}
+MyPlug 'tpope/vim-fugitive' , {'cmd': ['G', 'Git', 'Gedit', 'Gread', 'Gwrite', 'Gdiffsplit', 'Gvdiffsplit'], 'fn': 'fugitive#*'}
 MyPlug 'rbong/vim-flog', {'cmd': ['Flog', 'Flogsplit'], 'require': 'tpope/vim-fugitive'}
 
 MyPlug 'mg979/vim-visual-multi', {'branch': 'master'}

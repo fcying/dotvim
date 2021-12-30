@@ -20,12 +20,17 @@ local use = packer.use
 packer.init({
     package_root = root_dir .. '/plugged/pack',
     compile_path  = root_dir .. '/plugged/plugin/packer_compiled.lua',
-    auto_clean = false,
 })
 
 use {'wbthomason/packer.nvim', opt = true}
+use 'lifepillar/vim-solarized8'
 
 if Bootstrap then
     packer.sync()
 end
 
+cmd [[
+    set termguicolors
+    colorscheme solarized8
+    set background=light
+]]

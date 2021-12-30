@@ -95,7 +95,7 @@ endif "}}}
 if (HasPlug('vim-grepper') != -1) "{{{
   let g:grepper           = {}
   let g:grepper.tools     = ['rg', 'git', 'grep', 'findstr']
-  let g:grepper.rg        = { 'grepprg': 'rg --no-config -H --vimgrep --no-heading' }
+  let g:grepper.rg        = { 'grepprg': 'rg --no-config -H --vimgrep --no-heading --max-columns=300' }
   let g:grepper.git       = { 'grepprg': 'git grep -nI' }
   let g:grepper.grep      = { 'grepprg': 'grep -rn --exclude-dir=.git --exclude-dir=.root --exclude-dir=.repo' }
   let g:grepper.repo      = ['.root', '.git', '.hg', '.svn']

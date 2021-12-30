@@ -25,7 +25,7 @@ if !g:is_nvim
   let g:use_leaderf = 1
 end
 
-let g:lsp_servers = ['vimls', 'sumneko_lua', 'gopls', 'rust_analyzer',
+let g:lsp_servers = ['vimls', 'sumneko_lua', 'gopls', 'rust_analyzer', 'pylsp',
       \ 'bashls', 'dockerls']
 
 let g:ignore_default = {

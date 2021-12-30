@@ -34,6 +34,7 @@ function man() {
 
 
 
+# git alias {{{
 # https://github.com/robbyrussell/oh-my-zsh/tree/master/lib/git.zsh
 # https://github.com/robbyrussell/oh-my-zsh/tree/master/plugins/git
 function git_current_branch() {

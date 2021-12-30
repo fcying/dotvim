@@ -35,7 +35,7 @@ jobs:
 
           echo "let g:use_leaderf = 1" >> ~/.vimrc.local
           # sleep 10 for plugin run
-          timeout 120s nvim --headless -c 'autocmd User PackerComplete sleep 10 | quitall' -c 'let g:force_update=1'
+          timeout 120s nvim --headless -c 'autocmd User PackerComplete sleep 10 | quitall' --cmd 'let g:force_update=1'
 
           # gennerate packer_compiled.lua on first open
           rm -vf ./nvim/.plugged/plugin/packer_compiled.lua

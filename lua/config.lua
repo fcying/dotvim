@@ -156,6 +156,7 @@ function M.telescope()
                 set_ft_opt = function(ft_opt)
                     ft_opt.vim = '--vim-kinds=fk'
                     ft_opt.sh = '--sh-kinds=fk'
+                    ft_opt.zsh = '--sh-kinds=fk'
                     ft_opt.lua = '--lua-kinds=fk'
                 end
             }

@@ -1,9 +1,3 @@
-# If not running interactively, don't do anything
-case $- in
-    *i*) ;;
-      *) return;;
-esac
-
 if [ -f "$HOME/.bashrc.local" ]; then
     source "$HOME/.bashrc.local"
 fi
@@ -209,8 +203,20 @@ if [ ! -z "$BREW_PREFIX" ]; then
     }
 fi
 unset BREW_PREFIX
-alias install_brew='bash -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"'
 alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
-alias brew_install_ruby='brew vendor-install ruby'
+function brew_update() { #{{{
+    brew update
+    brew upgrade
+    brew cleanup --prune 7
+    brew doctor
+}
+function brew_install() {
+    if [[ "$1" == "origin" ]]; then
+        bash -c "$(curl -fsSL https://github.com/Homebrew/install/raw/master/install.sh)"
+    else
+        echo "install from cdn"
+        bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/Homebrew/install@master/install.sh)"
+    fi
+}
 
 type LoadAfter >/dev/null 2>&1 && LoadAfter

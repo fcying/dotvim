@@ -274,7 +274,12 @@ if [ ! -z "$BREW_PREFIX" ]; then
 fi
 unset BREW_PREFIX
 alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
-alias brew_update='brew update && brew upgrade && brew cleanup --prune 7; brew doctor'
+function brew_update() {
+    brew update
+    brew upgrade
+    brew cleanup --prune 7
+    brew doctor
+}
 function brew_install() {
     if [[ "$1" == "origin" ]]; then
         bash -c "$(curl -fsSL https://github.com/Homebrew/install/raw/master/install.sh)"

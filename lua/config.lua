@@ -18,27 +18,29 @@ function M.packer()
 
     packer.init({
         package_root = g.plug_dir .. '/pack',
-        compile_path  = g.plug_dir .. '/plugin/packer_compiled.lua',
+        compile_path = g.plug_dir .. '/plugin/packer_compiled.lua',
         plugin_package = 'packer',
         auto_clean = false,
     })
 
-    use({'wbthomason/packer.nvim', opt = true})
+    use({ 'wbthomason/packer.nvim', opt = true })
     for _, value in ipairs(g.plug_options) do
-        local options = {value[1]}
-        if (value[2] ~= "nil") then
+        local options = { value[1] }
+        if value[2] ~= 'nil' then
             for k, v in pairs(value[2]) do
                 options[k] = v
             end
-            if (value[2]['run'] ~= nil) then
+            if value[2]['run'] ~= nil then
                 local s = value[2]['run']
-                if string.find(s, "^function") == nil then
+                if string.find(s, '^function') == nil then
                     options['run'] = s
                 else
-                    options['run'] = function() fn[string.match(s, "function%('(.-)'%)")](0) end
+                    options['run'] = function()
+                        fn[string.match(s, "function%('(.-)'%)")](0)
+                    end
                 end
             end
-            if (value[2]['config'] ~= nil) then
+            if value[2]['config'] ~= nil then
                 options['config'] = conf(value[2]['config'])
             end
         end
@@ -63,13 +65,13 @@ function M.filetype()
 
     require('filetype').setup({
         complex = {
-            [".*git/config"] = "gitconfig",
+            ['.*git/config'] = 'gitconfig',
         },
     })
 end
 
 function M.telescope_map()
-    if (fn.HasPlug('LeaderF') == -1) then    --{{{
+    if fn.HasPlug('LeaderF') == -1 then --{{{
         map('n', 'fm', '<cmd>Telescope oldfiles<cr>', {})
         map('n', 'fb', '<cmd>Telescope buffers<cr>', {})
         map('n', 'fl', '<cmd>Telescope current_buffer_fuzzy_find<cr>', {})
@@ -97,17 +99,24 @@ function M.telescope_map()
 end
 function M.telescope_update_ignore()
     g.find_command = 'Telescope find_files '
-    if (g.has_rg == 1) then
+    if g.has_rg == 1 then
         g.find_command = g.find_command .. 'find_command=rg,--files,--color=never'
-        if (g.ignore_full.rg) then
-            g.find_command = g.find_command .. ',' .. table.concat(g.ignore_full.rg,',')
+        if g.ignore_full.rg then
+            g.find_command = g.find_command .. ',' .. table.concat(g.ignore_full.rg, ',')
         end
     end
 
-    if _G["TelescopeGlobalState"] ~= nil then
+    if _G['TelescopeGlobalState'] ~= nil then
         local conf = require('telescope.config').values
-        conf.vimgrep_arguments = {'rg','--color=never','--with-filename','--line-number','--column','--smart-case'}
-        for _,v in ipairs(g.ignore_full.rg) do
+        conf.vimgrep_arguments = {
+            'rg',
+            '--color=never',
+            '--with-filename',
+            '--line-number',
+            '--column',
+            '--smart-case',
+        }
+        for _, v in ipairs(g.ignore_full.rg) do
             table.insert(conf.vimgrep_arguments, v)
         end
     end
@@ -116,52 +125,53 @@ function M.telescope()
     local actions = require('telescope.actions')
     local toggle_modes = function()
         local mode = api.nvim_get_mode().mode
-        if mode == "n" then
-            cmd [[startinsert]]
+        if mode == 'n' then
+            cmd([[startinsert]])
             return
-        elseif mode == "i" then
-            cmd [[stopinsert]]
+        elseif mode == 'i' then
+            cmd([[stopinsert]])
             return
         end
     end
-    require('telescope').setup{
+    require('telescope').setup({
         defaults = {
             --horizontal vertical flex center
-            layout_strategy='vertical',
+            layout_strategy = 'vertical',
             mappings = {
                 i = {
-                    ["<esc>"] = actions.close,
-                    ["<c-j>"] = actions.move_selection_next,
-                    ["<c-k>"] = actions.move_selection_previous,
-                    ["<tab>"] = toggle_modes,
-                    ["<c-s>"] = actions.toggle_selection,
-                    ["<C-q>"] = actions.send_to_qflist,
+                    ['<esc>'] = actions.close,
+                    ['<c-j>'] = actions.move_selection_next,
+                    ['<c-k>'] = actions.move_selection_previous,
+                    ['<tab>'] = toggle_modes,
+                    ['<c-s>'] = actions.toggle_selection,
+                    ['<C-q>'] = actions.send_to_qflist,
                 },
                 n = {
-                    ["<tab>"] = toggle_modes,
-                    ["<c-s>"] = actions.toggle_selection,
-                    ["<C-q>"] = actions.send_to_qflist,
-                }
+                    ['<tab>'] = toggle_modes,
+                    ['<c-s>'] = actions.toggle_selection,
+                    ['<C-q>'] = actions.send_to_qflist,
+                },
             },
         },
         extensions = {
             fzf = {
-                fuzzy = true,                    -- false will only do exact matching
-                override_generic_sorter = true,  -- override the generic sorter
-                override_file_sorter = true,     -- override the file sorter
-                case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+                fuzzy = true,
+                override_generic_sorter = true,
+                override_file_sorter = true,
+                -- smart_case ignore_case respect_case
+                case_mode = 'smart_case',
             },
             ctags_outline = {
-                ctags = {'ctags', g.ctags_opt},
-                set_ft_opt = function(ft_opt)
-                    ft_opt.vim = '--vim-kinds=fk'
-                    ft_opt.sh = '--sh-kinds=fk'
-                    ft_opt.zsh = '--sh-kinds=fk'
-                    ft_opt.lua = '--lua-kinds=fk'
-                end
-            }
-        }
-    }
+                ctags = { 'ctags', g.ctags_opt },
+                ft_opt = {
+                    vim = '--vim-kinds=fk',
+                    sh = '--sh-kinds=fk',
+                    zsh = '--sh-kinds=fk',
+                    lua = '--lua-kinds=fk',
+                },
+            },
+        },
+    })
     require('telescope').load_extension('fzf')
     require('telescope').load_extension('ctags_outline')
     M.telescope_update_ignore()
@@ -184,34 +194,36 @@ function M.lspconfig()
         bmap('n', ']d', '<cmd>lua lsp.diagnostic.goto_next()<CR>', {})
     end
 
-    local lsp_installer = require'nvim-lsp-installer'
-    local server = require "nvim-lsp-installer.server"
-    local path = require "nvim-lsp-installer.path"
-    local std = require "nvim-lsp-installer.installers.std"
+    local lsp_installer = require('nvim-lsp-installer')
+    local server = require('nvim-lsp-installer.server')
+    local path = require('nvim-lsp-installer.path')
+    local std = require('nvim-lsp-installer.installers.std')
 
-    lsp_installer.settings {
-        install_root_dir = path.concat { g.cache_dir, "lsp_servers" },
-    }
+    lsp_installer.settings({
+        install_root_dir = path.concat({ g.cache_dir, 'lsp_servers' }),
+    })
 
     --register ccls
     local root_dir = server.get_server_root_path('ccls')
-    local ccls_server = server.Server:new {
+    local ccls_server = server.Server:new({
         name = 'ccls',
         root_dir = root_dir,
-        homepage = "https://github.com/MaskRay/ccls",
-        languages = { "c", "c++" },
+        homepage = 'https://github.com/MaskRay/ccls',
+        languages = { 'c', 'c++' },
         installer = {
-            std.download_file("https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.zip", "ccls.zip"),
+            std.download_file(
+                'https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.zip',
+                'ccls.zip'
+            ),
             std.unzip('ccls.zip', '.'),
         },
         default_options = {
-            cmd = { path.concat { root_dir, 'ccls' } }
+            cmd = { path.concat({ root_dir, 'ccls' }) },
         },
-    }
+    })
     lsp_installer.register(ccls_server)
 
-    local disalbe_diagnostics = lsp.with(
-    lsp.diagnostic.on_publish_diagnostics, {
+    local disalbe_diagnostics = lsp.with(lsp.diagnostic.on_publish_diagnostics, {
         underline = false,
         virtual_text = false,
         signs = false,
@@ -224,8 +236,9 @@ function M.lspconfig()
             on_attach = on_attach,
             flags = { debounce_text_changes = 150 },
             root_dir = function(fname)
-                return util.root_pattern 'go.work'(fname) or
-                util.root_pattern('go.mod', '.git', '.root')(fname) or util.path.dirname(fname)
+                return util.root_pattern('go.work')(fname)
+                    or util.root_pattern('go.mod', '.git', '.root')(fname)
+                    or util.path.dirname(fname)
             end,
         },
         ['pylsp'] = {
@@ -236,11 +249,11 @@ function M.lspconfig()
                     plugins = {
                         pycodestyle = {
                             maxLineLength = 120,
-                            ignore = {'E302', 'E265', 'E231'}
-                        }
-                    }
-                }
-            }
+                            ignore = { 'E302', 'E265', 'E231' },
+                        },
+                    },
+                },
+            },
         },
         ['sumneko_lua'] = require('lua-dev').setup({
             library = {
@@ -251,7 +264,8 @@ function M.lspconfig()
             lspconfig = {
                 on_attach = on_attach,
                 flags = { debounce_text_changes = 150 },
-            }}),
+            },
+        }),
         ['default'] = {
             on_attach = on_attach,
             flags = { debounce_text_changes = 150 },
@@ -259,16 +273,16 @@ function M.lspconfig()
     }
 
     --lsp ccls config {{{
-    local cache_dir = ".ccls-cache"
-    local config_dir = ""
+    local cache_dir = '.ccls-cache'
+    local config_dir = ''
     if g.gencconf_storein_rootmarker == 1 then
         config_dir = g.root_marker
-        cache_dir = g.root_marker .. "/.ccls-cache"
+        cache_dir = g.root_marker .. '/.ccls-cache'
     end
     server_opts.ccls = {
         on_attach = on_attach,
         flags = { debounce_text_changes = 150 },
-        handlers = { ["textDocument/publishDiagnostics"] = disalbe_diagnostics },
+        handlers = { ['textDocument/publishDiagnostics'] = disalbe_diagnostics },
         init_options = {
             compilationDatabaseDirectory = config_dir,
             cache = { directory = cache_dir },
@@ -277,14 +291,14 @@ function M.lspconfig()
 
     --lsp clangd config {{{
     local clangd_cmd = { fn.expand(server.get_server_root_path('clangd') .. '/clangd_*/bin/clangd') }
-    table.insert(clangd_cmd, "--background-index")
+    table.insert(clangd_cmd, '--background-index')
     if g.gencconf_storein_rootmarker == 1 then
-        table.insert(clangd_cmd, "--compile-commands-dir=" .. g.root_marker)
+        table.insert(clangd_cmd, '--compile-commands-dir=' .. g.root_marker)
     end
     server_opts.clangd = {
         on_attach = on_attach,
         flags = { debounce_text_changes = 150 },
-        handlers = { ["textDocument/publishDiagnostics"] = disalbe_diagnostics },
+        handlers = { ['textDocument/publishDiagnostics'] = disalbe_diagnostics },
         cmd = clangd_cmd,
     }
 
@@ -296,7 +310,7 @@ end
 
 function M.cmp()
     cmd([[autocmd myau BufEnter * setl omnifunc=syntaxcomplete#Complete]])
-    local cmp = require'cmp'
+    local cmp = require('cmp')
     cmp.setup({
         preselect = cmp.PreselectMode.None,
         mapping = {
@@ -312,7 +326,7 @@ function M.cmp()
         },
         snippet = {
             expand = function(args)
-                fn["vsnip#anonymous"](args.body)
+                fn['vsnip#anonymous'](args.body)
             end,
         },
         sources = cmp.config.sources({
@@ -350,23 +364,23 @@ function M.cmp()
 
     cmp.setup.cmdline('/', {
         sources = {
-            { name = 'buffer' }
-        }
+            { name = 'buffer' },
+        },
     })
 
     cmp.setup.cmdline(':', {
         sources = cmp.config.sources({
             { name = 'path' },
             { name = 'cmdline' },
-        })
+        }),
     })
 end
 
 function M.cmp_dictionary()
-    require("cmp_dictionary").setup({
+    require('cmp_dictionary').setup({
         dic = {
-            ['*'] = {g.root_dir .. '/dict/dictionary'},
-            ['go'] = {g.root_dir .. '/dict/go.dict'},
+            ['*'] = { g.root_dir .. '/dict/dictionary' },
+            ['go'] = { g.root_dir .. '/dict/go.dict' },
         },
         exact = 2,
         async = false,

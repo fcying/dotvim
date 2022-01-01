@@ -2,7 +2,7 @@ local M = {}
 local api = vim.api
 
 local function get_defaults(mode)
-    return {noremap = true, silent = mode ~= 'c'}
+    return { noremap = true, silent = mode ~= 'c' }
 end
 
 function M.map(mode, lhs, rhs, opts)

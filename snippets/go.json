@@ -1,12 +1,10 @@
 {
-  "head": {
-    "prefix": ["head", "he", "package", "pack"],
+  "shebang": {
+    "prefix": ["shebang", "sb", "sh"],
     "body": [
-      "/// 2>/dev/null ; gorun \"\\$0\" \"\\$@\" ; exit \\$?\n",
-      "package main\n",
-      "$0"
+      "/// 2>/dev/null ; go run \"\\$0\" \"\\$@\" ; exit \\$?\n"
     ],
-    "description": "head"
+    "description": "shebang"
   },
   "single import": {
     "prefix": ["im", "import"],

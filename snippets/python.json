@@ -1,6 +1,6 @@
 {
   "#!/usr/bin/env python3": {
-    "prefix": ["env3", "head", "he"],
+    "prefix": ["env3", "sb", "sh", "shebang"],
     "body": "#!/usr/bin/env python3\n$0",
     "description" : "Adds shebang line for default python 3 interpreter."
   },

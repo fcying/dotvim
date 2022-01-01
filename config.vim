@@ -601,5 +601,5 @@ if (HasPlug('telescope.nvim') != -1) "{{{
 endif
 
 if (HasPlug('nvim-lspconfig') != -1) "{{{
-  lua require('config').lspconfig()
+  lua require('lsp').setup()
 endif

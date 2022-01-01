@@ -1,8 +1,7 @@
 local M = {}
 
 local map = require('remap').map
-local bmap = require('remap').bmap
-local g, cmd, fn, lsp, api = vim.g, vim.cmd, vim.fn, vim.lsp, vim.api
+local g, cmd, fn, api = vim.g, vim.cmd, vim.fn, vim.api
 
 --for test
 --fn.writefile(fn.split(vim.inspect(_G),'\n'),g.cache_dir .. '/log','')
@@ -56,18 +55,6 @@ function M.packer()
             packer.compile()
         end
     end
-end
-
-function M.filetype()
-    if fn.has('nvim-0.6') == 0 then
-        g.did_load_filetypes = 1
-    end
-
-    require('filetype').setup({
-        complex = {
-            ['.*git/config'] = 'gitconfig',
-        },
-    })
 end
 
 function M.telescope_map()
@@ -175,137 +162,6 @@ function M.telescope()
     require('telescope').load_extension('fzf')
     require('telescope').load_extension('ctags_outline')
     M.telescope_update_ignore()
-end
-
-function M.lspconfig()
-    --lsp.set_log_level('debug')
-
-    local util = require('lspconfig/util')
-
-    cmd([[ autocmd myau FileType lspinfo nnoremap <silent><buffer> q :q<cr> ]])
-
-    -- Use an on_attach function to only map the following keys
-    -- after the language server attaches to the current buffer
-    local on_attach = function(_, _)
-        bmap('n', 'K', '<cmd>lua lsp.buf.hover()<CR>', {})
-        bmap('n', '<C-k>', '<cmd>lua lsp.buf.signature_help()<CR>', {})
-        bmap('n', '<space>rn', '<cmd>lua lsp.buf.rename()<CR>', {})
-        bmap('n', '[d', '<cmd>lua lsp.diagnostic.goto_prev()<CR>', {})
-        bmap('n', ']d', '<cmd>lua lsp.diagnostic.goto_next()<CR>', {})
-    end
-
-    local lsp_installer = require('nvim-lsp-installer')
-    local server = require('nvim-lsp-installer.server')
-    local path = require('nvim-lsp-installer.path')
-    local std = require('nvim-lsp-installer.installers.std')
-
-    lsp_installer.settings({
-        install_root_dir = path.concat({ g.cache_dir, 'lsp_servers' }),
-    })
-
-    --register ccls
-    local root_dir = server.get_server_root_path('ccls')
-    local ccls_server = server.Server:new({
-        name = 'ccls',
-        root_dir = root_dir,
-        homepage = 'https://github.com/MaskRay/ccls',
-        languages = { 'c', 'c++' },
-        installer = {
-            std.download_file(
-                'https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.zip',
-                'ccls.zip'
-            ),
-            std.unzip('ccls.zip', '.'),
-        },
-        default_options = {
-            cmd = { path.concat({ root_dir, 'ccls' }) },
-        },
-    })
-    lsp_installer.register(ccls_server)
-
-    local disalbe_diagnostics = lsp.with(lsp.diagnostic.on_publish_diagnostics, {
-        underline = false,
-        virtual_text = false,
-        signs = false,
-        update_in_insert = false,
-    })
-
-    --lsp gopls lua default config {{{
-    local server_opts = {
-        ['gopls'] = {
-            on_attach = on_attach,
-            flags = { debounce_text_changes = 150 },
-            root_dir = function(fname)
-                return util.root_pattern('go.work')(fname)
-                    or util.root_pattern('go.mod', '.git', '.root')(fname)
-                    or util.path.dirname(fname)
-            end,
-        },
-        ['pylsp'] = {
-            on_attach = on_attach,
-            flags = { debounce_text_changes = 150 },
-            settings = {
-                pylsp = {
-                    plugins = {
-                        pycodestyle = {
-                            maxLineLength = 120,
-                            ignore = { 'E302', 'E265', 'E231' },
-                        },
-                    },
-                },
-            },
-        },
-        ['sumneko_lua'] = require('lua-dev').setup({
-            library = {
-                vimruntime = true,
-                types = true,
-                plugins = true,
-            },
-            lspconfig = {
-                on_attach = on_attach,
-                flags = { debounce_text_changes = 150 },
-            },
-        }),
-        ['default'] = {
-            on_attach = on_attach,
-            flags = { debounce_text_changes = 150 },
-        },
-    }
-
-    --lsp ccls config {{{
-    local cache_dir = '.ccls-cache'
-    local config_dir = ''
-    if g.gencconf_storein_rootmarker == 1 then
-        config_dir = g.root_marker
-        cache_dir = g.root_marker .. '/.ccls-cache'
-    end
-    server_opts.ccls = {
-        on_attach = on_attach,
-        flags = { debounce_text_changes = 150 },
-        handlers = { ['textDocument/publishDiagnostics'] = disalbe_diagnostics },
-        init_options = {
-            compilationDatabaseDirectory = config_dir,
-            cache = { directory = cache_dir },
-        },
-    }
-
-    --lsp clangd config {{{
-    local clangd_cmd = { fn.expand(server.get_server_root_path('clangd') .. '/clangd_*/bin/clangd') }
-    table.insert(clangd_cmd, '--background-index')
-    if g.gencconf_storein_rootmarker == 1 then
-        table.insert(clangd_cmd, '--compile-commands-dir=' .. g.root_marker)
-    end
-    server_opts.clangd = {
-        on_attach = on_attach,
-        flags = { debounce_text_changes = 150 },
-        handlers = { ['textDocument/publishDiagnostics'] = disalbe_diagnostics },
-        cmd = clangd_cmd,
-    }
-
-    --server setup
-    lsp_installer.on_server_ready(function(s)
-        s:setup(server_opts[s.name] or server_opts['default'])
-    end)
 end
 
 function M.cmp()

@@ -223,6 +223,19 @@ if has('patch-8.1.0360') || g:is_nvim
   set diffopt+=internal,algorithm:patience
 endif
 
+" tmux {{{
+if g:is_tmux
+  " tmux knows the extended mouse mode
+  if g:is_nvim ==# 0
+    set ttymouse=xterm2
+  endif
+  set ttimeoutlen=30
+else
+  if &ttimeoutlen > 80 || &ttimeoutlen <= 0
+    set ttimeoutlen=80
+  endif
+endif
+
 " restore-cursor to the last position {{{
 " add only line(".") == 1 jump
 augroup vimStartup
@@ -232,6 +245,28 @@ augroup vimStartup
         \ |   exe "normal! g`\""
         \ | endif
 augroup END
+
+" autoread {{{
+set autoread
+augroup checktime
+  au!
+  autocmd FocusGained,BufEnter        * silent! checktime
+  autocmd CursorHold                  * silent! checktime
+  autocmd CursorHoldI                 * silent! checktime
+augroup END
+
+" terminal {{{
+tnoremap <ESC> <c-\><c-n>
+if g:is_nvim
+  autocmd myau TermOpen * startinsert
+  tnoremap <c-o>p <c-\><c-n>pi
+else
+  tnoremap <c-o>p <C-W>"+
+endif
+
+" set working directory to the current file {{{
+nnoremap <silent> <leader>cdt :tcd %:p:h<CR>:pwd<CR>
+nnoremap <silent> <leader>cda :cd %:p:h<CR>:pwd<CR>
 
 " ignore file in search && complete {{{
 set suffixes=.bak,~,.o,.h,.info,.swp,.obj,.pyc,.pyo,.egg-info,.class
@@ -485,6 +520,18 @@ func! Gentags()
 endf
 nnoremap <silent> tg :call Gentags()<CR>
 nnoremap <silent> tc :call Removetags()<CR>
+
+
+" wsl clip {{{
+if g:is_wsl
+  let s:clip = '/mnt/c/Windows/System32/clip.exe'
+  if executable(s:clip)
+    augroup WSLYank
+      autocmd!
+      autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
+    augroup END
+  endif
+endif
 
 
 " Without any arguments the current buffer is kept.  With an argument the buffer name/number supplied is kept.

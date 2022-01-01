@@ -57,6 +57,9 @@ default use `coc` in VIM, use `nvim-cmp` in NVIM.
     let g:background='light'
     ```
 
+* `g:pylsp_jedi_environment`
+    default `exepath('python3')`
+
 #### Shortcuts
 default `<leader>` is `<space>`
 | Shortcut          | Mode          | Description                                     |

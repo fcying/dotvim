@@ -217,12 +217,25 @@ if g:is_nvim
   MyPlug 'fcying/telescope-ctags-outline.nvim'
   MyPlug 'kevinhwang91/nvim-bqf', {'ft':'qf'}
   MyPlug 'rcarriga/nvim-notify'
+
+  " FIXME nvim cursorhold bug https://github.com/neovim/neovim/issues/12587
+  MyPlug 'antoinemadec/FixCursorHold.nvim'
+  " FIXME https://github.com/neovim/neovim/issues/14967 in 0.5.0
+  "MyPlug 'kevinhwang91/nvim-hclipboard'
+else
+  MyPlug 'tmux-plugins/vim-tmux-focus-events'
+  MyPlug 'roxma/vim-tmux-clipboard'
 endif
 
 if g:use_leaderf ==# 1
   MyPlug 'Yggdroot/LeaderF', {'run': ':LeaderfInstallCExtension', 'cmd': 'Leaderf'}
 endif
 
+MyPlug 'skywind3000/asyncrun.vim', {'cmd': ['AsyncRun', 'AsyncStop'] }
+MyPlug 'skywind3000/asynctasks.vim', {'cmd': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] }
+
+MyPlug 't9md/vim-choosewin', {'keys':'<Plug>(choosewin)'}
+MyPlug 'preservim/tagbar', {'cmd':'TagbarToggle'}
 
 " complete_engine: coc nvimlsp  {{{
 let g:complete_engine = get(g:, 'complete_engine', 'nvimlsp')
@@ -267,3 +280,5 @@ MyPlug 'peterhoeg/vim-qml', {'ft': 'qml'}
 MyPlug 'neoclide/jsonc.vim', {'ft': 'jsonc'}
 MyPlug 'othree/xml.vim', {'ft': 'xml'}
 MyPlug 'wsdjeg/vim-autohotkey', {'ft':'autohotkey'}
+MyPlug 'godlygeek/tabular', {'ft':'markdown'}
+MyPlug 'plasticboy/vim-markdown', {'ft':'markdown'}

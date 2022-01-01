@@ -57,7 +57,7 @@ export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
 # Ensure path arrays do not contain duplicates.
 typeset -gU cdpath fpath mailpath PATH path
 
-#export GO111MODULE=on
+export GO111MODULE=auto
 export GOPATH=$HOME/go
 export GOPROXY=https://goproxy.cn,direct
 export QT_DIR=${QT_DIR:-"$HOME/tool/Qt"}

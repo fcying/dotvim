@@ -1,6 +1,6 @@
 {
-  "bash": {
-    "prefix": ["head", "he", "#!", "shebang"],
+  "shebang": {
+    "prefix": ["sb", "sh", "#!", "shebang"],
     "body": "${1|#!/usr/bin/env bash,#!/bin/bash|}\n",
     "description": [
       "Option 1:\n",

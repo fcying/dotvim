@@ -30,7 +30,7 @@ local disalbe_diagnostics = lsp.with(lsp.diagnostic.on_publish_diagnostics, {
 -- https://github.com/golang/tools/tree/master/gopls
 -- fork from https://github.com/neovim/nvim-lspconfig/issues/115#issuecomment-902680058
 function M.goimports(timeout_ms)
-    local server_available, _ = server.get_server('gopls')
+    local server_available, _ = lsp_installer.get_server('gopls')
     if server_available == false then
         return
     end
@@ -120,7 +120,7 @@ function config.go()
             gopls = {
                 experimentalWorkspaceModule = true,
                 analyses = {
-                    unusedparams = true,
+                    unusedparams = false,
                 },
             },
         },
@@ -205,8 +205,8 @@ function M.setup()
             augroup go_lang
                 autocmd!
                 autocmd! * <buffer>
-                command! -nargs=0 Goimports lua require('golsp').goimports(800)
-                command! -nargs=0 Gofmt lua require('golsp').gofmt(200)
+                command! -nargs=0 Goimports lua require('lsp').goimports(800)
+                command! -nargs=0 Gofmt lua require('lsp').gofmt(200)
                 autocmd FileType go autocmd BufWritePre <buffer> Goimports
             augroup END
         ]])

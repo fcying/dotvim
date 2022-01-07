@@ -32,7 +32,7 @@ elseif g:plug_manager ==# 'vim-plug'
 else
   "not plugin
   let g:plug_dir = g:root_dir
-  let s:plug_manager_file = g:config_dir . '/basic.vim'
+  let s:plug_manager_file = g:config_dir . '/plug.vim'
 endif
 
 " Bootstrapping {{{

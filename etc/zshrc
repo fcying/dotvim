@@ -446,11 +446,10 @@ alias ll='ls -alh'
 
 function tmux_attach {
     if [ -n "$1" ]; then
-        tmux a -t $1
-        [ $? == 1 ] && tmux new -s $1
+        # add sleep fix "server exited unexpectedly" in some platform
+        tmux a -t $1 || sleep 0.0001; tmux new -s $1
     else
-        tmux a
-        [ $? == 1 ] && tmux
+        tmux a || sleep 0.0001; tmux
     fi
 }
 alias ta=' tmux_attach'

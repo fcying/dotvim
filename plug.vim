@@ -186,11 +186,10 @@ endif
 
 
 " ============================================================================
-" basic plugins
+" common plugins {{{
 " ============================================================================
 MyPlug 'fcying/gen_clang_conf.vim'
 MyPlug 'wsdjeg/vim-fetch'
-MyPlug 'itchyny/lightline.vim'
 
 MyPlug 'moll/vim-bbye', {'cmd':'Bdelete'}
 MyPlug 'preservim/nerdcommenter', {'keys':'<plug>NERDCommenter'}
@@ -216,7 +215,8 @@ if g:is_nvim
   MyPlug 'nvim-telescope/telescope-fzf-native.nvim', { 'run': 'make' }
   MyPlug 'fcying/telescope-ctags-outline.nvim'
   MyPlug 'kevinhwang91/nvim-bqf', {'ft':'qf'}
-  MyPlug 'rcarriga/nvim-notify'
+  MyPlug 'rcarriga/nvim-notify', {'config':'notify', 'event':'VimEnter'}
+  MyPlug 'nvim-lualine/lualine.nvim', {'config':'lualine', 'event':'VimEnter'}
 
   " FIXME nvim cursorhold bug https://github.com/neovim/neovim/issues/12587
   MyPlug 'antoinemadec/FixCursorHold.nvim'
@@ -225,6 +225,7 @@ if g:is_nvim
 else
   MyPlug 'tmux-plugins/vim-tmux-focus-events'
   MyPlug 'roxma/vim-tmux-clipboard'
+  MyPlug 'itchyny/lightline.vim'
 endif
 
 if g:use_leaderf ==# 1
@@ -245,14 +246,7 @@ if g:complete_engine ==# 'nvimlsp'
   endif
 endif
 
-if g:complete_engine ==# 'coc'
-  MyPlug 'neoclide/coc.nvim', {'branch': 'release'}
-  if g:is_win ==# 0
-    MyPlug 'wellle/tmux-complete.vim'
-  endif
-  MyPlug 'honza/vim-snippets'
-
-elseif g:complete_engine ==# 'nvimlsp'
+if g:complete_engine ==# 'nvimlsp'
   MyPlug 'williamboman/nvim-lsp-installer'
   MyPlug 'neovim/nvim-lspconfig'
   MyPlug 'folke/lua-dev.nvim'
@@ -267,6 +261,13 @@ elseif g:complete_engine ==# 'nvimlsp'
   MyPlug 'quangnguyen30192/cmp-nvim-tags', {'after':'nvim-cmp'}
   MyPlug 'uga-rosa/cmp-dictionary', {'after':'nvim-cmp', 'config':'cmp_dictionary'}
   "MyPlug 'andersevenrud/compe-tmux', {'branch': 'cmp'}
+
+elseif g:complete_engine ==# 'coc'
+  MyPlug 'neoclide/coc.nvim', {'branch': 'release'}
+  if g:is_win ==# 0
+    MyPlug 'wellle/tmux-complete.vim'
+  endif
+  MyPlug 'honza/vim-snippets'
 endif
 
 " colorscheme {{{

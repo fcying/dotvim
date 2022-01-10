@@ -122,6 +122,7 @@ if (HasPlug('lightline.vim') != -1) "{{{
         \ 'statusline': 1,
         \ 'tabline': 1
         \ }
+  let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'solarized')
 endif "}}}
 
 if (HasPlug('vim-visual-multi') != -1) "{{{

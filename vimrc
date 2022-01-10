@@ -66,4 +66,3 @@ let g:colorscheme = get(g:, 'colorscheme', 'solarized8')
 call ColorConfig()
 
 call LoadAfterConfig()
-

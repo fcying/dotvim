@@ -65,7 +65,7 @@ function M.telescope_map()
         map('n', 'fh', '<cmd>Telescope help_tags<cr>', {})
         map('n', 'ft', '<cmd>Telescope tags<cr>', {})
         map('n', 'fj', '<cmd>Telescope jumplist<cr>', {})
-        map('n', 'fr', '<cmd>Telescope resume<cr>', {})
+        map('n', 'fr', '<cmd>Telescope resume<cr><tab>', {})
         map('n', 'f/', '<cmd>Telescope live_grep<cr>', {})
         map('n', 'fg', '<cmd>Telescope grep_string<cr>', {})
         cmd([[
@@ -74,6 +74,7 @@ function M.telescope_map()
         ]])
     end
     map('n', 'fo', '<cmd>Telescope ctags_outline outline<cr>', {})
+    map('n', 'fn', '<cmd>Telescope notify<cr>', {})
 
     map('n', 'gd', '<cmd>Telescope lsp_definitions<cr>', {})
     map('n', '<leader>lr', '<cmd>Telescope lsp_references<cr>', {})
@@ -243,6 +244,73 @@ function M.cmp_dictionary()
         capacity = 5,
         debug = false,
     })
+end
+
+function M.lualine()
+    local theme = 'auto'
+    if vim.g.colors_name == 'solarized8' then
+        theme = 'solarized'
+    end
+
+    require('lualine').setup({
+        extensions = {},
+        inactive_sections = {
+            lualine_a = {},
+            lualine_b = {},
+            lualine_c = { 'filename' },
+            lualine_x = { 'location' },
+            lualine_y = {},
+            lualine_z = {},
+        },
+        options = {
+            always_divide_middle = true,
+            component_separators = {
+                left = '|',
+                right = '|',
+            },
+            disabled_filetypes = {},
+            icons_enabled = false,
+            section_separators = {
+                left = '',
+                right = '',
+            },
+            theme = theme,
+        },
+        sections = {
+            lualine_a = { 'mode' },
+            lualine_b = { 'branch', 'diff', 'diagnostics' },
+            lualine_c = { 'filename' },
+            lualine_x = { 'encoding', 'fileformat', 'filetype' },
+            lualine_y = { 'progress' },
+            lualine_z = { 'location' },
+        },
+        tabline = {},
+    })
+end
+
+function M.notify()
+    require('notify').setup({
+        -- fade_in_slide_out fade slide static
+        stages = 'fade_in_slide_out',
+        on_open = nil,
+        on_close = nil,
+        render = 'default',
+        timeout = 5000,
+        background_colour = 'Normal',
+        minimum_width = 50,
+        icons = {
+            ERROR = 'E',
+            WARN = 'W',
+            INFO = 'I',
+            DEBUG = 'D',
+            TRACE = 'T',
+        },
+    })
+    cmd([[
+        highlight NotifyINFOIcon guifg=#009f9f
+        highlight NotifyINFOTitle guifg=#009f9f
+    ]])
+    vim.notify = require('notify')
 end
 
 return M

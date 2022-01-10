@@ -634,15 +634,6 @@ function! ColorConfig()
     let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
   endif
 
-  if !exists('g:lightline')
-    let g:lightline = {}
-  endif
-  if g:background ==# 'dark'
-    let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'wombat')
-  else
-    let g:lightline.colorscheme=get(g:, 'lightline_colorscheme', 'solarized')
-  endif
-
   exec 'colorscheme ' . g:colorscheme
   exec 'set background=' . g:background
 

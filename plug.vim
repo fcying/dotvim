@@ -207,6 +207,7 @@ MyPlug 'mhinz/vim-grepper', {'keys':'<plug>(GrepperOperator)'}
 MyPlug 'terryma/vim-expand-region'
 MyPlug 'andymass/vim-matchup'
 MyPlug 'fcying/vim-foldsearch', {'cmd': ['Fp', 'Fw', 'Fs', 'FS', 'Fl', 'Fi', 'Fd', 'Fe']}
+MyPlug 'chrisbra/Colorizer'
 
 if g:is_nvim
   MyPlug 'nvim-lua/plenary.nvim'

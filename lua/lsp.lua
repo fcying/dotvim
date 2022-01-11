@@ -1,6 +1,7 @@
 local M = {}
 local config = {}
 
+--local map = require('remap').map
 local bmap = require('remap').bmap
 local g, cmd, fn, lsp = vim.g, vim.cmd, vim.fn, vim.lsp
 
@@ -12,12 +13,16 @@ local util = require('lspconfig/util')
 
 local flags = { debounce_text_changes = 150 }
 
-local on_attach = function(_, _)
-    bmap('n', 'K', '<cmd>lua lsp.buf.hover()<CR>', {})
-    bmap('n', '<C-k>', '<cmd>lua lsp.buf.signature_help()<CR>', {})
-    bmap('n', '<space>rn', '<cmd>lua lsp.buf.rename()<CR>', {})
-    bmap('n', '[d', '<cmd>lua lsp.diagnostic.goto_prev()<CR>', {})
-    bmap('n', ']d', '<cmd>lua lsp.diagnostic.goto_next()<CR>', {})
+local diagnostics_on = true
+function M.diagnostic_toggle()
+    if diagnostics_on then
+        vim.notify('disable diagnostics')
+        vim.diagnostic.disable()
+    else
+        vim.notify('enable diagnostics')
+        vim.diagnostic.enable()
+    end
+    diagnostics_on = not diagnostics_on
 end
 
 local disalbe_diagnostics = lsp.with(lsp.diagnostic.on_publish_diagnostics, {
@@ -26,6 +31,17 @@ local disalbe_diagnostics = lsp.with(lsp.diagnostic.on_publish_diagnostics, {
     signs = false,
     update_in_insert = false,
 })
+
+local on_attach = function(_, _)
+    bmap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', {})
+    bmap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', {})
+    bmap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', {})
+    bmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', {})
+    bmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', {})
+    bmap('n', '<leader>ld', '<cmd>lua require("lsp").diagnostic_toggle()<CR>', {})
+    bmap('n', '<leader>lf', '<cmd>lua vim.lsp.buf.formatting()<CR>', {})
+end
+
 
 -- https://github.com/golang/tools/tree/master/gopls
 -- fork from https://github.com/neovim/nvim-lspconfig/issues/115#issuecomment-902680058
@@ -55,10 +71,6 @@ function M.goimports(timeout_ms)
     lsp.buf.formatting_sync(nil, timeout_ms)
 end
 
-function M.gofmt(timeout_ms)
-    lsp.buf.formatting_sync(nil, timeout_ms)
-end
-
 function config.register_ccls()
     local ccls_root_dir = server.get_server_root_path('ccls')
     local ccls_server = server.Server:new({
@@ -66,6 +78,7 @@ function config.register_ccls()
         root_dir = ccls_root_dir,
         homepage = 'https://github.com/MaskRay/ccls',
         languages = { 'c', 'c++' },
+        filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'h', 'hh' },
         installer = {
             std.download_file(
                 'https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.zip',
@@ -99,7 +112,7 @@ function config.ccls()
 end
 
 function config.clangd()
-    local clangd_cmd = { fn.expand(server.get_server_root_path('clangd') .. '/clangd_*/bin/clangd') }
+    local clangd_cmd = { fn.expand(server.get_server_root_path('clangd') .. '/clangd/bin/clangd') }
     table.insert(clangd_cmd, '--background-index')
     if g.gencconf_storein_rootmarker == 1 then
         table.insert(clangd_cmd, '--compile-commands-dir=' .. g.root_marker)
@@ -124,10 +137,9 @@ function config.go()
                 },
             },
         },
+        single_file_support = true,
         root_dir = function(fname)
-            return util.root_pattern('go.work')(fname)
-                or util.root_pattern('go.mod', '.git', '.root')(fname)
-                or util.path.dirname(fname)
+            return util.root_pattern('go.work')(fname) or util.root_pattern('go.mod', '.root', '.git')(fname)
         end,
     }
 end
@@ -206,7 +218,6 @@ function M.setup()
                 autocmd!
                 autocmd! * <buffer>
                 command! -nargs=0 Goimports lua require('lsp').goimports(800)
-                command! -nargs=0 Gofmt lua require('lsp').gofmt(200)
                 autocmd FileType go autocmd BufWritePre <buffer> Goimports
             augroup END
         ]])

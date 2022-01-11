@@ -10,7 +10,6 @@ execute 'source ' . g:root_dir . '/plug.vim'
 " plugin list {{{
 MyPlug 'lambdalisue/suda.vim', {'cmd':['SudaRead', 'SudaWrite']}
 MyPlug 'simnalamburt/vim-mundo'
-MyPlug 'chrisbra/Colorizer'
 "MyPlug 'skywind3000/vim-quickui'
 "MyPlug 'liuchengxu/vim-which-key'
 "MyPlug 'tpope/vim-apathy'

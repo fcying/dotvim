@@ -77,6 +77,7 @@ endif "}}}
 
 if (HasPlug('vim-foldsearch') != -1) "{{{
   let g:foldsearch_highlight = 1
+  let g:foldsearch_disable_mappings = 0
 
   nmap <Leader>fp :<C-u><C-R>=printf("Fp %s", expand("<cword>"))<CR>
   xmap <Leader>fp :<C-u><C-R>=printf("Fp %s", expand("<cword>"))<CR>

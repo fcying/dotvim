@@ -1,0 +1,10 @@
+{
+  "build": {
+    "prefix": ["bu", "build"],
+    "body": [
+      "[build]",
+      "command=$0"
+    ],
+    "description": "asynctasks build command"
+  }
+}

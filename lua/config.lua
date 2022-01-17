@@ -238,6 +238,7 @@ function M.cmp_dictionary()
         dic = {
             ['*'] = { g.root_dir .. '/dict/dictionary' },
             ['go'] = { g.root_dir .. '/dict/go.dict' },
+            ['lua'] = { g.root_dir .. '/dict/xmake.dict' },
         },
         exact = 2,
         async = false,

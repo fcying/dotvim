@@ -42,7 +42,6 @@ local on_attach = function(_, _)
     bmap('n', '<leader>lf', '<cmd>lua vim.lsp.buf.formatting()<CR>', {})
 end
 
-
 -- https://github.com/golang/tools/tree/master/gopls
 -- fork from https://github.com/neovim/nvim-lspconfig/issues/115#issuecomment-902680058
 function M.goimports(timeout_ms)
@@ -179,6 +178,14 @@ function config.lua()
                 Lua = {
                     IntelliSense = {
                         traceLocalSet = true,
+                    },
+                    workspace = {
+                        library = {},
+                        maxPreload = 10000,
+                    },
+                    diagnostics = {
+                        enable = true,
+                        disable = { 'undefined-global' },
                     },
                 },
             },

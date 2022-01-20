@@ -25,12 +25,20 @@ function M.diagnostic_toggle()
     diagnostics_on = not diagnostics_on
 end
 
-local disalbe_diagnostics = lsp.with(lsp.diagnostic.on_publish_diagnostics, {
-    underline = false,
-    virtual_text = false,
-    signs = false,
-    update_in_insert = false,
-})
+local function diagnostics_config(enable)
+    if enable == nil then
+        enable = 1
+    end
+
+    if enable == 0 then
+        return lsp.with(lsp.diagnostic.on_publish_diagnostics, {
+            underline = false,
+            virtual_text = false,
+            signs = false,
+            update_in_insert = false,
+        })
+    end
+end
 
 local on_attach = function(_, _)
     bmap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', {})
@@ -102,24 +110,33 @@ function config.ccls()
     M.server_opt.ccls = {
         on_attach = on_attach,
         flags = flags,
-        handlers = { ['textDocument/publishDiagnostics'] = disalbe_diagnostics },
+        handlers = { ['textDocument/publishDiagnostics'] = diagnostics_config(0) },
         init_options = {
             compilationDatabaseDirectory = config_dir,
             cache = { directory = cache_dir },
+            clang = {
+                excludeArgs = {},
+                extraArgs = { '-Wno-implicit-function-declaration' },
+            },
         },
     }
 end
 
 function config.clangd()
     local clangd_cmd = { fn.expand(server.get_server_root_path('clangd') .. '/clangd/bin/clangd') }
-    table.insert(clangd_cmd, '--background-index')
     if g.gencconf_storein_rootmarker == 1 then
         table.insert(clangd_cmd, '--compile-commands-dir=' .. g.root_marker)
     end
+    table.insert(clangd_cmd, '--background-index')
+    table.insert(clangd_cmd, '--all-scopes-completion')
+    table.insert(clangd_cmd, '--completion-style=detailed')
+    table.insert(clangd_cmd, '--header-insertion=iwyu')
+    table.insert(clangd_cmd, '--pch-storage=memory')
+
     M.server_opt.clangd = {
         on_attach = on_attach,
         flags = flags,
-        handlers = { ['textDocument/publishDiagnostics'] = disalbe_diagnostics },
+        handlers = { ['textDocument/publishDiagnostics'] = diagnostics_config(0) },
         cmd = clangd_cmd,
     }
 end
@@ -185,7 +202,7 @@ function config.lua()
                     },
                     diagnostics = {
                         enable = true,
-                        disable = { 'undefined-global' },
+                        disable = { 'undefined-global', 'empty-block' },
                     },
                 },
             },
@@ -214,6 +231,9 @@ function M.lspconfig()
 
     --server setup
     lsp_installer.on_server_ready(function(s)
+        if fn.index(g.lsp_ignore, s.name) ~= -1 then
+            return
+        end
         s:setup(M.server_opt[s.name] or M.server_opt['default'])
     end)
 end

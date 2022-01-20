@@ -12,9 +12,12 @@ let g:is_gui = has('gui_running') || !empty($NVIM_GUI)
 let g:is_tmux = exists('$TMUX')
 let g:is_conemu = !empty($CONEMUBUILD)
 let g:is_wsl = isdirectory('/mnt/c')
+
 let g:has_go = executable('go')
 let g:has_rg = executable('rg')
 let g:use_leaderf = get(g:,'use_leaderf','0')
+let g:lsp_ignore = get(g:,'lsp_ignore',[''])
+
 let g:mapleader = get(g:,'mapleader',' ')
 let g:root_markers = ['.root', '.git', '.repo', '.svn']
 let g:root_marker = ''
@@ -474,36 +477,6 @@ endfunction
 " tags ltag {{{
 set tags=tags,tags;
 set cscopequickfix=s-,c-,d-,i-,t-,e-,a-
-
-function! Go2Def(name)
-  if &ft ==# 'help'
-    exec 'tag ' . a:name
-  else
-    try
-      let l:wv = winsaveview()
-      let l:bufnr = bufnr('%')
-      exec 'silent ltag ' . a:name
-      let l:size = getloclist(0, {'size': 0}).size
-      if l:size > 1
-        if l:bufnr !=# bufnr('%')
-          exec 'buf ' . l:bufnr
-        endif
-        call winrestview(l:wv)
-        "leftabove lwindow
-        rightbelow lwindow
-      elseif l:size ==# 1
-        lclose
-        call search(a:name, 'cs')
-      endif
-    catch
-      call searchdecl(a:name)
-    endtry
-  endif
-endfunction
-nnoremap g<c-]> <c-]>
-vnoremap g<c-]> <c-]>
-nnoremap <silent> <c-]> :call Go2Def(expand('<cword>'))<CR>
-vnoremap <silent> <c-]> :call Go2Def(expand('<cword>'))<CR>
 
 func! Removetags()
   ClearClangConf

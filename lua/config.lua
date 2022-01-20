@@ -57,33 +57,73 @@ function M.packer()
     end
 end
 
+function Go2Def(str, mode)
+    if vim.o.filetype == 'help' then
+        pcall(fn.execute, 'tag ' .. str)
+    else
+        if mode == 1 then
+            local params = vim.lsp.util.make_position_params()
+            local ret = vim.lsp.buf_request(0, 'textDocument/definition', params, function() end)
+            if next(ret) ~= nil then
+                require('telescope.builtin').lsp_definitions()
+                return
+            end
+        end
+
+        local bufnr = fn.bufnr()
+        local lnum = fn.line('.')
+
+        local ret = pcall(fn.execute, 'silent ltag ' .. str)
+        local loc_size = fn.getloclist(0, { size = 0 }).size
+
+        if loc_size > 1 and ret == true then
+            -- if resut > 1, not auto jump
+            if bufnr ~= fn.bufnr() then
+                fn.execute('buf ' .. bufnr)
+            end
+            if lnum ~= fn.line('.') then
+                vim.cmd('normal ' .. lnum .. 'G^')
+            end
+
+            require('telescope.builtin').loclist()
+        end
+    end
+end
+
 function M.telescope_map()
     if fn.HasPlug('LeaderF') == -1 then --{{{
-        map('n', 'fm', '<cmd>Telescope oldfiles<cr>', {})
-        map('n', 'fb', '<cmd>Telescope buffers<cr>', {})
-        map('n', 'fl', '<cmd>Telescope current_buffer_fuzzy_find<cr>', {})
-        map('n', 'fh', '<cmd>Telescope help_tags<cr>', {})
-        map('n', 'ft', '<cmd>Telescope tags<cr>', {})
-        map('n', 'fj', '<cmd>Telescope jumplist<cr>', {})
-        map('n', 'fr', '<cmd>Telescope resume<cr><tab>', {})
-        map('n', 'f/', '<cmd>Telescope live_grep<cr>', {})
-        map('n', 'fg', '<cmd>Telescope grep_string<cr>', {})
+        map('n', 'fm', '<cmd>Telescope oldfiles<cr>')
+        map('n', 'fb', '<cmd>Telescope buffers<cr>')
+        map('n', 'fl', '<cmd>Telescope current_buffer_fuzzy_find<cr>')
+        map('n', 'fh', '<cmd>Telescope help_tags<cr>')
+        map('n', 'ft', '<cmd>Telescope tags<cr>')
+        map('n', 'fj', '<cmd>Telescope jumplist<cr>')
+        map('n', 'fr', '<cmd>Telescope resume<cr><tab>')
+        map('n', 'f/', '<cmd>Telescope live_grep<cr>')
+        map('n', 'fg', '<cmd>Telescope grep_string<cr>')
         cmd([[
             vnoremap fg :<C-u>lua require("telescope.builtin.files").grep_string({search="<C-R>=GetVisualSelection()<CR>"})
             nnoremap <silent>ff :<C-u><C-R>=g:find_command<CR><CR>
         ]])
     end
-    map('n', 'fo', '<cmd>Telescope ctags_outline outline<cr>', {})
-    map('n', 'fn', '<cmd>Telescope notify<cr>', {})
+    map('n', 'fo', '<cmd>Telescope ctags_outline outline<cr>')
+    map('n', 'fn', '<cmd>Telescope notify<cr>')
 
-    map('n', 'gd', '<cmd>Telescope lsp_definitions<cr>', {})
-    map('n', '<leader>lr', '<cmd>Telescope lsp_references<cr>', {})
-    map('n', '<leader>lt', '<cmd>Telescope lsp_type_definitions<cr>', {})
-    map('n', '<leader>li', '<cmd>Telescope lsp_implementations<cr>', {})
-    map('n', '<leader>la', '<cmd>Telescope lsp_code_actions<cr>', {})
-    map('n', '<leader>ls', '<cmd>Telescope lsp_document_symbols<cr>', {})
-    map('n', '<leader>le', '<cmd>Telescope diagnostics bufnr=0<cr>', {})
-    map('n', '<leader>lo', '<cmd>Telescope ctags_outline outline<cr>', {})
+    -- goto def
+    map('n', 'g<c-]>', '<c-]>')
+    map('v', 'g<c-]>', '<c-]>')
+    map('n', '<c-]>', ':lua Go2Def(vim.fn.expand("<cword>"), 0)<cr>')
+    map('v', '<c-]>', ':<c-u>lua Go2Def(vim.fn.GetVisualSelection(), 0)<cr>')
+    map('n', 'gd', ':lua Go2Def(vim.fn.expand("<cword>"), 1)<cr>')
+
+    --map('n', 'gd', '<cmd>Telescope lsp_definitions<cr>')
+    map('n', '<leader>lr', '<cmd>Telescope lsp_references<cr>')
+    map('n', '<leader>lt', '<cmd>Telescope lsp_type_definitions<cr>')
+    map('n', '<leader>li', '<cmd>Telescope lsp_implementations<cr>')
+    map('n', '<leader>la', '<cmd>Telescope lsp_code_actions<cr>')
+    map('n', '<leader>ls', '<cmd>Telescope lsp_document_symbols<cr>')
+    map('n', '<leader>le', '<cmd>Telescope diagnostics bufnr=0<cr>')
+    map('n', '<leader>lo', '<cmd>Telescope ctags_outline outline<cr>')
 end
 function M.telescope_update_ignore()
     g.find_command = 'Telescope find_files '

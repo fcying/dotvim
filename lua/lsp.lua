@@ -43,7 +43,7 @@ end
 local on_attach = function(_, _)
     bmap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', {})
     bmap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', {})
-    bmap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', {})
+    bmap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', {})
     bmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', {})
     bmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', {})
     bmap('n', '<leader>ld', '<cmd>lua require("lsp").diagnostic_toggle()<CR>', {})
@@ -79,22 +79,34 @@ function M.goimports(timeout_ms)
 end
 
 function config.register_ccls()
-    local ccls_root_dir = server.get_server_root_path('ccls')
+    local platform = require('nvim-lsp-installer.platform')
+    local context = require('nvim-lsp-installer.installers.context')
+    local process = require('nvim-lsp-installer.process')
+    local root_dir = server.get_server_root_path('ccls')
     local ccls_server = server.Server:new({
         name = 'ccls',
-        root_dir = ccls_root_dir,
+        root_dir = root_dir,
         homepage = 'https://github.com/MaskRay/ccls',
-        languages = { 'c', 'c++' },
+        languages = { 'c', 'c++', 'objective-c' },
         filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'h', 'hh' },
         installer = {
-            std.download_file(
-                'https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.zip',
-                'ccls.zip'
-            ),
-            std.unzip('ccls.zip', '.'),
+            context.capture(function()
+                if platform.is_linux == true then
+                    return std.untarxz_remote(
+                        'https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.txz'
+                    )
+                elseif platform.is_win == true then
+                    return std.unzip_remote(
+                        'https://github.com/fcying/tools/releases/download/tools/ccls_windows_amd64.zip'
+                    )
+                end
+                print('unsupport platform')
+            end),
         },
         default_options = {
-            cmd = { path.concat({ ccls_root_dir, 'ccls' }) },
+            cmd_env = {
+                PATH = process.extend_path({ root_dir }),
+            },
         },
     })
     lsp_installer.register(ccls_server)
@@ -122,21 +134,66 @@ function config.ccls()
     }
 end
 
+function config.register_clangd()
+    local platform = require('nvim-lsp-installer.platform')
+    local context = require('nvim-lsp-installer.installers.context')
+    local process = require('nvim-lsp-installer.process')
+    local Data = require('nvim-lsp-installer.data')
+    local root_dir = server.get_server_root_path('clangd')
+    local clangd_server = server.Server:new({
+        name = 'clangd',
+        root_dir = root_dir,
+        homepage = 'https://clangd.llvm.org',
+        languages = { 'c', 'c++' },
+        installer = {
+            context.use_github_release_file('clangd/clangd', function(version)
+                local target_file = Data.coalesce(
+                    Data.when(platform.is_mac, 'clangd-mac-%s.zip'),
+                    Data.when(platform.is_linux and platform.arch == 'x64', 'clangd-linux-%s.zip'),
+                    Data.when(platform.is_win, 'clangd-windows-%s.zip')
+                )
+                return target_file and target_file:format(version)
+            end),
+            context.capture(function(ctx)
+                if platform.is_linux == true then
+                    ctx.github_release_file =
+                        'https://github.com/fcying/tools/releases/download/tools/clangd_linux_amd64.txz'
+                    return std.untarxz_remote(ctx.github_release_file)
+                else
+                    return std.unzip_remote(ctx.github_release_file)
+                end
+            end),
+            context.capture(function(ctx)
+                return std.rename(('clangd_%s'):format(ctx.requested_server_version), 'clangd')
+            end),
+            context.receipt(function(receipt, ctx)
+                receipt:with_primary_source(receipt.github_release_file(ctx))
+            end),
+        },
+        default_options = {
+            cmd_env = {
+                PATH = process.extend_path({ path.concat({ root_dir, 'clangd', 'bin' }) }),
+            },
+        },
+    })
+    lsp_installer.register(clangd_server)
+end
+
 function config.clangd()
-    local clangd_cmd = { fn.expand(server.get_server_root_path('clangd') .. '/clangd/bin/clangd') }
-    if g.gencconf_storein_rootmarker == 1 then
-        table.insert(clangd_cmd, '--compile-commands-dir=' .. g.root_marker)
-    end
+    local clangd_cmd = { 'clangd' }
     table.insert(clangd_cmd, '--background-index')
     table.insert(clangd_cmd, '--all-scopes-completion')
     table.insert(clangd_cmd, '--completion-style=detailed')
     table.insert(clangd_cmd, '--header-insertion=iwyu')
     table.insert(clangd_cmd, '--pch-storage=memory')
+    if g.gencconf_storein_rootmarker == 1 then
+        table.insert(clangd_cmd, '--compile-commands-dir=' .. g.root_marker)
+    end
 
     M.server_opt.clangd = {
         on_attach = on_attach,
         flags = flags,
-        handlers = { ['textDocument/publishDiagnostics'] = diagnostics_config(0) },
+        --handlers = { ['textDocument/publishDiagnostics'] = diagnostics_config(0) },
         cmd = clangd_cmd,
     }
 end
@@ -251,6 +308,18 @@ function M.setup()
     end
 
     M.lspconfig()
+    vim.diagnostic.config({
+        virtual_text = false,
+        float = {
+            show_header = true,
+            source = 'always',
+            focusable = false,
+            format = function(diagnostic)
+                --vim.notify(vim.inspect(diagnostic))
+                return string.format('%s\n[%s]', diagnostic.message, diagnostic.user_data.lsp.code)
+            end,
+        }
+    })
 end
 
 return M

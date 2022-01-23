@@ -1,2 +1,7 @@
 Diagnostics:
-  Suppress: ['-Wimplicit-function-declaration']
+  Suppress:
+    [ 'pp_file_not_found',
+    '-Wimplicit-function-declaration',
+    'undeclared_var_use',
+    'expected_expression',
+    'unknown_typename']

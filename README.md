@@ -9,7 +9,7 @@ ln -svf ~/.vim/vimrc ~/.config/nvim/init.vim
 #### nvim_config.zip (only support NVIM 0.5+)
 ```
 download from release
-unzip nvim_config.zip
+tar xJf nvim_config.txz
 mv nvim ~/.config/
 ```
 

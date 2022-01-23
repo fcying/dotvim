@@ -2,7 +2,7 @@ name: release
 
 on:
   schedule:
-  - cron: '0 19 * * *'
+  - cron: '0 20 * * *'
   push:
     branches: [ master, test ]
   workflow_dispatch:
@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Install neovim
         run: |
+          mkdir ~/publish
+
           wget -qOnvim.tgz "https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz"
           tar xzf nvim.tgz
           sudo cp -rf ./nvim-linux64/* /usr/local
@@ -39,14 +41,14 @@ jobs:
 
           # gennerate packer_compiled.lua on first open
           rm -vf ./nvim/.plugged/plugin/packer_compiled.lua
-          7z -mx9 a nvim_config.zip ./nvim
+          XZ_OPT=-9 tar cJf nvim_config.txz nvim
 
           # install vendor
-          #nvim --headless -c 'LspInstall --sync clangd' -c 'q'
-          nvim --headless -c 'LspInstall --sync ccls' -c 'q'
+          nvim --headless -c 'LspInstall --sync clangd' -c 'q'
+          #nvim --headless -c 'LspInstall --sync ccls' -c 'q'
           nvim --headless -c 'LspInstall --sync sumneko_lua' -c 'q'
 
-          # get rg
+          echo "get rg"
           new_ver=$(curl -s "https://github.com/BurntSushi/ripgrep/releases/latest" | grep -Po "(\d+\.){2}\d+")
           filename=ripgrep-${new_ver}-x86_64-unknown-linux-musl
           wget -qOrg.tgz "https://github.com/BurntSushi/ripgrep/releases/download/$new_ver/$filename.tar.gz"
@@ -55,16 +57,16 @@ jobs:
           mv ./$filename/rg ~/.config/nvim/vendor/
           rm -r rg.tgz $filename
 
-          # get ctags
-          wget -qO ctags.zip https://github.com/fcying/tools/releases/download/tools/ctags_linux_amd64.zip
-          7z x -y ctags.zip
-          rm ctags.zip
+          echo "get universal-ctags"
+          wget -qO ctags.txz https://github.com/fcying/tools/releases/download/tools/ctags_linux_amd64.txz
+          tar xJf ctags.txz
+          rm ctags.txz
           mv ctags ~/.config/nvim/vendor/
 
           rm -vf ./nvim/.plugged/plugin/packer_compiled.lua
-          7z -mx9 a nvim_config_with_vendor.zip ./nvim
+          XZ_OPT=-9 tar cJf nvim_config_with_vendor.txz nvim
           popd
-          mv ~/.config/*.zip .
+          mv ~/.config/*.txz ~/publish
 
       - name: Publish release
         env:
@@ -80,4 +82,4 @@ jobs:
           } | tee /tmp/note.md
           gh release delete nvim_config -y || true
           git push origin :nvim_config || true
-          gh release create nvim_config -t "nvim_config" -F "/tmp/note.md" --target $GITHUB_SHA *.zip
+          gh release create nvim_config -t "nvim_config" -F "/tmp/note.md" --target $GITHUB_SHA ~/publish/*

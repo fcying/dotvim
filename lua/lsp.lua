@@ -163,16 +163,13 @@ function config.register_clangd()
                     return std.unzip_remote(ctx.github_release_file)
                 end
             end),
-            context.capture(function(ctx)
-                return std.rename(('clangd_%s'):format(ctx.requested_server_version), 'clangd')
-            end),
             context.receipt(function(receipt, ctx)
                 receipt:with_primary_source(receipt.github_release_file(ctx))
             end),
         },
         default_options = {
             cmd_env = {
-                PATH = process.extend_path({ path.concat({ root_dir, 'clangd', 'bin' }) }),
+                PATH = process.extend_path({ path.concat({ fn.expand(root_dir .. '/clangd*'), 'bin' }) }),
             },
         },
     })

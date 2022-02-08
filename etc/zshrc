@@ -445,12 +445,12 @@ alias ls='ls --color=auto'
 alias ll='ls -alh'
 
 function tmux_attach {
-    if [ -n "$1" ]; then
-        # add sleep fix "server exited unexpectedly" in some platform
-        tmux a -t $1 || sleep 0.0001; tmux new -s $1
-    else
-        tmux a || sleep 0.0001; tmux
-    fi
+    local attach=""
+    local new=""
+    [ -n "$1" ] && attach="-t$1" && new="-s$1"
+    tmux a $attach
+    # add sleep fix "server exited unexpectedly" in some platform
+    [ "$?" -ne 0 ] && sleep 0.0001 && tmux new $new
 }
 alias ta=' tmux_attach'
 alias tl=' tmux ls'

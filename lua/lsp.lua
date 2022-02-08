@@ -315,7 +315,7 @@ function M.setup()
                 --vim.notify(vim.inspect(diagnostic))
                 return string.format('%s\n[%s]', diagnostic.message, diagnostic.user_data.lsp.code)
             end,
-        }
+        },
     })
 end
 

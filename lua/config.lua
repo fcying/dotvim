@@ -70,13 +70,15 @@ function Go2Def(str, mode)
             end
         end
 
+        -- ltag
         local bufnr = fn.bufnr()
         local lnum = fn.line('.')
-
         local ret = pcall(fn.execute, 'silent ltag ' .. str)
-        local loc_size = fn.getloclist(0, { size = 0 }).size
+        if ret ~= true then
+            return
+        end
 
-        if loc_size > 1 and ret == true then
+        if fn.getloclist(0, { size = 0 }).size > 1 then
             -- if resut > 1, not auto jump
             if bufnr ~= fn.bufnr() then
                 fn.execute('buf ' .. bufnr)
@@ -85,6 +87,7 @@ function Go2Def(str, mode)
                 vim.cmd('normal ' .. lnum .. 'G^')
             end
 
+            --M.telescope_ltaglist()
             require('telescope.builtin').loclist()
         end
     end
@@ -92,11 +95,11 @@ end
 
 function M.telescope_map()
     if fn.HasPlug('LeaderF') == -1 then --{{{
+        map('n', 'ft', '<cmd>Telescope tags<cr>')
         map('n', 'fm', '<cmd>Telescope oldfiles<cr>')
         map('n', 'fb', '<cmd>Telescope buffers<cr>')
         map('n', 'fl', '<cmd>Telescope current_buffer_fuzzy_find<cr>')
         map('n', 'fh', '<cmd>Telescope help_tags<cr>')
-        map('n', 'ft', '<cmd>Telescope tags<cr>')
         map('n', 'fj', '<cmd>Telescope jumplist<cr>')
         map('n', 'fr', '<cmd>Telescope resume<cr><tab>')
         map('n', 'f/', '<cmd>Telescope live_grep<cr>')
@@ -125,6 +128,7 @@ function M.telescope_map()
     map('n', '<leader>le', '<cmd>Telescope diagnostics bufnr=0<cr>')
     map('n', '<leader>lo', '<cmd>Telescope ctags_outline outline<cr>')
 end
+
 function M.telescope_update_ignore()
     g.find_command = 'Telescope find_files '
     if g.has_rg == 1 then
@@ -149,6 +153,7 @@ function M.telescope_update_ignore()
         end
     end
 end
+
 function M.telescope()
     local actions = require('telescope.actions')
     local toggle_modes = function()

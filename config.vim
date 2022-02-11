@@ -169,7 +169,9 @@ if (HasPlug('asynctasks.vim') != -1) "{{{
   let g:asyncrun_rootmarks = ['.root', '.git', '.svn']
   let g:asynctasks_config_name = ['.root/.tasks', '.git/.tasks', '.tasks']
   let g:asynctasks_rtp_config = "asynctasks.ini"
-  nnoremap <leader>b :AsyncTask build<CR>
+  if mapcheck('<leader>b', 'N') == ''
+    noremap <leader>b :AsyncTask build<CR>
+  endif
 endif
 
 if (HasPlug('vim-preview') != -1) "{{{

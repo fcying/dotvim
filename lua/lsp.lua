@@ -239,7 +239,7 @@ function config.lua()
         library = {
             vimruntime = true,
             types = true,
-            plugins = true,
+            plugins = { 'plenary.nvim', 'telescope.nvim' },
         },
         runtime_path = false, -- enable this to get completion in require strings. Slow!
         lspconfig = {
@@ -290,6 +290,25 @@ function M.lspconfig()
         end
         s:setup(M.server_opt[s.name] or M.server_opt['default'])
     end)
+end
+
+function M.check_capabilities(feature)
+    local clients = vim.lsp.buf_get_clients(0)
+
+    local supported_client = false
+    for _, client in pairs(clients) do
+        supported_client = client.resolved_capabilities[feature]
+        if supported_client then
+            break
+        end
+    end
+
+    if supported_client then
+        return true
+    else
+        --vim.notify("lsp check false")
+        return false
+    end
 end
 
 function M.setup()

@@ -57,22 +57,42 @@ function M.packer()
     end
 end
 
-function Go2Def(str, mode)
+function Go2Def(str, opts)
+    opts = opts or {}
     if vim.o.filetype == 'help' then
         pcall(fn.execute, 'tag ' .. str)
     else
-        if mode == 1 then
-            local params = vim.lsp.util.make_position_params()
-            local ret = vim.lsp.buf_request(0, 'textDocument/definition', params, function() end)
-            if next(ret) ~= nil then
-                require('telescope.builtin').lsp_definitions()
-                return
+        local bufnr = fn.bufnr()
+        local lnum = fn.line('.')
+
+        if opts.mode == 1 then
+            if require('lsp').check_capabilities('goto_definition') == true then
+                local params = vim.lsp.util.make_position_params()
+                local ret = vim.lsp.buf_request_sync(0, 'textDocument/definition', params, 5000)
+
+                --vim.notify(vim.inspect(ret))
+                if ret and #ret ~= 0 then
+                    local result = ret[1].result or {}
+                    if #result == 1 then
+                        vim.lsp.util.jump_to_location(result[1])
+
+                        -- not jump, check tag
+                        if bufnr ~= fn.bufnr() or lnum ~= fn.line('.') then
+                            return
+                        end
+                    elseif #result > 1 then
+                        require('telescope.builtin').lsp_definitions()
+                        return
+                    end
+                end
             end
+        elseif opts.mode == 2 then
+            require('telescope.builtin').lsp_definitions()
+            return
         end
 
         -- ltag
-        local bufnr = fn.bufnr()
-        local lnum = fn.line('.')
+        --vim.notify("check ltags")
         local ret = pcall(fn.execute, 'silent ltag ' .. str)
         if ret ~= true then
             return
@@ -87,10 +107,87 @@ function Go2Def(str, mode)
                 vim.cmd('normal ' .. lnum .. 'G^')
             end
 
-            --M.telescope_ltaglist()
-            require('telescope.builtin').loclist()
+            M.telescope_ltaglist()
         end
     end
+end
+
+function M.telescope_ltaglist(opts)
+    local pickers = require('telescope.pickers')
+    local finders = require('telescope.finders')
+    local conf = require('telescope.config').values
+    local entry_display = require('telescope.pickers.entry_display')
+    local previewers = require('telescope.previewers')
+    local action_set = require('telescope.actions.set')
+    local action_state = require('telescope.actions.state')
+
+    opts = opts or {}
+
+    local displayer = entry_display.create({
+        separator = ' | ',
+        items = {
+            { remaining = true },
+            { remaining = true },
+        },
+    })
+
+    local make_display = function(entry)
+        --vim.notify(vim.inspect(entry))
+        return displayer({
+            { entry.filename },
+            { entry.text },
+        })
+    end
+
+    local entry_maker = function(entry)
+        local filename = vim.fn.bufname(entry.bufnr)
+        local scode = entry.pattern
+        scode = string.gsub(scode, [[^%^\V]], '')
+        scode = string.gsub(scode, [[\%$]], '')
+        return {
+            value = entry,
+            filename = filename,
+            text = string.gsub(scode, [[^%s*]], ''),
+            scode = scode,
+            lnum = 1,
+            col = 1,
+            tag = entry.text,
+            ordinal = filename .. ': ' .. entry.text,
+            display = make_display,
+        }
+    end
+
+    local locations = vim.fn.getloclist(0)
+    pickers.new(opts, {
+        prompt_title = 'Ltaglist',
+        sorter = conf.generic_sorter(opts),
+        previewer = previewers.ctags.new(opts),
+        finder = finders.new_table({
+            results = locations,
+            entry_maker = entry_maker,
+        }),
+        attach_mappings = function()
+            action_set.select:enhance({
+                post = function()
+                    local selection = action_state.get_selected_entry()
+
+                    if selection.scode then
+                        local scode = selection.scode
+                        scode = string.gsub(scode, '[$]$', '')
+                        scode = string.gsub(scode, [[\\]], [[\]])
+                        scode = string.gsub(scode, [[\/]], [[/]])
+                        scode = string.gsub(scode, '[*]', [[\*]])
+
+                        vim.fn.search(scode, 'w')
+                        vim.cmd('norm! zz')
+                    else
+                        vim.api.nvim_win_set_cursor(0, { selection.lnum, 0 })
+                    end
+                end,
+            })
+            return true
+        end,
+    }):find()
 end
 
 function M.telescope_map()
@@ -115,9 +212,10 @@ function M.telescope_map()
     -- goto def
     map('n', 'g<c-]>', '<c-]>')
     map('v', 'g<c-]>', '<c-]>')
-    map('n', '<c-]>', ':lua Go2Def(vim.fn.expand("<cword>"), 0)<cr>')
-    map('v', '<c-]>', ':<c-u>lua Go2Def(vim.fn.GetVisualSelection(), 0)<cr>')
-    map('n', 'gd', ':lua Go2Def(vim.fn.expand("<cword>"), 1)<cr>')
+    map('n', '<c-]>', ':lua Go2Def(vim.fn.expand("<cword>"), {mode=0})<cr>')
+    map('v', '<c-]>', ':<c-u>lua Go2Def(vim.fn.GetVisualSelection(), {mode=0})<cr>')
+    map('n', 'gd', ':lua Go2Def(vim.fn.expand("<cword>"), {mode=1})<cr>')
+    map('n', 'gD', ':lua Go2Def(vim.fn.expand("<cword>"), {mode=2})<cr>')
 
     --map('n', 'gd', '<cmd>Telescope lsp_definitions<cr>')
     map('n', '<leader>lr', '<cmd>Telescope lsp_references<cr>')

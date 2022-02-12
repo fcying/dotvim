@@ -606,11 +606,12 @@ if (HasPlug('vim-quickui') != -1) "{{{
   noremap <space><space> :call quickui#menu#open()<cr>
 endif "}}}
 
+if (HasPlug('nvim-lspconfig') != -1) "{{{
+  lua require('lsp').setup()
+endif
+
 if (HasPlug('telescope.nvim') != -1) "{{{
   lua require('config').telescope_map()
   "lua require('config').telescope()
 endif
 
-if (HasPlug('nvim-lspconfig') != -1) "{{{
-  lua require('lsp').setup()
-endif

@@ -2,6 +2,10 @@ Diagnostics:
   Suppress:
     [ 'pp_file_not_found',
     '-Wimplicit-function-declaration',
+    '-Wunused-value',
     'undeclared_var_use',
+    'undeclared_var_use_suggest',
     'expected_expression',
+    'typecheck_expression_not_modifiable_lvalue',
+    'unknown_typename_suggest',
     'unknown_typename']

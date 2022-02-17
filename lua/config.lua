@@ -71,8 +71,8 @@ function Go2Def(str, opts)
                 local ret = vim.lsp.buf_request_sync(0, 'textDocument/definition', params, 5000)
 
                 --vim.notify(vim.inspect(ret))
-                if ret and #ret ~= 0 then
-                    local result = ret[1].result or {}
+                if next(ret) then
+                    local result = ret[next(ret)].result or {}
                     if #result == 1 then
                         vim.lsp.util.jump_to_location(result[1])
 

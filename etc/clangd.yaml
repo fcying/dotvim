@@ -7,5 +7,6 @@ Diagnostics:
     'undeclared_var_use_suggest',
     'expected_expression',
     'typecheck_expression_not_modifiable_lvalue',
+    'typecheck_decl_incomplete_type',
     'unknown_typename_suggest',
     'unknown_typename']

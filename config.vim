@@ -99,9 +99,42 @@ if (HasPlug('vim-vsnip') != -1) "{{{
 endif "}}}
 
 if (HasPlug('vim-fugitive') != -1) "{{{
-  autocmd myau FileType fugitive* nmap <buffer> q gq
-  autocmd myau FileType git nmap <buffer> q :q<CR>
-  "autocmd myau FileType floggraph nmap <buffer> q <c-w>lq
+  function! GF(mode) abort
+    try
+      let result = &filetype ==# 'git' ? fugitive#Cfile() : ''
+    catch /^fugitive:/
+      return 'echoerr ' . string(v:exception)
+    endtry
+
+    "echom 'origin: ' . result . 'len: ' . len(result)
+
+    if len(result) > 0
+      if match(result, '+Gdiffsplit') != -1
+        exec 'G' . a:mode . ' ' . result
+      elseif match(result, 'fugitive://') != -1
+        let result = substitute(result, 'fugitive://', '', '')
+        let result = substitute(result, '\.git//.\{-}/', '', '')
+
+        exec 'G' . a:mode . ' ' . result
+      endif
+    endif
+  endfunction
+
+  let g:flog_default_arguments = {}
+  let g:flog_default_arguments.max_count = 1000
+  let g:flog_default_arguments.date = 'format:%Y-%m-%d %H:%M'
+  let g:flog_default_arguments.format = '%Cblue%ad%Creset %C(yellow)[%h]%Creset %Cgreen{%an}%Creset%Cred%d%Creset %s'
+
+  augroup flog
+    autocmd FileType fugitive* nmap <buffer> q gq
+    autocmd FileType git nmap <buffer> q :q<CR>
+    autocmd FileType git nmap <silent> <buffer> e :call GF('edit')<CR>
+    autocmd FileType git nmap <silent> <buffer> <c-t> :call GF('tabedit')<CR>
+    autocmd FileType git nmap <silent> <buffer> <c-n> :wincmd w<cr> <BAR> <Plug>(FlogVNextCommitRight) <BAR> :wincmd w<cr>
+    autocmd FileType git nmap <silent> <buffer> <c-p> :wincmd w<cr> <BAR> <Plug>(FlogVPrevCommitRight) <BAR> :wincmd w<cr>
+    autocmd FileType floggraph nnoremap <silent> <buffer> q  :wincmd w <bar> close<cr>
+    autocmd FileType floggraph nmap <silent> <buffer> <CR> <Plug>(FlogVSplitCommitRight) <BAR> :wincmd w<cr>
+  augroup END
 endif "}}}
 
 if (HasPlug('vim-grepper') != -1) "{{{

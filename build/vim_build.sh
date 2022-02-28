@@ -63,7 +63,7 @@ if [ $install == "true" ]; then
         else
             echo "os Ubuntu/debian"
             sudo apt install -y build-essential libncurses5-dev libxt-dev \
-                python3-dev lua5.2 liblua5.2-dev
+                python3-dev luajit libluajit-5.1-dev
             #sudo apt install libgnome2-dev libgnomeui-dev libgtk2.0-dev libcairo2-dev libx11-dev libxpm-dev libatk1.0-dev
         fi
     fi
@@ -103,7 +103,7 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
     export LUA_VER=52
     export DYNAMIC_LUA=yes
     export PYTHON3=d:/tool/python/Python3
-    export PYTHON3_VER=37
+    export PYTHON3_VER=39
     export DYNAMIC_PYTHON3=yes
     export ARCH=x86-64
     export OLE=yes
@@ -137,7 +137,8 @@ else
 --enable-cscope \
 --enable-rubyinterp=dynamic \
 --enable-python3interp --with-python3-command=python3 \
---enable-luainterp=dynamic \
+--enable-luainterp \
+--with-luajit \
 --enable-perlinterp=dynamic \
 --prefix=$prefix \
 --with-compiledby=fcying"

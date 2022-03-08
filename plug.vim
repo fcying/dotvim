@@ -190,6 +190,7 @@ endif
 " ============================================================================
 MyPlug 'fcying/gen_clang_conf.vim'
 MyPlug 'wsdjeg/vim-fetch'
+MyPlug 'tpope/vim-sleuth'
 
 MyPlug 'moll/vim-bbye', {'cmd':'Bdelete'}
 MyPlug 'preservim/nerdcommenter', {'keys':'<plug>NERDCommenter'}

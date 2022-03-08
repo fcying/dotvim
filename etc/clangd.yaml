@@ -4,6 +4,8 @@ Diagnostics:
     '-Wimplicit-function-declaration',
     '-Wunused-value',
     '-Wincompatible-pointer-types',
+    '-Wtentative-definition-incomplete-type',
+    'tentative_def_incomplete_type',
     'undeclared_var_use',
     'undeclared_var_use_suggest',
     'expected_expression',

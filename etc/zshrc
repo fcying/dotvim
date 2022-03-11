@@ -31,17 +31,17 @@ export LESS='-F -g -i -M -R -S -w -X -z-4'
     fi
 
     # https://github.com/rupor-github/wsl-ssh-agent#wsl-2-compatibility
-    if [ -z "$SSH_AUTH_SOCK" ]; then
-        export WSL2_AGENT=true
-        export SSH_AUTH_SOCK=$HOME/.ssh/agent.sock
-        if [ "$(ss -a | grep -c "$SSH_AUTH_SOCK")" -eq 0 ]; then
-            rm -f "$SSH_AUTH_SOCK"
-            ( setsid socat UNIX-LISTEN:"$SSH_AUTH_SOCK",fork EXEC:"$HOME/sync/bin/npiperelay.exe -ei -s //./pipe/openssh-ssh-agent",nofork & ) >/dev/null 2>&1
-        elif [ ! -f "$SSH_AUTH_SOCK" ]; then
-            kill "$(pgrep -f "[s]ocat.*$SSH_AUTH_SOCK")" 2>/dev/null
-            ( setsid socat UNIX-LISTEN:"$SSH_AUTH_SOCK",fork EXEC:"$HOME/sync/bin/npiperelay.exe -ei -s //./pipe/openssh-ssh-agent",nofork & ) >/dev/null 2>&1
-        fi
-    fi
+    #if [ -z "$SSH_AUTH_SOCK" ]; then
+    #    export WSL2_AGENT=true
+    #    export SSH_AUTH_SOCK=$HOME/.ssh/agent.sock
+    #    if [ "$(ss -a | grep -c "$SSH_AUTH_SOCK")" -eq 0 ]; then
+    #        rm -f "$SSH_AUTH_SOCK"
+    #        ( setsid socat UNIX-LISTEN:"$SSH_AUTH_SOCK",fork EXEC:"$HOME/sync/bin/npiperelay.exe -ei -s //./pipe/openssh-ssh-agent",nofork & ) >/dev/null 2>&1
+    #    elif [ ! -f "$SSH_AUTH_SOCK" ]; then
+    #        kill "$(pgrep -f "[s]ocat.*$SSH_AUTH_SOCK")" 2>/dev/null
+    #        ( setsid socat UNIX-LISTEN:"$SSH_AUTH_SOCK",fork EXEC:"$HOME/sync/bin/npiperelay.exe -ei -s //./pipe/openssh-ssh-agent",nofork & ) >/dev/null 2>&1
+    #    fi
+    #fi
 }
 
 # screen-256color xterm-256color
@@ -448,7 +448,7 @@ function tmux_attach {
     local attach=""
     local new=""
     [ -n "$1" ] && attach="-t$1" && new="-s$1"
-    tmux a $attach
+    tmux a $attach 2>/dev/null
     # add sleep fix "server exited unexpectedly" in some platform
     [ "$?" -ne 0 ] && sleep 0.0001 && tmux new $new
 }

@@ -211,8 +211,7 @@ MyPlug 'fcying/vim-foldsearch', {'cmd': ['Fp', 'Fw', 'Fs', 'FS', 'Fl', 'Fi', 'Fd
 MyPlug 'chrisbra/Colorizer'
 
 if g:is_nvim
-  "MyPlug 'nvim-lua/plenary.nvim'
-  MyPlug 'fcying/plenary.nvim'
+  MyPlug 'nvim-lua/plenary.nvim'
   MyPlug 'nvim-telescope/telescope.nvim', {'config': 'telescope', 'cmd': 'Telescope', 'module_pattern': 'telescope.*'}
   "MyPlug 'nvim-telescope/telescope.nvim'
   MyPlug 'nvim-telescope/telescope-fzf-native.nvim', { 'run': 'make' }

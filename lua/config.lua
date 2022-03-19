@@ -312,27 +312,29 @@ function M.cmp()
     cmd([[autocmd myau BufEnter * setl omnifunc=syntaxcomplete#Complete]])
     local cmp = require('cmp')
     cmp.setup({
+        snippet = {
+            expand = function(args)
+                fn['vsnip#anonymous'](args.body)
+            end,
+        },
         preselect = cmp.PreselectMode.None,
         mapping = {
             ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' }),
             ['<S-Tab>'] = cmp.mapping(cmp.mapping.select_prev_item(), { 'i', 's' }),
             ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
             ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+            ['<C-l>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
+            ['<C-y>'] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
             ['<C-e>'] = cmp.mapping({
                 i = cmp.mapping.abort(),
                 c = cmp.mapping.close(),
             }),
             ['<CR>'] = cmp.mapping.confirm({ select = false }),
         },
-        snippet = {
-            expand = function(args)
-                fn['vsnip#anonymous'](args.body)
-            end,
-        },
         sources = cmp.config.sources({
             { name = 'vsnip' },
-            { name = 'nvim_lsp' },
             { name = 'path' },
+            { name = 'nvim_lsp' },
             { name = 'dictionary' },
             { name = 'cmdline' },
             { name = 'buffer' },
@@ -384,10 +386,12 @@ function M.cmp_dictionary()
             ['lua'] = { g.root_dir .. '/dict/xmake.dict' },
         },
         exact = 2,
+        first_case_insensitive = false,
         async = false,
         capacity = 5,
         debug = false,
     })
+    require("cmp_dictionary").update()
 end
 
 function M.lualine()

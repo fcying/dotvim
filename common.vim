@@ -216,6 +216,7 @@ autocmd myau FileType vim,json,jsonc,yaml,toml,dosbatch
 autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
 autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
 autocmd myau BufNewFile,BufRead .tasks setl filetype=conf
+autocmd myau BufNewFile,BufRead syslog setl filetype=messages
 
 " foldmethod {{{
 set foldmethod=manual

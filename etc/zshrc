@@ -350,7 +350,7 @@ fi
 old_sock=
 function myprecmd() {
     # SSH_AUTH_SOCK {{{
-    if [ -n "$TMUX" ] && [ -n "$SSH_AUTH_SOCK" ] && [ "$WSL2_AGENT" != "true" ]; then
+    if [ -n "$TMUX" ] && [ "$WSL2_AGENT" != "true" ]; then
         new_sock=$(find /tmp/ssh-* -type s -perm -700 -user "$USER" 2>/dev/null)
         if [ -n "$new_sock" ]; then
             new_sock=$(echo "$new_sock" | xargs ls -t | head -n 1)
@@ -488,7 +488,7 @@ function adb_logcat() {
     [ -n "$1" ] && search_opt="| rg \"$*\"" || search_opt=""
     eval "while true; do adb logcat -v time $search_opt; sleep 3; done;"
 }
-function kmsg() {
+function adb_kmsg() {
     local search_opt
     adb wait-for-device && adb root && adb wait-for-device
     [ -n "$1" ] && search_opt="| rg -a \"$*\"" || search_opt=""

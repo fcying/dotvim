@@ -10,7 +10,7 @@ function M.map(mode, lhs, rhs, opts)
     api.nvim_set_keymap(mode, lhs, rhs, opts)
 end
 
-function M.bmap(mode, lhs, rhs, opts)
+function M.bmap(bufnr, mode, lhs, rhs, opts)
     opts = opts or get_defaults(mode)
     api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
 end

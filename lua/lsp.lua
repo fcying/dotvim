@@ -40,14 +40,14 @@ local function diagnostics_config(enable)
     end
 end
 
-local on_attach = function(_, _)
-    bmap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', {})
-    bmap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', {})
-    bmap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', {})
-    bmap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', {})
-    bmap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', {})
-    bmap('n', '<leader>ld', '<cmd>lua require("lsp").diagnostic_toggle()<CR>', {})
-    bmap('n', '<leader>lf', '<cmd>lua vim.lsp.buf.formatting()<CR>', {})
+local on_attach = function(client, bufnr)
+    bmap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', {})
+    bmap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', {})
+    bmap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', {})
+    bmap(bufnr, 'n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', {})
+    bmap(bufnr, 'n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', {})
+    bmap(bufnr, 'n', '<leader>ld', '<cmd>lua require("lsp").diagnostic_toggle()<CR>', {})
+    bmap(bufnr, 'n', '<leader>lf', '<cmd>lua vim.lsp.buf.formatting()<CR>', {})
 end
 
 -- https://github.com/golang/tools/tree/master/gopls

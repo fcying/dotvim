@@ -391,7 +391,7 @@ function M.cmp_dictionary()
         capacity = 5,
         debug = false,
     })
-    require("cmp_dictionary").update()
+    require('cmp_dictionary').update()
 end
 
 function M.lualine()
@@ -411,6 +411,7 @@ function M.lualine()
             lualine_z = {},
         },
         options = {
+            --globalstatus = true,
             always_divide_middle = true,
             component_separators = {
                 left = '|',
@@ -427,6 +428,7 @@ function M.lualine()
         sections = {
             lualine_a = { 'mode' },
             lualine_b = { 'diff', 'diagnostics' },
+            --lualine_b = { 'branch', 'diff', 'diagnostics' },
             lualine_c = { 'filename' },
             lualine_x = { 'encoding', 'fileformat', 'filetype' },
             lualine_y = { 'progress' },

@@ -218,6 +218,12 @@ autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
 autocmd myau BufNewFile,BufRead .tasks setl filetype=conf
 autocmd myau BufNewFile,BufRead syslog setl filetype=messages
 
+" use filetype.lua instead of filetype.vim
+if g:is_nvim
+  let g:do_filetype_lua = 1
+  let g:did_load_filetypes = 0
+endif
+
 " foldmethod {{{
 set foldmethod=manual
 set nofoldenable

@@ -561,8 +561,8 @@ if (HasPlug('vim-which-key') != -1) "{{{
   nnoremap <silent> t :<c-u>WhichKey 't'<CR>
 
   autocmd! FileType which_key
-  autocmd  FileType which_key set laststatus=0 noshowmode noruler
-        \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+  autocmd  FileType which_key set noshowmode noruler
+        \| autocmd BufLeave <buffer> set showmode ruler
 
   let g:which_key_map   = {}
   let g:which_key_map_f = {}

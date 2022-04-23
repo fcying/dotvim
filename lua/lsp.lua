@@ -6,7 +6,7 @@ local bmap = require('remap').bmap
 local g, cmd, fn, lsp = vim.g, vim.cmd, vim.fn, vim.lsp
 
 local server = require('nvim-lsp-installer.server')
-local std = require('nvim-lsp-installer.installers.std')
+local std = require('nvim-lsp-installer.core.managers.std')
 local lsp_installer = require('nvim-lsp-installer')
 local path = require('nvim-lsp-installer.path')
 local util = require('lspconfig/util')
@@ -79,30 +79,31 @@ function M.goimports(timeout_ms)
 end
 
 function config.register_ccls()
-    local platform = require('nvim-lsp-installer.platform')
-    local context = require('nvim-lsp-installer.installers.context')
-    local process = require('nvim-lsp-installer.process')
     local root_dir = server.get_server_root_path('ccls')
+    local platform = require('nvim-lsp-installer.platform')
+    local process = require('nvim-lsp-installer.process')
+
     local ccls_server = server.Server:new({
         name = 'ccls',
         root_dir = root_dir,
         homepage = 'https://github.com/MaskRay/ccls',
         languages = { 'c', 'c++', 'objective-c' },
         filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'h', 'hh' },
-        installer = {
-            context.capture(function()
-                if platform.is_linux == true then
-                    return std.untarxz_remote(
-                        'https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.txz'
-                    )
-                elseif platform.is_win == true then
-                    return std.unzip_remote(
-                        'https://github.com/fcying/tools/releases/download/tools/ccls_windows_amd64.zip'
-                    )
-                end
+        async = true,
+        installer = function(ctx)
+            local source
+            if platform.is_linux == true then
+                ctx.github_release_file = 'https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.txz'
+                std.download_file(ctx.github_release_file, 'ccls.txz')
+                std.untarxz('ccls.txz')
+            elseif platform.is_win == true then
+                ctx.github_release_file = 'https://github.com/fcying/tools/releases/download/tools/ccls_windows_amd64.zip'
+                std.download_file(ctx.github_release_file, 'ccls.zip')
+                std.unzip('ccls.zip')
+            else
                 print('unsupport platform')
-            end),
-        },
+            end
+        end,
         default_options = {
             cmd_env = {
                 PATH = process.extend_path({ root_dir }),
@@ -135,38 +136,43 @@ function config.ccls()
 end
 
 function config.register_clangd()
-    local platform = require('nvim-lsp-installer.platform')
-    local context = require('nvim-lsp-installer.installers.context')
-    local process = require('nvim-lsp-installer.process')
-    local Data = require('nvim-lsp-installer.data')
     local root_dir = server.get_server_root_path('clangd')
+    local platform = require('nvim-lsp-installer.platform')
+    local process = require('nvim-lsp-installer.process')
+    local github = require('nvim-lsp-installer.core.managers.github')
+    local Data = require "nvim-lsp-installer.data"
+    local coalesce, when = Data.coalesce, Data.when
+
     local clangd_server = server.Server:new({
         name = 'clangd',
         root_dir = root_dir,
         homepage = 'https://clangd.llvm.org',
         languages = { 'c', 'c++' },
-        installer = {
-            context.use_github_release_file('clangd/clangd', function(version)
-                local target_file = Data.coalesce(
-                    Data.when(platform.is_mac, 'clangd-mac-%s.zip'),
-                    Data.when(platform.is_linux and platform.arch == 'x64', 'clangd-linux-%s.zip'),
-                    Data.when(platform.is_win, 'clangd-windows-%s.zip')
-                )
-                return target_file and target_file:format(version)
-            end),
-            context.capture(function(ctx)
-                if platform.is_linux == true then
-                    ctx.github_release_file =
-                        'https://github.com/fcying/tools/releases/download/tools/clangd_linux_amd64.txz'
-                    return std.untarxz_remote(ctx.github_release_file)
-                else
-                    return std.unzip_remote(ctx.github_release_file)
-                end
-            end),
-            context.receipt(function(receipt, ctx)
-                receipt:with_primary_source(receipt.github_release_file(ctx))
-            end),
-        },
+        async = true,
+        installer = function(ctx)
+            local source
+            if platform.is_linux == true then
+                source = github.untarxz_release_file {
+                    repo = 'fcying/tools',
+                    release = 'tools',
+                    asset_file = 'clangd_linux_amd64.txz',
+                }
+            else
+                source = github.unzip_release_file {
+                    repo = "clangd/clangd",
+                    asset_file = function(release)
+                        local target = coalesce(
+                            when(platform.is_mac, "clangd-mac-%s.zip"),
+                            when(platform.is_linux and platform.arch == "x64", "clangd-linux-%s.zip"),
+                            when(platform.is_win, "clangd-windows-%s.zip")
+                        )
+                        return target and target:format(release)
+                    end,
+                }
+            end
+            source.with_receipt()
+            --ctx.fs:rename(("clangd_%s"):format(source.release), "clangd")
+        end,
         default_options = {
             cmd_env = {
                 PATH = process.extend_path({ path.concat({ fn.expand(root_dir .. '/clangd*'), 'bin' }) }),

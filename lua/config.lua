@@ -74,7 +74,9 @@ function Go2Def(str, opts)
                 if next(ret) then
                     local result = ret[next(ret)].result or {}
                     if #result == 1 then
-                        vim.lsp.util.jump_to_location(result[1])
+                        local clients = vim.lsp.buf_get_clients(0)
+                        local client = clients[next(clients)] or { offset_encoding = 'utf-8' }
+                        vim.lsp.util.jump_to_location(result[1], client.offset_encoding)
 
                         -- not jump, check tag
                         if bufnr ~= fn.bufnr() or lnum ~= fn.line('.') then

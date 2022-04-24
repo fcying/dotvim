@@ -40,6 +40,7 @@ local function diagnostics_config(enable)
     end
 end
 
+---@diagnostic disable-next-line unused-local
 local on_attach = function(client, bufnr)
     bmap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', {})
     bmap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', {})
@@ -91,7 +92,6 @@ function config.register_ccls()
         filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'h', 'hh' },
         async = true,
         installer = function(ctx)
-            local source
             if platform.is_linux == true then
                 ctx.github_release_file = 'https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.txz'
                 std.download_file(ctx.github_release_file, 'ccls.txz')
@@ -149,7 +149,7 @@ function config.register_clangd()
         homepage = 'https://clangd.llvm.org',
         languages = { 'c', 'c++' },
         async = true,
-        installer = function(ctx)
+        installer = function(ctx)   ---@diagnostic disable-line unused-local
             local source
             if platform.is_linux == true then
                 source = github.untarxz_release_file {

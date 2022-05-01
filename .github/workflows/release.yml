@@ -49,7 +49,7 @@ jobs:
           nvim --headless -c 'LspInstall --sync sumneko_lua' -c 'q'
 
           echo "get rg"
-          new_ver=$(curl -s "https://github.com/BurntSushi/ripgrep/releases/latest" | grep -Po "(\d+\.){2}\d+")
+          new_ver=$(curl -sv "https://github.com/BurntSushi/ripgrep/releases/latest" 2>&1 | grep -P location: | grep -Po "(\d+\.){2}\d+")
           filename=ripgrep-${new_ver}-x86_64-unknown-linux-musl
           wget -qOrg.tgz "https://github.com/BurntSushi/ripgrep/releases/download/$new_ver/$filename.tar.gz"
           tar xzf rg.tgz

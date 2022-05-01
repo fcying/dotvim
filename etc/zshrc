@@ -96,7 +96,7 @@ type nvim >/dev/null 2>&1 && {
     alias vimdiff='nvim -d'
     alias nvim-qt="NVIM_GUI=1 nvim-qt"
     alias mvim='nvim -u ~/.vim/nvim_config/init.vim'
-    alias tvim='nvim -u ~/test/nvim_config/init.lua'
+    alias tvim='nvim -u ~/test/nvim/init.lua'
 }
 
 
@@ -156,7 +156,6 @@ zinit light zsh-users/zsh-completions
 
 function PluginFinish() {
     if [ -n "$zinit_inited" ]; then
-        zinit self-update
         zinit compile --all
     fi
     source "$CONFIG_DIR"/zsh_plugin.zsh
@@ -442,7 +441,7 @@ alias py='python3'
 alias py2='python2'
 alias py3='python3'
 alias ls='ls --color=auto'
-alias ll='ls -alh'
+alias ll='ls -alh --time-style=long-iso'
 
 function tmux_attach {
     local attach=""

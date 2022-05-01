@@ -12,6 +12,12 @@ function M.packer()
     local function conf(name)
         return string.format("require('config').%s()", name)
     end
+
+    local status_ok, impatient = pcall(require, 'impatient')
+    if status_ok then
+        impatient.enable_profile()
+    end
+
     local packer = require('packer')
     local use = packer.use
 

@@ -138,6 +138,6 @@ function prompt:filter(old_prompt)
     local git = git_prompt_info()
     -- The matching relies on the default prompt which ends in X:\PATH\PATH>
     local cwd = old_prompt:match('.*(.:[^>]*)>') or clink.get_cwd()
-    return BLUE .. cwd .. NORMAL .. git .. '$'
+    return BLUE .. cwd .. NORMAL .. git .. '$ '
 end
 

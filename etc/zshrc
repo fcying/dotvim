@@ -85,8 +85,8 @@ path=(
     $path
 )
 fpath=(
-    "$HOME"/.vim/etc/fpath
     $fpath
+    "$HOME"/.vim/etc/fpath
 )
 
 type nvim >/dev/null 2>&1 && {

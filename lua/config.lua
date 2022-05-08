@@ -214,8 +214,9 @@ function M.telescope_map()
             nnoremap <silent>ff :<C-u><C-R>=g:find_command<CR><CR>
         ]])
     end
-    map('n', 'fo', '<cmd>Telescope ctags_outline outline<cr>')
-    map('n', 'fn', '<cmd>Telescope notify<cr>')
+
+    map('n', 'fo', '<cmd>Telescope ctags_outline outline<CR>')
+    map('n', 'fn', '<cmd>Telescope notify<CR>')
 
     -- goto def
     map('n', 'g<c-]>', '<c-]>')
@@ -471,6 +472,24 @@ function M.notify()
         highlight NotifyINFOTitle guifg=#009f9f
     ]])
     vim.notify = require('notify')
+end
+
+function M.marks()
+    map('n', '<leader>ml', '<cmd>Telescope marks<CR>')
+    require'marks'.setup {
+        default_mappings = true,
+        builtin_marks = {},
+        cyclic = true,
+        force_write_shada = false,
+        refresh_interval = 250,
+        sign_priority = { lower=10, upper=15, builtin=8, bookmark=20 },
+        excluded_filetypes = {},
+        bookmark_0 = {
+            sign = "⚑",
+            virt_text = ""
+        },
+        mappings = {}
+    }
 end
 
 return M

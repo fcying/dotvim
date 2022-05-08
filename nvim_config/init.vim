@@ -16,6 +16,6 @@ let g:colorscheme = get(g:, 'colorscheme', 'onedark')
 
 call ColorConfig()
 
-call LoadAfterConfig()
+call PostLoadConfig()
 
 

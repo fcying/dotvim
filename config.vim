@@ -482,16 +482,6 @@ if (HasPlug('vim-choosewin') != -1) "{{{
   nmap - <Plug>(choosewin)
 endif "}}}
 
-if (HasPlug('vim-bookmarks') != -1) "{{{
-  nmap <Leader>mt <Plug>BookmarkToggle
-  nmap <Leader>mi <Plug>BookmarkAnnotate
-  nmap <Leader>ma <Plug>BookmarkShowAll
-  nmap <Leader>mj <Plug>BookmarkNext
-  nmap <Leader>mk <Plug>BookmarkPrev
-  nmap <Leader>mc <Plug>BookmarkClear
-  nmap <Leader>mx <Plug>BookmarkClearAll
-endif "}}}
-
 if (HasPlug('fencview') != -1) "{{{
   let g:fencview_autodetect = 1
   let g:fencview_checklines = 10

@@ -86,7 +86,7 @@ path=(
 )
 fpath=(
     $fpath
-    "$HOME"/.vim/etc/fpath
+    $CONFIG_DIR/fpath
 )
 
 type nvim >/dev/null 2>&1 && {
@@ -151,7 +151,7 @@ zinit ice wait'0' lucid atinit'zpcompinit; zpcdreplay'
 zinit light zsh-users/zsh-syntax-highlighting
 #zinit light zdharma/fast-syntax-highlighting
 
-zinit ice wait'0' blockf lucid
+zinit ice wait'0' blockf lucid atload'PluginFinish'
 zinit light zsh-users/zsh-completions
 
 function PluginFinish() {
@@ -159,10 +159,8 @@ function PluginFinish() {
         zinit compile --all
     fi
     source "$CONFIG_DIR"/zsh_plugin.zsh
-    type LoadAfter >/dev/null 2>&1 && LoadAfter
+    type PostLoad >/dev/null 2>&1 && PostLoad
 }
-zinit ice wait'0' lucid atload'PluginFinish'
-zinit snippet /dev/null
 
 
 # third party software {{{

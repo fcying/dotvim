@@ -199,6 +199,13 @@ MyPlug 'machakann/vim-sandwich'
 MyPlug 'dstein64/vim-startuptime', {'cmd':'StartupTime'}
 MyPlug 'mbbill/fencview', {'cmd':['FencView','FencAutoDetect']}
 
+MyPlug 'liuchengxu/vim-which-key'
+MyPlug 't9md/vim-choosewin', {'keys':'<Plug>(choosewin)'}
+MyPlug 'preservim/tagbar', {'cmd':'TagbarToggle'}
+MyPlug 'Yggdroot/indentLine', {'cmd': 'IndentLinesToggle'}
+"MyPlug 'MattesGroeger/vim-bookmarks'
+MyPlug 'chentau/marks.nvim', {'config':'marks', 'event':'VimEnter'}
+
 MyPlug 'tpope/vim-fugitive' , {'cmd': ['G', 'Git', 'Gedit', 'Gread', 'Gwrite', 'Gdiffsplit', 'Gvdiffsplit'], 'fn': 'fugitive#*'}
 MyPlug 'rbong/vim-flog', {'cmd': ['Flog', 'Flogsplit', 'Floggit'], 'require': 'tpope/vim-fugitive', 'branch': 'master'}
 
@@ -211,20 +218,21 @@ MyPlug 'fcying/vim-foldsearch', {'cmd': ['Fp', 'Fw', 'Fs', 'FS', 'Fl', 'Fi', 'Fd
 MyPlug 'chrisbra/Colorizer'
 
 if g:is_nvim
-  MyPlug 'lewis6991/impatient.nvim', {'opt': 'true'}
+  " telescope {{{
   MyPlug 'nvim-lua/plenary.nvim'
   MyPlug 'nvim-telescope/telescope.nvim', {'config': 'telescope', 'cmd': 'Telescope', 'module_pattern': 'telescope.*'}
   "MyPlug 'nvim-telescope/telescope.nvim'
-  MyPlug 'nvim-telescope/telescope-fzf-native.nvim', { 'run': 'make' }
   MyPlug 'fcying/telescope-ctags-outline.nvim'
+  MyPlug 'nvim-telescope/telescope-fzf-native.nvim', { 'run': 'make' }
+
+  MyPlug 'lewis6991/impatient.nvim', {'opt': 'true'}
   MyPlug 'kevinhwang91/nvim-bqf', {'ft':'qf'}
   MyPlug 'rcarriga/nvim-notify', {'config':'notify', 'event':'VimEnter'}
   MyPlug 'nvim-lualine/lualine.nvim', {'config':'lualine', 'event':'VimEnter'}
 
+  "MyPlug 'kevinhwang91/nvim-hclipboard'
   " FIXME nvim cursorhold bug https://github.com/neovim/neovim/issues/12587
   MyPlug 'antoinemadec/FixCursorHold.nvim'
-  " FIXME https://github.com/neovim/neovim/issues/14967 in 0.5.0
-  "MyPlug 'kevinhwang91/nvim-hclipboard'
 else
   MyPlug 'tmux-plugins/vim-tmux-focus-events'
   MyPlug 'roxma/vim-tmux-clipboard'
@@ -237,9 +245,6 @@ endif
 
 MyPlug 'skywind3000/asyncrun.vim', {'cmd': ['AsyncRun', 'AsyncStop'] }
 MyPlug 'skywind3000/asynctasks.vim', {'cmd': ['AsyncTask', 'AsyncTaskMacro', 'AsyncTaskList', 'AsyncTaskEdit'] }
-
-MyPlug 't9md/vim-choosewin', {'keys':'<Plug>(choosewin)'}
-MyPlug 'preservim/tagbar', {'cmd':'TagbarToggle'}
 
 " complete_engine: coc nvimlsp  {{{
 let g:complete_engine = get(g:, 'complete_engine', 'nvimlsp')

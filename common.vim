@@ -579,12 +579,12 @@ if !g:is_nvim
 endif
 
 
-function! LoadAfterConfig()
-  if exists('*LoadAfter')
-    call LoadAfter()
+function! PostLoadConfig()
+  if exists('*PostLoad')
+    call PostLoad()
   endif
-  if exists('*LoadAfterProject')
-    call LoadAfterProject()
+  if exists('*PostLoadProject')
+    call PostLoadProject()
   endif
   filetype plugin indent on
   syntax enable

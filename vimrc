@@ -11,13 +11,9 @@ execute 'source ' . g:root_dir . '/plug.vim'
 MyPlug 'lambdalisue/suda.vim', {'cmd':['SudaRead', 'SudaWrite']}
 MyPlug 'simnalamburt/vim-mundo'
 "MyPlug 'skywind3000/vim-quickui'
-"MyPlug 'liuchengxu/vim-which-key'
 "MyPlug 'tpope/vim-apathy'
 "MyPlug 'roxma/vim-paste-easy'
-
-MyPlug 'MattesGroeger/vim-bookmarks'
-MyPlug 'derekwyatt/vim-fswitch'
-MyPlug 'Yggdroot/indentLine', {'cmd': 'IndentLinesToggle'}
+"MyPlug 'derekwyatt/vim-fswitch'
 
 call MyPlugUpgrade()
 
@@ -64,4 +60,4 @@ let g:colorscheme = get(g:, 'colorscheme', 'solarized8')
 
 call ColorConfig()
 
-call LoadAfterConfig()
+call PostLoadConfig()

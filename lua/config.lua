@@ -26,6 +26,11 @@ function M.packer()
         compile_path = g.plug_dir .. '/plugin/packer_compiled.lua',
         plugin_package = 'packer',
         auto_clean = false,
+        git = {
+            subcommands = {
+                update = "pull --ff-only --progress --rebase=true",
+            },
+        },
     })
 
     use({ 'wbthomason/packer.nvim', opt = true })
@@ -476,20 +481,20 @@ end
 
 function M.marks()
     map('n', '<leader>ml', '<cmd>Telescope marks<CR>')
-    require'marks'.setup {
+    require('marks').setup({
         default_mappings = true,
         builtin_marks = {},
         cyclic = true,
-        force_write_shada = false,
+        force_write_shada = true,
         refresh_interval = 250,
-        sign_priority = { lower=10, upper=15, builtin=8, bookmark=20 },
+        sign_priority = { lower = 10, upper = 15, builtin = 8, bookmark = 20 },
         excluded_filetypes = {},
         bookmark_0 = {
-            sign = "⚑",
-            virt_text = ""
+            sign = '⚑',
+            virt_text = '',
         },
-        mappings = {}
-    }
+        mappings = {},
+    })
 end
 
 return M

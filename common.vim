@@ -597,7 +597,7 @@ function! ColorConfig()
   elseif g:colorscheme == 'default'
     let g:background = get(g:,'background','dark')
   else
-    let g:colorscheme = get(g:,'colorscheme','onedark')
+    let g:colorscheme = get(g:,'colorscheme','molokai')
     let g:background = get(g:,'background','dark')
   endif
 

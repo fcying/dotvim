@@ -204,7 +204,7 @@ MyPlug 't9md/vim-choosewin', {'keys':'<Plug>(choosewin)'}
 MyPlug 'preservim/tagbar', {'cmd':'TagbarToggle'}
 MyPlug 'Yggdroot/indentLine', {'cmd': 'IndentLinesToggle'}
 "MyPlug 'MattesGroeger/vim-bookmarks'
-MyPlug 'chentau/marks.nvim', {'config':'marks', 'event':'VimEnter'}
+MyPlug 'chentoast/marks.nvim', {'config':'marks', 'event':'VimEnter'}
 
 MyPlug 'tpope/vim-fugitive' , {'cmd': ['G', 'Git', 'Gedit', 'Gread', 'Gwrite', 'Gdiffsplit', 'Gvdiffsplit'], 'fn': 'fugitive#*'}
 MyPlug 'rbong/vim-flog', {'cmd': ['Flog', 'Flogsplit', 'Floggit'], 'require': 'tpope/vim-fugitive', 'branch': 'master'}
@@ -280,7 +280,8 @@ endif
 
 " colorscheme {{{
 MyPlug 'lifepillar/vim-solarized8'
-MyPlug 'joshdick/onedark.vim'
+MyPlug 'tomasr/molokai'
+MyPlug 'sainnhe/everforest'
 
 " filetype
 MyPlug 'Vimjas/vim-python-pep8-indent', {'ft':'python'}

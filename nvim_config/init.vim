@@ -12,8 +12,6 @@ execute 'source ' . g:config_dir . '/plug.vim'
 call MyPlugUpgrade()
 
 "colors && load after {{{
-let g:colorscheme = get(g:, 'colorscheme', 'onedark')
-
 call ColorConfig()
 
 call PostLoadConfig()

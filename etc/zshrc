@@ -477,7 +477,7 @@ test_true_color() {
 
 # project {{{
 #export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
-#export REPO_URL='https://gerrit-googlesource.proxy.ustclug.org/git-repo'
+export REPO_URL='https://gerrit-googlesource.proxy.ustclug.org/git-repo'
 alias repo_sync='while true; do repo sync; if [ $? -eq 0 ]; then echo "sync ok"; break; fi; done'
 export USE_CCACHE=1
 function adb_logcat() {

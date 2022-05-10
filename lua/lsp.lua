@@ -5,11 +5,18 @@ local config = {}
 local bmap = require('remap').bmap
 local g, cmd, fn, lsp = vim.g, vim.cmd, vim.fn, vim.lsp
 
+local lspconfig = require('lspconfig')
+local util = require('lspconfig/util')
+local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+local lsp_installer = require('nvim-lsp-installer')
 local server = require('nvim-lsp-installer.server')
 local std = require('nvim-lsp-installer.core.managers.std')
-local lsp_installer = require('nvim-lsp-installer')
-local path = require('nvim-lsp-installer.path')
-local util = require('lspconfig/util')
+local path = require('nvim-lsp-installer.core.path')
+local github = require('nvim-lsp-installer.core.managers.github')
+local process = require('nvim-lsp-installer.core.process')
+local platform = require('nvim-lsp-installer.core.platform')
+local functional = require('nvim-lsp-installer.core.functional')
 
 local flags = { debounce_text_changes = 150 }
 
@@ -65,11 +72,13 @@ function M.goimports(timeout_ms)
     local params = lsp.util.make_range_params()
     params.context = context
 
+    local clients = vim.lsp.buf_get_clients(0)
+    local client = clients[next(clients)] or { offset_encoding = 'utf-8' }
     local result = lsp.buf_request_sync(0, 'textDocument/codeAction', params, timeout_ms)
     for _, res in pairs(result or {}) do
         for _, r in pairs(res.result or {}) do
             if r.edit then
-                lsp.util.apply_workspace_edit(r.edit)
+                lsp.util.apply_workspace_edit(r.edit, client.offset_encoding)
             else
                 lsp.buf.execute_command(r.command)
             end
@@ -81,8 +90,6 @@ end
 
 function config.register_ccls()
     local root_dir = server.get_server_root_path('ccls')
-    local platform = require('nvim-lsp-installer.platform')
-    local process = require('nvim-lsp-installer.process')
 
     local ccls_server = server.Server:new({
         name = 'ccls',
@@ -97,7 +104,8 @@ function config.register_ccls()
                 std.download_file(ctx.github_release_file, 'ccls.txz')
                 std.untarxz('ccls.txz')
             elseif platform.is_win == true then
-                ctx.github_release_file = 'https://github.com/fcying/tools/releases/download/tools/ccls_windows_amd64.zip'
+                ctx.github_release_file =
+                    'https://github.com/fcying/tools/releases/download/tools/ccls_windows_amd64.zip'
                 std.download_file(ctx.github_release_file, 'ccls.zip')
                 std.unzip('ccls.zip')
             else
@@ -123,6 +131,7 @@ function config.ccls()
     M.server_opt.ccls = {
         on_attach = on_attach,
         flags = flags,
+        capabilities = capabilities,
         handlers = { ['textDocument/publishDiagnostics'] = diagnostics_config(0) },
         init_options = {
             compilationDatabaseDirectory = config_dir,
@@ -137,11 +146,7 @@ end
 
 function config.register_clangd()
     local root_dir = server.get_server_root_path('clangd')
-    local platform = require('nvim-lsp-installer.platform')
-    local process = require('nvim-lsp-installer.process')
-    local github = require('nvim-lsp-installer.core.managers.github')
-    local Data = require "nvim-lsp-installer.data"
-    local coalesce, when = Data.coalesce, Data.when
+    local coalesce, when = functional.coalesce, functional.when
 
     local clangd_server = server.Server:new({
         name = 'clangd',
@@ -149,26 +154,26 @@ function config.register_clangd()
         homepage = 'https://clangd.llvm.org',
         languages = { 'c', 'c++' },
         async = true,
-        installer = function(ctx)   ---@diagnostic disable-line unused-local
+        installer = function(ctx) ---@diagnostic disable-line unused-local
             local source
             if platform.is_linux == true then
-                source = github.untarxz_release_file {
+                source = github.untarxz_release_file({
                     repo = 'fcying/tools',
                     release = 'tools',
                     asset_file = 'clangd_linux_amd64.txz',
-                }
+                })
             else
-                source = github.unzip_release_file {
-                    repo = "clangd/clangd",
+                source = github.unzip_release_file({
+                    repo = 'clangd/clangd',
                     asset_file = function(release)
                         local target = coalesce(
-                            when(platform.is_mac, "clangd-mac-%s.zip"),
-                            when(platform.is_linux and platform.arch == "x64", "clangd-linux-%s.zip"),
-                            when(platform.is_win, "clangd-windows-%s.zip")
+                            when(platform.is_mac, 'clangd-mac-%s.zip'),
+                            when(platform.is_linux and platform.arch == 'x64', 'clangd-linux-%s.zip'),
+                            when(platform.is_win, 'clangd-windows-%s.zip')
                         )
                         return target and target:format(release)
                     end,
-                }
+                })
             end
             source.with_receipt()
             --ctx.fs:rename(("clangd_%s"):format(source.release), "clangd")
@@ -193,18 +198,16 @@ function config.clangd()
         table.insert(clangd_cmd, '--compile-commands-dir=' .. g.root_marker)
     end
 
-    M.server_opt.clangd = {
-        on_attach = on_attach,
-        flags = flags,
-        --handlers = { ['textDocument/publishDiagnostics'] = diagnostics_config(0) },
+    cmd([[ autocmd myau FileType c,cpp nnoremap <silent> <buffer> <Leader>h <ESC>:ClangdSwitchSourceHeader<CR> ]])
+
+    M.server_opt.clangd = vim.tbl_deep_extend('force', M.server_opt.default, {
         cmd = clangd_cmd,
-    }
+        --handlers = { ['textDocument/publishDiagnostics'] = diagnostics_config(0) },
+    })
 end
 
 function config.go()
-    M.server_opt.gopls = {
-        on_attach = on_attach,
-        flags = flags,
+    M.server_opt.gopls = vim.tbl_deep_extend('force', M.server_opt.default, {
         settings = {
             gopls = {
                 experimentalWorkspaceModule = true,
@@ -217,13 +220,11 @@ function config.go()
         root_dir = function(fname)
             return util.root_pattern('go.work')(fname) or util.root_pattern('go.mod', '.root', '.git')(fname)
         end,
-    }
+    })
 end
 
 function config.pylsp()
-    M.server_opt.pylsp = {
-        on_attach = on_attach,
-        flags = flags,
+    M.server_opt.pylsp = vim.tbl_deep_extend('force', M.server_opt.default, {
         settings = {
             pylsp = {
                 plugins = {
@@ -237,7 +238,7 @@ function config.pylsp()
                 },
             },
         },
-    }
+    })
 end
 
 function config.lua()
@@ -248,9 +249,7 @@ function config.lua()
             plugins = { 'plenary.nvim', 'telescope.nvim' },
         },
         runtime_path = false, -- enable this to get completion in require strings. Slow!
-        lspconfig = {
-            on_attach = on_attach,
-            flags = flags,
+        lspconfig = vim.tbl_deep_extend('force', M.server_opt.default, {
             settings = {
                 Lua = {
                     IntelliSense = {
@@ -266,7 +265,7 @@ function config.lua()
                     },
                 },
             },
-        },
+        }),
     })
 end
 
@@ -274,6 +273,8 @@ function M.lspconfig()
     --lsp.set_log_level('debug')
 
     cmd([[ autocmd myau FileType lspinfo nnoremap <silent><buffer> q :q<cr> ]])
+
+    lsp_installer.setup({})
 
     lsp_installer.settings({
         install_root_dir = path.concat({ g.cache_dir, 'lsp_servers' }),
@@ -283,19 +284,20 @@ function M.lspconfig()
         ['default'] = {
             on_attach = on_attach,
             flags = flags,
+            --capabilities = capabilities,
         },
     }
     for _, v in pairs(config) do
         v()
     end
 
+    --print(vim.inspect(M.server_opt.clangd))
     --server setup
-    lsp_installer.on_server_ready(function(s)
-        if fn.index(g.lsp_ignore, s.name) ~= -1 then
-            return
+    for _, s in ipairs(lsp_installer.get_installed_servers()) do
+        if fn.index(g.lsp_ignore, s.name) == -1 then
+            lspconfig[s.name].setup(M.server_opt[s.name] or M.server_opt['default'])
         end
-        s:setup(M.server_opt[s.name] or M.server_opt['default'])
-    end)
+    end
 end
 
 function M.check_capabilities(feature)

@@ -221,6 +221,7 @@ function M.telescope_map()
     end
 
     map('n', 'fo', '<cmd>Telescope ctags_outline outline<CR>')
+    map('n', '<leader>fo', '<cmd>Telescope ctags_outline outline buf=all<CR>')
     map('n', 'fn', '<cmd>Telescope notify<CR>')
 
     -- goto def
@@ -485,7 +486,7 @@ function M.marks()
         default_mappings = true,
         builtin_marks = {},
         cyclic = true,
-        force_write_shada = true,
+        force_write_shada = false,
         refresh_interval = 250,
         sign_priority = { lower = 10, upper = 15, builtin = 8, bookmark = 20 },
         excluded_filetypes = {},

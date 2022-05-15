@@ -176,9 +176,6 @@ set hlsearch
 set wrapscan    "search loop
 set ignorecase
 set smartcase
-if g:is_nvim
-  set inccommand=nosplit
-endif
 
 " tab shift {{{
 set expandtab        "retab
@@ -218,10 +215,15 @@ autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
 autocmd myau BufNewFile,BufRead .tasks setl filetype=conf
 autocmd myau BufNewFile,BufRead syslog setl filetype=messages
 
-" use filetype.lua instead of filetype.vim
 if g:is_nvim
+  " use filetype.lua instead of filetype.vim {{{
   let g:do_filetype_lua = 1
   let g:did_load_filetypes = 0
+
+  " force write shada on leaving nvim {{{
+  autocmd myau VimLeave * wshada!
+
+  set inccommand=nosplit
 endif
 
 " foldmethod {{{

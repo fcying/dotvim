@@ -593,6 +593,9 @@ function! PostLoadConfig()
 endfunction
 
 function! ColorConfig()
+  if !exists('g:colorscheme')
+    let g:colorscheme = 'solarized8'
+  endif
   set termguicolors
   if g:colorscheme == 'solarized8'
     let g:background = get(g:,'background','light')

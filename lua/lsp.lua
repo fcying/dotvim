@@ -11,6 +11,7 @@ local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protoco
 
 local lsp_installer = require('nvim-lsp-installer')
 local server = require('nvim-lsp-installer.server')
+local servers = require('nvim-lsp-installer.servers')
 local std = require('nvim-lsp-installer.core.managers.std')
 local path = require('nvim-lsp-installer.core.path')
 local github = require('nvim-lsp-installer.core.managers.github')
@@ -74,8 +75,7 @@ local on_attach = function(client, bufnr)
                 end
 
                 local cursor_pos = vim.api.nvim_win_get_cursor(0)
-                if
-                    (cursor_pos[1] ~= vim.b.diagnostics_pos[1] or cursor_pos[2] ~= vim.b.diagnostics_pos[2])
+                if (cursor_pos[1] ~= vim.b.diagnostics_pos[1] or cursor_pos[2] ~= vim.b.diagnostics_pos[2])
                     and #vim.diagnostic.get() > 0
                 then
                     vim.diagnostic.open_float(nil, opts)
@@ -90,8 +90,8 @@ end
 -- https://github.com/golang/tools/tree/master/gopls
 -- fork from https://github.com/neovim/nvim-lspconfig/issues/115#issuecomment-902680058
 function M.goimports(timeout_ms)
-    local server_available, _ = lsp_installer.get_server('gopls')
-    if server_available == false then
+
+    if vim.fn.get(servers.get_installed_server_names(), 'gopls') ~= 1 then
         return
     end
 
@@ -133,8 +133,7 @@ function config.register_ccls()
                 std.download_file(ctx.github_release_file, 'ccls.txz')
                 std.untarxz('ccls.txz')
             elseif platform.is_win == true then
-                ctx.github_release_file =
-                    'https://github.com/fcying/tools/releases/download/tools/ccls_windows_amd64.zip'
+                ctx.github_release_file = 'https://github.com/fcying/tools/releases/download/tools/ccls_windows_amd64.zip'
                 std.download_file(ctx.github_release_file, 'ccls.zip')
                 std.unzip('ccls.zip')
             else
@@ -250,6 +249,12 @@ function config.go()
             return util.root_pattern('go.work')(fname) or util.root_pattern('go.mod', '.root', '.git')(fname)
         end,
     })
+    vim.api.nvim_create_autocmd('BufWritePre', {
+        pattern = { '*.go' },
+        callback = function()
+            M.goimports(500)
+        end,
+    })
 end
 
 function config.pylsp()
@@ -291,11 +296,31 @@ function config.lua()
                     diagnostics = {
                         enable = true,
                         disable = { 'undefined-global', 'empty-block' },
+                        --neededFileStatus = {
+                        --    ['codestyle-check'] = 'Any',
+                        --},
+                    },
+                    format = {
+                        enable = true,
+                        defaultConfig = {
+                            indent_style = 'space',
+                            indent_size = '4',
+                            quote_style = 'single',
+                            call_arg_parentheses = 'keep',
+                            align_function_define_params = 'true',
+                            keep_one_space_between_table_and_bracket = 'true',
+                        },
                     },
                 },
             },
         }),
     })
+    --vim.api.nvim_create_autocmd('BufWritePre', {
+    --    pattern = { '*.lua' },
+    --    callback = function()
+    --        vim.lsp.buf.formatting_sync(nil, 100)
+    --    end,
+    --})
 end
 
 function M.lspconfig()
@@ -349,17 +374,7 @@ function M.check_capabilities(feature)
 end
 
 function M.setup()
-    if vim.g.has_go == 1 then
-        vim.cmd([[
-            augroup go_lang
-                autocmd!
-                autocmd! * <buffer>
-                command! -nargs=0 Goimports lua require('lsp').goimports(800)
-                autocmd FileType go autocmd BufWritePre <buffer> Goimports
-            augroup END
-        ]])
-    end
-
+    vim.cmd([[command! -nargs=0 Format lua vim.lsp.buf.formatting_sync(nil, 500)]])
     M.lspconfig()
     vim.diagnostic.config({
         virtual_text = false,

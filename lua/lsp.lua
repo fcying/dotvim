@@ -56,6 +56,35 @@ local on_attach = function(client, bufnr)
     bmap(bufnr, 'n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', {})
     bmap(bufnr, 'n', '<leader>ld', '<cmd>lua require("lsp").diagnostic_toggle()<CR>', {})
     bmap(bufnr, 'n', '<leader>lf', '<cmd>lua vim.lsp.buf.formatting()<CR>', {})
+
+    vim.api.nvim_create_autocmd('CursorHold', {
+        buffer = bufnr,
+        callback = function()
+            local opts = {
+                focusable = false,
+                close_events = { 'BufLeave', 'CursorMoved', 'InsertEnter', 'FocusLost' },
+                border = 'none',
+                source = 'always', -- show source in diagnostic popup window
+                prefix = ' ',
+            }
+
+            if diagnostics_on then
+                if not vim.b.diagnostics_pos then
+                    vim.b.diagnostics_pos = { nil, nil }
+                end
+
+                local cursor_pos = vim.api.nvim_win_get_cursor(0)
+                if
+                    (cursor_pos[1] ~= vim.b.diagnostics_pos[1] or cursor_pos[2] ~= vim.b.diagnostics_pos[2])
+                    and #vim.diagnostic.get() > 0
+                then
+                    vim.diagnostic.open_float(nil, opts)
+                end
+
+                vim.b.diagnostics_pos = cursor_pos
+            end
+        end,
+    })
 end
 
 -- https://github.com/golang/tools/tree/master/gopls

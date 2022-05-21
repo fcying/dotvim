@@ -28,7 +28,7 @@ function M.packer()
         auto_clean = false,
         git = {
             subcommands = {
-                update = "pull --ff-only --progress --rebase=true",
+                update = 'pull --ff-only --progress --rebase=true',
             },
         },
     })

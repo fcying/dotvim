@@ -35,7 +35,7 @@ jobs:
           cp -r snippets/ vendor/ etc/  ~/.config/nvim/
           pushd ~/.config
 
-          echo "let g:use_leaderf = 1" >> ~/.vimrc.local
+          echo "let g:use_leaderf = 0" >> ~/.vimrc.local
           # sleep 10 for plugin run
           timeout 120s nvim --headless -c 'autocmd User PackerComplete sleep 10 | quitall' --cmd 'let g:force_update=1'
 
@@ -77,8 +77,9 @@ jobs:
             echo -e "\n"
             echo "### vendor"
             echo "[ripgrep](https://github.com/BurntSushi/ripgrep)"
-            echo "[ccls](https://github.com/MaskRay/ccls)"
             echo "[universal-ctags](https://github.com/universal-ctags/ctags)"
+            echo "[clangd](https://github.com/clangd/clangd)"
+            echo "[sumneko_lua](https://github.com/sumneko/lua-language-server)"
           } | tee /tmp/note.md
           gh release delete nvim_config -y || true
           git push origin :nvim_config || true

@@ -203,18 +203,26 @@ function M.telescope_ltaglist(opts)
     }):find()
 end
 
+function M.current_buffer_find()
+    local opts = {}
+    opts.tiebreak = function(_, _)
+        return false
+    end
+    require('telescope.builtin').current_buffer_fuzzy_find(opts)
+end
+
 function M.telescope_map()
     if fn.HasPlug('LeaderF') == -1 then --{{{
         map('n', 'ft', '<cmd>Telescope tags<cr>')
         map('n', 'fm', '<cmd>Telescope oldfiles<cr>')
         map('n', 'fb', '<cmd>Telescope buffers<cr>')
-        map('n', 'fl', '<cmd>Telescope current_buffer_fuzzy_find<cr>')
         map('n', 'fh', '<cmd>Telescope help_tags<cr>')
         map('n', 'fj', '<cmd>Telescope jumplist<cr>')
         map('n', 'fr', '<cmd>Telescope resume<cr><tab>')
         map('n', 'f/', '<cmd>Telescope live_grep<cr>')
         map('n', 'fg', '<cmd>Telescope grep_string<cr>')
         cmd([[
+            noremap fl :<C-u>lua require('config').current_buffer_find()<CR>
             vnoremap fg :<C-u>lua require("telescope.builtin.files").grep_string({search="<C-R>=GetVisualSelection()<CR>"})
             nnoremap <silent>ff :<C-u><C-R>=g:find_command<CR><CR>
         ]])

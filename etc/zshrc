@@ -475,6 +475,13 @@ test_true_color() {
     }'
 }
 
+function lsof_app() {
+    local sort=""
+    [ -z "$1" ] && echo "need input app name" && return 0
+    [ "$2" -eq 1 ] && sort="| wc -l"
+    eval "lsof -p $(pgrep -af $1 | head -1 | awk '{print $1}') $sort"
+}
+
 # project {{{
 #export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo'
 #export REPO_URL='https://mirrors.bfsu.edu.cn/git/git-repo'
@@ -488,9 +495,13 @@ function adb_logcat() {
 }
 function adb_kmsg() {
     local search_opt
-    adb wait-for-device && adb root && adb wait-for-device
     [ -n "$1" ] && search_opt="| rg -a \"$*\"" || search_opt=""
-    eval "adb shell \"while true; do (cat proc/kmsg); done;\" $search_opt"
+    while true
+    do
+        adb wait-for-device && adb root && adb wait-for-device
+        eval "adb shell \"while true; do (cat proc/kmsg); done;\" $search_opt"
+        sleep 3
+    done
 }
 function adb_setenforce0() {
     adb wait-for-device

@@ -7,7 +7,6 @@ local g, cmd, fn, lsp = vim.g, vim.cmd, vim.fn, vim.lsp
 
 local lspconfig = require('lspconfig')
 local util = require('lspconfig/util')
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 local lsp_installer = require('nvim-lsp-installer')
 local server = require('nvim-lsp-installer.server')
@@ -75,7 +74,8 @@ local on_attach = function(client, bufnr)
                 end
 
                 local cursor_pos = vim.api.nvim_win_get_cursor(0)
-                if (cursor_pos[1] ~= vim.b.diagnostics_pos[1] or cursor_pos[2] ~= vim.b.diagnostics_pos[2])
+                if
+                    (cursor_pos[1] ~= vim.b.diagnostics_pos[1] or cursor_pos[2] ~= vim.b.diagnostics_pos[2])
                     and #vim.diagnostic.get() > 0
                 then
                     vim.diagnostic.open_float(nil, opts)
@@ -90,7 +90,6 @@ end
 -- https://github.com/golang/tools/tree/master/gopls
 -- fork from https://github.com/neovim/nvim-lspconfig/issues/115#issuecomment-902680058
 function M.goimports(timeout_ms)
-
     if vim.fn.get(servers.get_installed_server_names(), 'gopls') ~= 1 then
         return
     end
@@ -133,7 +132,8 @@ function config.register_ccls()
                 std.download_file(ctx.github_release_file, 'ccls.txz')
                 std.untarxz('ccls.txz')
             elseif platform.is_win == true then
-                ctx.github_release_file = 'https://github.com/fcying/tools/releases/download/tools/ccls_windows_amd64.zip'
+                ctx.github_release_file =
+                    'https://github.com/fcying/tools/releases/download/tools/ccls_windows_amd64.zip'
                 std.download_file(ctx.github_release_file, 'ccls.zip')
                 std.unzip('ccls.zip')
             else
@@ -159,7 +159,6 @@ function config.ccls()
     M.server_opt.ccls = {
         on_attach = on_attach,
         flags = flags,
-        capabilities = capabilities,
         handlers = { ['textDocument/publishDiagnostics'] = diagnostics_config(0) },
         init_options = {
             compilationDatabaseDirectory = config_dir,
@@ -338,7 +337,6 @@ function M.lspconfig()
         ['default'] = {
             on_attach = on_attach,
             flags = flags,
-            --capabilities = capabilities,
         },
     }
     for _, v in pairs(config) do

@@ -12,11 +12,6 @@
       "It can be useful if you aren't aware of the absolute path or don't want to search for it.\n"
     ]
   },
-  "echo": {
-    "prefix": "echo",
-    "body": "echo \"${0:message}\"",
-    "description": "Echo a message."
-  },
   "read": {
     "prefix": "read",
     "body": "read -r ${0:VAR}",
@@ -39,12 +34,12 @@
   },
   "for_in": {
     "prefix": "for_in",
-    "body": "for ${1:VAR} in $${2:LIST}\ndo\n\techo \"$${0:VAR}\"\ndone\n",
+    "body": "for ${1:VAR} in ${2:LIST}\ndo\n\t${0}\ndone\n",
     "description": "for loop in list"
   },
   "for_i": {
     "prefix": "for_i",
-    "body": "for ((${1:i} = 0; ${2:i} < ${3:10}; ${4:i}++)); do\n\techo \"$${0}\"\ndone\n",
+    "body": "for ((${1:i} = 0; ${2:i} < ${3:10}; ${4:i}++)); do\n\t${0}\ndone\n",
     "description": "An index-based iteration for loop."
   },
   "while": {
@@ -71,7 +66,7 @@
   },
   "case": {
     "prefix": "case",
-    "body": "case \"$${0:VAR}\" in\n\t${1:1}) echo 1\n\t;;\n\t${2:2|3}) echo 2 or 3\n\t;;\n\t*) echo default\n\t;;\nesac\n",
+    "body": "case ${0:0} in\n\t${1:1}) echo 1\n\t;;\n\t${2:2|3}) echo 2 or 3\n\t;;\n\t*) echo default\n\t;;\nesac\n",
     "description": [
       "case word in [ [(] pattern [ | pattern ] ... ) list ;; ] ... esac\n",
       "A case command first expands word, and tries to match it against each pattern in turn."

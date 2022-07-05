@@ -190,6 +190,8 @@ endif
 " ============================================================================
 MyPlug 'fcying/gen_clang_conf.vim'
 MyPlug 'wsdjeg/vim-fetch'
+
+" automatically adjusts 'shiftwidth' and 'expandtab'
 MyPlug 'tpope/vim-sleuth'
 
 MyPlug 'moll/vim-bbye', {'cmd':'Bdelete'}

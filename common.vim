@@ -220,8 +220,8 @@ if g:is_nvim
   let g:do_filetype_lua = 1
   let g:did_load_filetypes = 0
 
-  " force write shada on leaving nvim {{{
-  autocmd myau VimLeave * wshada!
+  " force write shada on leaving nvim:  it make restore-cursor to the last position broken {{{
+  "autocmd myau VimLeave * wshada!
 
   set inccommand=nosplit
 endif

@@ -318,6 +318,8 @@ function M.telescope()
             ctags_outline = {
                 ctags = { 'ctags', g.ctags_opt },
                 ft_opt = {
+                    c = '--c-kinds=f',
+                    cpp = '--c++-kinds=f --language-force=C++',
                     vim = '--vim-kinds=fk',
                     sh = '--sh-kinds=fk',
                     zsh = '--sh-kinds=fk',

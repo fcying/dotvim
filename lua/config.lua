@@ -223,7 +223,7 @@ function M.telescope_map()
         map('n', 'fg', '<cmd>Telescope grep_string<cr>')
         cmd([[
             noremap fl :<C-u>lua require('config').current_buffer_find()<CR>
-            vnoremap fg :<C-u>lua require("telescope.builtin.files").grep_string({search="<C-R>=GetVisualSelection()<CR>"})
+            vnoremap fg :<C-u>lua require("telescope.builtin.__files").grep_string({search="<C-R>=GetVisualSelection()<CR>"})
             nnoremap <silent>ff :<C-u><C-R>=g:find_command<CR><CR>
         ]])
     end

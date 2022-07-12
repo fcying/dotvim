@@ -641,3 +641,18 @@ if (HasPlug('telescope.nvim') != -1) "{{{
   "lua require('config').telescope()
 endif
 
+if (HasPlug('vim-sleuth') != -1) "{{{
+  "let g:sleuth_make_heuristics = 0
+  let g:sleuth_heuristics = 0
+endif
+
+if (HasPlug('ZFVimDirDiff') != -1) "{{{
+  let g:ZFJobVerboseLogEnable = 0
+  let g:ZFDirDiffUI_showSameFile = 1
+
+  augroup ZFVimDirDiff
+    au FileType ZFDirDiff nmap <silent> <buffer> r :call ZFDirDiffUIAction_update()<CR>
+    au FileType ZFDirDiff nmap <silent> <buffer> ro :let g:ZFDirDiffUI_showSameFile=0<CR>:call ZFDirDiffUIAction_update()<CR>
+    au FileType ZFDirDiff nmap <silent> <buffer> ra :let g:ZFDirDiffUI_showSameFile=1<CR>:call ZFDirDiffUIAction_update()<CR>
+  augroup END
+endif

@@ -26,6 +26,7 @@ if [[ $app == "ln" ]]; then
     ln -sfv $PWD/dircolors ~/.dircolors
     ln -sfv $PWD/inputrc ~/.inputrc
     ln -sfv $PWD/tmux.conf ~/.tmux.conf
+    ln -sfv $PWD/editorconfig ~/.editorconfig
 
     mkdir -p ~/.config/tig
     ln -sfv $PWD/tigrc ~/.config/tig/config

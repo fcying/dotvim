@@ -201,6 +201,9 @@ MyPlug 'machakann/vim-sandwich'
 MyPlug 'dstein64/vim-startuptime', {'cmd':'StartupTime'}
 MyPlug 'mbbill/fencview', {'cmd':['FencView','FencAutoDetect']}
 
+MyPlug 'ZSaberLv0/ZFVimJob'
+MyPlug 'ZSaberLv0/ZFVimDirDiff', {'cmd':'ZFDirDiff'}
+
 MyPlug 'liuchengxu/vim-which-key'
 MyPlug 't9md/vim-choosewin', {'keys':'<Plug>(choosewin)'}
 MyPlug 'preservim/tagbar', {'cmd':'TagbarToggle'}

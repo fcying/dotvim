@@ -126,14 +126,14 @@ if (HasPlug('vim-fugitive') != -1) "{{{
   let g:flog_default_arguments.format = '%Cblue%ad%Creset %C(yellow)[%h]%Creset %Cgreen{%an}%Creset%Cred%d%Creset %s'
 
   augroup flog
-    au FileType fugitive* nmap <buffer> q gq
-    au FileType git nmap <buffer> q :q<CR>
-    au FileType git nmap <silent> <buffer> e :call GF('edit')<CR>
-    au FileType git nmap <silent> <buffer> <c-t> :call GF('tabedit')<CR>
-    au FileType git nmap <silent> <buffer> <c-n> :wincmd w<cr> <BAR> <Plug>(FlogVNextCommitRight) <BAR> :wincmd w<cr>
-    au FileType git nmap <silent> <buffer> <c-p> :wincmd w<cr> <BAR> <Plug>(FlogVPrevCommitRight) <BAR> :wincmd w<cr>
+    au FileType fugitive* nnoremap <buffer> q gq
+    au FileType git nnoremap <buffer> q :q<CR>
+    au FileType git nnoremap <silent> <buffer> e :call GF('edit')<CR>
+    au FileType git nnoremap <silent> <buffer> <c-t> :call GF('tabedit')<CR>
+    au FileType git nnoremap <silent> <buffer> <c-n> :wincmd w<cr> <BAR> <Plug>(FlogVNextCommitRight) <BAR> :wincmd w<cr>
+    au FileType git nnoremap <silent> <buffer> <c-p> :wincmd w<cr> <BAR> <Plug>(FlogVPrevCommitRight) <BAR> :wincmd w<cr>
     au FileType floggraph nnoremap <silent> <buffer> q  :wincmd w <bar> close<cr>
-    au FileType floggraph nmap <silent> <buffer> <CR> <Plug>(FlogVSplitCommitRight) <BAR> :wincmd w<cr>
+    au FileType floggraph nnoremap <silent> <buffer> <CR> <Plug>(FlogVSplitCommitRight) <BAR> :wincmd w<cr>
     au FileType floggraph nnoremap <silent> <buffer> gs :<C-U> call flog#run_tmp_command("vertical belowright Git diff --cached", 0, 0)<CR> <BAR> :wincmd w<cr>
     au FileType floggraph nnoremap <silent> <buffer> gu :<C-U> call flog#run_tmp_command("silent Git add -N . \| vertical belowright Git diff \| silent Git read-tree %t", 0, 0)<CR> <BAR> :wincmd w<cr>
     au FileType floggraph nnoremap <silent> <buffer> gU :<C-U> call flog#run_tmp_command("vertical belowright Git diff", 0, 0)<CR> <BAR> :wincmd w<cr>

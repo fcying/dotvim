@@ -93,7 +93,7 @@ function! MyPlug(repo, ...)
             exec 'let l:options.' . key . ' = string(a:1[key])'
           endif
         elseif key ==# 'rtp' || key ==# 'commit' || key ==# 'branch'
-              \ || key ==# 'requires' || key ==# 'config'
+              \ || key ==# 'requires' || key ==# 'wants'|| key ==# 'config'
           exec 'let l:options.' . key . ' = a:1[key]'
         endif
       endfor
@@ -211,8 +211,9 @@ MyPlug 'Yggdroot/indentLine', {'cmd': 'IndentLinesToggle'}
 "MyPlug 'MattesGroeger/vim-bookmarks'
 MyPlug 'chentoast/marks.nvim', {'config':'marks', 'event':'VimEnter'}
 
-MyPlug 'tpope/vim-fugitive' , {'cmd': ['G', 'Git', 'Gedit', 'Gread', 'Gwrite', 'Gdiffsplit', 'Gvdiffsplit'], 'fn': 'fugitive#*'}
-MyPlug 'rbong/vim-flog', {'cmd': ['Flog', 'Flogsplit', 'Floggit'], 'require': 'tpope/vim-fugitive', 'branch': 'master'}
+"MyPlug 'tpope/vim-fugitive' , {'cmd': ['G', 'Git', 'Gedit', 'Gread', 'Gwrite', 'Gdiffsplit', 'Gvdiffsplit'], 'fn': 'fugitive#*'}
+MyPlug 'tpope/vim-fugitive'
+MyPlug 'rbong/vim-flog', {'cmd': ['Flog', 'Flogsplit', 'Floggit'], 'branch': 'master'}
 
 MyPlug 'mg979/vim-visual-multi', {'branch': 'master'}
 MyPlug 'easymotion/vim-easymotion', {'keys':'<Plug>(easymotion'}

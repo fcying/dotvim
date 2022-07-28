@@ -118,8 +118,8 @@
     "description": "Code snippet for #ifdef"
   },
   "#ifndef": {
-    "prefix": "#ifndef",
-    "body": ["#ifndef ${1:DEBUG}", "$0", "#endif // !$1"],
+    "prefix": ["#ifndef", "#ifn"],
+    "body": ["#ifndef ${1:DEBUG}", "#define $1", "$0", "#endif // $1"],
     "description": "Code snippet for #ifndef"
   },
   "#if": {

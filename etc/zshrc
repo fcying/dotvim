@@ -449,7 +449,7 @@ function tmux_attach {
     # add sleep fix "server exited unexpectedly" in some platform
     [ "$?" -ne 0 ] && sleep 0.0001 && tmux new $new
 }
-alias ta=' tmux_attach'
+alias ta='tmux_attach'
 alias tl=' tmux ls'
 alias tk=' tmux kill-server'
 

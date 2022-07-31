@@ -656,6 +656,7 @@ function! UpdateIgnore()
 
   " gen_clang_conf.vim
   let g:gencconf_ignore_dir = g:ignore_full.dir
+  let g:gencconf_ignore_file = g:ignore_full.file
 
   if (HasPlug('telescope.nvim') != -1) "{{{
     lua require('config').telescope_update_ignore()

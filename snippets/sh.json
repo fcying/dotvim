@@ -33,12 +33,12 @@
     "description": "else"
   },
   "for_in": {
-    "prefix": "for_in",
-    "body": "for ${1:VAR} in ${2:LIST}\ndo\n\t${0}\ndone\n",
+    "prefix": ["for_in", "forin"],
+    "body": "for ${1:VAR} in \\${${2:LIST}[@]}\ndo\n\t${0}\ndone\n",
     "description": "for loop in list"
   },
   "for_i": {
-    "prefix": "for_i",
+    "prefix": ["for_i"],
     "body": "for ((${1:i} = 0; ${2:i} < ${3:10}; ${4:i}++)); do\n\t${0}\ndone\n",
     "description": "An index-based iteration for loop."
   },

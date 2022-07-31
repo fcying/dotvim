@@ -253,7 +253,7 @@ end
 function M.telescope_update_ignore()
     g.find_command = 'Telescope find_files '
     if g.has_rg == 1 then
-        g.find_command = g.find_command .. 'find_command=rg,--files,--color=never'
+        g.find_command = g.find_command .. 'find_command=rg,--files,--no-ignore,--color=never'
         if g.ignore_full.rg then
             g.find_command = g.find_command .. ',' .. table.concat(g.ignore_full.rg, ',')
         end

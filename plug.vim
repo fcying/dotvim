@@ -214,6 +214,7 @@ MyPlug 'chentoast/marks.nvim', {'config':'marks', 'event':'VimEnter'}
 "MyPlug 'tpope/vim-fugitive' , {'cmd': ['G', 'Git', 'Gedit', 'Gread', 'Gwrite', 'Gdiffsplit', 'Gvdiffsplit'], 'fn': 'fugitive#*'}
 MyPlug 'tpope/vim-fugitive'
 MyPlug 'rbong/vim-flog', {'cmd': ['Flog', 'Flogsplit', 'Floggit'], 'branch': 'master'}
+MyPlug 'iberianpig/tig-explorer.vim'
 
 MyPlug 'mg979/vim-visual-multi', {'branch': 'master'}
 MyPlug 'easymotion/vim-easymotion', {'keys':'<Plug>(easymotion'}

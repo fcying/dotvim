@@ -264,7 +264,7 @@ endif
 if g:complete_engine ==# 'nvimlsp'
   MyPlug 'williamboman/nvim-lsp-installer'
   MyPlug 'neovim/nvim-lspconfig'
-  MyPlug 'folke/lua-dev.nvim'
+  MyPlug 'folke/neodev.nvim'
   MyPlug 'hrsh7th/nvim-cmp', {'config':'cmp', 'event':'InsertEnter'}
   MyPlug 'hrsh7th/cmp-path', {'after':'nvim-cmp'}
   MyPlug 'hrsh7th/cmp-nvim-lsp', {'after':'nvim-cmp'}

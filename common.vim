@@ -216,10 +216,6 @@ autocmd myau BufNewFile,BufRead .tasks setl filetype=conf
 autocmd myau BufNewFile,BufRead syslog setl filetype=messages
 
 if g:is_nvim
-  " use filetype.lua instead of filetype.vim {{{
-  let g:do_filetype_lua = 1
-  let g:did_load_filetypes = 0
-
   " force write shada on leaving nvim:  it make restore-cursor to the last position broken {{{
   "autocmd myau VimLeave * wshada!
 
@@ -485,7 +481,6 @@ endfunction
 
 " tags ltag {{{
 set tags=tags,tags;
-set cscopequickfix=s-,c-,d-,i-,t-,e-,a-
 
 func! Removetags()
   ClearClangConf

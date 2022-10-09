@@ -113,7 +113,6 @@ if [ $(uname | grep MINGW -c) -eq 1 ]; then
     export IME=yes
     export GIME=yes
     export DYNAMIC_IME=yes
-    export CSCOPE=yes
     export DEBUG=no
     export POSTSCRIPT=yes
     export USERNAME=fcying
@@ -134,7 +133,6 @@ else
     config="--with-features=huge \
 --enable-gui=no \
 --enable-multibyte \
---enable-cscope \
 --enable-rubyinterp=dynamic \
 --enable-python3interp --with-python3-command=python3 \
 --enable-luainterp \

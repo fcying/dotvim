@@ -275,51 +275,43 @@ function config.pylsp()
 end
 
 function config.lua()
-    M.server_opt.sumneko_lua = require('lua-dev').setup({
+    require('neodev').setup({
         library = {
-            vimruntime = true,
+            enabled = true,
+            runtime = true,
             types = true,
             plugins = { 'plenary.nvim', 'telescope.nvim' },
         },
-        runtime_path = false, -- enable this to get completion in require strings. Slow!
-        lspconfig = vim.tbl_deep_extend('force', M.server_opt.default, {
-            settings = {
-                Lua = {
-                    IntelliSense = {
-                        traceLocalSet = true,
-                    },
-                    workspace = {
-                        library = {},
-                        maxPreload = 10000,
-                    },
-                    diagnostics = {
-                        enable = true,
-                        disable = { 'undefined-global', 'empty-block' },
-                        --neededFileStatus = {
-                        --    ['codestyle-check'] = 'Any',
-                        --},
-                    },
-                    format = {
-                        enable = true,
-                        defaultConfig = {
-                            indent_style = 'space',
-                            indent_size = '4',
-                            quote_style = 'single',
-                            call_arg_parentheses = 'keep',
-                            align_function_define_params = 'true',
-                            keep_one_space_between_table_and_bracket = 'true',
-                        },
+    })
+    M.server_opt.sumneko_lua = {
+        settings = {
+            Lua = {
+                IntelliSense = { traceLocalSet = true },
+                workspace = {
+                    library = {},
+                    maxPreload = 10000,
+                },
+                diagnostics = {
+                    enable = true,
+                    disable = { 'undefined-global', 'empty-block' },
+                    --neededFileStatus = {
+                    --    ['codestyle-check'] = 'Any',
+                    --},
+                },
+                format = {
+                    enable = true,
+                    defaultConfig = {
+                        indent_style = 'space',
+                        indent_size = '4',
+                        quote_style = 'single',
+                        call_arg_parentheses = 'keep',
+                        align_function_define_params = 'true',
+                        keep_one_space_between_table_and_bracket = 'true',
                     },
                 },
             },
-        }),
-    })
-    --vim.api.nvim_create_autocmd('BufWritePre', {
-    --    pattern = { '*.lua' },
-    --    callback = function()
-    --        vim.lsp.buf.formatting_sync(nil, 100)
-    --    end,
-    --})
+        },
+    }
 end
 
 function M.lspconfig()
@@ -349,25 +341,6 @@ function M.lspconfig()
         if fn.index(g.lsp_ignore, s.name) == -1 then
             lspconfig[s.name].setup(M.server_opt[s.name] or M.server_opt['default'])
         end
-    end
-end
-
-function M.check_capabilities(feature)
-    local clients = vim.lsp.buf_get_clients(0)
-
-    local supported_client = false
-    for _, client in pairs(clients) do
-        supported_client = client.resolved_capabilities[feature]
-        if supported_client then
-            break
-        end
-    end
-
-    if supported_client then
-        return true
-    else
-        --vim.notify("lsp check false")
-        return false
     end
 end
 

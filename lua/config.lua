@@ -76,36 +76,35 @@ function Go2Def(str, opts)
         local bufnr = fn.bufnr()
         local lnum = fn.line('.')
 
-        if opts.mode == 1 then
-            if require('lsp').check_capabilities('goto_definition') == true then
-                local params = vim.lsp.util.make_position_params()
-                local ret = vim.lsp.buf_request_sync(0, 'textDocument/definition', params, 5000)
+        if opts.mode == "lsp" then
+            local params = vim.lsp.util.make_position_params()
+            local ret = vim.lsp.buf_request_sync(0, 'textDocument/definition', params, 5000)
 
-                --vim.notify(vim.inspect(ret))
-                if next(ret) then
-                    local result = ret[next(ret)].result or {}
-                    if #result == 1 then
-                        local clients = vim.lsp.buf_get_clients(0)
-                        local client = clients[next(clients)] or { offset_encoding = 'utf-8' }
-                        vim.lsp.util.jump_to_location(result[1], client.offset_encoding)
+            --vim.notify(vim.inspect(ret))
+            if next(ret) then
+                local result = ret[next(ret)].result or {}
+                if #result == 1 then
+                    local clients = vim.lsp.buf_get_clients(0)
+                    local client = clients[next(clients)] or { offset_encoding = 'utf-8' }
+                    vim.lsp.util.jump_to_location(result[1], client.offset_encoding)
 
-                        -- not jump, check tag
-                        if bufnr ~= fn.bufnr() or lnum ~= fn.line('.') then
-                            return
-                        end
-                    elseif #result > 1 then
-                        require('telescope.builtin').lsp_definitions()
+                    -- if not jump, fallback ltag
+                    if bufnr ~= fn.bufnr() or lnum ~= fn.line('.') then
                         return
                     end
+                elseif #result > 1 then
+                    require('telescope.builtin').lsp_definitions()
+                    return
                 end
             end
-        elseif opts.mode == 2 then
+        elseif opts.mode == "builtin" then
             require('telescope.builtin').lsp_definitions()
             return
         end
 
-        -- ltag
-        --vim.notify("check ltags")
+        -- fallback ltag
+        local backup = vim.o.tagfunc
+        vim.o.tagfunc = ""
         local ret = pcall(fn.execute, 'silent ltag ' .. str)
         if ret ~= true then
             return
@@ -122,6 +121,7 @@ function Go2Def(str, opts)
 
             M.telescope_ltaglist()
         end
+        vim.o.tagfunc = backup
     end
 end
 
@@ -235,12 +235,11 @@ function M.telescope_map()
     -- goto def
     map('n', 'g<c-]>', '<c-]>')
     map('v', 'g<c-]>', '<c-]>')
-    map('n', '<c-]>', ':lua Go2Def(vim.fn.expand("<cword>"), {mode=0})<cr>')
-    map('v', '<c-]>', ':<c-u>lua Go2Def(vim.fn.GetVisualSelection(), {mode=0})<cr>')
-    map('n', 'gd', ':lua Go2Def(vim.fn.expand("<cword>"), {mode=1})<cr>')
-    map('n', 'gD', ':lua Go2Def(vim.fn.expand("<cword>"), {mode=2})<cr>')
+    map('n', '<c-]>', ':lua Go2Def(vim.fn.expand("<cword>"), {mode="ltag"})<cr>')
+    map('v', '<c-]>', ':<c-u>lua Go2Def(vim.fn.GetVisualSelection(), {mode="ltag"})<cr>')
+    map('n', 'gd', ':lua Go2Def(vim.fn.expand("<cword>"), {mode="lsp"})<cr>')
+    map('n', 'gD', ':lua Go2Def(vim.fn.expand("<cword>"), {mode="builtin"})<cr>')
 
-    --map('n', 'gd', '<cmd>Telescope lsp_definitions<cr>')
     map('n', '<leader>lr', '<cmd>Telescope lsp_references<cr>')
     map('n', '<leader>lt', '<cmd>Telescope lsp_type_definitions<cr>')
     map('n', '<leader>li', '<cmd>Telescope lsp_implementations<cr>')
@@ -361,9 +360,8 @@ function M.cmp()
         sources = cmp.config.sources({
             { name = 'vsnip' },
             { name = 'path' },
-            { name = 'nvim_lsp' },
             { name = 'dictionary' },
-            { name = 'cmdline' },
+            { name = 'nvim_lsp' },
             { name = 'buffer' },
             { name = 'tags' },
             { name = 'omni', priority = -1 },

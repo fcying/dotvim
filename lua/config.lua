@@ -76,7 +76,7 @@ function Go2Def(str, opts)
         local bufnr = fn.bufnr()
         local lnum = fn.line('.')
 
-        if opts.mode == "lsp" then
+        if opts.mode == 'lsp' then
             local params = vim.lsp.util.make_position_params()
             local ret = vim.lsp.buf_request_sync(0, 'textDocument/definition', params, 5000)
 
@@ -97,14 +97,14 @@ function Go2Def(str, opts)
                     return
                 end
             end
-        elseif opts.mode == "builtin" then
+        elseif opts.mode == 'builtin' then
             require('telescope.builtin').lsp_definitions()
             return
         end
 
         -- fallback ltag
         local backup = vim.o.tagfunc
-        vim.o.tagfunc = ""
+        vim.o.tagfunc = ''
         local ret = pcall(fn.execute, 'silent ltag ' .. str)
         if ret ~= true then
             return
@@ -505,6 +505,35 @@ function M.marks()
         },
         mappings = {},
     })
+end
+
+function M.null_ls()
+    local null_ls = require('null-ls')
+    local formatting = null_ls.builtins.formatting
+    local diagnostics = null_ls.builtins.diagnostics
+
+    local extra_args = {
+        formatting = {
+            stylua = {
+                '--indent-type', 'Spaces',
+                '--indent-width', '4',
+                '--quote-style', 'AutoPreferSingle',
+            },
+        },
+    }
+
+    local options = {
+        debug = false,
+        sources = {
+            formatting.gofmt,
+            formatting.goimports,
+            formatting.clang_format,
+            formatting.stylua.with({extra_args = extra_args.formatting.stylua}),
+            diagnostics.flake8,
+        },
+    }
+
+    null_ls.setup(options)
 end
 
 return M

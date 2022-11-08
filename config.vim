@@ -635,15 +635,6 @@ if (HasPlug('vim-quickui') != -1) "{{{
   noremap <space><space> :call quickui#menu#open()<cr>
 endif "}}}
 
-if (HasPlug('nvim-lspconfig') != -1) "{{{
-  lua require('lsp').setup()
-endif
-
-if (HasPlug('telescope.nvim') != -1) "{{{
-  lua require('config').telescope_map()
-  "lua require('config').telescope()
-endif
-
 if (HasPlug('vim-sleuth') != -1) "{{{
   "let g:sleuth_make_heuristics = 0
   let g:sleuth_heuristics = 0
@@ -658,4 +649,14 @@ if (HasPlug('ZFVimDirDiff') != -1) "{{{
     au FileType ZFDirDiff nmap <silent> <buffer> ro :let g:ZFDirDiffUI_showSameFile=0<CR>:call ZFDirDiffUIAction_update()<CR>
     au FileType ZFDirDiff nmap <silent> <buffer> ra :let g:ZFDirDiffUI_showSameFile=1<CR>:call ZFDirDiffUIAction_update()<CR>
   augroup END
+endif
+
+" nvim plugin config {{{
+if (HasPlug('nvim-lspconfig') != -1) "{{{
+  lua require('lsp').setup()
+endif
+
+if (HasPlug('telescope.nvim') != -1) "{{{
+  lua require('config').telescope_map()
+  "lua require('config').telescope()
 endif

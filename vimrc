@@ -3,7 +3,6 @@
 " global var {{{
 let g:root_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let g:config_dir = g:root_dir
-let g:etc_dir = g:root_dir . '/etc'
 
 execute 'source ' . g:root_dir . '/common.vim'
 execute 'source ' . g:root_dir . '/plug.vim'

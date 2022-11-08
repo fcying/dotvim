@@ -238,8 +238,6 @@ if g:is_nvim
   MyPlug 'nvim-lualine/lualine.nvim', {'config':'lualine', 'event':'VimEnter'}
 
   "MyPlug 'kevinhwang91/nvim-hclipboard'
-  " FIXME nvim cursorhold bug https://github.com/neovim/neovim/issues/12587
-  MyPlug 'antoinemadec/FixCursorHold.nvim'
 else
   MyPlug 'tmux-plugins/vim-tmux-focus-events'
   MyPlug 'roxma/vim-tmux-clipboard'
@@ -263,6 +261,9 @@ endif
 
 if g:complete_engine ==# 'nvimlsp'
   MyPlug 'williamboman/nvim-lsp-installer'
+  MyPlug 'williamboman/mason.nvim'
+  MyPlug 'williamboman/mason-lspconfig.nvim'
+  MyPlug 'jose-elias-alvarez/null-ls.nvim', {'config':'null_ls', 'event':'VimEnter'}
   MyPlug 'neovim/nvim-lspconfig'
   MyPlug 'folke/neodev.nvim'
   MyPlug 'hrsh7th/nvim-cmp', {'config':'cmp', 'event':'InsertEnter'}

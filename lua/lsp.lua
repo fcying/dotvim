@@ -1,22 +1,13 @@
 local M = {}
 local config = {}
 
---local map = require('remap').map
+---@diagnostic disable-next-line unused-local
+local map = require('remap').map
 local bmap = require('remap').bmap
 local g, cmd, fn, lsp = vim.g, vim.cmd, vim.fn, vim.lsp
 
 local lspconfig = require('lspconfig')
 local util = require('lspconfig/util')
-
-local lsp_installer = require('nvim-lsp-installer')
-local server = require('nvim-lsp-installer.server')
-local servers = require('nvim-lsp-installer.servers')
-local std = require('nvim-lsp-installer.core.managers.std')
-local path = require('nvim-lsp-installer.core.path')
-local github = require('nvim-lsp-installer.core.managers.github')
-local process = require('nvim-lsp-installer.core.process')
-local platform = require('nvim-lsp-installer.core.platform')
-local functional = require('nvim-lsp-installer.core.functional')
 
 local flags = { debounce_text_changes = 150 }
 
@@ -32,6 +23,7 @@ function M.diagnostic_toggle()
     diagnostics_on = not diagnostics_on
 end
 
+---@diagnostic disable-next-line unused-local
 local function diagnostics_config(enable)
     if enable == nil then
         enable = 1
@@ -55,7 +47,7 @@ local on_attach = function(client, bufnr)
     bmap(bufnr, 'n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', {})
     bmap(bufnr, 'n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', {})
     bmap(bufnr, 'n', '<leader>ld', '<cmd>lua require("lsp").diagnostic_toggle()<CR>', {})
-    bmap(bufnr, 'n', '<leader>lf', '<cmd>lua vim.lsp.buf.formatting()<CR>', {})
+    bmap(bufnr, 'n', '<leader>lf', '<cmd>lua vim.lsp.buf.format()<CR>', {})
 
     vim.api.nvim_create_autocmd('CursorHold', {
         buffer = bufnr,
@@ -100,7 +92,7 @@ function M.goimports(timeout_ms)
     local params = lsp.util.make_range_params()
     params.context = context
 
-    local clients = vim.lsp.buf_get_clients(0)
+    local clients = vim.lsp.get_active_clients()
     local client = clients[next(clients)] or { offset_encoding = 'utf-8' }
     local result = lsp.buf_request_sync(0, 'textDocument/codeAction', params, timeout_ms)
     for _, res in pairs(result or {}) do
@@ -113,105 +105,7 @@ function M.goimports(timeout_ms)
         end
     end
 
-    lsp.buf.formatting_sync(nil, timeout_ms)
-end
-
-function config.register_ccls()
-    local root_dir = server.get_server_root_path('ccls')
-
-    local ccls_server = server.Server:new({
-        name = 'ccls',
-        root_dir = root_dir,
-        homepage = 'https://github.com/MaskRay/ccls',
-        languages = { 'c', 'c++', 'objective-c' },
-        filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'h', 'hh' },
-        async = true,
-        installer = function(ctx)
-            if platform.is_linux == true then
-                ctx.github_release_file = 'https://github.com/fcying/tools/releases/download/tools/ccls_linux_amd64.txz'
-                std.download_file(ctx.github_release_file, 'ccls.txz')
-                std.untarxz('ccls.txz')
-            elseif platform.is_win == true then
-                ctx.github_release_file =
-                    'https://github.com/fcying/tools/releases/download/tools/ccls_windows_amd64.zip'
-                std.download_file(ctx.github_release_file, 'ccls.zip')
-                std.unzip('ccls.zip')
-            else
-                print('unsupport platform')
-            end
-        end,
-        default_options = {
-            cmd_env = {
-                PATH = process.extend_path({ root_dir }),
-            },
-        },
-    })
-    lsp_installer.register(ccls_server)
-end
-
-function config.ccls()
-    local cache_dir = '.ccls-cache'
-    local config_dir = ''
-    if g.gencconf_storein_rootmarker == 1 then
-        config_dir = g.root_marker
-        cache_dir = g.root_marker .. '/.ccls-cache'
-    end
-    M.server_opt.ccls = {
-        on_attach = on_attach,
-        flags = flags,
-        handlers = { ['textDocument/publishDiagnostics'] = diagnostics_config(0) },
-        init_options = {
-            compilationDatabaseDirectory = config_dir,
-            cache = { directory = cache_dir },
-            clang = {
-                excludeArgs = {},
-                extraArgs = { '-Wno-implicit-function-declaration' },
-            },
-        },
-    }
-end
-
-function config.register_clangd()
-    local root_dir = server.get_server_root_path('clangd')
-    local coalesce, when = functional.coalesce, functional.when
-
-    local clangd_server = server.Server:new({
-        name = 'clangd',
-        root_dir = root_dir,
-        homepage = 'https://clangd.llvm.org',
-        languages = { 'c', 'c++' },
-        async = true,
-        installer = function(ctx) ---@diagnostic disable-line unused-local
-            local source
-            if platform.is_linux == true then
-                source = github.untarxz_release_file({
-                    repo = 'fcying/tools',
-                    release = 'tools',
-                    asset_file = 'clangd_linux_amd64.txz',
-                })
-            else
-                source = github.unzip_release_file({
-                    repo = 'clangd/clangd',
-                    asset_file = function(release)
-                        local target = coalesce(
-                            when(platform.is_mac, 'clangd-mac-%s.zip'),
-                            when(platform.is_linux and platform.arch == 'x64', 'clangd-linux-%s.zip'),
-                            when(platform.is_win, 'clangd-windows-%s.zip')
-                        )
-                        return target and target:format(release)
-                    end,
-                })
-            end
-            source.with_receipt()
-            --ctx.fs:rename(("clangd_%s"):format(source.release), "clangd")
-        end,
-        default_options = {
-            cmd_env = {
-                PATH = process.extend_path({ path.concat({ fn.expand(root_dir .. '/clangd*'), 'bin' }) }),
-            },
-        },
-    })
-    lsp_installer.register(clangd_server)
+    lsp.buf.format()
 end
 
 function config.clangd()
@@ -227,14 +121,22 @@ function config.clangd()
 
     cmd([[ autocmd myau FileType c,cpp nnoremap <silent> <buffer> <Leader>h <ESC>:ClangdSwitchSourceHeader<CR> ]])
 
-    M.server_opt.clangd = vim.tbl_deep_extend('force', M.server_opt.default, {
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    capabilities.offsetEncoding = { 'utf-16' }
+
+    M.server_opt.clangd = {
+        on_attach = on_attach,
+        flags = flags,
         cmd = clangd_cmd,
+        capabilities = capabilities,
         --handlers = { ['textDocument/publishDiagnostics'] = diagnostics_config(0) },
-    })
+    }
 end
 
 function config.go()
-    M.server_opt.gopls = vim.tbl_deep_extend('force', M.server_opt.default, {
+    M.server_opt.gopls = {
+        on_attach = on_attach,
+        flags = flags,
         settings = {
             gopls = {
                 experimentalWorkspaceModule = true,
@@ -247,7 +149,8 @@ function config.go()
         root_dir = function(fname)
             return util.root_pattern('go.work')(fname) or util.root_pattern('go.mod', '.root', '.git')(fname)
         end,
-    })
+    }
+
     vim.api.nvim_create_autocmd('BufWritePre', {
         pattern = { '*.go' },
         callback = function()
@@ -256,8 +159,10 @@ function config.go()
     })
 end
 
-function config.pylsp()
-    M.server_opt.pylsp = vim.tbl_deep_extend('force', M.server_opt.default, {
+function config.python()
+    M.server_opt.pylsp = {
+        on_attach = on_attach,
+        flags = flags,
         settings = {
             pylsp = {
                 plugins = {
@@ -271,7 +176,7 @@ function config.pylsp()
                 },
             },
         },
-    })
+    }
 end
 
 function config.lua()
@@ -284,12 +189,15 @@ function config.lua()
         },
     })
     M.server_opt.sumneko_lua = {
+        on_attach = on_attach,
+        flags = flags,
         settings = {
             Lua = {
                 IntelliSense = { traceLocalSet = true },
                 workspace = {
                     library = {},
                     maxPreload = 10000,
+                    checkThirdParty = false,
                 },
                 diagnostics = {
                     enable = true,
@@ -319,33 +227,43 @@ function M.lspconfig()
 
     cmd([[ autocmd myau FileType lspinfo nnoremap <silent><buffer> q :q<cr> ]])
 
-    lsp_installer.setup({})
-
-    lsp_installer.settings({
-        install_root_dir = path.concat({ g.cache_dir, 'lsp_servers' }),
-    })
-
+    --setup lsp config
     M.server_opt = {
         ['default'] = {
             on_attach = on_attach,
             flags = flags,
         },
     }
-    for _, v in pairs(config) do
-        v()
+    for _, c in pairs(config) do
+        c()
     end
 
-    --print(vim.inspect(M.server_opt.clangd))
-    --server setup
-    for _, s in ipairs(lsp_installer.get_installed_servers()) do
-        if fn.index(g.lsp_ignore, s.name) == -1 then
-            lspconfig[s.name].setup(M.server_opt[s.name] or M.server_opt['default'])
-        end
-    end
+    require('mason').setup({
+        install_root_dir = g.cache_dir .. '/mason',
+        pip = {
+            install_args = { '-i', 'https://opentuna.cn/pypi/web/simple' },
+        },
+    })
+
+    local index = require('mason-registry.index')
+    index['clangd'] = 'clangd'
+
+    require('mason-lspconfig').setup({
+        ensure_installed = {},
+        automatic_installation = false,
+    })
+
+    require('mason-lspconfig').setup_handlers({
+        function(server_name)
+            if fn.index(g.lsp_ignore, server_name) == -1 then
+                lspconfig[server_name].setup(M.server_opt[server_name] or M.server_opt['default'])
+            end
+        end,
+    })
 end
 
 function M.setup()
-    vim.cmd([[command! -nargs=0 Format lua vim.lsp.buf.formatting_sync(nil, 500)]])
+    vim.cmd([[command! -nargs=0 Format lua vim.lsp.buf.format()]])
     M.lspconfig()
     vim.diagnostic.config({
         virtual_text = false,

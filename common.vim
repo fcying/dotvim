@@ -1,6 +1,7 @@
 " vim: set et fenc=utf-8 ff=unix sts=2 sw=2 ts=2 :
 
 " init var {{{
+let g:etc_dir = g:root_dir . '/etc'
 let g:file_vimrc_local = $HOME .'/.vimrc.local'
 let g:cache_dir = g:root_dir . '/.cache'
 let g:file_log = g:cache_dir . '/vim.log'
@@ -636,10 +637,10 @@ function! UpdateIgnore()
 
   " update rg config
   for i in g:ignore_full.file
-    call add(g:ignore_full.rg, '-g=!' . i)
+    call add(g:ignore_full.rg, '--glob=!' . i)
   endfor
   for i in g:ignore_full.dir
-    call add(g:ignore_full.rg, '-g=!' . i)
+    call add(g:ignore_full.rg, '--glob=!' . i)
   endfor
 
   " leaderf

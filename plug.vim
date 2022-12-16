@@ -260,7 +260,6 @@ if g:complete_engine ==# 'nvimlsp'
 endif
 
 if g:complete_engine ==# 'nvimlsp'
-  MyPlug 'williamboman/nvim-lsp-installer'
   MyPlug 'williamboman/mason.nvim'
   MyPlug 'williamboman/mason-lspconfig.nvim'
   MyPlug 'jose-elias-alvarez/null-ls.nvim', {'config':'null_ls', 'event':'VimEnter'}

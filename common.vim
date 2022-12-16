@@ -446,11 +446,12 @@ endif
 let g:LargeFile = 1024 * 1024 * 10
 autocmd myau BufReadPre * let f=getfsize(expand("<afile>")) | if f > g:LargeFile || f == -2 | call LargeFile() | endif
 function! LargeFile()
-  set binary
-  " no syntax highlighting etc
-  "set eventignore+=FileType
+  "set binary
+  setlocal eventignore+=FileType    "no syntax highlighting etc
+  setlocal bufhidden=unload         "save memory when other file is viewed
+  setlocal undolevels=-1            "no undo possible
   " display message
-  autocmd myau VimEnter *  echo "The file is larger than " . (g:LargeFile / 1024 / 1024) . " MB, so some options are changed (see .vimrc for details)."
+  autocmd myau VimEnter *  echo "The file is larger than " . (g:LargeFile / 1024 / 1024) . " MB, so some options are changed (see vim config for details)."
 endfunction
 
 

@@ -529,7 +529,6 @@ function M.null_ls()
             formatting.goimports,
             formatting.clang_format,
             formatting.stylua.with({extra_args = extra_args.formatting.stylua}),
-            diagnostics.flake8,
         },
     }
 

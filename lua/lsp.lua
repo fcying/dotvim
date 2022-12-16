@@ -79,35 +79,6 @@ local on_attach = function(client, bufnr)
     })
 end
 
--- https://github.com/golang/tools/tree/master/gopls
--- fork from https://github.com/neovim/nvim-lspconfig/issues/115#issuecomment-902680058
-function M.goimports(timeout_ms)
-    if vim.fn.get(servers.get_installed_server_names(), 'gopls') ~= 1 then
-        return
-    end
-
-    local context = { only = { 'source.organizeImports' } }
-    vim.validate({ context = { context, 't', true } })
-
-    local params = lsp.util.make_range_params()
-    params.context = context
-
-    local clients = vim.lsp.get_active_clients()
-    local client = clients[next(clients)] or { offset_encoding = 'utf-8' }
-    local result = lsp.buf_request_sync(0, 'textDocument/codeAction', params, timeout_ms)
-    for _, res in pairs(result or {}) do
-        for _, r in pairs(res.result or {}) do
-            if r.edit then
-                lsp.util.apply_workspace_edit(r.edit, client.offset_encoding)
-            else
-                lsp.buf.execute_command(r.command)
-            end
-        end
-    end
-
-    lsp.buf.format()
-end
-
 function config.clangd()
     local clangd_cmd = { 'clangd' }
     table.insert(clangd_cmd, '--background-index')
@@ -139,7 +110,6 @@ function config.go()
         flags = flags,
         settings = {
             gopls = {
-                experimentalWorkspaceModule = true,
                 analyses = {
                     unusedparams = false,
                 },
@@ -150,13 +120,6 @@ function config.go()
             return util.root_pattern('go.work')(fname) or util.root_pattern('go.mod', '.root', '.git')(fname)
         end,
     }
-
-    vim.api.nvim_create_autocmd('BufWritePre', {
-        pattern = { '*.go' },
-        callback = function()
-            M.goimports(500)
-        end,
-    })
 end
 
 function config.python()

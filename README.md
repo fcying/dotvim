@@ -6,7 +6,7 @@ git clone https://github.com/fcying/dotvim.git ~/.vim
 ln -svf ~/.vim/vimrc ~/.config/nvim/init.vim
 ```
 
-#### nvim_config.zip (only support NVIM 0.5+)
+#### nvim_config.zip (only support NVIM 0.8+)
 ```
 download from release
 tar xJf nvim_config.txz
@@ -41,6 +41,7 @@ config var, modify it in `user config` or `project config`.
 let g:ignore.dir = ['.root','.svn','.git','.repo','.ccls-cache','.cache','.ccache']
 let g:ignore.file = ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]'
 let g:ignore.rg = ['--max-columns=300', '--iglob=!obj', '--iglob=!out']
+let g:ignore.mru = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll']
 ```
 
 * `g:complete_engine`

@@ -34,7 +34,3 @@
 --regex-sh=/(.*)\{\{\{/\1/k,key/
 
 --regex-lua=/(.*)\{\{\{/\1/k,key/
-
---langdef=YAML
---langmap=YAML:.yml.yaml
---regex-YAML=/^[ \t]*(.*):/\1/k,key/

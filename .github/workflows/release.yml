@@ -44,9 +44,9 @@ jobs:
           XZ_OPT=-9 tar cJf nvim_config.txz nvim
 
           # install vendor
-          nvim --headless -c 'LspInstall --sync clangd' -c 'q'
-          #nvim --headless -c 'LspInstall --sync ccls' -c 'q'
-          nvim --headless -c 'LspInstall --sync sumneko_lua' -c 'q'
+          nvim --headless -c 'MasonInstall --sync clangd' -c 'q'
+          nvim --headless -c 'MasonInstall --sync lua-language-server' -c 'q'
+          sed 's|/home/runner|~|' -i ~/.config/nvim/.cache/mason/bin/lua-language-server
 
           echo "get rg"
           new_ver=$(curl -sv "https://github.com/BurntSushi/ripgrep/releases/latest" 2>&1 | grep -P location: | grep -Po "(\d+\.){2}\d+")

@@ -77,24 +77,28 @@ function Go2Def(str, opts)
         local lnum = fn.line('.')
 
         if opts.mode == 'lsp' then
-            local params = vim.lsp.util.make_position_params()
-            local ret = vim.lsp.buf_request_sync(0, 'textDocument/definition', params, 5000)
+            local clients = vim.lsp.get_active_clients({bufnr = 0})
+            local client = clients[next(clients)]
 
-            --vim.notify(vim.inspect(ret))
-            if next(ret) then
-                local result = ret[next(ret)].result or {}
-                if #result == 1 then
-                    local clients = vim.lsp.buf_get_clients(0)
-                    local client = clients[next(clients)] or { offset_encoding = 'utf-8' }
-                    vim.lsp.util.jump_to_location(result[1], client.offset_encoding)
+            if client ~= nil and client.config.name ~= 'null-ls' then
+                local params = vim.lsp.util.make_position_params(0, client.offset_encoding)
+                ---@diagnostic disable-next-line
+                local ret = vim.lsp.buf_request_sync(0, 'textDocument/definition', params, 1000)
 
-                    -- if not jump, fallback ltag
-                    if bufnr ~= fn.bufnr() or lnum ~= fn.line('.') then
+                --vim.notify(vim.inspect(ret))
+                if ret ~= nil and next(ret) then
+                    local result = ret[next(ret)].result or {}
+                    if #result == 1 then
+                        vim.lsp.util.jump_to_location(result[1], client.offset_encoding, false)
+
+                        -- if not jump, fallback ltag
+                        if bufnr ~= fn.bufnr() or lnum ~= fn.line('.') then
+                            return
+                        end
+                    elseif #result > 1 then
+                        require('telescope.builtin').lsp_definitions()
                         return
                     end
-                elseif #result > 1 then
-                    require('telescope.builtin').lsp_definitions()
-                    return
                 end
             end
         elseif opts.mode == 'builtin' then
@@ -510,6 +514,7 @@ end
 function M.null_ls()
     local null_ls = require('null-ls')
     local formatting = null_ls.builtins.formatting
+    ---@diagnostic disable-next-line unused-local
     local diagnostics = null_ls.builtins.diagnostics
 
     local extra_args = {

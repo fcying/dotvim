@@ -152,8 +152,8 @@ set matchtime=2
 set number
 set ruler
 set laststatus=2
-"set nolist
-set list
+set nolist
+"set list
 set listchars=tab:▸\ ,trail:.,nbsp:+,extends:❯,precedes:❮
 set showcmd
 set wildmenu
@@ -215,6 +215,7 @@ autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
 autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
 autocmd myau BufNewFile,BufRead .tasks setl filetype=conf
 autocmd myau BufNewFile,BufRead syslog setl filetype=messages
+autocmd myau BufNewFile,BufRead rc.local setl filetype=sh
 
 if g:is_nvim
   " force write shada on leaving nvim:  it make restore-cursor to the last position broken {{{

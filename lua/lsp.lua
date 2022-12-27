@@ -164,7 +164,7 @@ function config.lua()
                 },
                 diagnostics = {
                     enable = true,
-                    disable = { 'undefined-global', 'empty-block' },
+                    disable = { 'undefined-global', 'undefined-field', 'empty-block' },
                     --neededFileStatus = {
                     --    ['codestyle-check'] = 'Any',
                     --},

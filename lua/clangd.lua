@@ -18,13 +18,16 @@ return Pkg.new({
     ---@async
     install = function(ctx)
         local source
+        local std = require "mason-core.managers.std"
         if platform.is.linux_x64 == true then
-            source = github.untarxz_release_file({
-                repo = 'fcying/tools',
-                release = 'tools',
-                asset_file = 'clangd_linux_amd64.txz',
-            })
-            source.with_receipt()
+            ctx.github_release_file = "https://github.com/fcying/tools/releases/download/tools/clangd_linux_amd64.txz"
+            std.download_file(ctx.github_release_file, "clangd_linux_amd64.txz")
+            std.untarxz("clangd_linux_amd64.txz")
+            ctx.receipt:with_primary_source {
+                type = "github_release_file",
+                repo = 'clangd/clangd',
+                file = ctx.github_release_file,
+            }
         else
             source = github.unzip_release_file({
                 repo = 'clangd/clangd',

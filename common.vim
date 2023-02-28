@@ -105,6 +105,7 @@ else
 endif
 
 " basic {{{
+"set shm+=I
 set mouse=nv
 set clipboard+=unnamedplus
 set autoindent

@@ -1,5 +1,5 @@
 "let g:plug_manager = 'vim-plug'
-let g:plug_manager = 'packer'
+let g:plug_manager = 'lazy'
 "let g:plug_manager = 'none'
 
 if g:is_nvim ==# 0
@@ -11,26 +11,22 @@ let g:plug_options = []
 if !exists('g:plug_dir')
   let g:plug_dir = g:root_dir . '/.plugged'
 endif
-let s:plug_install_dir = g:plug_dir . '/pack/packer/opt'
 let s:plug_init = 0
 let g:plug_need_update = 0
 
 " init env {{{
-if g:plug_manager ==# 'packer'
-  "for packer_compiled.lua
-  exec 'set runtimepath^=' . g:plug_dir
-  exec 'set packpath=' . g:plug_dir
-  let s:plug_manager_file = s:plug_install_dir . '/packer.nvim/lua/packer.lua'
+if g:plug_manager ==# 'lazy'
+  let s:plug_manager_file = g:plug_dir . '/lazy.nvim/README.md'
   let s:plug_manager_download =
-        \ 'silent !git clone --depth 1 https://github.com/wbthomason/packer.nvim '
-        \ . s:plug_install_dir . '/packer.nvim'
+        \ 'silent !git clone --filter=blob:none https://github.com/folke/lazy.nvim.git --branch=stable '
+        \ . g:plug_dir . '/lazy.nvim'
 elseif g:plug_manager ==# 'vim-plug'
-  let s:plug_manager_file = s:plug_install_dir . '/vim-plug/plug.vim'
+  let s:plug_manager_file = g:plug_dir . '/vim-plug/plug.vim'
   let s:plug_manager_download =
         \ 'silent !git clone --depth 1 https://github.com/junegunn/vim-plug '
-        \ . s:plug_install_dir . '/vim-plug'
+        \ . g:plug_dir . '/vim-plug'
 else
-  "not plugin
+  "not plugin manager
   let g:plug_dir = g:root_dir
   let s:plug_manager_file = g:config_dir . '/plug.vim'
 endif
@@ -75,35 +71,30 @@ function! MyPlug(repo, ...)
   let l:plug_name = fnamemodify(a:repo, ':t:s?\.git$??')
 
   " packer.nvim
-  if g:plug_manager ==# 'packer'
+  if g:plug_manager ==# 'lazy'
     call add(l:plug, a:repo)
     let l:options = {}
-    let l:options.opt = 'false'
+    let l:verylazy = 1
     if a:0 != 0
       for key in keys(a:1)
         if key ==# 'keys' || key ==# 'ft' || key ==# 'cmd' || key ==# 'event'
-              \ || key ==# 'fn' || key ==# 'after'
-              \ || key ==# 'module' || key ==# 'module_pattern'
-          let l:options.opt = 'true'
+              \ || key ==# 'lazy'
+          let l:verylazy = 0
           exec 'let l:options.' . key . ' = a:1[key]'
-        elseif key ==# 'run'
-          if type(a:1[key]) ==# 1
-            exec 'let l:options.' . key . ' = a:1[key]'
-          else
-            exec 'let l:options.' . key . ' = string(a:1[key])'
-          endif
-        elseif key ==# 'rtp' || key ==# 'commit' || key ==# 'branch'
-              \ || key ==# 'requires' || key ==# 'wants'|| key ==# 'config'
+        elseif key ==# 'dependencies' || key ==# 'config' || key ==# 'version'
+              \ || key ==# 'commit' || key ==# 'branch' || key ==# 'tag'
+              \ || key ==# 'build'
           exec 'let l:options.' . key . ' = a:1[key]'
         endif
       endfor
     endif
 
-    if isdirectory(s:plug_install_dir . '/' . l:plug_name)
+    "if l:verylazy
+    "  let l:options.event = 'VimEnter'
+    "endif
+    
+    if isdirectory(g:plug_dir . '/' . l:plug_name)
       exec 'let g:plug_names[''' . l:plug_name . '''] = 1'
-      if l:options.opt ==# 'false'
-          exe 'packadd! '. l:plug_name
-      endif
     else
       exec 'let g:plug_names[''' . l:plug_name . '''] = 0'
       let g:plug_need_update = 1
@@ -117,10 +108,10 @@ function! MyPlug(repo, ...)
     if a:0 != 0
       let l:options = {}
       for key in keys(a:1)
-        if key ==# 'cmd'
-          exec "let l:options.on = a:1[key]"
-        elseif key ==# 'run'
+        if key ==# 'build'
           exec "let l:options.do = a:1[key]"
+        elseif key ==# 'cmd'
+          exec "let l:options.on = a:1[key]"
         elseif key ==# 'branch'
           exec "let l:options.branch = a:1[key]"
         elseif key ==# 'ft'
@@ -130,7 +121,7 @@ function! MyPlug(repo, ...)
       call add(l:plug, l:options)
     endif
     call add(g:plug_options, l:plug)
-    if isdirectory(s:plug_install_dir . '/' . l:plug_name)
+    if isdirectory(g:plug_dir . '/' . l:plug_name)
       exec 'let g:plug_names[''' . l:plug_name . '''] = 1'
     else
       exec 'let g:plug_names[''' . l:plug_name . '''] = 0'
@@ -142,16 +133,15 @@ command! -nargs=+ -bar MyPlug call MyPlug(<args>)
 
 
 function! MyPlugUpgrade()
-  if g:plug_manager ==# 'packer'
-    lua require('config').packer()
+  if g:plug_manager ==# 'lazy'
+    lua require('config').lazy()
 
-    nnoremap <leader>pu :PackerSync<CR>
-    nnoremap <leader>pr :PackerClean<CR>
-    nnoremap <leader>pc :PackerCompile<CR>
+    nnoremap <leader>pu :Lazy update<CR>
+    nnoremap <leader>pr :Lazy clean<CR>
 
   elseif g:plug_manager ==# 'vim-plug'
-    exec 'source '. s:plug_install_dir . '/vim-plug/plug.vim'
-    call plug#begin(expand(s:plug_install_dir))
+    exec 'source '. g:plug_dir . '/vim-plug/plug.vim'
+    call plug#begin(expand(g:plug_dir))
     Plug 'junegunn/vim-plug'
 
     for plug in g:plug_options
@@ -188,54 +178,58 @@ endif
 " ============================================================================
 " common plugins {{{
 " ============================================================================
-MyPlug 'fcying/gen_clang_conf.vim'
-MyPlug 'wsdjeg/vim-fetch'
+MyPlug 'fcying/gen_clang_conf.vim', {'event': 'VeryLazy'}
+MyPlug 'wsdjeg/vim-fetch', {'lazy': v:false}
+
+MyPlug 'lambdalisue/suda.vim', {'cmd':['SudaRead', 'SudaWrite']}
+MyPlug 'simnalamburt/vim-mundo', {'event': 'VimEnter'}
+"MyPlug 'skywind3000/vim-quickui'
+"MyPlug 'tpope/vim-apathy'
+"MyPlug 'roxma/vim-paste-easy'
+"MyPlug 'derekwyatt/vim-fswitch'
 
 " automatically adjusts 'shiftwidth' and 'expandtab'
-MyPlug 'tpope/vim-sleuth'
+MyPlug 'tpope/vim-sleuth', {'event': 'VeryLazy'}
 
-MyPlug 'moll/vim-bbye', {'cmd':'Bdelete'}
-MyPlug 'preservim/nerdcommenter', {'keys':'<plug>NERDCommenter'}
-MyPlug 'lambdalisue/fern.vim', {'cmd':'Fern'}
-MyPlug 'machakann/vim-sandwich'
+MyPlug 'moll/vim-bbye', {'cmd':'Bdelete', 'event': 'VeryLazy'}
+MyPlug 'preservim/nerdcommenter', {'event': 'VeryLazy'}
+MyPlug 'lambdalisue/fern.vim', {'cmd':'Fern', 'event': 'VeryLazy'}
+MyPlug 'machakann/vim-sandwich', {'event': 'VeryLazy'}
 MyPlug 'dstein64/vim-startuptime', {'cmd':'StartupTime'}
 MyPlug 'mbbill/fencview', {'cmd':['FencView','FencAutoDetect']}
 
 MyPlug 'ZSaberLv0/ZFVimJob'
-MyPlug 'ZSaberLv0/ZFVimDirDiff', {'cmd':'ZFDirDiff'}
+MyPlug 'ZSaberLv0/ZFVimDirDiff', {'cmd':'ZFDirDiff', 'dependencies':['ZFVimJob']}
 
-MyPlug 'liuchengxu/vim-which-key'
-MyPlug 't9md/vim-choosewin', {'keys':'<Plug>(choosewin)'}
+MyPlug 'liuchengxu/vim-which-key', {'event': 'VimEnter'}
+MyPlug 't9md/vim-choosewin', {'event': 'VimEnter'}
 MyPlug 'preservim/tagbar', {'cmd':'TagbarToggle'}
 MyPlug 'Yggdroot/indentLine', {'cmd': 'IndentLinesToggle'}
 "MyPlug 'MattesGroeger/vim-bookmarks'
-MyPlug 'chentoast/marks.nvim', {'config':'marks', 'event':'VimEnter'}
+MyPlug 'chentoast/marks.nvim', {'config':'marks', 'event': 'VimEnter'}
 
-"MyPlug 'tpope/vim-fugitive' , {'cmd': ['G', 'Git', 'Gedit', 'Gread', 'Gwrite', 'Gdiffsplit', 'Gvdiffsplit'], 'fn': 'fugitive#*'}
-MyPlug 'tpope/vim-fugitive'
+MyPlug 'tpope/vim-fugitive', {'event': 'VeryLazy'}
 MyPlug 'rbong/vim-flog', {'cmd': ['Flog', 'Flogsplit', 'Floggit'], 'branch': 'master'}
-MyPlug 'iberianpig/tig-explorer.vim'
+MyPlug 'iberianpig/tig-explorer.vim', {'event': 'VimEnter'}
 
-MyPlug 'mg979/vim-visual-multi', {'branch': 'master'}
-MyPlug 'easymotion/vim-easymotion', {'keys':'<Plug>(easymotion'}
-MyPlug 'mhinz/vim-grepper', {'keys':'<plug>(GrepperOperator)'}
-MyPlug 'terryma/vim-expand-region'
-MyPlug 'andymass/vim-matchup'
+MyPlug 'mg979/vim-visual-multi', {'branch': 'master', 'event': 'VimEnter'}
+MyPlug 'easymotion/vim-easymotion', {'event': 'VimEnter'}
+MyPlug 'mhinz/vim-grepper', {'event': 'VimEnter'}
+MyPlug 'terryma/vim-expand-region', {'event': 'VimEnter'}
+MyPlug 'andymass/vim-matchup', {'event': 'VimEnter'}
 MyPlug 'fcying/vim-foldsearch', {'cmd': ['Fp', 'Fw', 'Fs', 'FS', 'Fl', 'Fi', 'Fd', 'Fe']}
-MyPlug 'chrisbra/Colorizer'
+MyPlug 'chrisbra/Colorizer', {'event': 'VimEnter'}
 
 if g:is_nvim
   " telescope {{{
-  MyPlug 'nvim-lua/plenary.nvim'
-  MyPlug 'nvim-telescope/telescope.nvim', {'config': 'telescope', 'cmd': 'Telescope', 'module_pattern': 'telescope.*'}
-  "MyPlug 'nvim-telescope/telescope.nvim'
+  MyPlug 'nvim-lua/plenary.nvim', {'event': 'VeryLazy'}
+  MyPlug 'nvim-telescope/telescope.nvim', {'config': 'telescope', 'cmd': 'Telescope'}
   MyPlug 'fcying/telescope-ctags-outline.nvim'
-  MyPlug 'nvim-telescope/telescope-fzf-native.nvim', { 'run': 'make' }
+  MyPlug 'nvim-telescope/telescope-fzf-native.nvim', { 'build': 'make' }
 
-  MyPlug 'lewis6991/impatient.nvim', {'opt': 'true'}
   MyPlug 'kevinhwang91/nvim-bqf', {'ft':'qf'}
-  MyPlug 'rcarriga/nvim-notify', {'config':'notify', 'event':'VimEnter'}
-  MyPlug 'nvim-lualine/lualine.nvim', {'config':'lualine', 'event':'VimEnter'}
+  MyPlug 'rcarriga/nvim-notify', {'config':'notify', 'event': 'VimEnter'}
+  MyPlug 'nvim-lualine/lualine.nvim', {'config':'lualine', 'event':'ColorScheme'}
 
   "MyPlug 'kevinhwang91/nvim-hclipboard'
 else
@@ -245,7 +239,7 @@ else
 endif
 
 if g:use_leaderf ==# 1
-  MyPlug 'Yggdroot/LeaderF', {'run': ':LeaderfInstallCExtension', 'cmd': 'Leaderf'}
+  MyPlug 'Yggdroot/LeaderF', {'build': ':LeaderfInstallCExtension', 'cmd': 'Leaderf'}
 endif
 
 MyPlug 'skywind3000/asyncrun.vim', {'cmd': ['AsyncRun', 'AsyncStop'] }
@@ -262,19 +256,19 @@ endif
 if g:complete_engine ==# 'nvimlsp'
   MyPlug 'williamboman/mason.nvim'
   MyPlug 'williamboman/mason-lspconfig.nvim'
-  MyPlug 'jose-elias-alvarez/null-ls.nvim', {'config':'null_ls', 'event':'VimEnter'}
+  MyPlug 'jose-elias-alvarez/null-ls.nvim', {'config':'null_ls'}
   MyPlug 'neovim/nvim-lspconfig'
   MyPlug 'folke/neodev.nvim'
   MyPlug 'hrsh7th/nvim-cmp', {'config':'cmp', 'event':'InsertEnter'}
-  MyPlug 'hrsh7th/cmp-path', {'after':'nvim-cmp'}
-  MyPlug 'hrsh7th/cmp-nvim-lsp', {'after':'nvim-cmp'}
-  MyPlug 'hrsh7th/cmp-vsnip', {'after':'nvim-cmp'}
-  MyPlug 'hrsh7th/vim-vsnip', {'after':'nvim-cmp'}
-  MyPlug 'hrsh7th/cmp-buffer', {'after':'nvim-cmp'}
-  MyPlug 'hrsh7th/cmp-cmdline', {'after':'nvim-cmp'}
-  MyPlug 'hrsh7th/cmp-omni', {'after':'nvim-cmp'}
-  MyPlug 'quangnguyen30192/cmp-nvim-tags', {'after':'nvim-cmp'}
-  MyPlug 'uga-rosa/cmp-dictionary', {'after':'nvim-cmp', 'config':'cmp_dictionary'}
+  MyPlug 'hrsh7th/cmp-path', {'dependencies':['nvim-cmp']}
+  MyPlug 'hrsh7th/cmp-nvim-lsp', {'dependencies':['nvim-cmp']}
+  MyPlug 'hrsh7th/cmp-vsnip', {'dependencies':['nvim-cmp']}
+  MyPlug 'hrsh7th/vim-vsnip', {'dependencies':['nvim-cmp']}
+  MyPlug 'hrsh7th/cmp-buffer', {'dependencies':['nvim-cmp']}
+  MyPlug 'hrsh7th/cmp-cmdline', {'dependencies':['nvim-cmp']}
+  MyPlug 'hrsh7th/cmp-omni', {'dependencies':['nvim-cmp']}
+  MyPlug 'quangnguyen30192/cmp-nvim-tags', {'dependencies':['nvim-cmp']}
+  MyPlug 'uga-rosa/cmp-dictionary', {'dependencies':['nvim-cmp'], 'config':'cmp_dictionary'}
   "MyPlug 'andersevenrud/compe-tmux', {'branch': 'cmp'}
 
 elseif g:complete_engine ==# 'coc'

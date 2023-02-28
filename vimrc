@@ -6,13 +6,6 @@ let g:config_dir = g:root_dir
 
 execute 'source ' . g:root_dir . '/common.vim'
 execute 'source ' . g:root_dir . '/plug.vim'
-" plugin list {{{
-MyPlug 'lambdalisue/suda.vim', {'cmd':['SudaRead', 'SudaWrite']}
-MyPlug 'simnalamburt/vim-mundo'
-"MyPlug 'skywind3000/vim-quickui'
-"MyPlug 'tpope/vim-apathy'
-"MyPlug 'roxma/vim-paste-easy'
-"MyPlug 'derekwyatt/vim-fswitch'
 
 call MyPlugUpgrade()
 

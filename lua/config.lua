@@ -6,6 +6,96 @@ local g, cmd, fn, api = vim.g, vim.cmd, vim.fn, vim.api
 --for test
 --fn.writefile(fn.split(vim.inspect(_G),'\n'),g.cache_dir .. '/log','')
 
+function M.lazy()
+    vim.opt.rtp:prepend(g.plug_dir .. '/lazy.nvim')
+    local lazy = require('lazy')
+
+    local plugs = {}
+    for _, value in ipairs(g.plug_options) do
+        local plug = { value[1] }   --repo
+        if value[2] ~= 'nil' then
+            for k, v in pairs(value[2]) do
+                plug[k] = v
+            end
+        end
+        if value[2]['config'] ~= nil then
+            plug['config'] = function()
+                require('config')[value[2]['config']]()
+            end
+        end
+        if value[2]['build'] ~= nil then
+            local s = value[2]['build']
+            if string.find(s, '^function') == nil then
+                plug['build'] = s
+            else
+                plug['build'] = function()
+                    fn[string.match(s, "function%('(.-)'%)")](0)
+                end
+            end
+        end
+        --print(vim.inspect(plug))
+        table.insert(plugs, plug)
+    end
+
+    lazy.setup(plugs, {
+        root = g.plug_dir,
+        lockfile = g.plug_dir .. "/lazy-lock.json",
+        state = g.plug_dir .. "/state.json",
+        checker = { enabled = false },
+        defaults = {
+            lazy = false,
+            version = nil,
+            --version = "*", --try installing the latest stable versions of plugins
+        },
+        performance = {
+            cache = { enabled = true, },
+            reset_packpath = true, -- reset the package path to improve startup time
+            rtp = {
+                reset = true,
+                ---@type string[]
+                paths = {g.root_dir, g.root_dir .. "../"},
+                ---@type string[] list any plugins you want to disable here
+                disabled_plugins = {
+                    "gzip",
+                    --"matchit",
+                    --"matchparen",
+                    --"netrwPlugin",
+                    "tarPlugin",
+                    "tohtml",
+                    "tutor",
+                    "zipPlugin",
+                },
+            },
+        },
+        install = {
+            -- install missing plugins on startup.
+            missing = true,
+            colorscheme = { "desert" },
+        },
+        ui = {
+            icons = {
+                cmd = "⌘",
+                config = "🛠",
+                event = "📅",
+                ft = "📂",
+                init = "⚙",
+                keys = "🗝",
+                plugin = "🔌",
+                runtime = "💻",
+                source = "📄",
+                start = "🚀",
+                task = "📌",
+                lazy = "💤 ",
+            },
+        },
+        readme = {
+            root = g.plug_dir .. "/readme",
+            files = { "README.md", "lua/**/README.md" },
+            skip_if_doc_exists = true,
+        },
+    })
+end
+
 function M.packer()
     cmd('packadd packer.nvim')
 

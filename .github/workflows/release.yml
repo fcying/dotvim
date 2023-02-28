@@ -24,7 +24,7 @@ jobs:
           sudo cp -rf ./nvim-linux64/* /usr/local
           nvim --version
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Prepare nvim config
         run: |
           pwd && ls
@@ -37,10 +37,9 @@ jobs:
 
           echo "let g:use_leaderf = 0" >> ~/.vimrc.local
           # sleep 10 for plugin run
-          timeout 120s nvim --headless -c 'autocmd User PackerComplete sleep 10 | quitall' --cmd 'let g:force_update=1'
+          #timeout 120s nvim --headless -c 'autocmd User LazyInstall quitall' --cmd 'let g:force_update=1'
+          nvim --headless "+Lazy! sync" +qa
 
-          # gennerate packer_compiled.lua on first open
-          rm -vf ./nvim/.plugged/plugin/packer_compiled.lua
           XZ_OPT=-9 tar cJf nvim_config.txz nvim
 
           # install vendor
@@ -63,7 +62,6 @@ jobs:
           rm ctags.txz
           mv ctags ~/.config/nvim/vendor/
 
-          rm -vf ./nvim/.plugged/plugin/packer_compiled.lua
           XZ_OPT=-9 tar cJf nvim_config_with_vendor.txz nvim
           popd
           mv ~/.config/*.txz ~/publish

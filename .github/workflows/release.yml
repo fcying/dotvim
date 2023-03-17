@@ -31,7 +31,7 @@ jobs:
           mkdir -p ~/.config/nvim
 
           # init default nvim config
-          cp -r nvim_config/init.vim lua/ dict/ *.vim ~/.config/nvim
+          cp -r init.lua lua/ dict/ ~/.config/nvim
           cp -r snippets/ vendor/ etc/  ~/.config/nvim/
           pushd ~/.config
 

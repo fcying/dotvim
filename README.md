@@ -1,9 +1,8 @@
-My VIM && NEOVIM config.
+My NEOVIM config.
 
-#### Install (VIM && NVIM)
+#### Install
 ```
-git clone https://github.com/fcying/dotvim.git ~/.vim
-ln -svf ~/.vim/vimrc ~/.config/nvim/init.vim
+git clone https://github.com/fcying/dotvim.git ~/.config/nvim
 ```
 
 #### nvim_config.zip (only support NVIM 0.8+)
@@ -43,9 +42,6 @@ let g:ignore.file = ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]'
 let g:ignore.rg = ['--max-columns=300', '--iglob=!obj', '--iglob=!out']
 let g:ignore.mru = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll']
 ```
-
-* `g:complete_engine`
-default use `coc` in VIM, use `nvim-cmp` in NVIM.  
 
 * `g:colorscheme`  
     e.g.  

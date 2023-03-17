@@ -11,8 +11,8 @@ fi
 if [[ $app == "ln" ]]; then
     # nvim
     mkdir -p ~/.config/nvim
-    if [ $(echo $PWD | grep -c "\.vim") -eq 1 ]; then
-        ln -svf $PWD/../vimrc ~/.config/nvim/init.vim
+    if [ $(echo $PWD | grep -c "\.lua") -eq 1 ]; then
+        ln -svf $PWD/../init.lua ~/.config/nvim/init.lua
     fi
 
     if [ -f $HOME/.zshrc.local ]; then

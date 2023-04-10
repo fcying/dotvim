@@ -61,27 +61,28 @@ let g:ignore.mru = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp
 default `<leader>` is `<space>`
 | Shortcut          | Mode          | Description                                     |
 |-------------------|---------------|-------------------------------------------------|
-| `ff`              | Normal        | fuzzy file search                               |
-| `fm`              | Normal        | fuzzy mru file search                           |
 | `fb`              | Normal        | fuzzy buffers search                            |
-| `fl`              | Normal        | fuzzy find in current buffer                    |
-| `fh`              | Normal        | fuzzy find help tags                            |
-| `ft`              | Normal        | fuzzy find tags                                 |
-| `fj`              | Normal        | fuzzy find jumplist                             |
-| `fr`              | Normal        | resume last search                              |
-| `fo`              | Normal        | ctags outline                                   |
-| `f/`              | Normal        | live grep                                       |
+| `ff`              | Normal        | fuzzy file search                               |
 | `fg`              | Normal/Visual | search under cursor or search visual selection  |
+| `fh`              | Normal        | fuzzy find help tags                            |
+| `fj`              | Normal        | fuzzy find jumplist                             |
+| `fl`              | Normal        | fuzzy find in current buffer                    |
+| `fm`              | Normal        | fuzzy mru file search                           |
+| `fo`              | Normal        | ctags outline                                   |
+| `fO`              | Normal        | ctags all buffer outline                        |
+| `fr`              | Normal        | resume last search                              |
+| `ft`              | Normal        | fuzzy find tags                                 |
+| `f/`              | Normal        | live grep                                       |
 | `gsiw`            | Normal        | search under cursor (display in quickfix)       |
 | `gs`              | Visual        | search visual selection (display in quickfix)   |
 | `gd`              | Normal        | goto definitions                                |
+| `gI`              | Normal        | lsp_implementations                             |
+| `gr`              | Normal        | lsp_references                                  |
+| `gt`              | Normal        | lsp_type_definitions                            |
 | `K`               | Normal        | lsp_hover                                       |
-| `<leader>lr`      | Normal        | lsp_references                                  |
-| `<leader>lt`      | Normal        | lsp_type_definitions                            |
-| `<leader>li`      | Normal        | lsp_implementations                             |
 | `<leader>la`      | Normal        | lsp_code_actions                                |
 | `<leader>ls`      | Normal        | lsp_document_symbols                            |
-| `<leader>le`      | Normal        | lsp_diagnostics                                 |
+| `<leader>ld`      | Normal        | lsp_diagnostics                                 |
 | `]d`              | Normal        | lsp_goto_next_diagnostic                        |
 | `[d`              | Normal        | lsp_goto_previous_diagnostic                    |
 | `<leader>rn`      | Normal        | lsp_rename                                      |

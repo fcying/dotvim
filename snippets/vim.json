@@ -4,6 +4,11 @@
     "body": "if ${1:condition}\n\t${0}\nendif",
     "description": "An IF statement."
   },
+  "ife": {
+    "prefix": "ife",
+    "body": "if ${1:condition}\n\t${2}\nelse\n\t${0}\nendif",
+    "description": "An if else statement."
+  },
   "function": {
     "prefix": "fu",
     "body": "function! ${1:name}\n\t${0}\nendfunction",

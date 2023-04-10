@@ -2,8 +2,8 @@ return {
     'lambdalisue/fern.vim',
     cmd = 'Fern',
     keys = {
-        { "<leader>wf", "<cmd>Fern . -drawer -toggle -keep<CR>" },
-        { "<leader>wl", "<cmd>Fern . -drawer -reveal=%<CR>" },
+        { "<leader>wf", "<cmd>Fern . -drawer -toggle -keep<CR>", desc = "file explorer" },
+        { "<leader>wl", "<cmd>Fern . -drawer -reveal=%<CR>", desc = "file location" },
     },
     config = function()
         vim.api.nvim_create_autocmd({ 'FileType' }, {

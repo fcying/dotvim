@@ -5,7 +5,7 @@
     "description": [
       "Option 1:\n",
       "#!/bin/bash\n",
-      "Description: Shebang Bash executor.\n",
+      "Description: My Shebang Bash executor.\n",
       "Option 2:\n",
       "#!/usr/bin/env bash\n",
       "Description: Shell searchs for the first match of bash in the $PATH environment variable.\n",

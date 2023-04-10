@@ -1,7 +1,35 @@
 local M = {}
 
 local map = require("util").map
-local g, cmd, fn = vim.g, vim.cmd, vim.fn
+local g = vim.g
+
+-- plugin load config before autoload
+local pre_config = {
+    "gen_clang_conf",
+    "easymotion",
+    "nerdcommenter",
+    "foldsearch",
+}
+
+function M.luasnip()
+    local paths = {}
+    paths[#paths + 1] = g.config_dir .. "/snippets"
+    paths[#paths + 1] = g.config_dir .. "/.plugged/friendly-snippets"
+    require("luasnip.loaders.from_vscode").lazy_load({ paths = paths })
+
+    vim.cmd([[
+    imap <silent><expr> <Tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<Tab>'
+    " -1 for jumping backwards.
+    inoremap <silent> <S-Tab> <cmd>lua require'luasnip'.jump(-1)<Cr>
+
+    snoremap <silent> <Tab> <cmd>lua require('luasnip').jump(1)<Cr>
+    snoremap <silent> <S-Tab> <cmd>lua require('luasnip').jump(-1)<Cr>
+
+    " For changing choices in choiceNodes (not strictly necessary for a basic setup).
+    imap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
+    smap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
+    ]])
+end
 
 function M.cmp()
     local cmp = require("cmp")
@@ -34,7 +62,7 @@ function M.cmp()
             { name = "nvim_lsp" },
             { name = "buffer" },
             { name = "tags" },
-            { name = "omni", priority = -1 },
+            { name = "omni",      priority = -1 },
         }),
         formatting = {
             format = function(entry, vim_item)
@@ -45,7 +73,7 @@ function M.cmp()
                     nvim_lsp = "[Lsp]",
                     tags = "[Tag]",
                     tmux = "[Tmux]",
-                    vsnip = "[Snip]",
+                    luasnip = "[Snip]",
                     dictionary = "[Dict]",
                     omni = "[Omni]",
                 })[entry.source.name]
@@ -94,19 +122,6 @@ function M.cmp()
             [".*xmake.lua"] = { dict_path .. "xmake.dict" },
         },
     })
-
-    vim.cmd([[
-    imap <silent><expr> <Tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<Tab>'
-    " -1 for jumping backwards.
-    inoremap <silent> <S-Tab> <cmd>lua require'luasnip'.jump(-1)<Cr>
-
-    snoremap <silent> <Tab> <cmd>lua require('luasnip').jump(1)<Cr>
-    snoremap <silent> <S-Tab> <cmd>lua require('luasnip').jump(-1)<Cr>
-
-    " For changing choices in choiceNodes (not strictly necessary for a basic setup).
-    imap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
-    smap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
-    ]])
 end
 
 function M.lualine()
@@ -171,7 +186,7 @@ function M.notify()
             TRACE = "T",
         },
     })
-    cmd([[
+    vim.cmd([[
         highlight NotifyINFOIcon guifg=#009f9f
         highlight NotifyINFOTitle guifg=#009f9f
     ]])
@@ -220,18 +235,16 @@ function M.lastplace()
 end
 
 function M.easymotion()
-    vim.cmd([[
-        let g:EasyMotion_smartcase = 0
-        let g:EasyMotion_do_mapping = 0   " Disable default mappings
-        " move to {char}
-        nmap s <Plug>(easymotion-overwin-f)
-        " move to {char}{char}
-        nmap S <Plug>(easymotion-overwin-f2)
-        " Move to line
-        nmap L <Plug>(easymotion-overwin-line)
-        " Move to word
-        "nmap <Leader>w <Plug>(easymotion-overwin-w)
-    ]])
+    g.EasyMotion_do_mapping = 0
+    g.EasyMotion_smartcase = 0
+    -- move to {char}
+    map("n", "s", "<Plug>(easymotion-overwin-f)", { desc = "Easy move to char" })
+    -- move to {char}{char}
+    map("n", "S", "<Plug>(easymotion-overwin-f2", { desc = "Easy move to 2char" })
+    -- Move to line
+    map("n", "L", "<Plug>(easymotion-overwin-line)", { desc = "Easy move to line" })
+    -- Move to word
+    --map("n", "<leader>w", "<Plug>(easymotion-overwin-w)", {desc = "Easy move to word"})
 end
 
 function M.vim_expand_region()
@@ -265,15 +278,25 @@ function M.foldsearch()
 end
 
 function M.nerdcommenter()
+    vim.opt.commentstring = "#%s"
+    g.NERDCreateDefaultMappings = 0
+    g.NERDSpaceDelims = 0
+    --g.NERDRemoveExtraSpaces = 0
+    g.NERDCommentEmptyLines = 1
+    g.NERDDefaultAlign = "left"
+    g.NERDToggleCheckAllLines = 1
+
+    map("n", "<a-/>", "<plug>NERDCommenterToggle", { desc = "NERDCommenterToggle" })
+    map("v", "<a-/>", "<plug>NERDCommenterToggle", { desc = "NERDCommenterToggle" })
+    map("n", "<leader>gc", "<plug>NERDCommenterToggle", { desc = "NERDCommenterToggle" })
+    map("v", "<leader>gc", "<plug>NERDCommenterToggle", { desc = "NERDCommenterToggle" })
+    map("v", "<leader>gC", "<plug>NERDCommenterComment", { desc = "NERDCommenterComment" })
+    map("v", "<leader>gU", "<plug>NERDCommenterUncomment", { desc = "NERDCommenterUncomment" })
+    map("n", "<leader>gi", "<plug>NERDCommenterInvert", { desc = "NERDCommenterInvert" })
+    map("v", "<leader>gi", "<plug>NERDCommenterInvert", { desc = "NERDCommenterInvert" })
+    map("n", "<leader>gs", "<plug>NERDCommenterSexy", { desc = "NERDCommenterSexy" })
+    map("v", "<leader>gs", "<plug>NERDCommenterSexy", { desc = "NERDCommenterSexy" })
     vim.cmd([[
-        " set default delimiter
-        set commentstring=#%s
-        let g:NERDCreateDefaultMappings = 0
-        let g:NERDSpaceDelims = 0
-        "let g:NERDRemoveExtraSpaces = 0
-        let g:NERDCommentEmptyLines = 1
-        let g:NERDDefaultAlign = 'left'
-        let g:NERDToggleCheckAllLines = 1
         let g:NERDCustomDelimiters = {
                 \ 'c': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
                 \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
@@ -286,17 +309,30 @@ function M.nerdcommenter()
                 \ 'rc': { 'left': '#' },
                 \ '*': { 'left': '#' },
                 \ }
-        nmap <A-/> <plug>NERDCommenterToggle
-        vmap <A-/> <plug>NERDCommenterToggle gv
-        nmap <leader>gc <plug>NERDCommenterToggle
-        vmap <leader>gc <plug>NERDCommenterToggle
-        vmap <leader>gC <plug>NERDCommenterComment
-        vmap <leader>gU <plug>NERDCommenterUncomment
-        nmap <leader>gi <plug>NERDCommenterInvert
-        vmap <leader>gi <plug>NERDCommenterInvert
-        nmap <leader>gs <plug>NERDCommenterSexy
-        vmap <leader>gs <plug>NERDCommenterSexy
     ]])
+end
+
+function M.whichkey()
+    vim.o.timeout = true
+    vim.o.timeoutlen = 500
+    local wk = require("which-key")
+    wk.setup({
+        triggers = { "<leader>", "g", "f" }, -- specifiy a list or auto
+    })
+    wk.register({
+        f = { name = "telescope" },
+    })
+    wk.register({
+        c = { name = "cd ..." },
+        d = { name = "delete ..." },
+        e = { name = "edit ..." },
+        g = { name = "nerdcommenter" },
+        l = { name = "lsp" },
+        m = { name = "mark" },
+        p = { name = "plugin" },
+        t = { name = "tab" },
+        w = { name = "window" },
+    }, { prefix = "<leader>" })
 end
 
 M.is_init = false
@@ -316,15 +352,17 @@ function M.init()
         endif
         ]])
 
+        for _, v in pairs(pre_config) do
+            M[v]()
+        end
+
         require("autocmds")
         require("options")
         require("keymaps")
 
-        M.gen_clang_conf()
-
         require("plugins.lazy")
 
-        cmd.colorscheme("solarized8")
+        vim.cmd.colorscheme("solarized8")
         vim.opt.background = "light"
     end
 end

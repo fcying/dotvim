@@ -29,7 +29,7 @@ local function config(name, module)
 end
 
 require("lazy").setup({
-    { "fcying/gen_clang_conf.vim", lazy = false, config = config("gen_clang_conf") },
+    { "fcying/gen_clang_conf.vim", lazy = false },
     { "wsdjeg/vim-fetch", lazy = false },
     { "lambdalisue/suda.vim", cmd = { "SudaRead", "SudaWrite" } },
     {
@@ -41,6 +41,7 @@ require("lazy").setup({
     },
     { "mbbill/fencview", cmd = { "FencView", "FencAutoDetect" } },
     --{ 'simnalamburt/vim-mundo', event = 'VimEnter' },
+    --{ 'mhinz/vim-grepper', cmd = { "Grepper", "<plug>(GrepperOperator)" } },
     { "tpope/vim-sleuth", event = "VeryLazy" }, -- auto adjust 'shiftwidth' and 'expandtab'
     { "ethanholz/nvim-lastplace", lazy = false, config = config("lastplace") },
 
@@ -48,25 +49,24 @@ require("lazy").setup({
     {
         "moll/vim-bbye",
         cmd = "Bdelete",
-        keys = { { "<leader>q", "<cmd>Bdelete<CR>" } },
+        keys = { { "<leader>q", "<cmd>Bdelete<CR>", desc = "Quit Buffer" } },
         config = function()
             vim.cmd([[ command! -bang -nargs=0 Bclose exec 'Bdelete' ]])
             vim.api.nvim_create_user_command("Bclose", "Bdelete", {})
         end
     },
-    { "preservim/nerdcommenter", event = "VeryLazy", config = config("nerdcommenter") },
+    { "preservim/nerdcommenter", event = "VeryLazy" },
     { "machakann/vim-sandwich", event = "VeryLazy" },
     { "t9md/vim-choosewin", event = "VimEnter" },
     { "Yggdroot/indentLine", cmd = "IndentLinesToggle" },
     { "chentoast/marks.nvim", event = "VimEnter", config = config("marks") },
     { "mg979/vim-visual-multi", event = "VimEnter" },
-    { "easymotion/vim-easymotion", event = "VimEnter", config = config("easymotion") },
+    { "easymotion/vim-easymotion", event = "VimEnter" },
     { "terryma/vim-expand-region", event = "VimEnter", config = config("vim_expand_region") },
     { "andymass/vim-matchup", event = "VimEnter" },
     {
         "fcying/vim-foldsearch",
         cmd = { "Fp", "Fw", "Fs", "FS", "Fl", "Fi", "Fd", "Fe" },
-        config = config("foldsearch"),
     },
     { "preservim/tagbar", cmd = "TagbarToggle" },
     { import = "plugins.telescope" },
@@ -75,13 +75,13 @@ require("lazy").setup({
     -- tool
     { "rcarriga/nvim-notify", event = "VimEnter", config = config("notify") },
     { "chrisbra/Colorizer", event = "VimEnter" },
-    { "liuchengxu/vim-which-key", event = "VimEnter" },
     { "ZSaberLv0/ZFVimDirDiff", cmd = "ZFDirDiff", dependencies = "ZSaberLv0/ZFVimJob" },
     { "iberianpig/tig-explorer.vim", event = "VimEnter" },
     { "tpope/vim-fugitive", event = "VeryLazy" },
     { "rbong/vim-flog", cmd = { "Flog", "Flogsplit", "Floggit" } },
     { "skywind3000/asyncrun.vim", cmd = { "AsyncRun", "AsyncStop" } },
     { "skywind3000/asynctasks.vim", cmd = { "AsyncTask", "AsyncTaskMacro", "AsyncTaskList", "AsyncTaskEdit" } },
+    { "folke/which-key.nvim", event = "VimEnter", config = config("whichkey") },
 
     -- coding {{{
     {
@@ -108,7 +108,12 @@ require("lazy").setup({
         version = false, -- last release is way too old
         dependencies = {
             { "hrsh7th/cmp-nvim-lsp" },
-            { "L3MON4D3/LuaSnip", build = g.make .. " install_jsregexp" },
+            {
+                "L3MON4D3/LuaSnip",
+                build = g.make .. " install_jsregexp",
+                config = config("luasnip"),
+                dependencies = { "rafamadriz/friendly-snippets" }
+            },
             { "saadparwaiz1/cmp_luasnip" },
             { "hrsh7th/cmp-path" },
             { "hrsh7th/cmp-buffer" },
@@ -126,6 +131,7 @@ require("lazy").setup({
     { "sainnhe/everforest", lazy = true },
 
     -- filetype {{{
+    --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },
     { "Vimjas/vim-python-pep8-indent", ft = "python" },
     { "cespare/vim-toml", ft = "toml" },
     { "peterhoeg/vim-qml", ft = "qml" },

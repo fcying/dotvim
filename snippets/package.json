@@ -1,0 +1,38 @@
+{
+  "name": "custom-snippets",
+  "engines": {
+    "vscode": "^1.11.0"
+  },
+  "contributes": {
+    "snippets": [
+      {
+        "language": [ "conf" ],
+        "path": "./conf.json"
+      },
+      {
+        "language": [ "sh" ],
+        "path": "./sh.json"
+      },
+      {
+        "language": [ "c", "cpp" ],
+        "path": "./cpp.json"
+      },
+      {
+        "language": "go",
+        "path": "./go.json"
+      },
+      {
+        "language": "python",
+        "path": "./python.json"
+      },
+      {
+        "language": "dockerfile",
+        "path": "./dockerfile.json"
+      },
+      {
+        "language": "vim",
+        "path": "./vim.json"
+      }
+    ]
+  }
+}

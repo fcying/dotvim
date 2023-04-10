@@ -23,8 +23,8 @@ map("n", "gd", ':lua require("util").go2def(vim.fn.expand("<cword>"), {mode="lsp
 map("n", "gD", ':lua require("util").go2def(vim.fn.expand("<cword>"), {mode="builtin"})<cr>')
 
 -- set working directory to the current file {{{
-map("n", "<leader>cdt", ":tcd %:p:h<CR>:pwd<CR>")
-map("n", "<leader>cda", ":cd %:p:h<CR>:pwd<CR>")
+map("n", "<leader>cdt", ":tcd %:p:h<CR>:pwd<CR>", { desc = "set working directory for current tab" })
+map("n", "<leader>cda", ":cd %:p:h<CR>:pwd<CR>", { desc = "set working directory" })
 
 -- fast save ctrl-s {{{
 map("n", "<C-s>", ":update<CR>")
@@ -79,11 +79,9 @@ map("x", "p", '"_dP')
 map("i", "<S-Return>", "<C-o>o")
 
 -- delete space, ^M, ansi escape codes {{{
-vim.cmd([[
-nnoremap <leader>ds :%s/\s\+$//g<CR>:noh<CR>
-nnoremap <leader>dm :%s/\r$//g<CR>:noh<CR>
-nnoremap <leader>da :%s/\%x1b\[[0-9;]*m//g<CR>:noh<CR>
-]])
+map("n", "<leader>ds", ":%s/\\s\\+$//g<CR>:noh<CR>", { desc = "trim trailing space" })
+map("n", "<leader>dm", ":%s/\\r$//g<CR>:noh<CR>", { desc = "delete ^M" })
+map("n", "<leader>da", ":%s/\\%x1b\\[[0-9;]*m//g<CR>:noh<CR>", { desc = "delete ansi escape codes" })
 
 -- tab {{{
 vim.cmd([[

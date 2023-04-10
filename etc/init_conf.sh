@@ -2,6 +2,7 @@
 
 cd $(dirname $0)
 config_dir=$PWD
+echo $PWD
 
 app="ln"
 if [ -n "$1" ]; then
@@ -11,7 +12,7 @@ fi
 if [[ $app == "ln" ]]; then
     # nvim
     mkdir -p ~/.config/nvim
-    if [ $(echo $PWD | grep -c "\.lua") -eq 1 ]; then
+    if [ $(ls "$HOME/.config/nvim" | grep -c "init.lua") -eq 0 ]; then
         ln -svf $PWD/../init.lua ~/.config/nvim/init.lua
     fi
 

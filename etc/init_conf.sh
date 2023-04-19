@@ -52,8 +52,7 @@ fi
 
 # pypi mirror
 if [[ $app == "pip" ]]; then
-    #PYPI=https://opentuna.cn/pypi/web/simple       # no aiohttp?
-    PYPI=https://repo.huaweicloud.com/repository/pypi/simple
+    PYPI=https://opentuna.cn/pypi/web/simple
     pip3 install -i $PYPI pip -U
     pip3 config set global.index-url $PYPI
 fi

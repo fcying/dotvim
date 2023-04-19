@@ -9,7 +9,7 @@ local coalesce, when = _.coalesce, _.when
 return Pkg.new({
     name = "clangd",
     desc = _.dedent([[
-        clangd understands your C++ code and adds smart features to your editor: code completion, compile errors,
+        custom clangd understands your C++ code and adds smart features to your editor: code completion, compile errors,
         go-to-definition and more.
     ]]),
     homepage = "https://clangd.llvm.org",

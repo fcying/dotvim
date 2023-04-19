@@ -1,7 +1,7 @@
 {
   "shebang": {
     "prefix": ["sb", "sh", "#!", "shebang"],
-    "body": "${1|#!/usr/bin/env bash,#!/bin/bash|}\n",
+    "body": "${1|#!/usr/bin/env bash,#!/bin/bash|}\n${0}",
     "description": [
       "Option 1:\n",
       "#!/bin/bash\n",

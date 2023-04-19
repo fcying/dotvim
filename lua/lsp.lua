@@ -215,11 +215,15 @@ function M.mason()
         pip = {
             install_args = { "-i", "https://opentuna.cn/pypi/web/simple" },
         },
+        registries = {
+            "lua:mason-registry.index",
+            "github:mason-org/mason-registry",
+        },
     })
 
     -- use local clangd config
     local index = require("mason-registry.index")
-    index["clangd"] = "clangd"
+    index["clangd"] = "mason_clangd"
 end
 
 function M.lspconfig()

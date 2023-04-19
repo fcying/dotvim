@@ -58,19 +58,36 @@ require("lazy").setup({
     { "preservim/nerdcommenter", event = "VeryLazy" },
     { "machakann/vim-sandwich", event = "VeryLazy" },
     { "t9md/vim-choosewin", event = "VimEnter" },
+    { "preservim/tagbar", cmd = "TagbarToggle" },
     { "Yggdroot/indentLine", cmd = "IndentLinesToggle" },
     { "chentoast/marks.nvim", event = "VimEnter", config = config("marks") },
     { "mg979/vim-visual-multi", event = "VimEnter" },
-    { "easymotion/vim-easymotion", event = "VimEnter" },
-    { "terryma/vim-expand-region", event = "VimEnter", config = config("vim_expand_region") },
     { "andymass/vim-matchup", event = "VimEnter" },
+    { "terryma/vim-expand-region", event = "VimEnter", config = config("vim_expand_region") },
+    {
+        "ggandor/leap.nvim", event = "VeryLazy",
+        dependencies = "tpope/vim-repeat",
+        config = function()
+            vim.keymap.set({ "n", "v" }, "s", function()
+                local current_window = vim.fn.win_getid()
+                require('leap').leap { target_windows = { current_window } }
+            end)
+        end
+    },
     {
         "fcying/vim-foldsearch",
         cmd = { "Fp", "Fw", "Fs", "FS", "Fl", "Fi", "Fd", "Fe" },
     },
-    { "preservim/tagbar", cmd = "TagbarToggle" },
+    {
+        'lambdalisue/fern.vim',
+        cmd = 'Fern',
+        keys = {
+            { "<leader>wf", "<cmd>Fern . -drawer -toggle -keep<CR>", desc = "file explorer" },
+            { "<leader>wl", "<cmd>Fern . -drawer -reveal=%<CR>", desc = "file location" },
+        },
+        config = config("fern"),
+    },
     { import = "plugins.telescope" },
-    { import = "plugins.fern" },
 
     -- tool
     { "rcarriga/nvim-notify", event = "VimEnter", config = config("notify") },

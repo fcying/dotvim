@@ -1,14 +1,44 @@
 local M = {}
 
 local map = require("util").map
-local g = vim.g
+local g, fn, cmd = vim.g, vim.fn, vim.cmd
 
 -- plugin load config before autoload
 local pre_config = {
+    "project_config",
     "gen_clang_conf",
+    "asyncrun",
+    "asynctasks",
     "nerdcommenter",
     "foldsearch",
 }
+
+function M.asyncrun()
+    g.asyncrun_bell = 1
+    g.asyncrun_silent = 0
+    g.asyncrun_open = 6
+    vim.api.nvim_create_autocmd("User", {
+        group = "myau",
+        pattern = { "AsyncRunStop" },
+        callback = function()
+            if g.asyncrun_code == 0 then
+                vim.cmd("cclose")
+                vim.print("AsyncRun Success")
+            else
+                --call ShowQuickfix()
+                vim.cmd("copen")
+                vim.cmd("cnext")
+            end
+        end,
+    })
+end
+
+function M.asynctasks()
+    g.asyncrun_rootmarks = { ".root", ".git", ".svn" }
+    g.asynctasks_config_name = { ".root/.tasks", ".git/.tasks", ".tasks" }
+    g.asynctasks_rtp_config = "asynctasks.ini"
+    map("n", "<leader>b", ":AsyncTask build<CR>")
+end
 
 function M.luasnip()
     local paths = {}
@@ -353,30 +383,41 @@ function M.whichkey()
     }, { prefix = "<leader>" })
 end
 
+function M.project_config()
+    g.pvimrc_path = fn.findfile('.pvimrc', g.root_marker .. ';' .. g.root_marker .. '..')
+    if g.pvimrc_path ~= '' then
+        cmd.source(g.pvimrc_path)
+    else
+        g.pvimrc_path = g.root_marker .. '/.pvimrc'
+    end
+    vim.api.nvim_create_autocmd("BufWritePost", {
+        group = "myau",
+        pattern = { ".pvimrc" },
+        callback = function()
+            cmd("source " .. g.pvimrc_path)
+        end,
+        nested = true,
+    })
+    vim.api.nvim_create_autocmd("SourcePost", {
+        group = "myau",
+        pattern = { ".pvimrc" },
+        callback = function()
+            require("util").update_ignore_config()
+        end,
+    })
+end
+
 M.is_init = false
 function M.init()
     if not M.is_init then
         M.is_init = true
 
         require("globals")
-
-        vim.cmd([[
-        let g:pvimrc_path = findfile('.pvimrc', g:root_marker . ';' . g:root_marker . '..')
-        if g:pvimrc_path !=# ''
-        "exec 'sandbox source ' . g:pvimrc_path
-        exec 'source ' . g:pvimrc_path
-        else
-        let g:pvimrc_path = g:root_marker . '/.pvimrc'
-        endif
-        ]])
+        require("keymaps")
 
         for _, v in pairs(pre_config) do
             M[v]()
         end
-
-        require("autocmds")
-        require("options")
-        require("keymaps")
 
         require("plugins.lazy")
 

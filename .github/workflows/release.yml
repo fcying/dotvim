@@ -45,6 +45,8 @@ jobs:
           # install vendor
           nvim --headless -c 'MasonInstall --sync clangd' -c 'q'
           nvim --headless -c 'MasonInstall --sync lua-language-server' -c 'q'
+          sed 's|/home/runner|~|' -i ~/.config/nvim/.cache/mason/bin/clangd
+          sed 's|cd.*|cd ~/.config/nvim/.cache/mason/packages/clangd/clangd/bin|' -i ~/.config/nvim/.cache/mason/bin/clangd
           sed 's|/home/runner|~|' -i ~/.config/nvim/.cache/mason/bin/lua-language-server
 
           echo "get rg"

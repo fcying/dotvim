@@ -89,6 +89,13 @@ function M.null_ls()
                 "--indent-width", "4",
                 "--quote-style", "AutoPreferDouble", -- AutoPreferDouble, AutoPreferSingle, ForceDouble, ForceSingle
             },
+            astyle = {
+                "-A1", "-s4", "-S", "-N",
+                "-L", "-w", "-m0", "-M100",
+                "-p", "-H", "-k3", "-W3",
+                "-c", "-n", "-j", "-xC120",
+                "--lineend=linux",
+            },
         },
     }
 
@@ -98,7 +105,8 @@ function M.null_ls()
         sources = {
             formatting.gofmt,
             formatting.goimports,
-            formatting.clang_format,
+            --formatting.clang_format,
+            formatting.astyle.with({ extra_args = extra_args.formatting.astyle }),
             --formatting.stylua.with({ extra_args = extra_args.formatting.stylua }),
         },
     })
@@ -258,7 +266,9 @@ end
 
 function M.setup()
     api.nvim_create_user_command("Format", function() lsp.buf.format() end, {})
+
     M.lspconfig()
+
     vim.diagnostic.config({
         virtual_text = false,
         float = {

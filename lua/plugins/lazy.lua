@@ -1,4 +1,4 @@
-local g = vim.g
+local g, api = vim.g, vim.api
 local map = require("util").map
 
 g.plug_dir = g.config_dir .. "/.plugged"
@@ -45,7 +45,7 @@ require("lazy").setup({
     { "tpope/vim-sleuth", event = "VeryLazy" }, -- auto adjust 'shiftwidth' and 'expandtab'
     { "ethanholz/nvim-lastplace", lazy = false, config = config("lastplace") },
 
-    -- editor
+    -- editor {{{
     {
         "moll/vim-bbye",
         cmd = "Bdelete",
@@ -89,7 +89,7 @@ require("lazy").setup({
     },
     { import = "plugins.telescope" },
 
-    -- tool
+    -- tool {{{
     { "rcarriga/nvim-notify", event = "VimEnter", config = config("notify") },
     { "chrisbra/Colorizer", event = "VimEnter" },
     { "ZSaberLv0/ZFVimDirDiff", cmd = "ZFDirDiff", dependencies = "ZSaberLv0/ZFVimJob" },
@@ -127,7 +127,7 @@ require("lazy").setup({
             { "hrsh7th/cmp-nvim-lsp" },
             {
                 "L3MON4D3/LuaSnip",
-                build = g.make .. " install_jsregexp",
+                --build = g.make .. " install_jsregexp",
                 config = config("luasnip"),
                 dependencies = { "rafamadriz/friendly-snippets" }
             },

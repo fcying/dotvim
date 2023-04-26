@@ -7,28 +7,46 @@ return {
         { "fcying/telescope-ctags-outline.nvim" },
         { "nvim-telescope/telescope-fzf-native.nvim", build = g.make },
     },
-    cmd = "Telescope",
+    cmd = { "Telescope" },
     keys = {
-        { "fb",         "<cmd>Telescope buffers<cr>",                        desc = "buffer" },
-        { "ff",         ":<C-u><C-R>=g:find_command<CR><CR>",                desc = "file",                  silent = true },
-        { "fg",         "<cmd>Telescope grep_string<cr><TAB>",               desc = "string" },
-        { "fg",         "<cmd>Telescope grep_string<cr><TAB>",               desc = "string",                mode = "v" },
-        { "fh",         "<cmd>Telescope help_tags<cr>",                      desc = "help" },
-        { "fj",         "<cmd>Telescope jumplist<cr>",                       desc = "jumplist" },
-        { "fl",         "<cmd>Telescope current_buffer_fuzzy_find<cr>",      desc = "line" },
-        { "fm",         "<cmd>Telescope oldfiles<cr>",                       desc = "mru" },
-        { "fn",         "<cmd>Telescope notify<cr>",                         desc = "notify" },
-        { "fo",         "<cmd>Telescope ctags_outline outline<CR>",          desc = "outline" },
-        { "fO",         "<cmd>Telescope ctags_outline outline buf=all<CR>",  desc = "all buf outline" },
-        { "fr",         "<cmd>Telescope resume<cr><tab>",                    desc = "resume" },
-        { "ft",         "<cmd>Telescope tags<cr>",                           desc = "tag" },
-        { "f/",         "<cmd>Telescope live_grep<cr>",                      desc = "live grep" },
-        { "gI",         "<cmd>Telescope lsp_implementations<cr>",            desc = "lsp_implementations" },
-        { "gr",         "<cmd>Telescope lsp_references<cr>",                 desc = "lsp_references" },
-        { "gt",         "<cmd>Telescope lsp_type_definitions<cr>",           desc = "lsp_type_definitions" },
-        { "<leader>la", "<cmd>Telescope lsp_code_actions<cr>",               desc = "lsp_code_actions" },
-        { "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>",            desc = "lsp diagnostics on/off" },
-        { "<leader>ls", "<cmd>Telescope lsp_document_symbols<cr>",           desc = "lsp_document_symbols" },
+        {
+            "fb",
+            "<cmd>Telescope buffers<cr>",
+            desc = "buffer"
+        },
+        {
+            "ff",
+            ":<C-u><C-R>=g:find_command<CR><CR>",
+            desc = "file",
+            silent = true
+        },
+        {
+            "fg",
+            "<cmd>Telescope grep_string<cr>",
+            desc = "string"
+        },
+        {
+            "fg",
+            "<cmd>Telescope grep_string<cr>",
+            desc = "string",
+            mode = "v"
+        },
+        { "fh",         "<cmd>Telescope help_tags<cr>",                     desc = "help" },
+        { "fj",         "<cmd>Telescope jumplist<cr>",                      desc = "jumplist" },
+        { "fl",         "<cmd>Telescope current_buffer_fuzzy_find<cr>",     desc = "line" },
+        { "fm",         "<cmd>Telescope oldfiles<cr>",                      desc = "mru" },
+        { "fn",         "<cmd>Telescope notify<cr>",                        desc = "notify" },
+        { "fo",         "<cmd>Telescope ctags_outline outline<CR>",         desc = "outline" },
+        { "fO",         "<cmd>Telescope ctags_outline outline buf=all<CR>", desc = "all buf outline" },
+        { "fr",         "<cmd>Telescope resume<cr>",                        desc = "resume" },
+        { "ft",         "<cmd>Telescope tags<cr>",                          desc = "tag" },
+        { "f/",         "<cmd>Telescope live_grep<cr>",                     desc = "live grep" },
+        { "gI",         "<cmd>Telescope lsp_implementations<cr>",           desc = "lsp_implementations" },
+        { "gr",         "<cmd>Telescope lsp_references<cr>",                desc = "lsp_references" },
+        { "gt",         "<cmd>Telescope lsp_type_definitions<cr>",          desc = "lsp_type_definitions" },
+        { "<leader>la", "<cmd>Telescope lsp_code_actions<cr>",              desc = "lsp_code_actions" },
+        { "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>",           desc = "lsp diagnostics on/off" },
+        { "<leader>ls", "<cmd>Telescope lsp_document_symbols<cr>",          desc = "lsp_document_symbols" },
     },
     config = function()
         local actions = require("telescope.actions")
@@ -62,6 +80,12 @@ return {
                         ["<C-q>"] = actions.send_to_qflist.open_qflist,
                     },
                 },
+            },
+            pickers = {
+                resume = { initial_mode = "normal", },
+                grep_string = { initial_mode = "normal", },
+                lsp_implementations = { initial_mode = "normal", },
+                lsp_references = { initial_mode = "normal", },
             },
             extensions = {
                 fzf = {

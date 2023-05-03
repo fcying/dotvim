@@ -127,7 +127,7 @@ require("lazy").setup({
             { "hrsh7th/cmp-nvim-lsp" },
             {
                 "L3MON4D3/LuaSnip",
-                --build = g.make .. " install_jsregexp",
+                build = (g.is_win == 0) and g.make .. " install_jsregexp" or nil,
                 config = config("luasnip"),
                 dependencies = { "rafamadriz/friendly-snippets" }
             },

@@ -45,9 +45,21 @@ jobs:
           # install vendor
           nvim --headless -c 'MasonInstall --sync clangd' -c 'q'
           nvim --headless -c 'MasonInstall --sync lua-language-server' -c 'q'
-          sed 's|/home/runner|~|' -i ~/.config/nvim/.cache/mason/bin/clangd
-          sed 's|cd.*|cd ~/.config/nvim/.cache/mason/packages/clangd/clangd/bin|' -i ~/.config/nvim/.cache/mason/bin/clangd
-          sed 's|/home/runner|~|' -i ~/.config/nvim/.cache/mason/bin/lua-language-server
+
+          echo "update mason script"
+          sed 's|/home/runner|~|' -i ~/.config/nvim/.cache/mason/share/mason-schemas/lsp/lua-language-server.json
+          rm ~/.config/nvim/.cache/mason/bin/*
+          {
+            echo "#!/usr/bin/env bash"
+            echo 'cd "$(dirname $(readlink -f $0))"'
+            echo 'exec "../packages/clangd/clangd/bin/clangd" "$@"'
+          } | tee ~/.config/nvim/.cache/mason/bin/clangd
+          {
+            echo "#!/usr/bin/env bash"
+            echo 'cd "$(dirname $(readlink -f $0))"'
+            echo 'exec "../packages/lua-language-server/libexec/bin/lua-language-server" "$@"'
+          } | tee ~/.config/nvim/.cache/mason/bin/lua-language-server
+          chmod +x ~/.config/nvim/.cache/mason/bin/*
 
           echo "get rg"
           new_ver=$(curl -sv "https://github.com/BurntSushi/ripgrep/releases/latest" 2>&1 | grep -P location: | grep -Po "(\d+\.){2}\d+")

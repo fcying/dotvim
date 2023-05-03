@@ -119,7 +119,7 @@ opt.virtualedit = "onemore" -- onemore all
 opt.visualbell = false
 opt.wildmode = "longest:full,full"
 opt.winminwidth = 5
-opt.wrap = false
+opt.wrap = true
 opt.whichwrap = opt.whichwrap + "<,>,[,],h,l"
 
 -- foldmethod {{{

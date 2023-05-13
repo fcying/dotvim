@@ -3,12 +3,9 @@ My NEOVIM config.
 #### Install
 ```
 git clone https://github.com/fcying/dotvim.git ~/.config/nvim
-```
-
-#### nvim_config.zip (only support NVIM 0.8+)
-```
-download from release
-tar xJf nvim_config.txz
+or
+wget https://github.com/fcying/dotvim/releases/download/nvim_config/nvim_config_with_vendor.txz
+tar xJf nvim_config_with_vendor.txz
 mv nvim ~/.config/
 ```
 

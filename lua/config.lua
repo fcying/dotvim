@@ -107,10 +107,10 @@ function M.cmp()
                     omni = "[Omni]",
                 })[entry.source.name]
                 vim_item.dup = ({
-                        nvim_lsp = 0,
-                        buffer = 1,
-                        path = 1,
-                    })[entry.source.name] or 0
+                    nvim_lsp = 0,
+                    buffer = 1,
+                    path = 1,
+                })[entry.source.name] or 0
                 return vim_item
             end,
         },

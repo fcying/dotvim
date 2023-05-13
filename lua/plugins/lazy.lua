@@ -1,4 +1,4 @@
-local g, api = vim.g, vim.api
+local g = vim.g
 local map = require("util").map
 
 g.plug_dir = g.config_dir .. "/.plugged"
@@ -107,16 +107,23 @@ require("lazy").setup({
         event = { "BufReadPre", "BufNewFile" },
         dependencies = {
             { "folke/neodev.nvim" },
-            { "williamboman/mason.nvim", lazy = false, config = config("mason", "lsp") },
+            { "williamboman/mason.nvim", lazy = false, build = ":MasonUpdate", config = config("mason", "lsp") },
             { "williamboman/mason-lspconfig.nvim" },
-            { "hrsh7th/cmp-nvim-lsp" },
         },
     },
+    --{
+    --    "jose-elias-alvarez/null-ls.nvim",
+    --    event = { "BufReadPre", "BufNewFile" },
+    --    dependencies = {
+    --        "nvim-lua/plenary.nvim",
+    --        "neovim/nvim-lspconfig",
+    --    },
+    --    config = config("null_ls", "lsp"),
+    --},
     {
-        "jose-elias-alvarez/null-ls.nvim",
-        event = { "BufReadPre", "BufNewFile" },
-        dependencies = { "nvim-lua/plenary.nvim" },
-        config = config("null_ls", "lsp"),
+        "nvimdev/easyformat.nvim",
+        cmd = "EasyFormat",
+        config = config("easyformat", "lsp"),
     },
     {
         "hrsh7th/nvim-cmp",

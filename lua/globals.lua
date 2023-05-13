@@ -48,7 +48,7 @@ if g.is_win == 1 then
 else
     g.file_vimrc_local = os.getenv("HOME") .. "/.vimrc.local"
 end
-if fn.filereadable(g.file_vimrc_local) then
+if fn.filereadable(g.file_vimrc_local) == 1 then
     vim.cmd.source(g.file_vimrc_local)
 end
 

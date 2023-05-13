@@ -5,6 +5,21 @@ local g, cmd, fn, lsp, api = vim.g, vim.cmd, vim.fn, vim.lsp, vim.api
 
 local flags = { debounce_text_changes = 150 }
 
+local formats = {
+    stylua = {
+        "--indent-type", "Spaces",
+        "--indent-width", "4",
+        "--quote-style", "AutoPreferDouble", -- AutoPreferDouble, AutoPreferSingle, ForceDouble, ForceSingle
+    },
+    astyle = {
+        "-A1", "-s4", "-S", "-N",
+        "-L", "-w", "-m0", "-M100",
+        "-p", "-H", "-k3", "-W3",
+        "-c", "-n", "-j", "-xC120",
+        "--lineend=linux",
+    },
+}
+
 local diagnostics_on = true
 function M.diagnostic_toggle()
     if diagnostics_on then
@@ -33,6 +48,48 @@ local function diagnostics_config(enable)
     end
 end
 
+function M.format()
+    local custom_format = { "c", "cpp" }
+    if vim.fn.index(custom_format, vim.o.filetype) ~= -1 then
+        vim.cmd("EasyFormat")
+    else
+        vim.lsp.buf.format()
+    end
+end
+
+function M.easyformat()
+    local configs = require("easyformat.config")
+    configs.c = {
+        cmd = "astyle",
+        args = formats.astyle,
+        find = "",
+        stdin = true,
+    }
+    configs.cpp = vim.deepcopy(configs.c)
+    require("easyformat").setup({
+        fmt_on_save = false,
+    })
+end
+
+function M.null_ls()
+    local nls = require("null-ls")
+    local formatting = nls.builtins.formatting
+    ---@diagnostic disable-next-line unused-local
+    local diagnostics = nls.builtins.diagnostics
+
+    nls.setup({
+        debug = false,
+        root_dir = require("null-ls.utils").root_pattern(".root", ".neoconf.json", ".git"),
+        sources = {
+            formatting.gofmt,
+            formatting.goimports,
+            --formatting.clang_format,
+            formatting.astyle.with({ extra_args = formats.astyle }),
+            --formatting.stylua.with({ extra_args = formats.stylua }),
+        },
+    })
+end
+
 ---@diagnostic disable-next-line unused-local
 local on_attach = function(client, bufnr)
     local opts = { buffer = bufnr }
@@ -42,8 +99,8 @@ local on_attach = function(client, bufnr)
     map("n", "gl", vim.diagnostic.open_float, opts)
     map("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<CR>", opts)
     map("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<CR>", opts)
-    map("n", "<leader>ld", '<cmd>lua require("lsp").diagnostic_toggle()<CR>', opts)
-    map("n", "<leader>lf", "<cmd>lua vim.lsp.buf.format()<CR>", opts)
+    map("n", "<leader>ltd", '<cmd>lua require("lsp").diagnostic_toggle()<CR>', opts)
+    map("n", "<leader>lf", "<cmd>lua require('lsp').format()<CR>", opts)
 
     --vim.api.nvim_create_autocmd("CursorHold", {
     --    buffer = bufnr,
@@ -73,43 +130,6 @@ local on_attach = function(client, bufnr)
     --        end
     --    end,
     --})
-end
-
-function M.null_ls()
-    local nls = require("null-ls")
-    local formatting = nls.builtins.formatting
-    ---@diagnostic disable-next-line unused-local
-    local diagnostics = nls.builtins.diagnostics
-
-    ---@diagnostic disable-next-line unused-local
-    local extra_args = {
-        formatting = {
-            stylua = {
-                "--indent-type", "Spaces",
-                "--indent-width", "4",
-                "--quote-style", "AutoPreferDouble", -- AutoPreferDouble, AutoPreferSingle, ForceDouble, ForceSingle
-            },
-            astyle = {
-                "-A1", "-s4", "-S", "-N",
-                "-L", "-w", "-m0", "-M100",
-                "-p", "-H", "-k3", "-W3",
-                "-c", "-n", "-j", "-xC120",
-                "--lineend=linux",
-            },
-        },
-    }
-
-    nls.setup({
-        debug = false,
-        root_dir = require("null-ls.utils").root_pattern(".root", ".neoconf.json", ".git"),
-        sources = {
-            formatting.gofmt,
-            formatting.goimports,
-            --formatting.clang_format,
-            formatting.astyle.with({ extra_args = extra_args.formatting.astyle }),
-            --formatting.stylua.with({ extra_args = extra_args.formatting.stylua }),
-        },
-    })
 end
 
 function config.clangd()
@@ -251,21 +271,20 @@ function M.lspconfig()
     end
 
     require("mason-lspconfig").setup({
-        ensure_installed = {},
+        ensure_installed = { "clangd" },
         automatic_installation = false,
-    })
-
-    require("mason-lspconfig").setup_handlers({
-        function(server_name)
-            if fn.index(g.lsp_ignore, server_name) == -1 then
-                lspconfig[server_name].setup(M.server_opt[server_name] or M.server_opt["default"])
-            end
-        end,
+        handlers = {
+            function(server_name)
+                if fn.index(g.lsp_ignore, server_name) == -1 then
+                    lspconfig[server_name].setup(M.server_opt[server_name] or M.server_opt["default"])
+                end
+            end,
+        }
     })
 end
 
 function M.setup()
-    api.nvim_create_user_command("Format", function() lsp.buf.format() end, {})
+    api.nvim_create_user_command("Format", function() require("lsp").format() end, {})
 
     M.lspconfig()
 

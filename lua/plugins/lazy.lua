@@ -1,7 +1,7 @@
 local g = vim.g
 local map = require("util").map
 
-g.plug_dir = g.config_dir .. "/.plugged"
+g.plug_dir = g.cache_dir .. "/plugins"
 local lazypath = g.plug_dir .. "/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({
@@ -57,7 +57,10 @@ require("lazy").setup({
     },
     { "preservim/nerdcommenter", event = "VeryLazy" },
     { "machakann/vim-sandwich", event = "VeryLazy" },
-    { "t9md/vim-choosewin", event = "VimEnter" },
+    {
+        "t9md/vim-choosewin",
+        keys = { { "-", "<Plug>(choosewin)", desc = "choosewin" } },
+    },
     { "preservim/tagbar", cmd = "TagbarToggle" },
     { "Yggdroot/indentLine", cmd = "IndentLinesToggle" },
     { "chentoast/marks.nvim", event = "VimEnter", config = config("marks") },

@@ -101,6 +101,7 @@ local on_attach = function(client, bufnr)
     map("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<CR>", opts)
     map("n", "<leader>ltd", '<cmd>lua require("lsp").diagnostic_toggle()<CR>', opts)
     map("n", "<leader>lf", "<cmd>lua require('lsp').format()<CR>", opts)
+    map("v", "<leader>lf", "<cmd>lua require('lsp').format()<CR><ESC>", opts)
 
     --vim.api.nvim_create_autocmd("CursorHold", {
     --    buffer = bufnr,

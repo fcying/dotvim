@@ -70,6 +70,7 @@ function M.telescope_update_ignore()
         local conf = require("telescope.config").values
         conf.vimgrep_arguments = {
             "rg",
+            "--no-binary",
             "--color=never",
             "--with-filename",
             "--line-number",

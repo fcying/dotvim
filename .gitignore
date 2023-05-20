@@ -2,8 +2,6 @@
 .cache/
 /*.log
 /vim*/
-.plugged/
-plugged/
 /.netrwhist
 /sessions
 *vim_origin

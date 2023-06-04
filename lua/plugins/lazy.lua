@@ -1,4 +1,4 @@
-local g = vim.g
+local g, api = vim.g, vim.api
 local map = require("util").map
 
 g.plug_dir = g.cache_dir .. "/plugins"
@@ -31,7 +31,12 @@ end
 require("lazy").setup({
     { "fcying/gen_clang_conf.vim", lazy = false },
     { "wsdjeg/vim-fetch", lazy = false },
-    { "lambdalisue/suda.vim", cmd = { "SudaRead", "SudaWrite" } },
+    { "lambdalisue/suda.vim", cmd = { "SudoRead", "SudoWrite" },
+        config = function()
+            api.nvim_create_user_command("SudoRead", "SudaRead", {})
+            api.nvim_create_user_command("SudoWrite", "SudaWrite", {})
+        end,
+    },
     {
         "dstein64/vim-startuptime",
         cmd = "StartupTime",

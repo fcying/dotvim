@@ -205,17 +205,17 @@ vim.api.nvim_create_autocmd("VimLeave", {
 })
 
 -- wsl clip {{{
-if g.is_wsl == 1 then
-    vim.cmd([[
-    let s:clip = '/mnt/c/Windows/System32/clip.exe'
-    if executable(s:clip)
-        augroup WSLYank
-        autocmd!
-        autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
-        augroup END
-    endif
-    ]])
-end
+--if g.is_wsl == 1 then
+--    vim.cmd([[
+--    let s:clip = '/mnt/c/Windows/System32/clip.exe'
+--    if executable(s:clip)
+--        augroup WSLYank
+--        autocmd!
+--        autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
+--        augroup END
+--    endif
+--    ]])
+--end
 
 -- large file {{{
 vim.cmd([[

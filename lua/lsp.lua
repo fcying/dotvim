@@ -51,22 +51,24 @@ end
 function M.format()
     local custom_format = { "c", "cpp" }
     if vim.fn.index(custom_format, vim.o.filetype) ~= -1 then
-        vim.cmd("EasyFormat")
+        vim.cmd("GuardFmt")
     else
         vim.lsp.buf.format()
     end
 end
 
-function M.easyformat()
-    local configs = require("easyformat.config")
-    configs.c = {
+function M.guard()
+    local ft = require('guard.filetype')
+    ft('c'):fmt({
         cmd = "astyle",
         args = formats.astyle,
-        find = "",
-        stdin = true,
-    }
-    configs.cpp = vim.deepcopy(configs.c)
-    require("easyformat").setup({
+    })
+    ft('cpp'):fmt({
+        cmd = "astyle",
+        args = formats.astyle,
+    })
+
+    require('guard').setup({
         fmt_on_save = false,
     })
 end

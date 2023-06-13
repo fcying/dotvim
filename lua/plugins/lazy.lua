@@ -129,9 +129,9 @@ require("lazy").setup({
     --    config = config("null_ls", "lsp"),
     --},
     {
-        "nvimdev/easyformat.nvim",
-        cmd = "EasyFormat",
-        config = config("easyformat", "lsp"),
+        "nvimdev/guard.nvim",
+        cmd = "GuardFmt",     -- broken auto format
+        config = config("guard", "lsp"),
     },
     {
         "hrsh7th/nvim-cmp",

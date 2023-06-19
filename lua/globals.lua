@@ -28,7 +28,7 @@ vim.cmd([[
 let g:ignore_default = {
       \ 'dir':['.root','.svn','.git','.repo','.ccls-cache','.cache','.ccache'],
       \ 'file':['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]',
-      \ 'GTAGS', 'GRTAGS', 'GPATH', 'prj_tag','tag'],
+      \ 'GTAGS', 'GRTAGS', 'GPATH', 'prj_tag','tags'],
       \ 'mru':['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll'],
       \ 'rg':['--max-columns=300', '--iglob=!obj', '--iglob=!out']}
 let g:ignore = {'dir':[], 'file':[], 'rg':[], 'mru':[]}

@@ -20,7 +20,7 @@ export LESS='-F -g -i -M -R -S -w -X -z-4'
 # wsl2 {{{
 [ -d "/mnt/c" ] && [[ "$(uname -a)" == *microsoft* ]] && {
     export SCOOP=${SCOOP:-"/mnt/d/tool/scoop"}
-    export PATH=$PATH:$SCOOP/shims
+    export PATH=$PATH:$SCOOP/shims:/usr/lib/wsl/lib
     alias cmd='/mnt/c/Windows/System32/cmd.exe'
     alias adb='$SCOOP/shims/adb.exe'
     alias fastboot='$SCOOP/shims/fastboot.exe'

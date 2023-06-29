@@ -154,15 +154,19 @@ end
 vim.cmd([[
 autocmd myau FileType go setlocal noexpandtab nolist
 autocmd myau FileType vim,json,jsonc,yaml,toml,dosbatch
-      \ setlocal shiftwidth=2
-      \ softtabstop=2
-      \ tabstop=2
-      \ expandtab
+    \ setlocal shiftwidth=2
+    \ softtabstop=2
+    \ tabstop=2
+    \ expandtab
 autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
 autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
 autocmd myau BufNewFile,BufRead .tasks setl filetype=conf
 autocmd myau BufNewFile,BufRead syslog setl filetype=messages
 autocmd myau BufNewFile,BufRead rc.local setl filetype=sh
+
+autocmd myau BufNewFile,BufRead gitconfig setl filetype=gitconfig
+autocmd myau FileType gitconfig 
+    \ setl noexpandtab
 ]])
 
 -- close some filetypes with <q> {{{

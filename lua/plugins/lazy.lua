@@ -31,6 +31,7 @@ end
 require("lazy").setup({
     { "fcying/gen_clang_conf.vim", lazy = false },
     { "wsdjeg/vim-fetch", lazy = false },
+    { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
     { "lambdalisue/suda.vim", cmd = { "SudoRead", "SudoWrite" },
         config = function()
             api.nvim_create_user_command("SudoRead", "SudaRead", {})

@@ -39,8 +39,8 @@ fi
 
 # windows
 #mkdir %userprofile%\AppData\Local\nvim
-#echo source d:\tool\vim\vimrc > %userprofile%\AppData\Local\nvim\init.vim
-#echo source d:\tool\vim\vimrc > %userprofile%\_vimrc   #use this doesn't load defaults.vim
+#echo source d:\tool\vim\init.lua > %userprofile%\AppData\Local\nvim\init.vim
+#echo source d:\tool\vim\init.lua > %userprofile%\_vimrc   #use this doesn't load defaults.vim
 
 # npm
 if [[ $app == "npm" ]]; then

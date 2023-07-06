@@ -183,6 +183,7 @@ vim.api.nvim_create_autocmd("FileType", {
         "spectre_panel",
         "startuptime",
         "tsplayground",
+        "fugitive*",
     },
     callback = function(event)
         vim.bo[event.buf].buflisted = false
@@ -208,18 +209,42 @@ vim.api.nvim_create_autocmd("VimLeave", {
     end,
 })
 
--- wsl clip {{{
---if g.is_wsl == 1 then
---    vim.cmd([[
---    let s:clip = '/mnt/c/Windows/System32/clip.exe'
---    if executable(s:clip)
---        augroup WSLYank
---        autocmd!
---        autocmd TextYankPost * if v:event.operator ==# 'y' | call system(s:clip, @0) | endif
---        augroup END
---    endif
---    ]])
---end
+-- osc52 clip {{{
+local function copy(lines, _)
+    require('osc52').copy(table.concat(lines, '\n'))
+end
+local function paste()
+    return {vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('')}
+end
+if g.is_tmux == 1 then
+    vim.g.clipboard = {
+        name = 'tmux',
+        copy = {
+            ['+'] = { 'tmux', 'load-buffer', '-' },
+            ['*'] = { 'tmux', 'load-buffer', '-' },
+        },
+        paste = {
+            ['+'] = { 'tmux', 'save-buffer', '-' },
+            ['*'] = { 'tmux', 'save-buffer', '-' },
+        },
+    }
+    vim.api.nvim_create_autocmd("TextYankPost", {
+        group = api.nvim_create_augroup("osc52", { clear = true }),
+        pattern = { "*" },
+        callback = function()
+            --vim.print(vim.v.event)
+            if vim.v.operator == "y" then
+                require('osc52').copy_register("+")
+            end
+        end,
+    })
+else
+    vim.g.clipboard = {
+        name = 'osc52',
+        copy = {['+'] = copy, ['*'] = copy},
+        paste = {['+'] = paste, ['*'] = paste},
+    }
+end
 
 -- large file {{{
 vim.cmd([[

@@ -32,6 +32,7 @@ function M.table_merge(t1, ...)
 end
 
 function M.update_ignore_config()
+    -- FIXME https://github.com/neovim/neovim/issues/12544
     ignore_full = { dir = {}, file = {}, rg = {}, mru = {} }
     M.table_merge(ignore_full.dir, g.ignore_default.dir, g.ignore.dir)
     M.table_merge(ignore_full.file, g.ignore_default.file, g.ignore.file)
@@ -46,13 +47,8 @@ function M.update_ignore_config()
     end
 
     -- gen_clang_conf.vim
-    -- FIXME https://github.com/neovim/neovim/issues/12544
-    local temp_dir = g.gencconf_ignore_dir
-    local temp_file = g.gencconf_ignore_file
-    M.table_merge(temp_dir, ignore_full.dir)
-    M.table_merge(temp_file, ignore_full.file)
-    g.gencconf_ignore_dir = temp_dir
-    g.gencconf_ignore_file = temp_file
+    g.gencconf_ignore_dir = ignore_full.dir
+    g.gencconf_ignore_file = ignore_full.file
 
     M.telescope_update_ignore()
 end

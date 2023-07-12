@@ -135,6 +135,20 @@ local on_attach = function(client, bufnr)
     --})
 end
 
+function config.qmlls()
+    local util = require("lspconfig/util")
+    M.server_opt.qmlls = {
+        on_attach = on_attach,
+        flags = flags,
+        cmd = { '/usr/lib/qt6/bin/qmlls' },
+        filetypes = { 'qml' },
+        root_dir = function(fname)
+            return util.find_git_ancestor(fname)
+        end,
+        single_file_support = true,
+    }
+end
+
 function config.clangd()
     local clangd_cmd = { "clangd" }
     table.insert(clangd_cmd, "--background-index")
@@ -284,6 +298,8 @@ function M.lspconfig()
             end,
         }
     })
+
+    lspconfig.qmlls.setup(M.server_opt["qmlls"])
 end
 
 function M.setup()

@@ -1,0 +1,3 @@
+return {
+    ["clangd"] = "registry.clangd",
+}

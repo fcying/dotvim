@@ -1,5 +1,5 @@
 local M = {}
-local fn, g = vim.fn, vim.g
+local fn, g, cmd = vim.fn, vim.g, vim.cmd
 local ignore_full
 
 function M.map(mode, lhs, rhs, opts)
@@ -217,5 +217,26 @@ function M.telescope_ltaglist(opts)
         end,
     }):find()
 end
+
+-- tags ltag {{{
+vim.cmd([[ set tags=tags,tags; ]])
+function M.removetags()
+    cmd("ClearClangConf")
+    cmd("ClearCtags")
+end
+function M.gentags(type)
+    type = type or 0
+    cmd("ClearClangConf")
+    cmd("GenClangConf")
+    if vim.fn.exists(":LspRestart") ~= 0 then
+        cmd("LspRestart")
+    end
+    if type == 0 then
+        cmd("GenCtags")
+    end
+end
+M.map("n", "ta", "<cmd>lua require('util').gentags()<CR>")
+M.map("n", "tc", "<cmd>lua require('util').gentags(1)<CR>")
+M.map("n", "tr", "<cmd>lua require('util').removetags()<CR>")
 
 return M

@@ -129,23 +129,3 @@ map("n", "<F6>", ":exec exists('syntax_on') ? 'syn off' : 'syn on'<CR>")
 vim.opt.pastetoggle = "<F5>"
 vim.cmd([[ autocmd myau InsertLeave * set nopaste ]])
 
--- tags ltag {{{
-vim.cmd([[
-set tags=tags,tags;
-
-func! Removetags()
-    ClearClangConf
-    ClearCtags
-endf
-
-func! Gentags()
-    ClearClangConf
-    GenClangConf
-    GenCtags
-    if exists(':LspRestart')
-        LspRestart
-    endif
-endf
-nnoremap <silent> tg :call Gentags()<CR>
-nnoremap <silent> tc :call Removetags()<CR>
-]])

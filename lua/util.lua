@@ -188,6 +188,7 @@ function M.telescope_ltaglist(opts)
     local locations = vim.fn.getloclist(0)
     pickers.new(opts, {
         prompt_title = "Ltaglist",
+        initial_mode = "normal",
         sorter = conf.generic_sorter(opts),
         previewer = previewers.ctags.new(opts),
         finder = finders.new_table({

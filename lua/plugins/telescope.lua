@@ -112,6 +112,7 @@ return {
                 },
             },
         })
+        require("telescope").load_extension("notify")
         require("telescope").load_extension("fzf")
         require("telescope").load_extension("ctags_outline")
         require("util").telescope_update_ignore()

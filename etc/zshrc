@@ -75,6 +75,7 @@ path=(
     "$HOME"/bin
     "$HOME"/.local/bin
     "$GOPATH"/bin
+    "$HOME"/tool/miniconda/bin
     "$HOME"/.cargo/bin
     "$HOME"/.npm/node_modules/.bin
     "$QT_DIR"/"$QT_VERSION"/gcc_64/bin

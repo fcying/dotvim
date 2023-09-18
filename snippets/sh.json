@@ -1,10 +1,10 @@
 {
   "shebang": {
     "prefix": ["sb", "sh", "#!", "shebang"],
-    "body": "${1|#!/usr/bin/env bash,#!/bin/bash|}\n${0}",
+    "body": "${1|#!/usr/bin/bash,#!/usr/bin/env bash|}\n${0}",
     "description": [
       "Option 1:\n",
-      "#!/bin/bash\n",
+      "#!/usr/bin/bash\n",
       "Description: My Shebang Bash executor.\n",
       "Option 2:\n",
       "#!/usr/bin/env bash\n",

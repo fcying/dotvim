@@ -181,6 +181,9 @@ function config.go()
         flags = flags,
         settings = {
             gopls = {
+                env = {
+                    GOOS = "windows"
+                },
                 analyses = {
                     unusedparams = false,
                 },

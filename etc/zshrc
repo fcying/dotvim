@@ -133,6 +133,12 @@ autoload -Uz _zinit
 zinit ice wait'0' lucid; zinit light changyuheng/fz
 FZ_HISTORY_CD_CMD=_zlua
 
+zinit ice wait'0' lucid; zinit light marlonrichert/zsh-hist
+zstyle ':hist:*' auto-format no
+hd() {
+    hist delete $(history | fzf | awk '{print $1}')
+}
+
 zinit ice wait'0' lucid; zinit light zsh-users/zsh-history-substring-search
 bindkey -M emacs '^p' history-substring-search-up
 bindkey -M emacs '^n' history-substring-search-down
@@ -377,7 +383,7 @@ setopt hist_ignore_space
 # history
 HISTFILE="$HOME/.zhistory"
 HISTSIZE=10000
-SAVEHIST=10000
+SAVEHIST=8000
 setopt BANG_HIST                 # Treat the '!' character specially during expansion.
 setopt EXTENDED_HISTORY          # Write the history file in the ':start:elapsed;command' format.
 setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.

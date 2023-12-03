@@ -261,7 +261,7 @@ function M.mason()
     require("mason").setup({
         install_root_dir = g.cache_dir .. "/mason",
         pip = {
-            install_args = { "-i", "https://opentuna.cn/pypi/web/simple" },
+            install_args = { "-i", "https://repo.huaweicloud.com/repository/pypi/simple" },
         },
         registries = {
             "lua:registry",

@@ -167,7 +167,7 @@ require("lazy").setup({
     --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },
     { "Vimjas/vim-python-pep8-indent", ft = "python" },
     { "cespare/vim-toml", ft = "toml" },
-    { "peterhoeg/vim-qml", ft = "qml" },
+    { "peterhoeg/vim-qml", ft = "qml" },  --FIXME remove after upstrem update
     { "neoclide/jsonc.vim", ft = "jsonc" },
     { "othree/xml.vim", ft = "xml" },
     { "wsdjeg/vim-autohotkey", ft = "autohotkey" },

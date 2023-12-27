@@ -52,7 +52,8 @@ fi
 
 # pypi mirror
 if [[ $app == "pip" ]]; then
-    PYPI=https://repo.huaweicloud.com/repository/pypi/simple
+    #PYPI=https://repo.huaweicloud.com/repository/pypi/simple
+    PYPI=https://pypi.tuna.tsinghua.edu.cn/simple
     pip3 install -i $PYPI pip -U
     pip3 config set global.index-url $PYPI
 fi

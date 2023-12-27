@@ -140,7 +140,7 @@ function config.qmlls()
     M.server_opt.qmlls = {
         on_attach = on_attach,
         flags = flags,
-        cmd = { '/usr/lib/qt6/bin/qmlls' },
+        cmd = { 'qmlls', '--build-dir', g.root_folder .. '/build' },
         filetypes = { 'qml' },
         root_dir = function(fname)
             return util.find_git_ancestor(fname)
@@ -261,7 +261,7 @@ function M.mason()
     require("mason").setup({
         install_root_dir = g.cache_dir .. "/mason",
         pip = {
-            install_args = { "-i", "https://repo.huaweicloud.com/repository/pypi/simple" },
+            install_args = { "-i", "https://pypi.tuna.tsinghua.edu.cn/simple" },
         },
         registries = {
             "lua:registry",

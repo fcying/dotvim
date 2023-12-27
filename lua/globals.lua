@@ -22,7 +22,7 @@ g.has_go = fn.executable("go")
 
 g.ctags_opt = "--options=" .. g.config_dir .. "/etc/ctags"
 g.lsp_ignore = {}
-g.root_marker = util.get_root_marker({ ".root", ".git", ".repo", ".svn" })
+g.root_marker, g.root_folder = util.get_root_marker({ ".root", ".git", ".repo", ".svn" })
 
 vim.cmd([[
 let g:ignore_default = {

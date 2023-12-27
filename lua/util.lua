@@ -18,9 +18,9 @@ function M.get_root_marker(root_markers)
         end
     end
     if fn.empty(dir) == 0 then
-        return fn.fnamemodify(dir, ":p:h")
+        return fn.fnamemodify(dir, ":p:h"), fn.fnamemodify(dir .. "/../", ":p:h")
     end
-    return fn.getcwd()
+    return fn.getcwd(), fn.getcwd()
 end
 
 function M.table_merge(t1, ...)

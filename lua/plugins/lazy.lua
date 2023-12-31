@@ -167,7 +167,7 @@ require("lazy").setup({
     --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },
     { "Vimjas/vim-python-pep8-indent", ft = "python" },
     { "cespare/vim-toml", ft = "toml" },
-    { "peterhoeg/vim-qml", ft = "qml" },  --FIXME remove after upstrem update
+    { "peterhoeg/vim-qml", ft = "qml" },  --FIXME https://github.com/neovim/neovim/pull/24812 echo has("patch-9.0.1768")
     { "neoclide/jsonc.vim", ft = "jsonc" },
     { "othree/xml.vim", ft = "xml" },
     { "wsdjeg/vim-autohotkey", ft = "autohotkey" },

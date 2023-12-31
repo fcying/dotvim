@@ -156,6 +156,9 @@ function config.clangd()
     table.insert(clangd_cmd, "--completion-style=detailed")
     table.insert(clangd_cmd, "--header-insertion=iwyu")
     table.insert(clangd_cmd, "--pch-storage=memory")
+    if g.clangd_query_driver then
+        table.insert(clangd_cmd, "--query-driver=" .. g.clangd_query_driver)
+    end
     if g.gencconf_storein_rootmarker == 1 then
         table.insert(clangd_cmd, "--compile-commands-dir=" .. g.root_marker)
     end

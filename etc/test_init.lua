@@ -15,11 +15,18 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup({ 
-    {"easymotion/vim-easymotion", event="VeryLazy"},
+require("lazy").setup({
+    {
+        "dstein64/vim-startuptime",
+        cmd = "StartupTime",
+        config = function()
+            g.startuptime_tries = 5
+        end,
+    },
 }, {
     root = g.plug_dir,
     lockfile = g.plug_dir .. "/lazy-lock.json",
     state = g.plug_dir .. "/state.json",
 })
 
+vim.cmd.colorscheme("desert")

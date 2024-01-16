@@ -158,6 +158,15 @@ function M.lualine()
         theme = "solarized"
     end
 
+    local function ext_encoding()
+        local bufnr = vim.api.nvim_get_current_buf()
+        if vim.bo[bufnr].bomb then
+            return string.format("%s-bom", vim.bo[bufnr].fileencoding)
+        else
+            return vim.bo[bufnr].fileencoding
+        end
+    end
+
     require("lualine").setup({
         extensions = {},
         inactive_sections = {
@@ -188,7 +197,7 @@ function M.lualine()
             lualine_b = { "diff", "diagnostics" },
             --lualine_b = { 'branch', 'diff', 'diagnostics' },
             lualine_c = { "filename" },
-            lualine_x = { "encoding", "fileformat", "filetype" },
+            lualine_x = { ext_encoding, "fileformat", "filetype" },
             lualine_y = { "progress" },
             lualine_z = { "location" },
         },

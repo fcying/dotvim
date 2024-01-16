@@ -71,7 +71,7 @@ opt.cursorline = true -- Enable highlighting of the current line
 opt.expandtab = true -- Use spaces instead of tabs
 
 opt.modeline = false
-opt.bomb = true
+opt.bomb = false
 opt.fileencodings = "ucs-bom,utf-8,gbk,gb18030,big5,euc-jp,euc-kr,latin1"
 opt.formatoptions = opt.formatoptions + "mM" - "o"
 --stop auto insert comment, set FileType can't work

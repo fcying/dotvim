@@ -97,7 +97,7 @@ type nvim >/dev/null 2>&1 && {
     alias vi='nvim'
     alias vimdiff='nvim -d'
     alias nvim-qt="NVIM_GUI=1 nvim-qt"
-    alias mvim='nvim -u ~/.vim/nvim_config/init.vim'
+    alias mvim='nvim -u NORC'
     alias tvim='nvim -u ~/test/nvim/init.lua'
 }
 

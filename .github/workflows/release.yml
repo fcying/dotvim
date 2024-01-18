@@ -33,35 +33,40 @@ jobs:
           # init default nvim config
           cp -r init.lua lua/ dict/ ~/.config/nvim
           cp -r snippets/ vendor/ etc/  ~/.config/nvim/
-          pushd ~/.config
+          cd ~/.config
 
-          echo "let g:use_leaderf = 0" >> ~/.vimrc.local
-          # sleep 10 for plugin run
-          #timeout 120s nvim --headless -c 'autocmd User LazyInstall quitall' --cmd 'let g:force_update=1'
-          nvim --headless "+Lazy! sync" +qa
+          echo "install plugins===================="
+          # set treesitter ensure_install sync install
+          sed 's|sync_install = false|sync_install = true|' -i ~/.config/nvim/lua/config.lua
+          nvim --headless "+Lazy! sync" -c "qa"
+          sed 's|sync_install = true|sync_install = false|' -i ~/.config/nvim/lua/config.lua
 
           XZ_OPT=-9 tar cJf nvim_config.txz nvim
+          mv ./*.txz ~/publish
 
-          # install vendor
-          nvim --headless -c 'MasonInstall --sync clangd' -c 'q'
+      - name: Prepare nvim config with vendor
+        run: |
+          cd ~/.config
+          echo "install vendor===================="
           nvim --headless -c 'MasonInstall --sync lua-language-server' -c 'q'
+          nvim --headless -c 'MasonInstall --sync clangd' -c 'q'
 
-          echo "update mason script"
-          sed 's|/home/runner|~|' -i ~/.config/nvim/.cache/mason/share/mason-schemas/lsp/lua-language-server.json
-          rm ~/.config/nvim/.cache/mason/bin/*
+          echo "update mason script===================="
+          sed 's|/home/runner|~|' -i ~/.config/nvim/.run/mason/share/mason-schemas/lsp/lua-language-server.json
+          rm ~/.config/nvim/.run/mason/bin/*
           {
             echo "#!/usr/bin/env bash"
             echo 'cd "$(dirname $(readlink -f $0))"'
             echo 'exec "../packages/clangd/clangd/bin/clangd" "$@"'
-          } | tee ~/.config/nvim/.cache/mason/bin/clangd
+          } | tee ~/.config/nvim/.run/mason/bin/clangd
           {
             echo "#!/usr/bin/env bash"
             echo 'cd "$(dirname $(readlink -f $0))"'
             echo 'exec "../packages/lua-language-server/libexec/bin/lua-language-server" "$@"'
-          } | tee ~/.config/nvim/.cache/mason/bin/lua-language-server
-          chmod +x ~/.config/nvim/.cache/mason/bin/*
+          } | tee ~/.config/nvim/.run/mason/bin/lua-language-server
+          chmod +x ~/.config/nvim/.run/mason/bin/*
 
-          echo "get rg"
+          echo "get rg===================="
           new_ver=$(curl -sv "https://github.com/BurntSushi/ripgrep/releases/latest" 2>&1 | grep -P location: | grep -Po "(\d+\.){2}\d+")
           filename=ripgrep-${new_ver}-x86_64-unknown-linux-musl
           wget -qOrg.tgz "https://github.com/BurntSushi/ripgrep/releases/download/$new_ver/$filename.tar.gz"
@@ -70,15 +75,14 @@ jobs:
           mv ./$filename/rg ~/.config/nvim/vendor/
           rm -r rg.tgz $filename
 
-          echo "get universal-ctags"
+          echo "get universal-ctags===================="
           wget -qO ctags.txz https://github.com/fcying/tools/releases/download/tools/ctags_linux_amd64.txz
           tar xJf ctags.txz
           rm ctags.txz
           mv ctags ~/.config/nvim/vendor/
 
           XZ_OPT=-9 tar cJf nvim_config_with_vendor.txz nvim
-          popd
-          mv ~/.config/*.txz ~/publish
+          mv ./*.txz ~/publish
 
       - name: Publish release
         env:
@@ -87,7 +91,7 @@ jobs:
           {
             echo "nvim_config work with [NeoVim](https://github.com/neovim/neovim/releases/latest)"
             echo -e "\n"
-            echo "### vendor"
+            echo "### vendor:"
             echo "[ripgrep](https://github.com/BurntSushi/ripgrep)"
             echo "[universal-ctags](https://github.com/universal-ctags/ctags)"
             echo "[clangd](https://github.com/clangd/clangd)"

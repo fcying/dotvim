@@ -1,6 +1,7 @@
 local M = {}
 
-local map = require("util").map
+local util = require("util")
+local map = util.map
 local g, fn, cmd = vim.g, vim.fn, vim.cmd
 
 -- plugin load config before autoload
@@ -60,6 +61,35 @@ function M.luasnip()
     ]])
 end
 
+function M.treesitter()
+    local parser_install_dir = g.runtime_dir .. "/parsers"
+    vim.opt.runtimepath:prepend(parser_install_dir)
+    require("nvim-treesitter.configs").setup {
+        parser_install_dir = parser_install_dir,
+        ensure_installed = { "cpp", "lua" },
+        sync_install = false,
+        auto_install = false,
+        ignore_install = {},
+        highlight = {
+            enable = false,
+            disable = { 'help' },
+            additional_vim_regex_highlighting = false,
+        },
+        matchup = { enable = false },
+    }
+end
+
+function M.nt_cpp_tools()
+    require 'nt-cpp-tools'.setup({
+        preview = {
+            quit = 'q',
+            accept = '<tab>'
+        },
+        header_extension = 'h',
+        source_extension = 'cpp',
+    })
+end
+
 function M.cmp()
     local cmp = require("cmp")
     cmp.setup({
@@ -70,12 +100,12 @@ function M.cmp()
         },
         preselect = cmp.PreselectMode.None,
         mapping = {
-            ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
-            ["<S-Tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
-            ["<C-n>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
-            ["<C-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
-            ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), { "i", "c" }),
-            ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), { "i", "c" }),
+            ["<Tab>"] = cmp.mapping.select_next_item(),
+            ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+            ["<C-n>"] = cmp.mapping.select_next_item(),
+            ["<C-p>"] = cmp.mapping.select_prev_item(),
+            ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+            ["<C-f>"] = cmp.mapping.scroll_docs(4),
             ["<C-l>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
             ["<C-y>"] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
             ["<C-e>"] = cmp.mapping({
@@ -116,28 +146,37 @@ function M.cmp()
         },
     })
 
-    cmp.setup.cmdline({ '/', '?' }, {
-        sources = {
+    cmp.setup.filetype('gitcommit', {
+        sources = cmp.config.sources({
             { name = "buffer" },
-        },
+        }),
+    })
+
+    cmp.setup.cmdline({ '/', '?' }, {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = cmp.config.sources({
+            { name = "buffer" },
+        }),
     })
 
     cmp.setup.cmdline(":", {
+        mapping = cmp.mapping.preset.cmdline(),
         sources = cmp.config.sources({
             { name = "path" },
             { name = "cmdline" },
         }),
     })
 
+    --FIXME need update to v3
     local dict = require("cmp_dictionary")
     local dict_path = g.config_dir .. "/dict/"
     dict.setup({
-        exact = 2,
+        exact_length = 2,
         first_case_insensitive = false,
         document = false,
         document_command = "wn %s -over",
         sqlite = false,
-        max_items = -1,
+        max_number_items = -1,
         capacity = 5,
         debug = false,
     })
@@ -410,7 +449,7 @@ function M.project_config()
         group = "myau",
         pattern = { ".pvimrc" },
         callback = function()
-            require("util").update_ignore_config()
+            util.update_ignore_config()
         end,
     })
 end
@@ -427,10 +466,11 @@ function M.init()
             M[v]()
         end
 
+        vim.opt.background = "light"
+
         require("plugins.lazy")
 
         vim.cmd.colorscheme("solarized8")
-        vim.opt.background = "light"
     end
 end
 

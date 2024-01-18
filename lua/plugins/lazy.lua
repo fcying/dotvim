@@ -1,17 +1,11 @@
 local g, api = vim.g, vim.api
 local map = require("util").map
 
-g.plug_dir = g.cache_dir .. "/plugins"
-local lazypath = g.plug_dir .. "/lazy.nvim"
+local lazypath = g.runtime_dir .. "/plugins/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-    vim.fn.system({
-        "git",
-        "clone",
-        "--filter=blob:none",
-        "https://github.com/folke/lazy.nvim.git",
+    vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git",
         "--branch=stable", -- latest stable release
-        lazypath,
-    })
+        lazypath })
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -28,7 +22,7 @@ local function config(name, module)
     end
 end
 
-require("lazy").setup({
+local plugins = {
     { "fcying/gen_clang_conf.vim", lazy = false },
     { "wsdjeg/vim-fetch", lazy = false },
     { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
@@ -71,7 +65,7 @@ require("lazy").setup({
     { "Yggdroot/indentLine", cmd = "IndentLinesToggle" },
     { "chentoast/marks.nvim", event = "VimEnter", config = config("marks") },
     { "mg979/vim-visual-multi", event = "VimEnter" },
-    { "andymass/vim-matchup", event = "VimEnter" },
+    --{ "andymass/vim-matchup", event = "VimEnter" },
     { "terryma/vim-expand-region", event = "VimEnter", config = config("vim_expand_region") },
     {
         "ggandor/leap.nvim", event = "VeryLazy",
@@ -110,6 +104,17 @@ require("lazy").setup({
     { "folke/which-key.nvim", event = "VimEnter", config = config("whichkey") },
 
     -- coding {{{
+    {
+        "nvim-treesitter/nvim-treesitter",
+        event = "VeryLazy",
+        config = config("treesitter"),
+        build = ":TSUpdate",
+    },
+    {
+        "Badhi/nvim-treesitter-cpp-tools",
+        dependencies = {"nvim-treesitter/nvim-treesitter"},
+        config = config("nt_cpp_tools"),
+    },
     {
         "neovim/nvim-lspconfig",
         config = config("setup", "lsp"),
@@ -153,7 +158,7 @@ require("lazy").setup({
             { "hrsh7th/cmp-cmdline" },
             { "hrsh7th/cmp-omni" },
             { "quangnguyen30192/cmp-nvim-tags" },
-            { "uga-rosa/cmp-dictionary" },
+            { "uga-rosa/cmp-dictionary", commit="d17bc1f87736b6a7f058b2f246e651d34d648b47" },
         },
     },
 
@@ -172,11 +177,11 @@ require("lazy").setup({
     { "othree/xml.vim", ft = "xml" },
     { "wsdjeg/vim-autohotkey", ft = "autohotkey" },
     { "plasticboy/vim-markdown", ft = "markdown", dependencies = "godlygeek/tabular" },
-}, {
-    -- lazy config {{{
-    root = g.plug_dir,
-    lockfile = g.plug_dir .. "/lazy-lock.json",
-    state = g.plug_dir .. "/state.json",
+}
+
+-- lazy config {{{
+require("lazy").setup(plugins, {
+    root = g.runtime_dir .. "/plugins",
     checker = { enabled = false },
     defaults = {
         lazy = false,
@@ -188,9 +193,7 @@ require("lazy").setup({
         reset_packpath = true, -- reset the package path to improve startup time
         rtp = {
             reset = true,
-            ---@type string[]
-            paths = { g.config_dir, g.config_dir .. "../" },
-            ---@type string[] list any plugins you want to disable here
+            paths = { g.config_dir },
             disabled_plugins = {
                 "gzip",
                 --"matchit",
@@ -204,9 +207,8 @@ require("lazy").setup({
         },
     },
     install = {
-        -- install missing plugins on startup.
         missing = true,
-        colorscheme = { "desert" },
+        colorscheme = { "solarized8", "desert" },
     },
     ui = {
         icons = {
@@ -223,11 +225,6 @@ require("lazy").setup({
             task = "📌",
             lazy = "💤 ",
         },
-    },
-    readme = {
-        root = g.plug_dir .. "/readme",
-        files = { "README.md", "lua/**/README.md" },
-        skip_if_doc_exists = true,
     },
 })
 

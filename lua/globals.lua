@@ -4,19 +4,6 @@ local util = require("util")
 g.mapleader = " "
 g.maplocalleader = " "
 
-g.etc_dir = g.config_dir .. "/etc"
-
-g.cache_dir = g.config_dir .. "/.cache"
-if fn.isdirectory(g.cache_dir) == 0 then
-    fn.mkdir(g.cache_dir, "p")
-end
-
-g.file_log = g.cache_dir .. "/vim.log"
-
-g.is_wsl = fn.isdirectory("/mnt/c")
-g.is_win = fn.has("win32")
-g.is_tmux = fn.exists("$TMUX")
-
 g.has_rg = fn.executable("rg")
 g.has_go = fn.executable("go")
 
@@ -34,11 +21,6 @@ let g:ignore_default = {
 let g:ignore = {'dir':[], 'file':[], 'rg':[], 'mru':[]}
 ]])
 
-if g.is_win == 1 then
-    vim.env.PATH = g.config_dir .. "\\vendor" .. ";" .. vim.env.PATH
-else
-    vim.env.PATH = g.config_dir .. "/vendor" .. ":" .. vim.env.PATH
-end
 
 api.nvim_create_augroup("myau", { clear = true })
 
@@ -113,7 +95,7 @@ opt.tabstop = 4
 opt.termguicolors = true
 opt.timeoutlen = 500
 opt.ttimeoutlen = 80
-opt.undodir =  g.cache_dir .. "/undodir_nvim"
+opt.undodir =  g.runtime_dir .. "/undodir_nvim"
 opt.undofile = true
 opt.undolevels = 10000
 opt.updatetime = 200
@@ -167,7 +149,7 @@ autocmd myau BufNewFile,BufRead syslog setl filetype=messages
 autocmd myau BufNewFile,BufRead rc.local setl filetype=sh
 
 autocmd myau BufNewFile,BufRead gitconfig setl filetype=gitconfig
-autocmd myau FileType gitconfig 
+autocmd myau FileType gitconfig
     \ setl noexpandtab
 ]])
 

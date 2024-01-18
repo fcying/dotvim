@@ -225,6 +225,7 @@ function M.removetags()
     cmd("ClearClangConf")
     cmd("ClearCtags")
 end
+
 function M.gentags(type)
     type = type or 0
     cmd("ClearClangConf")
@@ -236,6 +237,7 @@ function M.gentags(type)
         cmd("GenCtags")
     end
 end
+
 M.map("n", "ta", "<cmd>lua require('util').gentags()<CR>")
 M.map("n", "tc", "<cmd>lua require('util').gentags(1)<CR>")
 M.map("n", "tr", "<cmd>lua require('util').removetags()<CR>")

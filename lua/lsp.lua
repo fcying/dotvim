@@ -225,8 +225,10 @@ function config.lua()
             enabled = true,
             runtime = true,
             types = true,
-            plugins = { "plenary.nvim", "telescope.nvim" },
+            plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
+            pathStrict = false,
         },
+        lspconfig = true,
     })
     M.server_opt.lua_ls = {
         on_attach = on_attach,
@@ -262,7 +264,7 @@ end
 
 function M.mason()
     require("mason").setup({
-        install_root_dir = g.cache_dir .. "/mason",
+        install_root_dir = g.runtime_dir .. "/mason",
         pip = {
             install_args = { "-i", "https://pypi.tuna.tsinghua.edu.cn/simple" },
         },
@@ -290,7 +292,7 @@ function M.lspconfig()
     end
 
     require("mason-lspconfig").setup({
-        ensure_installed = { "clangd" },
+        ensure_installed = {},
         automatic_installation = false,
         handlers = {
             function(server_name)

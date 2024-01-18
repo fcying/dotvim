@@ -1,5 +1,7 @@
 *.pyc
 .cache/
+.data/
+.run/
 /*.log
 /vim*/
 /.netrwhist

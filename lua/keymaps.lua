@@ -21,7 +21,6 @@ map("v", "g<c-]>", "<c-]>")
 map("n", "<c-]>", ':lua require("util").go2def(vim.fn.expand("<cword>"), {mode="ltag"})<cr>')
 map("v", "<c-]>", ':<c-u>lua require("util").go2def(vim.fn.GetVisualSelection(), {mode="ltag"})<cr>')
 map("n", "gd", ':lua require("util").go2def(vim.fn.expand("<cword>"), {mode="lsp"})<cr>')
-map("n", "gD", ':lua require("util").go2def(vim.fn.expand("<cword>"), {mode="builtin"})<cr>')
 
 -- set working directory to the current file {{{
 map("n", "<leader>cdt", ":tcd %:p:h<CR>:pwd<CR>", { desc = "set working directory for current tab" })

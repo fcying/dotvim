@@ -115,16 +115,6 @@ local plugins = {
         dependencies = {"nvim-treesitter/nvim-treesitter"},
         config = config("nt_cpp_tools"),
     },
-    {
-        "neovim/nvim-lspconfig",
-        config = config("setup", "lsp"),
-        event = { "BufReadPre", "BufNewFile" },
-        dependencies = {
-            { "folke/neodev.nvim" },
-            { "williamboman/mason.nvim", lazy = false, build = ":MasonUpdate", config = config("mason", "lsp") },
-            { "williamboman/mason-lspconfig.nvim" },
-        },
-    },
     --{
     --    "jose-elias-alvarez/null-ls.nvim",
     --    event = { "BufReadPre", "BufNewFile" },
@@ -137,7 +127,29 @@ local plugins = {
     {
         "nvimdev/guard.nvim",
         cmd = "GuardFmt",     -- broken auto format
-        config = config("guard", "lsp"),
+        config = config("guard"),
+    },
+    {
+        "VonHeikemen/lsp-zero.nvim",
+        branch = "v3.x",
+        lazy = true,
+        config = false,
+        init = function()
+            -- Disable automatic setup, we are doing it manually
+            vim.g.lsp_zero_extend_cmp = 0
+            vim.g.lsp_zero_extend_lspconfig = 0
+            vim.g.lsp_zero_ui_float_border = 0
+        end,
+    },
+    {
+        "neovim/nvim-lspconfig",
+        config = config("setup", "lsp"),
+        event = { "BufReadPre", "BufNewFile" },
+        dependencies = {
+            { "folke/neodev.nvim" },
+            { "williamboman/mason.nvim", lazy = false, build = ":MasonUpdate", config = config("mason") },
+            { "williamboman/mason-lspconfig.nvim" },
+        },
     },
     {
         "hrsh7th/nvim-cmp",

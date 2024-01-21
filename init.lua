@@ -20,4 +20,4 @@ end
 vim.env.PATH = g.config_dir .. g.dir_separator .. "vendor" .. g.path_separator .. vim.env.PATH
 g.file_log = g.runtime_dir .. g.dir_separator .. "vim.log"
 
-require("config").init()
+require("config").setup()

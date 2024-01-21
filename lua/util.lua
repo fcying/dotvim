@@ -112,9 +112,6 @@ function M.go2def(str, opts)
                     end
                 end
             end
-        elseif opts.mode == "builtin" then
-            require("telescope.builtin").lsp_definitions()
-            return
         end
 
         -- fallback ltag

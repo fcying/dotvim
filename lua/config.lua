@@ -191,6 +191,35 @@ function M.cmp()
     })
 end
 
+function M.mason()
+    require("mason").setup({
+        install_root_dir = g.runtime_dir .. "/mason",
+        pip = {
+            install_args = { "-i", "https://pypi.tuna.tsinghua.edu.cn/simple" },
+        },
+        registries = {
+            "lua:registry",
+            "github:mason-org/mason-registry",
+        },
+    })
+end
+
+function M.guard()
+    local ft = require('guard.filetype')
+    ft('c'):fmt({
+        cmd = "astyle",
+        args = formats.astyle,
+    })
+    ft('cpp'):fmt({
+        cmd = "astyle",
+        args = formats.astyle,
+    })
+
+    require('guard').setup({
+        fmt_on_save = false,
+    })
+end
+
 function M.lualine()
     local theme = "auto"
     if vim.g.colors_name == "solarized8" then
@@ -291,7 +320,6 @@ end
 function M.gen_clang_conf()
     vim.cmd([[
         let g:gencconf_storein_rootmarker = get(g:,'gencconf_storein_rootmarker',1)
-        let g:gencconf_ctags_option = '--languages=c++ --languages=+c'
         if !exists('g:gencconf_default_option')
             let g:gencconf_default_option = {
                 \ 'c': ['gcc', '-c', '-std=c11'],
@@ -454,24 +482,23 @@ function M.project_config()
     })
 end
 
-M.is_init = false
-function M.init()
-    if not M.is_init then
-        M.is_init = true
-
-        require("globals")
-        require("keymaps")
-
-        for _, v in pairs(pre_config) do
-            M[v]()
-        end
-
-        vim.opt.background = "light"
-
-        require("plugins.lazy")
-
-        vim.cmd.colorscheme("solarized8")
+local init_done = false
+function M.setup()
+    if init_done then
+        return
     end
+    init_done = true
+
+    require("globals")
+    require("keymaps")
+
+    for _, v in pairs(pre_config) do
+        M[v]()
+    end
+
+    vim.opt.background = "light"    --for lazy install colorscheme
+    require("plugins.lazy")
+    vim.cmd.colorscheme("solarized8")
 end
 
 return M

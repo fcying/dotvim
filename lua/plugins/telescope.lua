@@ -41,16 +41,16 @@ return {
         { "fr", "<cmd>Telescope resume<cr>",                        desc = "resume" },
         { "ft", "<cmd>Telescope tags<cr>",                          desc = "tag" },
         { "f/", "<cmd>Telescope live_grep<cr>",                     desc = "live grep" },
-        { "gI", "<cmd>Telescope lsp_implementations<cr>",           desc = "lsp_implementations" },
+        { "gi", "<cmd>Telescope lsp_implementations<cr>",           desc = "lsp_implementations" },
         {
             "gr",
             "<cmd>Telescope lsp_references include_current_line=true<cr>",
             desc = "lsp_references"
         },
-        { "gt",         "<cmd>Telescope lsp_type_definitions<cr>", desc = "lsp_type_definitions" },
+        { "go",         "<cmd>Telescope lsp_type_definitions<cr>", desc = "lsp_type_definitions" },
         { "<leader>la", "<cmd>Telescope lsp_code_actions<cr>",     desc = "lsp_code_actions" },
         { "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>",  desc = "lsp diagnostics" },
-        { "<leader>ls", "<cmd>Telescope lsp_document_symbols<cr>", desc = "lsp_document_symbols" },
+        { "<leader>ls", "<cmd>Telescope lsp_workspace_symbols<cr>", desc = "lsp_document_symbols" },
     },
     config = function()
         local actions = require("telescope.actions")

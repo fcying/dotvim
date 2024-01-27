@@ -1,5 +1,6 @@
 local g, opt, fn, api = vim.g, vim.opt, vim.fn, vim.api
 local util = require("util")
+local map = util.map
 
 g.mapleader = " "
 g.maplocalleader = " "
@@ -83,7 +84,7 @@ opt.scrolloff = 3
 opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize" }
 opt.shiftround = true -- Round indent
 opt.shiftwidth = 4
-opt.shortmess:append({ W = false, I = false, c = true })
+opt.shortmess:append({ W = false, I = true, c = true, C = true, s = true })
 opt.showmode = false
 opt.signcolumn = "auto"
 opt.smartcase = true
@@ -129,11 +130,6 @@ opt.wildignore = opt.wildignore + "*.msi,*.crx,*.deb,*.vfd,*.apk,*.ipa,*.bin,*.m
 opt.wildignore = opt.wildignore + "*.gba,*.sfc,*.078,*.nds,*.smd,*.smc"
 opt.wildignore = opt.wildignore + "*.linux2,*.win32,*.darwin,*.freebsd,*.linux,*.android"
 
-if fn.has("nvim-0.9.0") == 1 then
-    opt.splitkeep = "screen"
-    opt.shortmess:append({ C = true })
-end
-
 -- filetype {{{
 vim.cmd([[
 autocmd myau FileType go setlocal noexpandtab nolist
@@ -168,15 +164,17 @@ vim.api.nvim_create_autocmd("FileType", {
         "startuptime",
         "tsplayground",
         "fugitive*",
+        "flog*",
+        "git",
     },
     callback = function(event)
         vim.bo[event.buf].buflisted = false
-        vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf, silent = true })
+        map("n", "q", "<cmd>close<cr>", { buffer = event.buf })
     end,
 })
 
 -- omnifunc use syntax {{{
-vim.api.nvim_create_autocmd("BufEnter", {
+api.nvim_create_autocmd("BufEnter", {
     group = api.nvim_create_augroup("set_omnifunc", { clear = true }),
     pattern = { "*" },
     callback = function()

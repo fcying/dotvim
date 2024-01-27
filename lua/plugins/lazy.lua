@@ -26,45 +26,67 @@ local plugins = {
     { "fcying/gen_clang_conf.vim", lazy = false },
     { "wsdjeg/vim-fetch", lazy = false },
     { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
-    { "lambdalisue/suda.vim", cmd = { "SudoRead", "SudoWrite" },
+    {
+        "lambdalisue/suda.vim", cmd = { "SudoRead", "SudoWrite" },
         config = function()
             api.nvim_create_user_command("SudoRead", "SudaRead", {})
             api.nvim_create_user_command("SudoWrite", "SudaWrite", {})
         end,
     },
     {
-        "dstein64/vim-startuptime",
-        cmd = "StartupTime",
+        "mbbill/fencview", cmd = { "FencView", "FencAutoDetect" },
         config = function()
-            g.startuptime_tries = 5
+            g.fencview_autodetect = 0
+            g.fencview_checklines = 10
         end,
     },
-    { "mbbill/fencview", cmd = { "FencView", "FencAutoDetect" } },
-    --{ 'simnalamburt/vim-mundo', event = 'VimEnter' },
-    --{ 'mhinz/vim-grepper', cmd = { "Grepper", "<plug>(GrepperOperator)" } },
-    { "tpope/vim-sleuth", event = "VeryLazy" }, -- auto adjust 'shiftwidth' and 'expandtab'
+    {   -- auto adjust 'shiftwidth' and 'expandtab'
+        "tpope/vim-sleuth", event = "VeryLazy",
+        config = function()
+            --g.sleuth_make_heuristics = 0
+            g.sleuth_heuristics = 0
+        end,
+    },
     { "ethanholz/nvim-lastplace", lazy = false, config = config("lastplace") },
+    --{ 'simnalamburt/vim-mundo', event = 'VimEnter' },
 
     -- editor {{{
     {
         "moll/vim-bbye",
-        cmd = "Bdelete",
+        cmd = { "Bdelete", "Bclose" },
         keys = { { "<leader>q", "<cmd>Bdelete<CR>", desc = "Quit Buffer" } },
         config = function()
-            vim.cmd([[ command! -bang -nargs=0 Bclose exec 'Bdelete' ]])
-            vim.api.nvim_create_user_command("Bclose", "Bdelete", {})
+            vim.api.nvim_create_user_command("Bclose", "Bdelete", { bang = true })
         end
     },
     { "preservim/nerdcommenter", event = "VeryLazy" },
-    { "machakann/vim-sandwich", event = "VeryLazy" },
+    { "machakann/vim-sandwich", event = "VeryLazy", config = config("sandwich") },
     {
         "t9md/vim-choosewin",
         keys = { { "-", "<Plug>(choosewin)", desc = "choosewin" } },
     },
-    { "preservim/tagbar", cmd = "TagbarToggle" },
-    { "Yggdroot/indentLine", cmd = "IndentLinesToggle" },
+    { "preservim/tagbar", cmd = "TagbarToggle", config = config("tagbar") },
     { "chentoast/marks.nvim", event = "VimEnter", config = config("marks") },
-    { "mg979/vim-visual-multi", event = "VimEnter" },
+    {
+        "Yggdroot/indentLine", cmd = "IndentLinesToggle",
+        config = function()
+            g.indentLine_setColors = 1
+            g.indentLine_enabled = 0
+            g.indentLine_char_list = { '|', '¦', '┆', '┊' }
+            map("n", "<leader>i", ":IndentLinesToggle<CR>", { silent = true })
+        end,
+    },
+    {
+        "mg979/vim-visual-multi", event = "VimEnter",
+        config = function()
+            g.VM_no_meta_mappings = 1
+            g.VM_maps = {}
+            g.VM_maps['Find Under']         = '<C-n>'
+            g.VM_maps['Find Subword Under'] = '<C-n>'
+            g.VM_cmdheight = 1
+            --g.VM_manual_infoline = 1
+        end,
+    },
     --{ "andymass/vim-matchup", event = "VimEnter" },
     { "terryma/vim-expand-region", event = "VimEnter", config = config("vim_expand_region") },
     {
@@ -93,15 +115,34 @@ local plugins = {
     { import = "plugins.telescope" },
 
     -- tool {{{
-    { "rcarriga/nvim-notify", event = "VimEnter", config = config("notify") },
-    { "chrisbra/Colorizer", event = "VimEnter" },
-    { "ZSaberLv0/ZFVimDirDiff", cmd = "ZFDirDiff", dependencies = "ZSaberLv0/ZFVimJob" },
-    { "iberianpig/tig-explorer.vim", event = "VimEnter" },
-    { "tpope/vim-fugitive", event = "VeryLazy" },
-    { "rbong/vim-flog", cmd = { "Flog", "Flogsplit", "Floggit" } },
+    {
+        "folke/noice.nvim",
+        event = "VeryLazy",
+        config = config("noice"),
+        dependencies = {
+            { "MunifTanjim/nui.nvim" },
+            { "rcarriga/nvim-notify", config = config("notify") },
+        }
+    },
+    { "chrisbra/Colorizer", cmd = { "ColorToggle" } },
+    { "iberianpig/tig-explorer.vim", event = "VeryLazy" },
+    {
+        "ZSaberLv0/ZFVimDirDiff",
+        cmd = "ZFDirDiff",
+        dependencies = "ZSaberLv0/ZFVimJob",
+        config = function()
+            g.ZFJobVerboseLogEnable = 0
+            g.ZFDirDiffUI_showSameFile = 1
+        end,
+    },
+    {
+        "rbong/vim-flog",
+        cmd = { "Flog", "Flogsplit", "Floggit" },
+        dependencies = {"tpope/vim-fugitive", event = "VeryLazy", config = config("fugitive")},
+    },
     { "skywind3000/asyncrun.vim", cmd = { "AsyncRun", "AsyncStop" } },
     { "skywind3000/asynctasks.vim", cmd = { "AsyncTask", "AsyncTaskMacro", "AsyncTaskList", "AsyncTaskEdit" } },
-    { "folke/which-key.nvim", event = "VimEnter", config = config("whichkey") },
+    { "folke/which-key.nvim", event = "VeryLazy", config = config("whichkey") },
 
     -- coding {{{
     {
@@ -127,7 +168,7 @@ local plugins = {
     {
         "nvimdev/guard.nvim",
         cmd = "GuardFmt",     -- broken auto format
-        config = config("guard"),
+        config = config("guard", "lsp"),
     },
     {
         "VonHeikemen/lsp-zero.nvim",
@@ -153,7 +194,7 @@ local plugins = {
     },
     {
         "hrsh7th/nvim-cmp",
-        event = "InsertEnter",
+        event = { "InsertEnter", "CmdlineEnter" },
         config = config("cmp"),
         version = false, -- last release is way too old
         dependencies = {
@@ -170,15 +211,20 @@ local plugins = {
             { "hrsh7th/cmp-cmdline" },
             { "hrsh7th/cmp-omni" },
             { "quangnguyen30192/cmp-nvim-tags" },
-            { "uga-rosa/cmp-dictionary", commit="d17bc1f87736b6a7f058b2f246e651d34d648b47" },
+            { "uga-rosa/cmp-dictionary", config = config("cmp_dictionary") },
         },
     },
 
     -- colorscheme {{{
+    {
+        "nvimdev/dashboard-nvim",
+        event = "VimEnter",
+        dependencies = { {'nvim-tree/nvim-web-devicons'}},
+        config = config("dashboard"),
+    },
     { "nvim-lualine/lualine.nvim", event = "ColorScheme", config = config("lualine") },
-    { "lifepillar/vim-solarized8", lazy = true },
-    { "tomasr/molokai", lazy = true },
-    { "sainnhe/everforest", lazy = true },
+    { "maxmx03/solarized.nvim", lazy = true, priority = 1000 },
+    { "folke/tokyonight.nvim", lazy = true, priority = 1000 },
 
     -- filetype {{{
     --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },

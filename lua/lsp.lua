@@ -47,6 +47,22 @@ local function diagnostics_config(enable)
     end
 end
 
+function M.guard()
+    local ft = require('guard.filetype')
+    ft('c'):fmt({
+        cmd = "astyle",
+        args = formats.astyle,
+    })
+    ft('cpp'):fmt({
+        cmd = "astyle",
+        args = formats.astyle,
+    })
+
+    require('guard').setup({
+        fmt_on_save = false,
+    })
+end
+
 function M.format()
     local custom_format = { "c", "cpp" }
     if vim.fn.index(custom_format, vim.o.filetype) ~= -1 then

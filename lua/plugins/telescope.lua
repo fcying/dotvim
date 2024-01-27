@@ -16,7 +16,7 @@ return {
         },
         {
             "ff",
-            ":<C-u><C-R>=g:find_command<CR><CR>",
+            function() require('util').find_file() end,
             desc = "file",
             silent = true
         },
@@ -47,9 +47,9 @@ return {
             "<cmd>Telescope lsp_references include_current_line=true<cr>",
             desc = "lsp_references"
         },
-        { "go",         "<cmd>Telescope lsp_type_definitions<cr>", desc = "lsp_type_definitions" },
-        { "<leader>la", "<cmd>Telescope lsp_code_actions<cr>",     desc = "lsp_code_actions" },
-        { "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>",  desc = "lsp diagnostics" },
+        { "go",         "<cmd>Telescope lsp_type_definitions<cr>",  desc = "lsp_type_definitions" },
+        { "<leader>la", "<cmd>Telescope lsp_code_actions<cr>",      desc = "lsp_code_actions" },
+        { "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>",   desc = "lsp diagnostics" },
         { "<leader>ls", "<cmd>Telescope lsp_workspace_symbols<cr>", desc = "lsp_document_symbols" },
     },
     config = function()

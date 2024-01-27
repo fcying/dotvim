@@ -1,6 +1,7 @@
 local M = {}
 local fn, g, cmd = vim.fn, vim.g, vim.cmd
 local ignore_full
+local find_command = ""
 
 function M.map(mode, lhs, rhs, opts)
     opts = opts or {}
@@ -53,12 +54,16 @@ function M.update_ignore_config()
     M.telescope_update_ignore()
 end
 
+function M.find_file()
+    vim.cmd(find_command)
+end
+
 function M.telescope_update_ignore()
-    g.find_command = "Telescope find_files "
+    find_command = "Telescope find_files "
     if g.has_rg == 1 then
-        g.find_command = g.find_command .. "find_command=rg,--files,--no-ignore,--color=never"
+        find_command = find_command .. "find_command=rg,--files,--no-ignore,--color=never"
         if ignore_full.rg ~= {} then
-            g.find_command = g.find_command .. "," .. table.concat(ignore_full.rg, ",")
+            find_command = find_command .. "," .. table.concat(ignore_full.rg, ",")
         end
     end
 

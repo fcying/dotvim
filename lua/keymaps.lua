@@ -1,8 +1,9 @@
-local map = require("util").map
+local util = require("util")
+local map = util.map
 
 map("n", "<leader>evc", ":execute 'e '  . g:config_dir<CR>")
 map("n", "<leader>evl", ":execute 'e '  . g:file_vimrc_local<CR>")
-map("n", "<leader>evp", ":execute 'e '  . g:pvimrc_path<CR>")
+map("n", "<leader>evp", require("project_config").edit_config)
 
 -- fast ident {{{
 map("n", "<", "<<")
@@ -18,9 +19,9 @@ map("n", "q", "<nop>")
 -- goto def {{{
 map("n", "g<c-]>", "<c-]>")
 map("v", "g<c-]>", "<c-]>")
-map("n", "<c-]>", ':lua require("util").go2def(vim.fn.expand("<cword>"), {mode="ltag"})<cr>')
-map("v", "<c-]>", ':<c-u>lua require("util").go2def(vim.fn.GetVisualSelection(), {mode="ltag"})<cr>')
-map("n", "gd", ':lua require("util").go2def(vim.fn.expand("<cword>"), {mode="lsp"})<cr>')
+map("n", "<c-]>", function() util.go2def(vim.fn.expand("<cword>"), {mode="ltag"}) end)
+map("v", "<c-]>", function() util.go2def(util.get_visual_selection(), {mode="ltag"}) end)
+map("n", "gd", function() util.go2def(vim.fn.expand("<cword>"), {mode="lsp"}) end)
 
 -- set working directory to the current file {{{
 map("n", "<leader>cdt", ":tcd %:p:h<CR>:pwd<CR>", { desc = "set working directory for current tab" })

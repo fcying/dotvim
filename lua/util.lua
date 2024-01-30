@@ -1,7 +1,25 @@
 local M = {}
 local fn, g, cmd = vim.fn, vim.g, vim.cmd
-local ignore_full
-local find_command = ""
+
+--custome ignore list
+Ignore = { dir = {}, file = {}, mru = {}, rg = {}, lsp = {} }
+local ignore_default = {
+    dir = { '.root', '.svn', '.git', '.repo', '.ccls-cache', '.cache', '.ccache' },
+    file = { '*.sw?', '~$*', '*.bak', '*.exe', '*.o', '*.so', '*.py[co]', 'tags' },
+    mru = { '*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll' },
+    rg = { '--max-columns=300', '--iglob=!obj', '--iglob=!out' }
+}
+
+M.ignore = ignore_default
+M.find_command = ""
+M.root_dir = ""
+M.root_marker = ""
+
+-- issue list
+-- https://github.com/neovim/neovim/issues/12544 store metatables on vim.b/vim.w/vim.t scopes
+-- https://github.com/neovim/neovim/issues/4396 nvim not restore terminal cursorshape globals.lua
+-- https://github.com/neovim/neovim/pull/24812 echo has("patch-9.0.1768") lazy.lua
+-- https://github.com/neovim/neovim/issues/16843  lua function to get current visual selection
 
 function M.map(mode, lhs, rhs, opts)
     opts = opts or {}
@@ -19,51 +37,54 @@ function M.get_root_marker(root_markers)
         end
     end
     if fn.empty(dir) == 0 then
-        return fn.fnamemodify(dir, ":p:h"), fn.fnamemodify(dir .. "/../", ":p:h")
+        M.root_dir = fn.fnamemodify(dir .. "/../", ":p:h")
+        M.root_marker = fn.fnamemodify(dir, ":p:h")
+    else
+        M.root_dir = fn.getcwd()
+        M.root_marker = fn.getcwd()
     end
-    return fn.getcwd(), fn.getcwd()
+    return M.root_marker, M.root_dir
 end
 
-function M.table_merge(t1, ...)
-    for _, t in ipairs { ... } do
-        for _, k in ipairs(t) do
-            table.insert(t1, k)
-        end
-    end
+function M.get_visual_selection()
+    local _, ls, cs = unpack(vim.fn.getpos('v'))
+    local _, le, ce = unpack(vim.fn.getpos('.'))
+    local result = vim.api.nvim_buf_get_text(0, ls - 1, cs - 1, le - 1, ce, {})[1]
+
+    return result
 end
 
 function M.update_ignore_config()
-    -- FIXME https://github.com/neovim/neovim/issues/12544
-    ignore_full = { dir = {}, file = {}, rg = {}, mru = {} }
-    M.table_merge(ignore_full.dir, g.ignore_default.dir, g.ignore.dir)
-    M.table_merge(ignore_full.file, g.ignore_default.file, g.ignore.file)
-    M.table_merge(ignore_full.rg, g.ignore_default.rg, g.ignore.rg)
-    M.table_merge(ignore_full.mru, g.ignore_default.mru, g.ignore.mru)
+    M.ignore = ignore_default
+    vim.list_extend(M.ignore.dir, Ignore.dir)
+    vim.list_extend(M.ignore.file, Ignore.file)
+    vim.list_extend(M.ignore.mru, Ignore.mru)
+    vim.list_extend(M.ignore.rg, Ignore.rg)
 
-    for _, k in ipairs(ignore_full.file) do
-        table.insert(ignore_full.rg, "--glob=!" .. k)
+    for _, k in ipairs(M.ignore.file) do
+        table.insert(M.ignore.rg, "--glob=!" .. k)
     end
-    for _, k in ipairs(ignore_full.dir) do
-        table.insert(ignore_full.rg, "--glob=!" .. k)
+    for _, k in ipairs(M.ignore.dir) do
+        table.insert(M.ignore.rg, "--glob=!" .. k)
     end
 
     -- gen_clang_conf.vim
-    g.gencconf_ignore_dir = ignore_full.dir
-    g.gencconf_ignore_file = ignore_full.file
+    g.gencconf_ignore_dir = M.ignore.dir
+    g.gencconf_ignore_file = M.ignore.file
 
     M.telescope_update_ignore()
 end
 
 function M.find_file()
-    vim.cmd(find_command)
+    vim.cmd(M.find_command)
 end
 
 function M.telescope_update_ignore()
-    find_command = "Telescope find_files "
+    M.find_command = "Telescope find_files "
     if g.has_rg == 1 then
-        find_command = find_command .. "find_command=rg,--files,--no-ignore,--color=never"
-        if ignore_full.rg ~= {} then
-            find_command = find_command .. "," .. table.concat(ignore_full.rg, ",")
+        M.find_command = M.find_command .. "find_command=rg,--files,--no-ignore,--color=never"
+        if M.ignore.rg ~= {} then
+            M.find_command = M.find_command .. "," .. table.concat(M.ignore.rg, ",")
         end
     end
 
@@ -78,7 +99,7 @@ function M.telescope_update_ignore()
             "--column",
             "--smart-case",
         }
-        for _, v in ipairs(ignore_full.rg) do
+        for _, v in ipairs(M.ignore.rg) do
             table.insert(conf.vimgrep_arguments, v)
         end
     end

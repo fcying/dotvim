@@ -100,7 +100,7 @@ return {
                     case_mode = "smart_case",
                 },
                 ctags_outline = {
-                    ctags = { "ctags", g.ctags_opt },
+                    ctags = { "ctags", "--options=" .. g.config_dir .. "/etc/ctags" },
                     ft_opt = {
                         c = "--c-kinds=f",
                         cpp = "--c++-kinds=f --language-force=C++",

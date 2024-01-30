@@ -1,4 +1,4 @@
-local g, opt, fn, api = vim.g, vim.opt, vim.fn, vim.api
+local g, opt, fn = vim.g, vim.opt, vim.fn
 local util = require("util")
 local map = util.map
 
@@ -8,32 +8,7 @@ g.maplocalleader = " "
 g.has_rg = fn.executable("rg")
 g.has_go = fn.executable("go")
 
-g.ctags_opt = "--options=" .. g.config_dir .. "/etc/ctags"
-g.lsp_ignore = {}
-g.root_marker, g.root_folder = util.get_root_marker({ ".root", ".git", ".repo", ".svn" })
-
-vim.cmd([[
-let g:ignore_default = {
-      \ 'dir':['.root','.svn','.git','.repo','.ccls-cache','.cache','.ccache'],
-      \ 'file':['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]',
-      \ 'GTAGS', 'GRTAGS', 'GPATH', 'prj_tag','tags'],
-      \ 'mru':['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll'],
-      \ 'rg':['--max-columns=300', '--iglob=!obj', '--iglob=!out']}
-let g:ignore = {'dir':[], 'file':[], 'rg':[], 'mru':[]}
-]])
-
-
-api.nvim_create_augroup("myau", { clear = true })
-
--- find user config {{{
-if g.is_win == 1 then
-    g.file_vimrc_local = os.getenv("USERPROFILE") .. "/.vimrc.local"
-else
-    g.file_vimrc_local = os.getenv("HOME") .. "/.vimrc.local"
-end
-if fn.filereadable(g.file_vimrc_local) == 1 then
-    vim.cmd.source(g.file_vimrc_local)
-end
+vim.api.nvim_create_augroup("myau", { clear = true })
 
 if g.is_win == 1 then
     g.make = "mingw32-make"
@@ -58,9 +33,9 @@ opt.bomb = false
 opt.fileencodings = "ucs-bom,utf-8,gbk,gb18030,big5,euc-jp,euc-kr,latin1"
 opt.formatoptions = opt.formatoptions + "mM" - "o"
 --stop auto insert comment, set FileType can't work
-api.nvim_create_autocmd({ "BufEnter" }, {
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
     pattern = "*",
-    group = api.nvim_create_augroup("set_fo", { clear = true }),
+    group = vim.api.nvim_create_augroup("set_fo", { clear = true }),
     callback = function()
         vim.opt_local.formatoptions = vim.opt_local.formatoptions - "o"
     end,
@@ -151,7 +126,7 @@ autocmd myau FileType gitconfig
 
 -- close some filetypes with <q> {{{
 vim.api.nvim_create_autocmd("FileType", {
-    group = api.nvim_create_augroup("close_with_q", { clear = true }),
+    group = vim.api.nvim_create_augroup("close_with_q", { clear = true }),
     pattern = {
         "help",
         "lspinfo",
@@ -174,8 +149,8 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- omnifunc use syntax {{{
-api.nvim_create_autocmd("BufEnter", {
-    group = api.nvim_create_augroup("set_omnifunc", { clear = true }),
+vim.api.nvim_create_autocmd("BufEnter", {
+    group = vim.api.nvim_create_augroup("set_omnifunc", { clear = true }),
     pattern = { "*" },
     callback = function()
         vim.opt_local.omnifunc = "syntaxcomplete#Complete"
@@ -184,7 +159,7 @@ api.nvim_create_autocmd("BufEnter", {
 
 -- FIXME nvim not restore terminal cursorshape https://github.com/neovim/neovim/issues/4396 {{{
 vim.api.nvim_create_autocmd("VimLeave", {
-    group = api.nvim_create_augroup("set_cursorshape", { clear = true }),
+    group = vim.api.nvim_create_augroup("set_cursorshape", { clear = true }),
     pattern = { "*" },
     callback = function()
         vim.cmd([[ set guicursor= | call chansend(v:stderr, "\x1b[ q") ]])
@@ -211,7 +186,7 @@ if g.is_tmux == 1 then
         },
     }
     vim.api.nvim_create_autocmd("TextYankPost", {
-        group = api.nvim_create_augroup("osc52", { clear = true }),
+        group = vim.api.nvim_create_augroup("osc52", { clear = true }),
         pattern = { "*" },
         callback = function()
             --vim.print(vim.v.event)

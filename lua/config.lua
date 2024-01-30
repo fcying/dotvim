@@ -2,11 +2,10 @@ local M = {}
 
 local util = require("util")
 local map = util.map
-local g, fn, cmd = vim.g, vim.fn, vim.cmd
+local g, fn = vim.g, vim.fn
 
 -- plugin load config before autoload
 local pre_config = {
-    "project_config",
     "gen_clang_conf",
     "asyncrun",
     "asynctasks",
@@ -27,7 +26,7 @@ function M.fugitive()
         local result = ""
         local run = ""
         if vim.bo.filetype == "git" then
-            result = vim.fn["fugitive#Cfile"]()
+            result = fn["fugitive#Cfile"]()
             --print(vim.inspect(result))
             if #result > 0 then
                 if string.match(result, "+Gdiffsplit") then
@@ -286,13 +285,9 @@ function M.cmp_dictionary()
     end
 
     require("cmp_dictionary").setup({
-        paths = get_dict_path(vim.fn.expand("%")),
+        paths = get_dict_path(fn.expand("%")),
         exact_length = 2,
         first_case_insensitive = false,
-        document = {
-            enable = true,
-            command = { "wn", "${label}", "-over" },
-        },
     })
 
     vim.api.nvim_create_autocmd("BufEnter", {
@@ -359,7 +354,7 @@ function M.lualine()
         end
     end
     local function git_status()
-        local status = vim.fn.FugitiveHead(7)
+        local status = fn.FugitiveHead(7)
         if vim.b.flog_status_summary then
             if string.match(vim.b.flog_status_summary, "%d+") then
                 status = status .. "*"
@@ -421,7 +416,7 @@ function M.noice()
             inc_rename = true,
         },
         notify = {
-            enabled = false,
+            enabled = true,
             view = "notify",
         },
         messages = {
@@ -433,9 +428,10 @@ function M.noice()
 end
 
 function M.notify()
+    --vim.notify = require("notify")
     require("notify").setup({
         timeout = 5000,
-        render = "wrapped-compact",
+        --render = "wrapped-compact",
         max_width = 120,
         --icons = {
         --    ERROR = "[E]",
@@ -449,7 +445,6 @@ function M.notify()
     --    highlight NotifyINFOIcon guifg=#009f9f
     --    highlight NotifyINFOTitle guifg=#009f9f
     --]])
-    --vim.notify = require("notify")
 end
 
 function M.marks()
@@ -612,30 +607,6 @@ function M.whichkey()
     }, { prefix = "<leader>" })
 end
 
-function M.project_config()
-    g.pvimrc_path = fn.findfile('.pvimrc', g.root_marker .. ';' .. g.root_marker .. '..')
-    if g.pvimrc_path ~= '' then
-        cmd.source(g.pvimrc_path)
-    else
-        g.pvimrc_path = g.root_marker .. '/.pvimrc'
-    end
-    vim.api.nvim_create_autocmd("BufWritePost", {
-        group = "myau",
-        pattern = { ".pvimrc" },
-        callback = function()
-            cmd("source " .. g.pvimrc_path)
-        end,
-        nested = true,
-    })
-    vim.api.nvim_create_autocmd("SourcePost", {
-        group = "myau",
-        pattern = { ".pvimrc" },
-        callback = function()
-            util.update_ignore_config()
-        end,
-    })
-end
-
 local init_done = false
 function M.setup()
     if init_done then
@@ -643,6 +614,8 @@ function M.setup()
     end
     init_done = true
 
+    util.get_root_marker({ ".root", ".git", ".repo", ".svn" })
+    require("project_config").setup()
     require("globals")
     require("keymaps")
 
@@ -653,6 +626,8 @@ function M.setup()
     vim.opt.background = "light"    --for lazy install colorscheme
     require("plugins.lazy")
     vim.cmd.colorscheme("solarized")
+
+    util.update_ignore_config()
 end
 
 return M

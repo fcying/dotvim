@@ -77,14 +77,14 @@ local plugins = {
         end,
     },
     {
-        "mg979/vim-visual-multi", event = "VimEnter",
+        "mg979/vim-visual-multi", event = "VeryLazy",
         config = function()
-            g.VM_no_meta_mappings = 1
-            g.VM_maps = {}
-            g.VM_maps['Find Under']         = '<C-n>'
-            g.VM_maps['Find Subword Under'] = '<C-n>'
-            g.VM_cmdheight = 1
-            --g.VM_manual_infoline = 1
+            vim.cmd([[
+                let g:VM_maps = {}
+                let g:VM_maps['Find Under']         = '<C-n>'
+                let g:VM_maps['Find Subword Under'] = '<C-n>'
+                let g:VM_cmdheight = 1
+            ]])
         end,
     },
     --{ "andymass/vim-matchup", event = "VimEnter" },
@@ -285,5 +285,3 @@ require("lazy").setup(plugins, {
         },
     },
 })
-
-require("util").update_ignore_config()

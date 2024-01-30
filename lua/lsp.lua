@@ -1,7 +1,8 @@
+local g, cmd, fn, lsp, api = vim.g, vim.cmd, vim.fn, vim.lsp, vim.api
+local util = require("util")
+local map = util.map
 local M = {}
 local lsp_opts = {}
-local g, cmd, fn, lsp, api = vim.g, vim.cmd, vim.fn, vim.lsp, vim.api
-local map = require("util").map
 local lsp_zero = require("lsp-zero")
 
 local formats = {
@@ -92,12 +93,12 @@ function M.null_ls()
 end
 
 function lsp_opts.qmlls()
-    local util = require("lspconfig/util")
+    local lsp_util = require("lspconfig/util")
     local opts = {
-        cmd = { 'qmlls', '--build-dir', g.root_folder .. '/build' },
+        cmd = { 'qmlls', '--build-dir', util.root_dir .. '/build' },
         filetypes = { 'qml' },
         root_dir = function(fname)
-            return util.find_git_ancestor(fname)
+            return lsp_util.find_git_ancestor(fname)
         end,
     }
     lsp_zero.configure("qmlls", opts)
@@ -114,7 +115,7 @@ function lsp_opts.clangd()
         table.insert(clangd_cmd, "--query-driver=" .. g.clangd_query_driver)
     end
     if g.gencconf_storein_rootmarker == 1 then
-        table.insert(clangd_cmd, "--compile-commands-dir=" .. g.root_marker)
+        table.insert(clangd_cmd, "--compile-commands-dir=" .. util.root_marker)
     end
 
     cmd([[ autocmd myau FileType c,cpp nnoremap <silent> <buffer> <Leader>h <ESC>:ClangdSwitchSourceHeader<CR> ]])
@@ -148,22 +149,27 @@ end
 function lsp_opts.lua()
     require("neodev").setup({
         override = function(_, options)
-            if vim.loop.fs_stat(g.root_folder .. "/lua") then
-                options.enabled = true
-                options.plugins = {
-                    "nvim-treesitter",
-                    "plenary.nvim",
-                    "telescope.nvim",
-                }
-                --options.plugins = true
-            end
+            options.enabled = true
+            options.plugins = {
+                "nvim-treesitter",
+                "plenary.nvim",
+                "telescope.nvim",
+            }
+            --options.plugins = true
         end,
     })
 
-    -- :lua= vim.lsp.get_active_clients({ name = "lua_ls" })[1].config.settings.Lua
+    -- :lua vim.notify(vim.inspect(vim.lsp.get_active_clients({ name = "lua_ls" })[1].config.settings.Lua))
     local opts = {
         settings = {
             Lua = {
+                workspace = {
+                    checkThirdParty = false,
+                    library = { g.config_dir .. "/lua" },
+                },
+                completion = {
+                    callSnippet = "Replace",
+                },
                 diagnostics = {
                     enable = true,
                     disable = {
@@ -189,6 +195,7 @@ function lsp_opts.lua()
             },
         },
     }
+    --require("lspconfig").lua_ls.setup(opts)
     lsp_zero.configure("lua_ls", lsp_zero.nvim_lua_ls(opts))
 end
 
@@ -244,7 +251,7 @@ function M.setup()
         automatic_installation = false,
         handlers = {
             function(server_name)
-                if fn.index(g.lsp_ignore, server_name) == -1 then
+                if fn.index(Ignore.lsp, server_name) == -1 then
                     lsp_zero.default_setup(server_name)
                 end
             end,

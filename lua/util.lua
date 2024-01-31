@@ -17,7 +17,7 @@ M.root_marker = ""
 
 -- issue list
 -- https://github.com/neovim/neovim/issues/12544 store metatables on vim.b/vim.w/vim.t scopes
--- https://github.com/neovim/neovim/issues/4396 nvim not restore terminal cursorshape globals.lua
+-- https://github.com/neovim/neovim/issues/4396 nvim not restore terminal cursorshape settings.lua
 -- https://github.com/neovim/neovim/pull/24812 echo has("patch-9.0.1768") lazy.lua
 -- https://github.com/neovim/neovim/issues/16843  lua function to get current visual selection
 

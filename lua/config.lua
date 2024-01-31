@@ -616,7 +616,7 @@ function M.setup()
 
     util.get_root_marker({ ".root", ".git", ".repo", ".svn" })
     require("project_config").setup()
-    require("globals")
+    require("settings")
     require("keymaps")
 
     for _, v in pairs(pre_config) do

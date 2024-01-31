@@ -240,7 +240,12 @@ local plugins = {
 -- lazy config {{{
 require("lazy").setup(plugins, {
     root = g.runtime_dir .. "/plugins",
-    checker = { enabled = false },
+    checker = {
+        enabled = true,
+        notify = true,
+        frequency = 3600,
+        check_pinned = false,
+    },
     defaults = {
         lazy = false,
         version = nil,

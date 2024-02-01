@@ -23,10 +23,10 @@ opt.autowrite = false
 opt.backup = false
 opt.clipboard = "unnamedplus" -- Sync with system clipboard
 opt.cinkeys = opt.cinkeys - "0#"
-opt.confirm = false -- Confirm to save changes before exiting modified buffer
+opt.confirm = false           -- Confirm to save changes before exiting modified buffer
 opt.completeopt = "menu,menuone,noselect,noinsert"
-opt.cursorline = true -- Enable highlighting of the current line
-opt.expandtab = true -- Use spaces instead of tabs
+opt.cursorline = true         -- Enable highlighting of the current line
+opt.expandtab = true          -- Use spaces instead of tabs
 
 opt.modeline = false
 opt.bomb = false
@@ -49,11 +49,11 @@ end
 opt.ignorecase = true
 opt.inccommand = "nosplit" -- preview incremental substitute
 opt.laststatus = 2
-opt.list = false -- Show some invisible characters (tabs...
+opt.list = false           -- Show some invisible characters (tabs...
 opt.mouse = "a"
-opt.number = true -- Print line number
-opt.pumblend = 10 -- Popup blend
-opt.pumheight = 10 -- Maximum number of entries in a popup
+opt.number = true          -- Print line number
+opt.pumblend = 10          -- Popup blend
+opt.pumheight = 10         -- Maximum number of entries in a popup
 opt.relativenumber = false
 opt.scrolloff = 3
 opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize" }
@@ -71,7 +71,7 @@ opt.tabstop = 4
 opt.termguicolors = true
 opt.timeoutlen = 500
 opt.ttimeoutlen = 80
-opt.undodir =  g.runtime_dir .. "/undodir_nvim"
+opt.undodir = g.runtime_dir .. "/undodir_nvim"
 opt.undofile = true
 opt.undolevels = 10000
 opt.updatetime = 200
@@ -168,21 +168,21 @@ vim.api.nvim_create_autocmd("VimLeave", {
 
 -- osc52 clip {{{
 local function copy(lines, _)
-    require('osc52').copy(table.concat(lines, '\n'))
+    require("osc52").copy(table.concat(lines, "\n"))
 end
 local function paste()
-    return {vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('')}
+    return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
 end
 if g.is_tmux == 1 then
     vim.g.clipboard = {
-        name = 'tmux',
+        name = "tmux",
         copy = {
-            ['+'] = { 'tmux', 'load-buffer', '-' },
-            ['*'] = { 'tmux', 'load-buffer', '-' },
+            ["+"] = { "tmux", "load-buffer", "-" },
+            ["*"] = { "tmux", "load-buffer", "-" },
         },
         paste = {
-            ['+'] = { 'tmux', 'save-buffer', '-' },
-            ['*'] = { 'tmux', 'save-buffer', '-' },
+            ["+"] = { "tmux", "save-buffer", "-" },
+            ["*"] = { "tmux", "save-buffer", "-" },
         },
     }
     vim.api.nvim_create_autocmd("TextYankPost", {
@@ -191,15 +191,15 @@ if g.is_tmux == 1 then
         callback = function()
             --vim.print(vim.v.event)
             if vim.v.operator == "y" then
-                require('osc52').copy_register("+")
+                require("osc52").copy_register("+")
             end
         end,
     })
 else
     vim.g.clipboard = {
-        name = 'osc52',
-        copy = {['+'] = copy, ['*'] = copy},
-        paste = {['+'] = paste, ['*'] = paste},
+        name = "osc52",
+        copy = { ["+"] = copy, ["*"] = copy },
+        paste = { ["+"] = paste, ["*"] = paste },
     }
 end
 

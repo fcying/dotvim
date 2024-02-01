@@ -135,7 +135,7 @@ function M.tagbar()
             \ ]
             \ }
             ]])
-        end
+end
 
 function M.treesitter()
     local parser_install_dir = g.runtime_dir .. "/parsers"
@@ -148,7 +148,7 @@ function M.treesitter()
         ignore_install = {},
         highlight = {
             enable = false,
-            disable = { 'help' },
+            disable = { "help" },
             additional_vim_regex_highlighting = false,
         },
         matchup = { enable = false },
@@ -156,13 +156,13 @@ function M.treesitter()
 end
 
 function M.nt_cpp_tools()
-    require 'nt-cpp-tools'.setup({
+    require "nt-cpp-tools".setup({
         preview = {
-            quit = 'q',
-            accept = '<tab>'
+            quit = "q",
+            accept = "<tab>"
         },
-        header_extension = 'h',
-        source_extension = 'cpp',
+        header_extension = "h",
+        source_extension = "cpp",
     })
 end
 
@@ -217,7 +217,7 @@ function M.cmp()
             { name = "nvim_lsp" },
             { name = "buffer" },
             { name = "tags" },
-            { name = "omni",      priority = -1 },
+            { name = "omni", priority = -1 },
         }),
         formatting = {
             format = function(entry, vim_item)
@@ -242,13 +242,13 @@ function M.cmp()
         },
     })
 
-    cmp.setup.filetype('gitcommit', {
+    cmp.setup.filetype("gitcommit", {
         sources = cmp.config.sources({
             { name = "buffer" },
         }),
     })
 
-    cmp.setup.cmdline({ '/', '?' }, {
+    cmp.setup.cmdline({ "/", "?" }, {
         mapping = cmp.mapping.preset.cmdline(),
         sources = cmp.config.sources({
             { name = "buffer" },
@@ -312,6 +312,7 @@ function M.mason()
 end
 
 function M.dashboard()
+    --- @format disable-next
     local opts = {
         theme = "doom",
         hide = { statusline = false },
@@ -330,10 +331,12 @@ function M.dashboard()
                 local version = vim.version().major .. "." .. vim.version().minor .. vim.version().patch
                 local stats = require("lazy").stats()
                 local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
-                return { "Neovim-" .. version .. " loaded " .. stats.loaded .. "/" .. stats.count .. " plugins in " .. ms .. "ms" }
+                return { "Neovim-" .. version .. " loaded " .. stats.loaded .. "/"
+                .. stats.count .. " plugins in " .. ms .. "ms" }
             end,
         },
     }
+
     for _, button in ipairs(opts.config.center) do
         button.desc = button.desc .. string.rep(" ", 43 - #button.desc)
         button.key_format = "  %s"
@@ -383,7 +386,7 @@ function M.lualine()
         },
         sections = {
             lualine_a = { "mode" },
-            lualine_b = { git_status, 'diff', 'diagnostics' },
+            lualine_b = { git_status, "diff", "diagnostics" },
             lualine_c = { "filename" },
             lualine_x = { ext_encoding, "fileformat", "filetype" },
             lualine_y = { "progress" },
@@ -553,9 +556,9 @@ function M.nerdcommenter()
 end
 
 function M.fern()
-    vim.api.nvim_create_autocmd({ 'FileType' }, {
-        pattern = 'fern',
-        group = vim.api.nvim_create_augroup('fern_init', { clear = true }),
+    vim.api.nvim_create_autocmd({ "FileType" }, {
+        pattern = "fern",
+        group = vim.api.nvim_create_augroup("fern_init", { clear = true }),
         callback = function()
             vim.cmd([[
             nmap <buffer><expr>
@@ -623,7 +626,7 @@ function M.setup()
         M[v]()
     end
 
-    vim.opt.background = "light"    --for lazy install colorscheme
+    vim.opt.background = "light" --for lazy install colorscheme
     require("plugins.lazy")
     vim.cmd.colorscheme("solarized")
 

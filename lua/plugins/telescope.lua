@@ -16,7 +16,7 @@ return {
         },
         {
             "ff",
-            function() require('util').find_file() end,
+            function() require("util").find_file() end,
             desc = "file",
             silent = true
         },
@@ -31,6 +31,7 @@ return {
             desc = "string",
             mode = "v"
         },
+        --- @format disable
         { "fh", "<cmd>Telescope help_tags<cr>",                     desc = "help" },
         { "fj", "<cmd>Telescope jumplist<cr>",                      desc = "jumplist" },
         { "fl", "<cmd>Telescope current_buffer_fuzzy_find<cr>",     desc = "line" },

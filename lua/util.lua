@@ -4,10 +4,10 @@ local fn, g, cmd = vim.fn, vim.g, vim.cmd
 --custome ignore list
 Ignore = { dir = {}, file = {}, mru = {}, rg = {}, lsp = {} }
 local ignore_default = {
-    dir = { '.root', '.svn', '.git', '.repo', '.ccls-cache', '.cache', '.ccache' },
-    file = { '*.sw?', '~$*', '*.bak', '*.exe', '*.o', '*.so', '*.py[co]', 'tags' },
-    mru = { '*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll' },
-    rg = { '--max-columns=300', '--iglob=!obj', '--iglob=!out' }
+    dir = { ".root", ".svn", ".git", ".repo", ".ccls-cache", ".cache", ".ccache" },
+    file = { "*.sw?", "~$*", "*.bak", "*.exe", "*.o", "*.so", "*.py[co]", "tags" },
+    mru = { "*.so", "*.exe", "*.py[co]", "*.sw?", "~$*", "*.bak", "*.tmp", "*.dll" },
+    rg = { "--max-columns=300", "--iglob=!obj", "--iglob=!out" }
 }
 
 M.ignore = ignore_default
@@ -47,8 +47,8 @@ function M.get_root_marker(root_markers)
 end
 
 function M.get_visual_selection()
-    local _, ls, cs = unpack(vim.fn.getpos('v'))
-    local _, le, ce = unpack(vim.fn.getpos('.'))
+    local _, ls, cs = unpack(vim.fn.getpos("v"))
+    local _, le, ce = unpack(vim.fn.getpos("."))
     local result = vim.api.nvim_buf_get_text(0, ls - 1, cs - 1, le - 1, ce, {})[1]
 
     return result

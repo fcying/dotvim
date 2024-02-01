@@ -19,9 +19,9 @@ map("n", "q", "<nop>")
 -- goto def {{{
 map("n", "g<c-]>", "<c-]>")
 map("v", "g<c-]>", "<c-]>")
-map("n", "<c-]>", function() util.go2def(vim.fn.expand("<cword>"), {mode="ltag"}) end)
-map("v", "<c-]>", function() util.go2def(util.get_visual_selection(), {mode="ltag"}) end)
-map("n", "gd", function() util.go2def(vim.fn.expand("<cword>"), {mode="lsp"}) end)
+map("n", "<c-]>", function() util.go2def(vim.fn.expand("<cword>"), { mode = "ltag" }) end)
+map("v", "<c-]>", function() util.go2def(util.get_visual_selection(), { mode = "ltag" }) end)
+map("n", "gd", function() util.go2def(vim.fn.expand("<cword>"), { mode = "lsp" }) end)
 
 -- set working directory to the current file {{{
 map("n", "<leader>cdt", ":tcd %:p:h<CR>:pwd<CR>", { desc = "set working directory for current tab" })
@@ -128,4 +128,3 @@ map("n", "<F6>", ":exec exists('syntax_on') ? 'syn off' : 'syn on'<CR>")
 -- set paste mode, disbale when leaving insert mode
 vim.opt.pastetoggle = "<F5>"
 vim.cmd([[ autocmd myau InsertLeave * set nopaste ]])
-

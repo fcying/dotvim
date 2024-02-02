@@ -20,13 +20,16 @@ return Pkg.new({
         local source
         local std = require("mason-core.managers.std")
         if platform.is.linux_x64 == true then
-            ctx.github_release_file = "https://github.com/fcying/tools/releases/download/tools/clangd_linux_amd64.txz"
+            local ver = require("plenary.curl").get("https://github.com/fcying/tools/releases/latest").body
+            ver = "clangd-" .. string.match(ver, "clangd (.-) last")
+            ctx.github_release_file = "https://github.com/fcying/tools/releases/download/" .. ver .. "/clangd_linux_amd64.txz"
             std.download_file(ctx.github_release_file, "clangd_linux_amd64.txz")
             std.untarxz("clangd_linux_amd64.txz")
             ctx.receipt:with_primary_source({
                 type = "github_release_file",
-                repo = "clangd/clangd",
+                repo = "fcying/tools",
                 file = ctx.github_release_file,
+                release = ver,
             })
         else
             source = github.unzip_release_file({

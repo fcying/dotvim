@@ -301,9 +301,9 @@ end
 function M.mason()
     require("mason").setup({
         install_root_dir = g.runtime_dir .. "/mason",
-        pip = {
-            install_args = { "-i", "https://pypi.tuna.tsinghua.edu.cn/simple" },
-        },
+        --pip = {
+        --    install_args = { "-i", "https://pypi.tuna.tsinghua.edu.cn/simple" },
+        --},
         registries = {
             "lua:registry",
             "github:mason-org/mason-registry",

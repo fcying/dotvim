@@ -149,12 +149,16 @@ end
 function lsp_opts.lua()
     require("neodev").setup({
         override = function(_, options)
-            options.enabled = true
-            options.plugins = {
-                "nvim-treesitter",
-                "plenary.nvim",
-                "telescope.nvim",
-            }
+            if vim.loop.fs_stat(util.root_dir .. "/lua") then
+                options.enabled = true
+                options.plugins = {
+                    "plenary.nvim",
+                    "telescope.nvim",
+                    --"mason.nvim",
+                    --"nvim-treesitter",
+                }
+            end
+            --options.enabled = true
             --options.plugins = true
         end,
     })

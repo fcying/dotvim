@@ -24,7 +24,7 @@ jobs:
           sudo cp -rf ./nvim-linux64/* /usr/local
           nvim --version
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Prepare nvim config
         run: |
           pwd && ls

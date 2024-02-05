@@ -209,6 +209,7 @@ local plugins = {
             { "hrsh7th/cmp-path" },
             { "hrsh7th/cmp-buffer" },
             { "hrsh7th/cmp-cmdline" },
+            { "dmitmel/cmp-cmdline-history" },
             { "hrsh7th/cmp-omni" },
             { "quangnguyen30192/cmp-nvim-tags" },
             { "uga-rosa/cmp-dictionary", config = config("cmp_dictionary") },

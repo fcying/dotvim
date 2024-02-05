@@ -142,16 +142,32 @@ function M.treesitter()
     vim.opt.runtimepath:prepend(parser_install_dir)
     require("nvim-treesitter.configs").setup {
         parser_install_dir = parser_install_dir,
-        ensure_installed = { "cpp", "lua", "vim", "regex", "bash", "markdown", "markdown_inline" },
+        ensure_installed = {
+            "vim", "vimdoc", "lua",
+            "bash", "regex", "query", "markdown", "markdown_inline",
+            "cpp", "go",
+        },
         sync_install = false,
         auto_install = false,
         ignore_install = {},
         highlight = {
-            enable = false,
-            disable = { "help" },
+            enable = true,
             additional_vim_regex_highlighting = false,
+            disable = function(lang, buf)
+                local disable_lang = { "help", "lua" }
+                for _, l in ipairs(disable_lang) do
+                    if l == lang then
+                        return true
+                    end
+                end
+                local max_filesize = 100 * 1024
+                local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+                if ok and stats and stats.size > max_filesize then
+                    return true
+                end
+            end,
         },
-        matchup = { enable = false },
+        matchup = { enable = true },
     }
 end
 
@@ -301,19 +317,6 @@ function M.cmp_dictionary()
     })
 end
 
-function M.mason()
-    require("mason").setup({
-        install_root_dir = g.runtime_dir .. "/mason",
-        --pip = {
-        --    install_args = { "-i", "https://pypi.tuna.tsinghua.edu.cn/simple" },
-        --},
-        registries = {
-            "lua:registry",
-            "github:mason-org/mason-registry",
-        },
-    })
-end
-
 function M.dashboard()
     --- @format disable-next
     local opts = {
@@ -391,7 +394,19 @@ function M.lualine()
             lualine_a = { "mode" },
             lualine_b = { git_status, "diff", "diagnostics" },
             lualine_c = { "filename" },
-            lualine_x = { ext_encoding, "fileformat", "filetype" },
+            lualine_x = {
+                {
+                    function() return require("noice").api.status.command.get() end,
+                    cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
+                },
+                {
+                    function() return require("noice").api.status.mode.get() end,
+                    cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
+                },
+                ext_encoding,
+                "fileformat",
+                "filetype"
+            },
             lualine_y = { "progress" },
             lualine_z = { "location" },
         },
@@ -407,30 +422,51 @@ function M.lualine()
 end
 
 function M.noice()
-    local opts = {
-        lsp = {
-            override = {
-                ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-                ["vim.lsp.util.stylize_markdown"] = true,
-                ["cmp.entry.get_documentation"] = true,
+    return {
+        "folke/noice.nvim",
+        event = "VeryLazy",
+        opts = {
+            lsp = {
+                override = {
+                    ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+                    ["vim.lsp.util.stylize_markdown"] = true,
+                    ["cmp.entry.get_documentation"] = true,
+                },
+            },
+            presets = {
+                bottom_search = true,
+                command_palette = false,
+                long_message_to_split = true,
+                inc_rename = true,
+            },
+            routes = {
+                {
+                    filter = {
+                        event = "msg_show",
+                        any = {
+                            { find = "%d+L, %d+B" },
+                            { find = "; after #%d+" },
+                            { find = "; before #%d+" },
+                        },
+                    },
+                    view = "mini",
+                },
             },
         },
-        presets = {
-            bottom_search = true,
-            command_palette = false,
-            long_message_to_split = true,
-            inc_rename = true,
+        keys = {
+            { "<S-Enter>", function() require("noice").redirect(vim.fn.getcmdline()) end, mode = "c", desc = "Redirect Cmdline" },
+            { "<leader>snl", function() require("noice").cmd("last") end, desc = "Noice Last Message" },
+            { "<leader>snh", function() require("noice").cmd("history") end, desc = "Noice History" },
+            { "<leader>sna", function() require("noice").cmd("all") end, desc = "Noice All" },
+            { "<leader>snd", function() require("noice").cmd("dismiss") end, desc = "Dismiss All" },
+            { "<c-f>", function() if not require("noice.lsp").scroll(4) then return "<c-f>" end end, silent = true, expr = true, desc = "Scroll forward", mode = { "i", "n", "s" } },
+            { "<c-b>", function() if not require("noice.lsp").scroll(-4) then return "<c-b>" end end, silent = true, expr = true, desc = "Scroll backward", mode = { "i", "n", "s" } },
         },
-        notify = {
-            enabled = true,
-            view = "notify",
-        },
-        messages = {
-            enabled = false,
-            view_search = false, --"virtualtext"
-        },
+        dependencies = {
+            { "MunifTanjim/nui.nvim" },
+            { "rcarriga/nvim-notify", config = util.config("notify") },
+        }
     }
-    require("noice").setup(opts)
 end
 
 function M.notify()
@@ -438,7 +474,7 @@ function M.notify()
     require("notify").setup({
         timeout = 5000,
         --render = "wrapped-compact",
-        max_width = 120,
+        --max_width = 120,
         --icons = {
         --    ERROR = "[E]",
         --    WARN  = "[W]",
@@ -607,10 +643,14 @@ function M.whichkey()
         g = { name = "nerdcommenter" },
         l = { name = "lsp" },
         m = { name = "mark" },
+        s = { name = "sandwich | noice" },
         p = { name = "plugin" },
         t = { name = "tab" },
         w = { name = "window" },
     }, { prefix = "<leader>" })
+    wk.register({
+        n = { name = "noice" },
+    }, { prefix = "<leader>s" })
 end
 
 local init_done = false

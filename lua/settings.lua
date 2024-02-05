@@ -27,6 +27,7 @@ opt.confirm = false           -- Confirm to save changes before exiting modified
 opt.completeopt = "menu,menuone,noselect,noinsert"
 opt.cursorline = true         -- Enable highlighting of the current line
 opt.expandtab = true          -- Use spaces instead of tabs
+opt.cmdheight = 0
 
 opt.modeline = false
 opt.bomb = false
@@ -145,15 +146,6 @@ vim.api.nvim_create_autocmd("FileType", {
     callback = function(event)
         vim.bo[event.buf].buflisted = false
         map("n", "q", "<cmd>close<cr>", { buffer = event.buf })
-    end,
-})
-
--- omnifunc use syntax {{{
-vim.api.nvim_create_autocmd("BufEnter", {
-    group = vim.api.nvim_create_augroup("set_omnifunc", { clear = true }),
-    pattern = { "*" },
-    callback = function()
-        vim.opt_local.omnifunc = "syntaxcomplete#Complete"
     end,
 })
 

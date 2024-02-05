@@ -49,17 +49,17 @@ local function diagnostics_config(enable)
 end
 
 function M.guard()
-    local ft = require('guard.filetype')
-    ft('c'):fmt({
+    local ft = require("guard.filetype")
+    ft("c"):fmt({
         cmd = "astyle",
         args = formats.astyle,
     })
-    ft('cpp'):fmt({
+    ft("cpp"):fmt({
         cmd = "astyle",
         args = formats.astyle,
     })
 
-    require('guard').setup({
+    require("guard").setup({
         fmt_on_save = false,
     })
 end
@@ -95,8 +95,8 @@ end
 function lsp_opts.qmlls()
     local lsp_util = require("lspconfig/util")
     local opts = {
-        cmd = { 'qmlls', '--build-dir', util.root_dir .. '/build' },
-        filetypes = { 'qml' },
+        cmd = { "qmlls", "--build-dir", util.root_dir .. "/build" },
+        filetypes = { "qml" },
         root_dir = function(fname)
             return lsp_util.find_git_ancestor(fname)
         end,
@@ -154,7 +154,7 @@ function lsp_opts.lua()
                 options.plugins = {
                     "plenary.nvim",
                     "telescope.nvim",
-                    --"mason.nvim",
+                    "mason.nvim",
                     --"nvim-treesitter",
                 }
             end

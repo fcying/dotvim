@@ -54,6 +54,16 @@ function M.get_visual_selection()
     return result
 end
 
+function M.config(name, module)
+    return function()
+        if module == nil then
+            require("config")[name]()
+        else
+            require(module)[name]()
+        end
+    end
+end
+
 function M.update_ignore_config()
     M.ignore = ignore_default
     vim.list_extend(M.ignore.dir, Ignore.dir)

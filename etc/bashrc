@@ -147,7 +147,7 @@ EOF
     pushd ~/bin && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua && popd
 }
 export _ZL_FZF_FLAG="-e"
-eval "$(lua $HOME/bin/z.lua --init bash once enhanced)"
+eval "$(lua $HOME/bin/z.lua --init bash once enhanced fzf)"
 alias zz='z -c'      # restrict matches to subdirs of $PWD
 alias zi='z -i'      # cd with interactive selection
 alias zf='z -I'      # use fzf to select in multiple matches

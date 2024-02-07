@@ -2,7 +2,8 @@ local g, api = vim.g, vim.api
 local map = require("util").map
 local config = require("util").config
 
-local lazypath = g.runtime_dir .. "/plugins/lazy.nvim"
+g.plug_dir = g.runtime_dir .. "/plugins"
+local lazypath = g.plug_dir .. "/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
     vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git",
         "--branch=stable", -- latest stable release
@@ -228,7 +229,7 @@ local plugins = {
 
 -- lazy config {{{
 require("lazy").setup(plugins, {
-    root = g.runtime_dir .. "/plugins",
+    root = g.plug_dir,
     checker = {
         enabled = true,
         notify = true,

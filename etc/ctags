@@ -34,3 +34,8 @@
 --regex-sh=/(.*)\{\{\{/\1/k,key/
 
 --regex-lua=/(.*)\{\{\{/\1/k,key/
+--regex-yaml=/(.*)\{\{\{/\1/k,key/
+
+--langdef=toml
+--langmap=toml:.toml
+--regex-toml=/(.*)\{\{\{/\1/k,key/

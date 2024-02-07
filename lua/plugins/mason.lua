@@ -10,9 +10,11 @@ function M.get_version(name)
     end
 
     if name == "clangd" then
-        ver = string.match(ver, "clangd (.-) last")
+        ver = string.match(ver, "<li>clangd (.-) last")
     elseif name == "lua-language-server" then
-        ver = string.match(ver, "luals (.-)\nctags")
+        ver = string.match(ver, "<li>luals (.-)</li>")
+    elseif name == "autohotkey2-lsp" then
+        ver = string.match(ver, "<li>autohotkey2%-lsp (.-)</li>")
     else
         ver = nil
     end

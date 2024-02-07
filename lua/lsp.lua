@@ -127,6 +127,44 @@ function lsp_opts.clangd()
     lsp_zero.configure("clangd", opts)
 end
 
+function lsp_opts.ahk2()
+    local path = require("mason-core.path").package_prefix("autohotkey2-lsp")
+    local InterpreterPath = "AutoHotkey64.exe"
+    if fn.has("linux") == 1 then
+        InterpreterPath = fn.expand("$HOME/bin/") .. InterpreterPath
+    end
+    local opts = {
+        cmd = { "node", path .. "/autohotkey2-lsp/server/dist/server.js", "--stdio" },
+        filetypes = { "ahk", "autohotkey", "ah2" },
+        init_options = {
+            locale = "en-us",
+            InterpreterPath = InterpreterPath,
+        },
+        root_dir = function()
+            return util.root_dir
+        end,
+    }
+    require("lspconfig.configs")["ahk2"] = { default_config = opts }
+    lsp_zero.configure("ahk2")
+end
+
+function lsp_opts.gopls()
+    local opts = {
+        settings = {
+            gopls = {
+                semanticTokens = true,
+                env = {
+                    GOOS = "windows"
+                },
+                analyses = {
+                    unusedparams = false,
+                },
+            }
+        }
+    }
+    lsp_zero.configure("gopls", opts)
+end
+
 function lsp_opts.python()
     local opts = {
         settings = {

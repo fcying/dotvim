@@ -6,8 +6,8 @@
   "contributes": {
     "snippets": [
       {
-        "language": [ "conf" ],
-        "path": "./conf.json"
+        "language": [ "taskini" ],
+        "path": "./taskini.json"
       },
       {
         "language": [ "sh" ],

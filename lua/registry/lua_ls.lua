@@ -12,7 +12,7 @@ return Pkg.new({
     ---@async
     install = function(ctx)
         local ver = m.get_version(ctx.package.name)
-        local file = "https://github.com/fcying/tools/releases/download/tools/lua-language-server.txz"
+        local file = "https://github.com/fcying/tools/releases/download/tools/lua-language-server-linux-x64.txz"
         std.download_file(file, "lsp.txz")
         std.untarxz("lsp.txz")
 

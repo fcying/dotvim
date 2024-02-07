@@ -143,19 +143,21 @@ function M.treesitter()
     require("nvim-treesitter.configs").setup {
         parser_install_dir = parser_install_dir,
         ensure_installed = {
-            "vim", "vimdoc", "lua",
-            "bash", "regex", "query", "markdown", "markdown_inline",
-            "cpp", "go",
+            "vim", "vimdoc", "lua", "query",
+            "bash", "regex", "markdown", "markdown_inline",
+            "cpp",
         },
         sync_install = false,
         auto_install = false,
         ignore_install = {},
+        matchup = { enable = true },
         highlight = {
             enable = true,
             additional_vim_regex_highlighting = false,
+            --disable = true,
             disable = function(lang, buf)
-                local disable_lang = { "help", "lua" }
-                for _, l in ipairs(disable_lang) do
+                local disable_hl = { "help", "lua", "cpp", "c" }
+                for _, l in ipairs(disable_hl) do
                     if l == lang then
                         return true
                     end
@@ -167,7 +169,6 @@ function M.treesitter()
                 end
             end,
         },
-        matchup = { enable = true },
     }
 end
 
@@ -185,7 +186,7 @@ end
 function M.luasnip()
     local paths = {}
     paths[#paths + 1] = g.config_dir .. "/snippets"
-    paths[#paths + 1] = g.config_dir .. "/.plugged/friendly-snippets"
+    paths[#paths + 1] = g.plug_dir .. "/friendly-snippets"
     require("luasnip.loaders.from_vscode").lazy_load({ paths = paths })
 
     vim.cmd([[
@@ -669,9 +670,10 @@ function M.setup()
         M[v]()
     end
 
-    vim.opt.background = "light" --for lazy install colorscheme
     require("plugins.lazy")
+    vim.opt.background = "light"
     vim.cmd.colorscheme("solarized")
+    --vim.cmd.colorscheme("tokyonight-day")
 
     util.update_ignore_config()
 end

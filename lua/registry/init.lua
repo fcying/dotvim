@@ -1,9 +1,12 @@
+local opts = {
+    ["autohotkey2-lsp"] = "registry.autohotkey2",
+}
+
 if vim.fn.has("linux") == 1 then
-    return {
+    opts = vim.tbl_extend("force", opts, {
         ["clangd"] = "registry.clangd",
         ["lua-language-server"] = "registry.lua_ls",
-        --["AAATest"] = "registry.lua_ls",
-    }
-else
-    return {}
+    })
 end
+
+return opts

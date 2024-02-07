@@ -120,3 +120,6 @@ map("n", "<F6>", ":exec exists('syntax_on') ? 'syn off' : 'syn on'<CR>")
 -- set paste mode, disbale when leaving insert mode
 vim.opt.pastetoggle = "<F5>"
 vim.cmd([[ autocmd myau InsertLeave * set nopaste ]])
+
+map("n", "<leader>tt", function()
+end)

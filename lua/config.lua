@@ -90,7 +90,8 @@ function M.asynctasks()
     g.asyncrun_rootmarks = { ".root", ".git", ".svn" }
     g.asynctasks_config_name = { ".root/.tasks", ".git/.tasks", ".tasks" }
     g.asynctasks_rtp_config = "asynctasks.ini"
-    map("n", "<leader>b", ":AsyncTask build<CR>")
+    map("n", "<leader>bb", ":AsyncTask build<CR>")
+    map("n", "<leader>br", ":AsyncTask release<CR>")
 end
 
 function M.sandwich()

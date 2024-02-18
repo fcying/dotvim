@@ -149,18 +149,19 @@ function lsp_opts.ahk2()
 end
 
 function lsp_opts.gopls()
+    local lsp_util = require("lspconfig/util")
     local opts = {
         settings = {
             gopls = {
                 semanticTokens = true,
-                env = {
-                    GOOS = "windows"
-                },
                 analyses = {
                     unusedparams = false,
                 },
             }
-        }
+        },
+        root_dir = function(fname)
+            return lsp_util.root_pattern("go.work", "go.mod", ".root", ".git")(fname)
+        end,
     }
     lsp_zero.configure("gopls", opts)
 end

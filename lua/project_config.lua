@@ -5,11 +5,7 @@ local config_name = { ".nvim.lua", ".pvimrc" }
 local config_path = ""
 
 local function set_config()
-    if string.match(config_path, "%.lua", 1) then
-        cmd.luafile(config_path)
-    else
-        cmd.source(config_path)
-    end
+    cmd.source(config_path)
 end
 
 local function find_config()

@@ -1,16 +1,29 @@
 local M = {}
 local fn, g, cmd = vim.fn, vim.g, vim.cmd
 
---custome ignore list
-Ignore = { dir = {}, file = {}, mru = {}, rg = {}, lsp = {} }
-local ignore_default = {
+--custome Option
+Option = {
+    dir = {},   -- ignore dir
+    file = {},  -- ignore file
+    mru = {},   -- ignore mru
+    rg = {},    -- ignore rg
+    lsp = {},   -- ignore lsp server
+    cconf = {}, -- for g:gencconf_default_option
+}
+local option_default = {
+    -- ignore list
     dir = { ".root", ".svn", ".git", ".repo", ".ccls-cache", ".cache", ".ccache" },
     file = { "*.sw?", "~$*", "*.bak", "*.exe", "*.o", "*.so", "*.py[co]", "tags" },
     mru = { "*.so", "*.exe", "*.py[co]", "*.sw?", "~$*", "*.bak", "*.tmp", "*.dll" },
-    rg = { "--max-columns=300", "--iglob=!obj", "--iglob=!out" }
+    rg = { "--max-columns=300", "--iglob=!obj", "--iglob=!out" },
+    cconf = {
+        ["*"] = { "-ferror-limit=0" },
+        c = { "gcc", "-c", "-std=c11" },
+        cpp = { "g++", "-c", "-std=c++14" },
+    },
 }
 
-M.ignore = ignore_default
+M.option = {}
 M.find_command = ""
 M.root_dir = ""
 M.root_marker = ""
@@ -65,22 +78,25 @@ function M.config(name, module)
 end
 
 function M.update_ignore_config()
-    M.ignore = ignore_default
-    vim.list_extend(M.ignore.dir, Ignore.dir)
-    vim.list_extend(M.ignore.file, Ignore.file)
-    vim.list_extend(M.ignore.mru, Ignore.mru)
-    vim.list_extend(M.ignore.rg, Ignore.rg)
+    M.option = vim.deepcopy(option_default)
 
-    for _, k in ipairs(M.ignore.file) do
-        table.insert(M.ignore.rg, "--glob=!" .. k)
+    vim.list_extend(M.option.dir, Option.dir)
+    vim.list_extend(M.option.file, Option.file)
+    vim.list_extend(M.option.mru, Option.mru)
+    vim.list_extend(M.option.rg, Option.rg)
+
+    for _, k in ipairs(M.option.file) do
+        table.insert(M.option.rg, "--glob=!" .. k)
     end
-    for _, k in ipairs(M.ignore.dir) do
-        table.insert(M.ignore.rg, "--glob=!" .. k)
+    for _, k in ipairs(M.option.dir) do
+        table.insert(M.option.rg, "--glob=!" .. k)
     end
 
     -- gen_clang_conf.vim
-    g.gencconf_ignore_dir = M.ignore.dir
-    g.gencconf_ignore_file = M.ignore.file
+    g.gencconf_ignore_dir = M.option.dir
+    g.gencconf_ignore_file = M.option.file
+    g.gencconf_default_option = vim.tbl_deep_extend("force", M.option.cconf, Option.cconf)
+    --vim.notify(vim.inspect(g.gencconf_default_option))
 
     M.telescope_update_ignore()
 end
@@ -93,8 +109,8 @@ function M.telescope_update_ignore()
     M.find_command = "Telescope find_files "
     if g.has_rg == 1 then
         M.find_command = M.find_command .. "find_command=rg,--files,--no-ignore,--color=never"
-        if M.ignore.rg ~= {} then
-            M.find_command = M.find_command .. "," .. table.concat(M.ignore.rg, ",")
+        if M.option.rg ~= {} then
+            M.find_command = M.find_command .. "," .. table.concat(M.option.rg, ",")
         end
     end
 
@@ -109,7 +125,7 @@ function M.telescope_update_ignore()
             "--column",
             "--smart-case",
         }
-        for _, v in ipairs(M.ignore.rg) do
+        for _, v in ipairs(M.option.rg) do
             table.insert(conf.vimgrep_arguments, v)
         end
     end

@@ -294,7 +294,7 @@ function M.setup()
         automatic_installation = false,
         handlers = {
             function(server_name)
-                if fn.index(Ignore.lsp, server_name) == -1 then
+                if fn.index(Option.lsp, server_name) == -1 then
                     lsp_zero.default_setup(server_name)
                 end
             end,

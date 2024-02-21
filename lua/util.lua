@@ -133,6 +133,11 @@ end
 
 function M.go2def(str, opts)
     opts = opts or {}
+
+    if vim.api.nvim_get_mode() == "v" then
+        vim.cmd("<ESC>")
+    end
+
     if vim.o.filetype == "help" then
         pcall(fn.execute, "tag " .. str)
     else

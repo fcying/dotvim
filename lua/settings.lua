@@ -23,11 +23,13 @@ opt.autowrite = false
 opt.backup = false
 opt.clipboard = "unnamedplus" -- Sync with system clipboard
 opt.cinkeys = opt.cinkeys - "0#"
+--FIXME Press ENTER message
+--https://github.com/neovim/neovim/issues/22478  https://github.com/neovim/neovim/pull/20548
+opt.cmdheight = 1
 opt.confirm = false           -- Confirm to save changes before exiting modified buffer
 opt.completeopt = "menu,menuone,noselect,noinsert"
 opt.cursorline = true         -- Enable highlighting of the current line
 opt.expandtab = true          -- Use spaces instead of tabs
-opt.cmdheight = 0
 
 opt.modeline = false
 opt.bomb = false
@@ -60,7 +62,11 @@ opt.scrolloff = 3
 opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize" }
 opt.shiftround = true -- Round indent
 opt.shiftwidth = 4
-opt.shortmess:append({ W = false, I = true, c = true, C = true, s = true })
+opt.shortmess:append("I")
+opt.shortmess:append("c")
+opt.shortmess:append("C")
+opt.shortmess:append("s")
+--opt.shortmess:append("S")
 opt.showmode = false
 opt.signcolumn = "auto"
 opt.smartcase = true

@@ -113,8 +113,14 @@ local plugins = {
     { import = "plugins.telescope" },
 
     -- tool {{{
-    require("config").noice(),
+    { "rcarriga/nvim-notify", config = config("notify") },
+    --require("config").noice(),
     { "chrisbra/Colorizer", cmd = { "ColorToggle" } },
+    {
+        "ZSaberLv0/ZFVimIM",
+        event = "VeryLazy",
+        dependencies = { "ZSaberLv0/ZFVimJob", "fcying/ZFVimIM_wubi_jidian" },
+    },
     {
         "ZSaberLv0/ZFVimDirDiff",
         cmd = "ZFDirDiff",

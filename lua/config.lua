@@ -11,6 +11,7 @@ local pre_config = {
     "asynctasks",
     "nerdcommenter",
     "foldsearch",
+    "ZFVimIM",
 }
 
 function M.fugitive()
@@ -153,9 +154,8 @@ function M.treesitter()
         ignore_install = {},
         matchup = { enable = true },
         highlight = {
-            enable = true,
+            enable = false,
             additional_vim_regex_highlighting = false,
-            --disable = true,
             disable = function(lang, buf)
                 local disable_hl = { "help", "lua", "cpp", "c" }
                 for _, l in ipairs(disable_hl) do
@@ -354,26 +354,8 @@ function M.dashboard()
 end
 
 function M.lualine()
+    local s = require("statusline")
     local theme = "auto"
-
-    local function ext_encoding()
-        local bufnr = vim.api.nvim_get_current_buf()
-        if vim.bo[bufnr].bomb then
-            return string.format("%s-bom", vim.bo[bufnr].fileencoding)
-        else
-            return vim.bo[bufnr].fileencoding
-        end
-    end
-    local function git_status()
-        local status = fn.FugitiveHead(7)
-        if vim.b.flog_status_summary then
-            if string.match(vim.b.flog_status_summary, "%d+") then
-                status = status .. "*"
-            end
-        end
-        return status
-    end
-
     require("lualine").setup({
         tabline = {},
         extensions = {},
@@ -394,20 +376,16 @@ function M.lualine()
         },
         sections = {
             lualine_a = { "mode" },
-            lualine_b = { git_status, "diff", "diagnostics" },
+            lualine_b = { s.git_status, "diff", "diagnostics" },
             lualine_c = { "filename" },
             lualine_x = {
-                {
-                    function() return require("noice").api.status.command.get() end,
-                    cond = function() return package.loaded["noice"] and require("noice").api.status.command.has() end,
-                },
-                {
-                    function() return require("noice").api.status.mode.get() end,
-                    cond = function() return package.loaded["noice"] and require("noice").api.status.mode.has() end,
-                },
-                ext_encoding,
+                s.lsp_progress,
+                --s.search,
+                --s.macro_recording,
                 "fileformat",
-                "filetype"
+                s.fileencoding,
+                "filetype",
+                s.indent,
             },
             lualine_y = { "progress" },
             lualine_z = { "location" },
@@ -466,24 +444,46 @@ function M.noice()
         },
         dependencies = {
             { "MunifTanjim/nui.nvim" },
-            { "rcarriga/nvim-notify", config = util.config("notify") },
         }
     }
 end
 
 function M.notify()
-    --vim.notify = require("notify")
+    vim.notify = require("notify")
+    _G.print = function(...)
+        local print_safe_args = {}
+        local _ = { ... }
+        for i = 1, #_ do
+            table.insert(print_safe_args, tostring(_[i]))
+        end
+        local msg = table.concat(print_safe_args, " ")
+        vim.notify(msg, vim.log.levels.INFO)
+    end
+    -- redir pcall message, get treesitter error
+    --_G.error = function(...)
+    --    local print_safe_args = {}
+    --    local _ = { ... }
+    --    for i = 1, #_ do
+    --        table.insert(print_safe_args, tostring(_[i]))
+    --    end
+    --    local msg = table.concat(print_safe_args, " ")
+    --    if string.match(msg, "^no parser for.*treesitter%-parsers$") then
+    --        return
+    --    end
+    --    vim.notify(msg, vim.log.levels.ERROR)
+    --end
+
+    -- FIXME add wrap or fix wrapped-compact format
     require("notify").setup({
-        timeout = 5000,
-        --render = "wrapped-compact",
-        --max_width = 120,
-        --icons = {
-        --    ERROR = "[E]",
-        --    WARN  = "[W]",
-        --    INFO  = "[I]",
-        --    DEBUG = "[D]",
-        --    TRACE = "[T]",
-        --},
+        timeout = 3000,
+        max_width = 200,
+        icons = {
+            ERROR = "[E]",
+            WARN  = "[W]",
+            INFO  = "[I]",
+            DEBUG = "[D]",
+            TRACE = "[T]",
+        },
     })
     --vim.cmd([[
     --    highlight NotifyINFOIcon guifg=#009f9f
@@ -646,6 +646,39 @@ function M.whichkey()
     wk.register({
         n = { name = "noice" },
     }, { prefix = "<leader>s" })
+end
+
+function M.ZFVimIM()
+    g.ZFVimIM_cachePath = g.runtime_dir .. g.dir_separator .. "ZFVimIM"
+    g.ZFVimIM_cloudAsync_outputTo = {
+        outputType = "statusline",
+        outputId = "ZFVimIM_cloud_async",
+    }
+    g.ZFJobVerboseLogEnable = 0
+
+    local db_file = "vim_wubi.txt"
+    local repo_path
+    if g.is_win == 1 then
+        repo_path = "d:/sync/tool/rime"
+    else
+        repo_path = vim.fn.expand("~/sync/tool/rime")
+    end
+    if vim.loop.fs_stat(repo_path .. "/" .. db_file) then
+        local function db_init()
+            local db = vim.fn.ZFVimIM_dbInit({ name = "custom", editable = 0, priority = 200 })
+            vim.fn.ZFVimIM_cloudRegister({
+                mode = "local",
+                dbId = db["dbId"],
+                repoPath = repo_path,
+                dbFile = db_file,
+            })
+        end
+        vim.api.nvim_create_autocmd("User", {
+            group = vim.api.nvim_create_augroup("ZFVimIM_custom_augroup", { clear = true }),
+            pattern = { "ZFVimIM_event_OnDbInit" },
+            callback = function() db_init() end
+        })
+    end
 end
 
 local init_done = false

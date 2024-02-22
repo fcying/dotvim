@@ -1,13 +1,15 @@
 #--no-ignore
 --hidden
 --color=auto
-#--vimgrep      #result is bigger
 --no-heading
 --no-column
 --follow
 --binary
 #--no-messages
 #--smart-case
+
+#result is bigger
+#--vimgrep
 
 # --glob in cmd line must use '', ex: --glob='!test'
 --glob=!.git

@@ -12,7 +12,6 @@ map("n", ">", ">>")
 map("x", ">", ">gv|")
 
 -- remap q Q {{{
-map("n", "gQ", "Q")
 map("n", "Q", "q")
 map("n", "q", "<nop>")
 
@@ -24,6 +23,26 @@ map("", "<esc>", function()
     end
     require("notify").dismiss()
 end)
+
+-- cmd-line window dd {{{
+vim.api.nvim_create_autocmd({ "CmdwinEnter" }, {
+    pattern = "*",
+    group = vim.api.nvim_create_augroup("cmd_line", { clear = true }),
+    callback = function(event)
+        ---@diagnostic disable-next-line
+        local bufname = vim.fn.bufname("%")
+        if vim.o.buftype == "nofile" and bufname == "[Command Line]" then
+            map("n", "dd", function()
+                local win_type = vim.fn.getcmdwintype()
+                local line = vim.fn.line(".")
+                vim.api.nvim_del_current_line()
+                vim.fn.histdel(win_type, line)
+                vim.cmd("wshada!")
+                vim.cmd("rshada!")
+            end, { buffer = event.buf })
+        end
+    end,
+})
 
 -- goto def {{{
 map("n", "g<c-]>", "<c-]>")

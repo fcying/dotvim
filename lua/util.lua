@@ -103,7 +103,7 @@ function M.update_ignore_config()
 end
 
 function M.find_file()
-    vim.cmd(M.find_command)
+    vim.fn.execute(M.find_command)
 end
 
 function M.telescope_update_ignore()

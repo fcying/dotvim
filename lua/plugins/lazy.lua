@@ -60,7 +60,7 @@ local plugins = {
         "t9md/vim-choosewin",
         keys = { { "-", "<Plug>(choosewin)", desc = "choosewin" } },
     },
-    { "preservim/tagbar", cmd = "TagbarToggle", config = config("tagbar") },
+    require("config").tagbar(),
     { "chentoast/marks.nvim", event = "VimEnter", config = config("marks") },
     {
         "Yggdroot/indentLine",
@@ -101,15 +101,7 @@ local plugins = {
         "fcying/vim-foldsearch",
         cmd = { "Fp", "Fw", "Fs", "FS", "Fl", "Fi", "Fd", "Fe" },
     },
-    {
-        "lambdalisue/fern.vim",
-        cmd = "Fern",
-        keys = {
-            { "<leader>wf", "<cmd>Fern . -drawer -toggle -keep<CR>", desc = "file explorer" },
-            { "<leader>wl", "<cmd>Fern . -drawer -reveal=%<CR>", desc = "file location" },
-        },
-        config = config("fern"),
-    },
+    require("config").nvim_tree(),
     { import = "plugins.telescope" },
 
     -- tool {{{

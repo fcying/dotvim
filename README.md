@@ -22,28 +22,29 @@ modify user config.
 `~/.vimrc.local`
 
 #### project config
-`<leader>ep`  
+`<leader>evp`  
 modify project config.  
-e.g. `.git/.pvimrc`.  
-if there is not `scm` dir, save `.pvimrc` in workspace.
-autoreload `.pvimrc` after save this file.
+e.g. `.git/.nvim.lua`.  
+if there is not `scm` dir, save `.nvim.lua` in workspace.
+autoreload `..nvim.lua` after save this file.
 
 #### config var
 config var, modify it in `user config` or `project config`.  
 
-* `g:ignore`  
-    ignore config for fuzzyfind and generate tags
+* `Option`  
+    Option for fuzzyfind and generate tags, default:
 ```
-let g:ignore.dir = ['.root','.svn','.git','.repo','.ccls-cache','.cache','.ccache']
-let g:ignore.file = ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]'
-let g:ignore.rg = ['--max-columns=300', '--iglob=!obj', '--iglob=!out']
-let g:ignore.mru = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll']
+Option.dir = { ".root", ".svn", ".git", ".repo", ".ccls-cache", ".cache", ".ccache" }
+Option.file = { "*.sw?", "~$*", "*.bak", "*.exe", "*.o", "*.so", "*.py[co]", "tags" }
+Option.rg = { "--max-columns=300", "--iglob=!obj", "--iglob=!out" }
+Option.mru = { "*.so", "*.exe", "*.py[co]", "*.sw?", "~$*", "*.bak", "*.tmp", "*.dll" }
+Option.cconf = { ["*"] = { "-ferror-limit=0" }, c = { "gcc", "-c", "-std=c11" }, cpp = { "g++", "-c", "-std=c++14" } }
 ```
 
 * `g:colorscheme`  
     e.g.  
     ```
-    let g:colorscheme='solarized8'
+    let g:colorscheme='solarized'
     ```
 * `g:background`  
     e.g.  
@@ -70,6 +71,7 @@ default `<leader>` is `<space>`
 | `fr`              | Normal        | resume last search                              |
 | `ft`              | Normal        | fuzzy find tags                                 |
 | `f/`              | Normal        | live grep                                       |
+| `fc`              | Normal        | select colorscheme                              |
 | `gsiw`            | Normal        | search under cursor (display in quickfix)       |
 | `gs`              | Visual        | search visual selection (display in quickfix)   |
 | `gd`              | Normal        | goto definitions                                |
@@ -95,9 +97,8 @@ default `<leader>` is `<space>`
 | `<leader>q`       | Normal        | close current buffer                            |
 | `v`               | Visual        | expand select region                            |
 | `V`               | Visual        | shrink select region                            |
-| `s`               | Normal        | move to {char}                                  |
-| `S`               | Normal        | move to {char}{char}                            |
-| `L`               | Normal        | move to line                                    |
+| `s`               | Normal        | flash move to {char}                            |
+| `S`               | Normal        | flash treesitter                                |
 | `<leader>sa`      | Normal        | surround add                                    |
 | `<leader>sd`      | Normal        | surround delete                                 |
 | `<leader>sr`      | Normal        | surround replace                                |
@@ -106,11 +107,10 @@ default `<leader>` is `<space>`
 | `<F4>`            | Normal        | toggle wrap                                     |
 | `<F6>`            | Normal        | toggle syntax                                   |
 | `<F5>`/`<leader>z`| Normal        | toggle paste                                    |
-| `Q`               | Normal        | `map Q q`, `map q <nop>`, `map gQ Q`            |
+| `Q`               | Normal        | `map Q q`, `map q <nop>`                        |
 | `<leader>ds`      | Normal        | delete trailing space                           |
 | `<leader>dm`      | Normal        | delete ^M                                       |
 | `<leader>da`      | Normal        | delete ansi escape codes                        |
 | `<leader>pu`      | Normal        | update plugins                                  |
 | `<leader>pr`      | Normal        | remove unused plugins                           |
-| `<leader>pc`      | Normal        | PackerCompile(packer)                           |
 

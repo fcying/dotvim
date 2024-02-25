@@ -30,8 +30,6 @@ opt.autowrite = false
 opt.backup = false
 opt.clipboard = "unnamedplus" -- Sync with system clipboard
 opt.cinkeys = opt.cinkeys - "0#"
---FIXME Press ENTER message
---https://github.com/neovim/neovim/issues/22478  https://github.com/neovim/neovim/pull/20548
 opt.cmdheight = 1
 opt.confirm = false           -- Confirm to save changes before exiting modified buffer
 opt.completeopt = "menu,menuone,noselect,noinsert"

@@ -1,6 +1,114 @@
 local g, api, cmd = vim.g, vim.api, vim.cmd
+local M = {}
 
-return {
+function M.telescope_update_ignore()
+    local util = require("util")
+    local option = util.option
+    util.find_command = "Telescope find_files "
+    if g.has_rg == 1 then
+        util.find_command = util.find_command .. "find_command=rg,--files,--no-ignore,--color=never"
+        if option.rg ~= {} then
+            util.find_command = util.find_command .. "," .. table.concat(option.rg, ",")
+        end
+    end
+
+    if _G["TelescopeGlobalState"] ~= nil then
+        local conf = require("telescope.config").values
+        conf.vimgrep_arguments = {
+            "rg",
+            "--no-binary",
+            "--color=never",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case",
+        }
+        for _, v in ipairs(option.rg) do
+            table.insert(conf.vimgrep_arguments, v)
+        end
+    end
+end
+
+function M.telescope_ltaglist(opts)
+    local pickers = require("telescope.pickers")
+    local finders = require("telescope.finders")
+    local conf = require("telescope.config").values
+    local entry_display = require("telescope.pickers.entry_display")
+    local previewers = require("telescope.previewers")
+    local action_set = require("telescope.actions.set")
+    local action_state = require("telescope.actions.state")
+
+    opts = opts or {}
+
+    local displayer = entry_display.create({
+        separator = " | ",
+        items = {
+            { remaining = true },
+            { remaining = true },
+        },
+    })
+
+    local make_display = function(entry)
+        --vim.notify(vim.inspect(entry))
+        return displayer({
+            { entry.filename },
+            { entry.text },
+        })
+    end
+
+    local entry_maker = function(entry)
+        local filename = vim.fn.bufname(entry.bufnr)
+        local scode = entry.pattern
+        scode = string.gsub(scode, [[^%^\V]], "")
+        scode = string.gsub(scode, [[\%$]], "")
+        return {
+            value = entry,
+            filename = filename,
+            text = string.gsub(scode, [[^%s*]], ""),
+            scode = scode,
+            lnum = 1,
+            col = 1,
+            tag = entry.text,
+            ordinal = filename .. ": " .. entry.text,
+            display = make_display,
+        }
+    end
+
+    local locations = vim.fn.getloclist(0)
+    pickers.new(opts, {
+        prompt_title = "Ltaglist",
+        initial_mode = "normal",
+        sorter = conf.generic_sorter(opts),
+        previewer = previewers.ctags.new(opts),
+        finder = finders.new_table({
+            results = locations,
+            entry_maker = entry_maker,
+        }),
+        attach_mappings = function()
+            action_set.select:enhance({
+                post = function()
+                    local selection = action_state.get_selected_entry()
+
+                    if selection.scode then
+                        local scode = selection.scode
+                        scode = string.gsub(scode, "[$]$", "")
+                        scode = string.gsub(scode, [[\\]], [[\]])
+                        scode = string.gsub(scode, [[\/]], [[/]])
+                        scode = string.gsub(scode, "[*]", [[\*]])
+
+                        vim.fn.search(scode, "w")
+                        vim.cmd("norm! zz")
+                    else
+                        vim.api.nvim_win_set_cursor(0, { selection.lnum, 0 })
+                    end
+                end,
+            })
+            return true
+        end,
+    }):find()
+end
+
+M.lazy = {
     "nvim-telescope/telescope.nvim",
     dependencies = {
         { "nvim-lua/plenary.nvim" },
@@ -10,28 +118,25 @@ return {
     cmd = { "Telescope" },
     keys = {
         {
-            "fb",
-            "<cmd>Telescope buffers<cr>",
-            desc = "buffer"
-        },
-        {
-            "ff",
-            function() require("util").find_file() end,
-            desc = "file",
-            silent = true
-        },
-        {
-            "fg",
-            "<cmd>Telescope grep_string<cr>",
-            desc = "string"
-        },
-        {
-            "fg",
-            "<cmd>Telescope grep_string<cr>",
-            desc = "string",
-            mode = "v"
+            "fc",
+            function()
+                require("telescope.builtin").colorscheme({
+                    enable_preview = true,
+                    colors = {
+                        "rose-pine-dawn",
+                        "everforest",
+                        "solarized",
+                        "tokyonight-day",
+                    }
+                })
+            end,
+            desc = "colorscheme"
         },
         --- @format disable
+        { "ff", function() require("util").find_file() end, desc = "file", silent = true },
+        { "fb", "<cmd>Telescope buffers<cr>",     desc = "buffer" },
+        { "fg", "<cmd>Telescope grep_string<cr>", desc = "string" },
+        { "fg", "<cmd>Telescope grep_string<cr>", desc = "string", mode = "v" },
         { "fh", "<cmd>Telescope help_tags<cr>",                     desc = "help" },
         { "fj", "<cmd>Telescope jumplist<cr>",                      desc = "jumplist" },
         { "fl", "<cmd>Telescope current_buffer_fuzzy_find<cr>",     desc = "line" },
@@ -43,12 +148,8 @@ return {
         { "ft", "<cmd>Telescope tags<cr>",                          desc = "tag" },
         { "f/", "<cmd>Telescope live_grep<cr>",                     desc = "live grep" },
         { "gi", "<cmd>Telescope lsp_implementations<cr>",           desc = "lsp_implementations" },
-        {
-            "gr",
-            "<cmd>Telescope lsp_references include_current_line=true<cr>",
-            desc = "lsp_references"
-        },
-        { "go",         "<cmd>Telescope lsp_type_definitions<cr>",  desc = "lsp_type_definitions" },
+        { "gr", "<cmd>Telescope lsp_references include_current_line=true<cr>", desc = "lsp_references" },
+        { "go", "<cmd>Telescope lsp_type_definitions<cr>",  desc = "lsp_type_definitions" },
         { "<leader>la", "<cmd>Telescope lsp_code_actions<cr>",      desc = "lsp_code_actions" },
         { "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>",   desc = "lsp diagnostics" },
         { "<leader>ls", "<cmd>Telescope lsp_workspace_symbols<cr>", desc = "lsp_document_symbols" },
@@ -116,6 +217,8 @@ return {
         require("telescope").load_extension("notify")
         require("telescope").load_extension("fzf")
         require("telescope").load_extension("ctags_outline")
-        require("util").telescope_update_ignore()
+        M.telescope_update_ignore()
     end,
 }
+
+return M

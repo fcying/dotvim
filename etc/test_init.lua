@@ -11,13 +11,13 @@ if not vim.loop.fs_stat(lazypath) then
         "https://github.com/folke/lazy.nvim.git", lazypath })
 end
 vim.opt.runtimepath:prepend(lazypath)
+vim.opt.termguicolors = true
 
 local plugins = {
     { "maxmx03/solarized.nvim" },
     -- test plugins
 }
 
-vim.opt.termguicolors = true
 require("lazy").setup(plugins, {
     root = g.runtime_dir .. "/plugins",
 })

@@ -1,6 +1,5 @@
 local g, api = vim.g, vim.api
 local map = require("util").map
-local config = require("util").config
 
 g.plug_dir = g.runtime_dir .. "/plugins"
 local lazypath = g.plug_dir .. "/lazy.nvim"
@@ -15,7 +14,7 @@ map("n", "<leader>pu", ":Lazy update<CR>")
 map("n", "<leader>pr", ":Lazy clean<CR>")
 
 local plugins = {
-    { "fcying/gen_clang_conf.vim", lazy = false },
+    require("config").gen_clang_conf(),
     { "wsdjeg/vim-fetch", lazy = false },
     { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
     {
@@ -42,7 +41,7 @@ local plugins = {
             g.sleuth_heuristics = 0
         end,
     },
-    { "ethanholz/nvim-lastplace", lazy = false, config = config("lastplace") },
+    require("config").lastplace(),
     --{ 'simnalamburt/vim-mundo', event = 'VimEnter' },
 
     -- editor {{{
@@ -54,14 +53,12 @@ local plugins = {
             vim.api.nvim_create_user_command("Bclose", "Bdelete", { bang = true })
         end
     },
-    { "preservim/nerdcommenter", event = "VeryLazy" },
-    { "machakann/vim-sandwich", event = "VeryLazy", config = config("sandwich") },
-    {
-        "t9md/vim-choosewin",
-        keys = { { "-", "<Plug>(choosewin)", desc = "choosewin" } },
-    },
+    require("config").sandwich(),
+    require("config").nerdcommenter(),
+    require("config").window_picker(),
+    --require("config").incline(),
     require("config").tagbar(),
-    { "chentoast/marks.nvim", event = "VimEnter", config = config("marks") },
+    require("config").marks(),
     {
         "Yggdroot/indentLine",
         cmd = "IndentLinesToggle",
@@ -85,34 +82,21 @@ local plugins = {
         end,
     },
     --{ "andymass/vim-matchup", event = "VimEnter" },
-    { "terryma/vim-expand-region", event = "VimEnter", config = config("vim_expand_region") },
-    {
-        "ggandor/leap.nvim",
-        event = "VeryLazy",
-        dependencies = "tpope/vim-repeat",
-        config = function()
-            vim.keymap.set({ "n", "v" }, "s", function()
-                local current_window = vim.fn.win_getid()
-                require("leap").leap { target_windows = { current_window } }
-            end)
-        end
-    },
-    {
-        "fcying/vim-foldsearch",
-        cmd = { "Fp", "Fw", "Fs", "FS", "Fl", "Fi", "Fd", "Fe" },
-    },
+    require("config").vim_expand_region(),
+    --require("config").leap(),
+    require("config").flash(),
+    require("config").foldsearch(),
     require("config").nvim_tree(),
-    { import = "plugins.telescope" },
+    require("config").dashboard(),
+    require("config").lualine(),
+    require("plugins.telescope").lazy,
+    { import = "plugins.colorscheme" },
 
     -- tool {{{
-    { "rcarriga/nvim-notify", config = config("notify") },
-    --require("config").noice(),
     { "chrisbra/Colorizer", cmd = { "ColorToggle" } },
-    {
-        "ZSaberLv0/ZFVimIM",
-        event = "VeryLazy",
-        dependencies = { "ZSaberLv0/ZFVimJob", "fcying/ZFVimIM_wubi_jidian" },
-    },
+    --require("config").noice(),
+    require("config").nvim_notify(),
+    require("config").ZFVimIM(),
     {
         "ZSaberLv0/ZFVimDirDiff",
         cmd = "ZFDirDiff",
@@ -122,41 +106,14 @@ local plugins = {
             g.ZFDirDiffUI_showSameFile = 1
         end,
     },
-    {
-        "rbong/vim-flog",
-        cmd = { "Flog", "Flogsplit", "Floggit" },
-        dependencies = { "tpope/vim-fugitive", event = "VeryLazy", config = config("fugitive") },
-    },
-    { "skywind3000/asyncrun.vim", cmd = { "AsyncRun", "AsyncStop" } },
-    { "skywind3000/asynctasks.vim", cmd = { "AsyncTask", "AsyncTaskMacro", "AsyncTaskList", "AsyncTaskEdit" } },
-    { "folke/which-key.nvim", event = "VeryLazy", config = config("whichkey") },
+    require("config").fugitive(),
+    require("config").asynctasks(),
+    require("config").whichkey(),
 
     -- coding {{{
-    {
-        "nvim-treesitter/nvim-treesitter",
-        event = "VeryLazy",
-        config = config("treesitter"),
-        build = ":TSUpdate",
-    },
-    {
-        "Badhi/nvim-treesitter-cpp-tools",
-        dependencies = { "nvim-treesitter/nvim-treesitter" },
-        config = config("nt_cpp_tools"),
-    },
-    --{
-    --    "nvimtools/none-ls.nvim",
-    --    event = { "BufReadPre", "BufNewFile" },
-    --    dependencies = {
-    --        "nvim-lua/plenary.nvim",
-    --        "neovim/nvim-lspconfig",
-    --    },
-    --    config = config("null_ls", "lsp"),
-    --},
-    {
-        "nvimdev/guard.nvim",
-        cmd = "GuardFmt", -- broken auto format
-        config = config("guard", "lsp"),
-    },
+    require("config").treesitter(),
+    require("config").nt_cpp_tools(),
+    --require("lsp").null_ls(),
     {
         "VonHeikemen/lsp-zero.nvim",
         branch = "v3.x",
@@ -169,9 +126,10 @@ local plugins = {
             vim.g.lsp_zero_ui_float_border = 0
         end,
     },
+    require("lsp").guard(),
     {
         "neovim/nvim-lspconfig",
-        config = config("setup", "lsp"),
+        config = require("lsp").setup,
         event = { "BufReadPre", "BufNewFile" },
         dependencies = {
             require("plugins.mason").setup(),
@@ -179,40 +137,7 @@ local plugins = {
             { "williamboman/mason-lspconfig.nvim" },
         },
     },
-    {
-        "hrsh7th/nvim-cmp",
-        event = { "InsertEnter", "CmdlineEnter" },
-        config = config("cmp"),
-        version = false, -- last release is way too old
-        dependencies = {
-            { "hrsh7th/cmp-nvim-lsp" },
-            {
-                "L3MON4D3/LuaSnip",
-                build = (g.is_win == 0) and g.make .. " install_jsregexp" or nil,
-                config = config("luasnip"),
-                dependencies = { "rafamadriz/friendly-snippets" }
-            },
-            { "saadparwaiz1/cmp_luasnip" },
-            { "hrsh7th/cmp-path" },
-            { "hrsh7th/cmp-buffer" },
-            { "hrsh7th/cmp-cmdline" },
-            { "dmitmel/cmp-cmdline-history" },
-            { "hrsh7th/cmp-omni" },
-            { "quangnguyen30192/cmp-nvim-tags" },
-            { "uga-rosa/cmp-dictionary", config = config("cmp_dictionary") },
-        },
-    },
-
-    -- colorscheme {{{
-    {
-        "nvimdev/dashboard-nvim",
-        event = "VimEnter",
-        dependencies = { { "nvim-tree/nvim-web-devicons" } },
-        config = config("dashboard"),
-    },
-    { "nvim-lualine/lualine.nvim", event = "ColorScheme", config = config("lualine") },
-    { "maxmx03/solarized.nvim", lazy = false, priority = 1000 },
-    { "folke/tokyonight.nvim", lazy = false, priority = 1000 },
+    require("config").cmp(),
 
     -- filetype {{{
     --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },
@@ -257,7 +182,7 @@ require("lazy").setup(plugins, {
     },
     install = {
         missing = true,
-        colorscheme = { "solarized8", "desert" },
+        colorscheme = { "everforest", "habamax" },
     },
     ui = {
         icons = {

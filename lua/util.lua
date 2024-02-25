@@ -33,6 +33,7 @@ M.root_marker = ""
 -- https://github.com/neovim/neovim/issues/4396 nvim not restore terminal cursorshape settings.lua
 -- https://github.com/neovim/neovim/pull/24812 echo has("patch-9.0.1768") lazy.lua
 -- https://github.com/neovim/neovim/issues/16843  lua function to get current visual selection
+-- https://github.com/neovim/neovim/issues/22478  Press ENTER message
 
 function M.map(mode, lhs, rhs, opts)
     opts = opts or {}
@@ -68,14 +69,8 @@ function M.get_visual_selection()
     return result
 end
 
-function M.config(name, module)
-    return function()
-        if module == nil then
-            require("config")[name]()
-        else
-            require(module)[name]()
-        end
-    end
+function M.find_file()
+    fn.execute(M.find_command)
 end
 
 function M.update_ignore_config()
@@ -99,37 +94,7 @@ function M.update_ignore_config()
     g.gencconf_default_option = vim.tbl_deep_extend("force", M.option.cconf, Option.cconf)
     --vim.notify(vim.inspect(g.gencconf_default_option))
 
-    M.telescope_update_ignore()
-end
-
-function M.find_file()
-    vim.fn.execute(M.find_command)
-end
-
-function M.telescope_update_ignore()
-    M.find_command = "Telescope find_files "
-    if g.has_rg == 1 then
-        M.find_command = M.find_command .. "find_command=rg,--files,--no-ignore,--color=never"
-        if M.option.rg ~= {} then
-            M.find_command = M.find_command .. "," .. table.concat(M.option.rg, ",")
-        end
-    end
-
-    if _G["TelescopeGlobalState"] ~= nil then
-        local conf = require("telescope.config").values
-        conf.vimgrep_arguments = {
-            "rg",
-            "--no-binary",
-            "--color=never",
-            "--with-filename",
-            "--line-number",
-            "--column",
-            "--smart-case",
-        }
-        for _, v in ipairs(M.option.rg) do
-            table.insert(conf.vimgrep_arguments, v)
-        end
-    end
+    require("plugins.telescope").telescope_update_ignore()
 end
 
 function M.go2def(str, opts)
@@ -189,89 +154,10 @@ function M.go2def(str, opts)
                 vim.cmd("normal " .. lnum .. "G^")
             end
 
-            M.telescope_ltaglist()
+            require("plugins.telescope").telescope_ltaglist()
         end
         vim.o.tagfunc = backup
     end
-end
-
-function M.telescope_ltaglist(opts)
-    local pickers = require("telescope.pickers")
-    local finders = require("telescope.finders")
-    local conf = require("telescope.config").values
-    local entry_display = require("telescope.pickers.entry_display")
-    local previewers = require("telescope.previewers")
-    local action_set = require("telescope.actions.set")
-    local action_state = require("telescope.actions.state")
-
-    opts = opts or {}
-
-    local displayer = entry_display.create({
-        separator = " | ",
-        items = {
-            { remaining = true },
-            { remaining = true },
-        },
-    })
-
-    local make_display = function(entry)
-        --vim.notify(vim.inspect(entry))
-        return displayer({
-            { entry.filename },
-            { entry.text },
-        })
-    end
-
-    local entry_maker = function(entry)
-        local filename = vim.fn.bufname(entry.bufnr)
-        local scode = entry.pattern
-        scode = string.gsub(scode, [[^%^\V]], "")
-        scode = string.gsub(scode, [[\%$]], "")
-        return {
-            value = entry,
-            filename = filename,
-            text = string.gsub(scode, [[^%s*]], ""),
-            scode = scode,
-            lnum = 1,
-            col = 1,
-            tag = entry.text,
-            ordinal = filename .. ": " .. entry.text,
-            display = make_display,
-        }
-    end
-
-    local locations = vim.fn.getloclist(0)
-    pickers.new(opts, {
-        prompt_title = "Ltaglist",
-        initial_mode = "normal",
-        sorter = conf.generic_sorter(opts),
-        previewer = previewers.ctags.new(opts),
-        finder = finders.new_table({
-            results = locations,
-            entry_maker = entry_maker,
-        }),
-        attach_mappings = function()
-            action_set.select:enhance({
-                post = function()
-                    local selection = action_state.get_selected_entry()
-
-                    if selection.scode then
-                        local scode = selection.scode
-                        scode = string.gsub(scode, "[$]$", "")
-                        scode = string.gsub(scode, [[\\]], [[\]])
-                        scode = string.gsub(scode, [[\/]], [[/]])
-                        scode = string.gsub(scode, "[*]", [[\*]])
-
-                        vim.fn.search(scode, "w")
-                        vim.cmd("norm! zz")
-                    else
-                        vim.api.nvim_win_set_cursor(0, { selection.lnum, 0 })
-                    end
-                end,
-            })
-            return true
-        end,
-    }):find()
 end
 
 -- tags ltag {{{

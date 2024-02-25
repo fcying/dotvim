@@ -3,7 +3,6 @@ local util = require("util")
 local map = util.map
 local M = {}
 local lsp_opts = {}
-local lsp_zero = require("lsp-zero")
 
 local formats = {
     stylua = {
@@ -49,19 +48,25 @@ local function diagnostics_config(enable)
 end
 
 function M.guard()
-    local ft = require("guard.filetype")
-    ft("c"):fmt({
-        cmd = "astyle",
-        args = formats.astyle,
-    })
-    ft("cpp"):fmt({
-        cmd = "astyle",
-        args = formats.astyle,
-    })
+    return {
+        "nvimdev/guard.nvim",
+        cmd = "GuardFmt", -- broken auto format
+        config = function()
+            local ft = require("guard.filetype")
+            ft("c"):fmt({
+                cmd = "astyle",
+                args = formats.astyle,
+            })
+            ft("cpp"):fmt({
+                cmd = "astyle",
+                args = formats.astyle,
+            })
 
-    require("guard").setup({
-        fmt_on_save = false,
-    })
+            require("guard").setup({
+                fmt_on_save = false,
+            })
+        end
+    }
 end
 
 function M.format()
@@ -79,20 +84,29 @@ function M.null_ls()
     ---@diagnostic disable-next-line unused-local
     local diagnostics = nls.builtins.diagnostics
 
-    nls.setup({
-        debug = false,
-        root_dir = require("null-ls.utils").root_pattern(".root", ".neoconf.json", ".git"),
-        sources = {
-            formatting.gofmt,
-            formatting.goimports,
-            --formatting.clang_format,
-            formatting.astyle.with({ extra_args = formats.astyle }),
-            --formatting.stylua.with({ extra_args = formats.stylua }),
+    return {
+        "nvimtools/none-ls.nvim",
+        event = { "BufReadPre", "BufNewFile" },
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "neovim/nvim-lspconfig",
         },
-    })
+        opts = {
+            debug = false,
+            root_dir = require("null-ls.utils").root_pattern(".root", ".neoconf.json", ".git"),
+            sources = {
+                formatting.gofmt,
+                formatting.goimports,
+                --formatting.clang_format,
+                formatting.astyle.with({ extra_args = formats.astyle }),
+                --formatting.stylua.with({ extra_args = formats.stylua }),
+            },
+        }
+    }
 end
 
 function lsp_opts.qmlls()
+    local lsp_zero = require("lsp-zero")
     local lsp_util = require("lspconfig/util")
     local opts = {
         cmd = { "qmlls", "--build-dir", util.root_dir .. "/build" },
@@ -105,6 +119,7 @@ function lsp_opts.qmlls()
 end
 
 function lsp_opts.clangd()
+    local lsp_zero = require("lsp-zero")
     local clangd_cmd = { "clangd" }
     table.insert(clangd_cmd, "--background-index")
     table.insert(clangd_cmd, "--all-scopes-completion")
@@ -128,6 +143,7 @@ function lsp_opts.clangd()
 end
 
 function lsp_opts.ahk2()
+    local lsp_zero = require("lsp-zero")
     local path = require("mason-core.path").package_prefix("autohotkey2-lsp")
     local InterpreterPath = "AutoHotkey64.exe"
     if fn.has("linux") == 1 then
@@ -149,6 +165,7 @@ function lsp_opts.ahk2()
 end
 
 function lsp_opts.gopls()
+    local lsp_zero = require("lsp-zero")
     local lsp_util = require("lspconfig/util")
     local opts = {
         settings = {
@@ -167,6 +184,7 @@ function lsp_opts.gopls()
 end
 
 function lsp_opts.python()
+    local lsp_zero = require("lsp-zero")
     local opts = {
         settings = {
             pylsp = {
@@ -186,6 +204,7 @@ function lsp_opts.python()
 end
 
 function lsp_opts.lua()
+    local lsp_zero = require("lsp-zero")
     require("neodev").setup({
         override = function(_, options)
             if vim.loop.fs_stat(util.root_dir .. "/lua") then
@@ -243,6 +262,7 @@ function lsp_opts.lua()
 end
 
 function M.setup()
+    local lsp_zero = require("lsp-zero")
     --lsp.set_log_level('debug')
 
     api.nvim_create_user_command("Format", function() require("lsp").format() end, {})

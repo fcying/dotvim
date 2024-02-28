@@ -1,8 +1,8 @@
 #zmodload zsh/zprof
 
 # shellcheck disable=SC2034,SC1117,SC2179,SC2015,SC2181,SC2032,SC2033,SC2154,SC2004
-if [ -f "$HOME/.zshrc.local" ]; then
-    source "$HOME/.zshrc.local"
+if [ -f "$HOME/.shrc.local" ]; then
+    source "$HOME/.shrc.local"
 fi
 
 export CONFIG_DIR=${CONFIG_DIR:-"$HOME/.vim/etc"}
@@ -70,7 +70,7 @@ LD_LIBRARY_PATH=$HOME/bin/lib:$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
 PKG_CONFIG_PATH=$QT_DIR/$QT_VERSION/gcc_64/lib/pkgconfig:$PKG_CONFIG_PATH
 PYTHONPATH=$PYTHONPATH:$CONFIG_DIR/python_script
 export RIPGREP_CONFIG_PATH=$CONFIG_DIR/ripgreprc
-export SHELLCHECK_OPTS="-e SC2164 -e SC1090"
+export SHELLCHECK_OPTS="-e SC2164,SC1090,SC2086"
 export RUST_SRC_PATH=$HOME/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src
 
 path=(
@@ -176,10 +176,10 @@ function PluginFinish() {
 function fzf_setup() {
     local install=0
     if [ ! -d ~/.fzf ]; then
-        install = 1
+        install=1
         git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     elif [[ "$1" == "update" ]]; then
-        install = 1
+        install=1
         pushd ~/.fzf > /dev/null && git pull
     fi
     if [ $install -eq 1 ]; then
@@ -230,7 +230,7 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
     mkdir -p "$HOME/.tmux/plugins" && pushd "$_"
     git clone https://github.com/tmux-plugins/tpm --depth 1
     popd
-    tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/install_plugins
+    ~/.tmux/plugins/tpm/bin/install_plugins
 fi
 
 # linuxbrew {{{
@@ -249,7 +249,7 @@ if [ -d "$HOME/.linuxbrew/bin" ]; then
 elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
     BREW_PREFIX=/home/linuxbrew/.linuxbrew
 fi
-if [ ! -z "$BREW_PREFIX" ]; then
+if [ -n "$BREW_PREFIX" ]; then
     export HOMEBREW_PREFIX="$BREW_PREFIX"
     export HOMEBREW_CELLAR="$BREW_PREFIX/Cellar"
     export MANPATH="$BREW_PREFIX/share/man:$MANPATH"
@@ -362,7 +362,7 @@ function _git_prompt_info() {
 }
 setopt PROMPT_SUBST
 if [ -z "$CUSTOM_PROMPT" ]; then
-    PROMPT='%F{green}%n@%m%f:%B%F{blue}%~%b%f %F{red}$(_git_prompt_info)%f%(!.#.$) '
+    PROMPT="%F{green}%n@%m%f:%B%F{blue}%~%b%f %F{red}$(_git_prompt_info)%f%(!.#.$) "
 else
     PROMPT=$CUSTOM_PROMPT
 fi
@@ -451,8 +451,10 @@ alias pacu='sudo pacman -U'
 alias pacautoremove='sudo pacman -Rs $(pacman -Qtdq)'
 alias pacrns='sudo pacman -Rns'
 
+# common alias {{{
 function cdls { builtin cd "$@" && ls --color=auto; }
 alias cd='cdls'
+alias lsblk='lsblk -oLABEL,NAME,MAJ:MIN,RM,SIZE,RO,TYPE,MOUNTPOINTS'
 alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_history'
 alias zsh_fix_gw='compaudit |xargs chmod -R g-w'
 alias zsh_time_test='for i in $(seq 1 5); do time zsh -i -c exit; done'

@@ -164,6 +164,7 @@ function M.flash()
         opts = {
             modes = {
                 char = { enabled = false },
+                search = { enabled = false },
             }
         },
     }
@@ -505,7 +506,7 @@ function M.dashboard()
             center = {
                 { action = "ene | startinsert",                     desc = " New file",        icon = " ", key = "n" },
                 { action = "lua require('util').find_file()",       desc = " Find file",       icon = " ", key = "ff" },
-                { action = "Telescope live_grep",                   desc = " Find text",       icon = " ", key = "f/" },
+                { action = "lua require('util').live_grep()",       desc = " Find text",       icon = " ", key = "f/" },
                 { action = "Telescope oldfiles",                    desc = " Recent files",    icon = " ", key = "fm" },
                 --{ action = "lua require('persistence').load()",     desc = " Restore Session", icon = " ", key = "s" },
                 { action = "Lazy",                                  desc = " Lazy",            icon = "󰒲 ", key = "l" },
@@ -836,12 +837,12 @@ function M.nvim_tree()
                     local hl_group = vim.api.nvim_get_hl_by_name("Normal", true)
                     local guifg = hl_group.foreground
                     local guibg = hl_group.background
-                    local cmd = "highlight NvimTreeNormal "
+                    local cmd = "highlight NvimTreeNormal"
                     if guifg then
-                        cmd = cmd .. "guifg=" .. string.format("#%x", guifg)
+                        cmd = cmd .. " guifg=" .. string.format("#%x", guifg)
                     end
                     if guibg then
-                        cmd = cmd .. "guibg=" .. string.format("#%x", guibg)
+                        cmd = cmd .. " guibg=" .. string.format("#%x", guibg)
                     end
                     if guifg or guibg then
                         vim.cmd(cmd)
@@ -878,8 +879,12 @@ function M.whichkey()
                 s = { name = "sandwich | noice" },
                 p = { name = "plugin" },
                 t = { name = "tab" },
+                u = { name = "util" },
                 w = { name = "window" },
             }, { prefix = "<leader>" })
+            wk.register({
+                m = { name = "print current mode" },
+            }, { prefix = "<leader>u" })
             wk.register({
                 n = { name = "noice" },
             }, { prefix = "<leader>s" })
@@ -939,7 +944,7 @@ function M.setup()
     require("keymaps")
 
     -- solarized tokyonight-day everforest rose-pine-dawn
-    local colorscheme = g.colorscheme or "everforest"
+    local colorscheme = g.colorscheme or "solarized"
     local background = g.background or "light"
     vim.opt.background = background
 

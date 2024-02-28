@@ -1,5 +1,5 @@
-if [ -f "$HOME/.bashrc.local" ]; then
-    source "$HOME/.bashrc.local"
+if [ -f "$HOME/.shrc.local" ]; then
+    source "$HOME/.shrc.local"
 fi
 
 export CONFIG_DIR=${CONFIG_DIR:-"$HOME/.vim/etc"}
@@ -138,10 +138,10 @@ export USE_CCACHE=1
 function fzf_setup() {
     local install=0
     if [ ! -d ~/.fzf ]; then
-        install = 1
+        install=1
         git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     elif [[ "$1" == "update" ]]; then
-        install = 1
+        install=1
         pushd ~/.fzf > /dev/null && git pull
     fi
     if [ $install -eq 1 ]; then
@@ -200,7 +200,7 @@ if [ -d "$HOME/.linuxbrew/bin" ]; then
 elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
     BREW_PREFIX=/home/linuxbrew/.linuxbrew
 fi
-if [ ! -z "$BREW_PREFIX" ]; then
+if [ -n "$BREW_PREFIX" ]; then
     #export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"    #error: function definition file not found
     export HOMEBREW_PREFIX="$BREW_PREFIX"
     export HOMEBREW_CELLAR="$BREW_PREFIX/Cellar"

@@ -182,7 +182,7 @@ require("lazy").setup(plugins, {
     },
     install = {
         missing = true,
-        colorscheme = { "everforest", "habamax" },
+        colorscheme = { "solarized", "habamax" },
     },
     ui = {
         icons = {

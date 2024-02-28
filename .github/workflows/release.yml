@@ -41,7 +41,7 @@ jobs:
           nvim --headless "+Lazy! sync" -c "qa"
           sed 's|sync_install = true|sync_install = false|' -i ~/.config/nvim/lua/config.lua
 
-          XZ_OPT=-9 tar cJf nvim_config.txz nvim
+          XZ_OPT=-9 tar cJf nvim_config.txz --exclude .git nvim
           mv ./*.txz ~/publish
 
       - name: Prepare nvim config with vendor
@@ -82,7 +82,7 @@ jobs:
           rm ctags.txz
           mv ctags ~/.config/nvim/vendor/
 
-          XZ_OPT=-9 tar cJf nvim_config_with_vendor.txz nvim
+          XZ_OPT=-9 tar cJf nvim_config_with_vendor.txz --exclude .git nvim
           mv ./*.txz ~/publish
 
       - name: Publish release

@@ -95,7 +95,19 @@ map("c", "<C-d>", "<del>")
 map("c", "<C-_>", "<c-k>")
 
 -- paste without overwrite register {{{
-map("x", "p", '"_dP')
+map("x", "p", function()
+    -- virtual block
+    if vim.api.nvim_get_mode().mode == "\22" then
+        vim.api.nvim_feedkeys("p", "n", true)
+    else
+        vim.api.nvim_feedkeys('"_dP', "n", true)
+    end
+end)
+
+-- print current mode {{{
+map({ "x", "n" }, "<leader>um", function()
+    print(vim.inspect(vim.api.nvim_get_mode()))
+end)
 
 -- Start new line {{{
 map("i", "<S-Return>", "<C-o>o")

@@ -47,16 +47,13 @@ function M.get_root_marker(root_markers)
     for _, item in pairs(root_markers) do
         dir = fn.finddir(item, ".;")
         if fn.empty(dir) == 0 then
-            break
+            M.root_dir = fn.fnamemodify(dir .. "/../", ":p:h")
+            M.root_marker = fn.fnamemodify(dir, ":p:h")
+            return M.root_marker, M.root_dir
         end
     end
-    if fn.empty(dir) == 0 then
-        M.root_dir = fn.fnamemodify(dir .. "/../", ":p:h")
-        M.root_marker = fn.fnamemodify(dir, ":p:h")
-    else
-        M.root_dir = fn.getcwd()
-        M.root_marker = fn.getcwd()
-    end
+    M.root_dir = fn.getcwd()
+    M.root_marker = fn.getcwd()
     return M.root_marker, M.root_dir
 end
 
@@ -71,6 +68,15 @@ end
 
 function M.find_file()
     fn.execute(M.find_command)
+end
+
+function M.live_grep()
+    if vim.api.nvim_get_mode().mode == "v" then
+        require("telescope-live-grep-args.shortcuts").grep_visual_selection()
+    else
+        --require("telescope-live-grep-args.shortcuts").grep_word_under_cursor()
+        require('telescope').extensions.live_grep_args.live_grep_args()
+    end
 end
 
 function M.update_ignore_config()

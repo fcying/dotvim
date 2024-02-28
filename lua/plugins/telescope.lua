@@ -108,12 +108,19 @@ function M.telescope_ltaglist(opts)
     }):find()
 end
 
-M.lazy = {
+M.lazy = { --{{{
     "nvim-telescope/telescope.nvim",
     dependencies = {
         { "nvim-lua/plenary.nvim" },
         { "fcying/telescope-ctags-outline.nvim" },
+        { "nvim-telescope/telescope-live-grep-args.nvim" },
         { "nvim-telescope/telescope-fzf-native.nvim", build = g.make },
+        {
+            "aznhe21/actions-preview.nvim",
+            config = function()
+                require("actions-preview").setup()
+            end
+        },
     },
     cmd = { "Telescope" },
     keys = {
@@ -134,9 +141,9 @@ M.lazy = {
         },
         --- @format disable
         { "ff", function() require("util").find_file() end, desc = "file", silent = true },
-        { "fb", "<cmd>Telescope buffers<cr>",     desc = "buffer" },
-        { "fg", "<cmd>Telescope grep_string<cr>", desc = "string" },
-        { "fg", "<cmd>Telescope grep_string<cr>", desc = "string", mode = "v" },
+        { "fb", "<cmd>Telescope buffers<cr>",                       desc = "buffer" },
+        { "fg", "<cmd>Telescope grep_string<cr>",                   desc = "string" },
+        { "fg", "<cmd>Telescope grep_string<cr>", mode = "v",       desc = "string" },
         { "fh", "<cmd>Telescope help_tags<cr>",                     desc = "help" },
         { "fj", "<cmd>Telescope jumplist<cr>",                      desc = "jumplist" },
         { "fl", "<cmd>Telescope current_buffer_fuzzy_find<cr>",     desc = "line" },
@@ -146,15 +153,16 @@ M.lazy = {
         { "fO", "<cmd>Telescope ctags_outline outline buf=all<CR>", desc = "all buf outline" },
         { "fr", "<cmd>Telescope resume<cr>",                        desc = "resume" },
         { "ft", "<cmd>Telescope tags<cr>",                          desc = "tag" },
-        { "f/", "<cmd>Telescope live_grep<cr>",                     desc = "live grep" },
-        { "gi", "<cmd>Telescope lsp_implementations<cr>",           desc = "lsp_implementations" },
-        { "gr", "<cmd>Telescope lsp_references include_current_line=true<cr>", desc = "lsp_references" },
-        { "go", "<cmd>Telescope lsp_type_definitions<cr>",  desc = "lsp_type_definitions" },
-        { "<leader>la", "<cmd>Telescope lsp_code_actions<cr>",      desc = "lsp_code_actions" },
-        { "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>",   desc = "lsp diagnostics" },
-        { "<leader>ls", "<cmd>Telescope lsp_workspace_symbols<cr>", desc = "lsp_document_symbols" },
+        { "f/", function() require("util").live_grep() end, mode = {"n", "x"},      desc = "live grep" },
+        { "gi", "<cmd>Telescope lsp_implementations<cr>",                           desc = "lsp_implementations" },
+        { "gr", "<cmd>Telescope lsp_references include_current_line=true<cr>",      desc = "lsp_references" },
+        { "go", "<cmd>Telescope lsp_type_definitions<cr>",                          desc = "lsp_type_definitions" },
+        { "<leader>la", function() require("actions-preview").code_actions() end,   desc = "lsp_code_actions" },
+        { "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>",                   desc = "lsp diagnostics" },
+        { "<leader>ls", "<cmd>Telescope lsp_workspace_symbols<cr>",                 desc = "lsp_document_symbols" },
     },
     config = function()
+        --vim.keymap.set("n", "f/", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
         local actions = require("telescope.actions")
         local toggle_modes = function()
             local mode = api.nvim_get_mode().mode
@@ -217,6 +225,7 @@ M.lazy = {
         require("telescope").load_extension("notify")
         require("telescope").load_extension("fzf")
         require("telescope").load_extension("ctags_outline")
+        require("telescope").load_extension("live_grep_args")
         M.telescope_update_ignore()
     end,
 }

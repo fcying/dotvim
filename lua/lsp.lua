@@ -164,6 +164,20 @@ function lsp_opts.ahk2()
     lsp_zero.configure("ahk2")
 end
 
+function lsp_opts.bashls()
+    local lsp_zero = require("lsp-zero")
+    local opts = {
+        filetypes = { "sh", "zsh" },
+        settings = {
+            bashIde = {
+                shellcheckArguments = "-e SC1090,SC1091,SC2010,SC2012,SC2015,SC2046,SC2086,"
+                    .. "SC2119,SC2120,SC2155,SC2164,SC2181,SC2206",
+            }
+        }
+    }
+    lsp_zero.configure("bashls", opts)
+end
+
 function lsp_opts.gopls()
     local lsp_zero = require("lsp-zero")
     local lsp_util = require("lspconfig/util")

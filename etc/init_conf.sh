@@ -16,10 +16,10 @@ if [[ $app == "ln" ]]; then
         ln -svf $PWD/../init.lua ~/.config/nvim/init.lua
     fi
 
-    if [ -f $HOME/.zshrc.local ]; then
-        sed -i "/CONFIG_DIR/d" $HOME/.zshrc.local
+    if [ -f $HOME/.shrc.local ]; then
+        sed -i "/CONFIG_DIR/d" $HOME/.shrc.local
     fi
-    echo "CONFIG_DIR=$config_dir" | tee -a $HOME/.zshrc.local
+    echo "CONFIG_DIR=$config_dir" | tee -a $HOME/.shrc.local
 
     ln -sfv $PWD/zshrc ~/.zshrc
     ln -sfv $PWD/bashrc ~/.bashrc

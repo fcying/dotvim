@@ -52,6 +52,7 @@ jobs:
           nvim --headless -c 'MasonInstall --sync clangd' -c 'q'
 
           echo "update mason script===================="
+          # replace link to file
           sed 's|/home/runner|~|' -i ~/.config/nvim/.run/mason/share/mason-schemas/lsp/clangd.json
           sed 's|/home/runner|~|' -i ~/.config/nvim/.run/mason/share/mason-schemas/lsp/lua-language-server.json
           rm ~/.config/nvim/.run/mason/bin/*

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 cd $(dirname $0)
-config_dir=$PWD
-echo $PWD
+config_dir=${PWD//$HOME/\$HOME}
+echo $config_dir
 
 app="ln"
 if [ -n "$1" ]; then
@@ -17,18 +17,18 @@ if [[ $app == "ln" ]]; then
     fi
 
     if [ -f $HOME/.shrc.local ]; then
-        sed -i "/CONFIG_DIR/d" $HOME/.shrc.local
+        sed -i --follow-symlinks "s|CONFIG_DIR=.*|CONFIG_DIR=$config_dir|" $HOME/.shrc.local
+    else
+        echo "CONFIG_DIR=$config_dir" | tee $HOME/.shrc.local
     fi
-    echo "CONFIG_DIR=$config_dir" | tee -a $HOME/.shrc.local
 
     ln -sfv $PWD/zshrc ~/.zshrc
     ln -sfv $PWD/bashrc ~/.bashrc
-    ln -sfv $PWD/bashenv ~/.bashenv
     ln -sfv $PWD/dircolors ~/.dircolors
     ln -sfv $PWD/inputrc ~/.inputrc
     ln -sfv $PWD/editorconfig ~/.editorconfig
 
-    mkdir ~/.tmux
+    mkdir -p ~/.tmux
     ln -sfv $PWD/tmux.conf ~/.tmux.conf
     ln -sfv $PWD/colortheme ~/.tmux
 

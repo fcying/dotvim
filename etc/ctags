@@ -30,7 +30,7 @@
 --langmap=vim:+(*vimrc*)
 --regex-vim=/(.*)\{\{\{/\1/k,key/
 
---langmap=sh:+(*bashrc)(*zshrc)
+--langmap=sh:+(*bashrc)(*zshrc)(*shrc.local)
 --regex-sh=/(.*)\{\{\{/\1/k,key/
 
 --regex-lua=/(.*)\{\{\{/\1/k,key/

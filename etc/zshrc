@@ -151,6 +151,8 @@ zinit light zsh-users/zsh-syntax-highlighting
 zinit ice wait'0' blockf lucid atload'PluginFinish'
 zinit light zsh-users/zsh-completions
 
+zinit light nix-community/nix-zsh-completions
+
 function PluginFinish() {
     if [ -n "$zinit_inited" ]; then
         zinit compile --all
@@ -222,9 +224,31 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
     ~/.tmux/plugins/tpm/bin/install_plugins
 fi
 
+# nix {{{
+export NIX_MIRROR=${NIX_MIRROR:-"cn"}
+function nix_install() {
+    if [[ "$NIX_MIRROR" == "cn" ]]; then
+        sh <(curl https://mirrors.tuna.tsinghua.edu.cn/nix/latest/install) --no-modify-profile --no-channel-add "$@"
+        mkdir -p ~/.config/nix
+        #echo 'substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://cache.nixos.org/' > ~/.config/nix/nix.conf
+        echo 'substituters = https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org/' > ~/.config/nix/nix.conf
+    else
+        sh <(curl -L https://nixos.org/nix/install) --no-modify-profile "$@"
+        #nix-channel --add https://nixos.org/channels/nixpkgs-unstable
+    fi
+    if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi
+    if [[ "$NIX_MIRROR" == "cn" ]]; then
+        #nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixpkgs-unstable nixpkgs
+        nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixpkgs-unstable nixpkgs
+        nix-channel --update
+    fi
+}
+alias nix_uninstall='sudo rm -rf ~/.nix-profile ~/.nix-channels ~/.nix-defexpr ~/.local/state/nix ~/.config/nix /nix/*'
+if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi
+
 # linuxbrew {{{
-export BREW_REMOTE=${BREW_REMOTE:-"cn"}
-if [[ "$BREW_REMOTE" == "cn" ]]; then
+export BREW_MIRROR=${BREW_MIRROR:-"cn"}
+if [[ "$BREW_MIRROR" == "cn" ]]; then
     #export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
     #export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
     #export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles"
@@ -239,6 +263,7 @@ elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
     BREW_PREFIX=/home/linuxbrew/.linuxbrew
 fi
 if [ -n "$BREW_PREFIX" ]; then
+    export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
     export HOMEBREW_PREFIX="$BREW_PREFIX"
     export HOMEBREW_CELLAR="$BREW_PREFIX/Cellar"
     export MANPATH="$BREW_PREFIX/share/man:$MANPATH"
@@ -351,7 +376,8 @@ function _git_prompt_info() {
 }
 setopt PROMPT_SUBST
 if [ -z "$CUSTOM_PROMPT" ]; then
-    PROMPT="%F{green}%n@%m%f:%B%F{blue}%~%b%f %F{red}$(_git_prompt_info)%f%(!.#.$) "
+    # shellcheck disable=SC2016
+    PROMPT='%F{green}%n@%m%f:%B%F{blue}%~%b%f %F{red}$(_git_prompt_info)%f%(!.#.$) '
 else
     PROMPT=$CUSTOM_PROMPT
 fi
@@ -443,6 +469,7 @@ alias pacrns='sudo pacman -Rns'
 # common alias {{{
 function cdls { builtin cd "$@" && ls --color=auto; }
 alias cd='cdls'
+alias df='df -h'
 alias lsblk='lsblk -oLABEL,NAME,MAJ:MIN,RM,SIZE,RO,TYPE,MOUNTPOINTS'
 alias zsh_history_clean='sort -t ";" -k 2 -u ~/.zsh_history | sort -o ~/.zsh_history'
 alias zsh_fix_gw='compaudit |xargs chmod -R g-w'
@@ -528,3 +555,4 @@ function adb_setenforce0() {
 }
 
 #zprof
+

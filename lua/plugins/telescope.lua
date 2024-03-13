@@ -219,6 +219,7 @@ M.lazy = { --{{{
                         zsh = "--sh-kinds=fk",
                         lua = "--lua-kinds=fk",
                     },
+                    --sorting_strategy = "ascending",
                 },
             },
         })

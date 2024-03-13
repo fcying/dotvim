@@ -171,7 +171,7 @@ function lsp_opts.bashls()
         settings = {
             bashIde = {
                 shellcheckArguments = "-e SC1090,SC1091,SC2010,SC2012,SC2015,SC2046,SC2086,"
-                    .. "SC2119,SC2120,SC2155,SC2164,SC2181,SC2206",
+                    .. "SC2119,SC2120,SC2154,SC2155,SC2164,SC2181,SC2206,SC2317",
             }
         }
     }

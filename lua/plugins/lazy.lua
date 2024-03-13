@@ -86,6 +86,7 @@ local plugins = {
     --require("config").leap(),
     require("config").flash(),
     require("config").foldsearch(),
+    --require("config").fern(),
     require("config").nvim_tree(),
     require("config").dashboard(),
     require("config").lualine(),

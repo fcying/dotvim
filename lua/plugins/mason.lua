@@ -46,6 +46,7 @@ function M.setup()
         "fcying/mason.nvim",
         lazy = false,
         build = ":MasonUpdate",
+        branch = "custom",
         config = function()
             require("mason").setup({
                 install_root_dir = g.runtime_dir .. "/mason",

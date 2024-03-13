@@ -18,7 +18,7 @@ local function find_config()
 
     --vim.notify(config_path)
     if config_path == "" then
-        config_path = util.root_marker .. config_name[1]
+        config_path = util.root_marker .. "/" .. config_name[1]
         return false
     end
 

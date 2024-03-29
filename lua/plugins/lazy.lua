@@ -62,11 +62,11 @@ local plugins = {
     {
         "Yggdroot/indentLine",
         cmd = "IndentLinesToggle",
+        keys = { { "<leader>i", "<cmd>IndentLinesToggle<CR>", desc = "IndentLinesToggle" } },
         config = function()
             g.indentLine_setColors = 1
             g.indentLine_enabled = 0
             g.indentLine_char_list = { "|", "¦", "┆", "┊" }
-            map("n", "<leader>i", ":IndentLinesToggle<CR>", { silent = true })
         end,
     },
     {

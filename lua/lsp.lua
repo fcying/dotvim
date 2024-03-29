@@ -221,7 +221,8 @@ function lsp_opts.lua()
     local lsp_zero = require("lsp-zero")
     require("neodev").setup({
         override = function(_, options)
-            if vim.loop.fs_stat(util.root_dir .. "/lua") then
+            if vim.loop.fs_stat(util.root_dir .. "/lua")
+                or vim.fn.expand("%:t") == ".nvim.lua" then
                 options.enabled = true
                 options.plugins = {
                     "plenary.nvim",

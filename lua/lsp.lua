@@ -218,35 +218,37 @@ function lsp_opts.python()
 end
 
 function lsp_opts.lua()
+    local libs = {
+        g.config_dir .. "/lua",
+    }
     local lsp_zero = require("lsp-zero")
     require("neodev").setup({
-        override = function(_, options)
-            if vim.loop.fs_stat(util.root_dir .. "/lua")
-                or vim.fn.expand("%:t") == ".nvim.lua" then
-                options.enabled = true
-                options.plugins = {
+        override = function(root_dir, library)
+            local filename = vim.fn.expand("%:t")
+            if filename == ".nvim.lua" then
+                library.enabled = true
+                library.plugins = false
+            elseif vim.loop.fs_stat(root_dir .. "/lua") then
+                library.enabled = true
+                library.plugins = {
                     "plenary.nvim",
                     "telescope.nvim",
-                    "mason.nvim",
+                    --"mason.nvim",
                     --"nvim-treesitter",
                 }
             end
-            --options.enabled = true
-            --options.plugins = true
+            --print(root_dir .. " " .. vim.inspect(library))
+            --library.enabled = true
+            --library.plugins = true
         end,
     })
 
-    -- :lua vim.notify(vim.inspect(vim.lsp.get_active_clients({ name = "lua_ls" })[1].config.settings.Lua))
+    -- :lua print(vim.inspect(vim.lsp.get_active_clients({ name = "lua_ls" })[1].config.settings.Lua))
     local opts = {
         settings = {
             Lua = {
-                workspace = {
-                    checkThirdParty = false,
-                    library = { g.config_dir .. "/lua" },
-                },
-                completion = {
-                    callSnippet = "Replace",
-                },
+                workspace = { library = libs, },
+                completion = { callSnippet = "Replace", },
                 diagnostics = {
                     enable = true,
                     disable = {
@@ -254,7 +256,8 @@ function lsp_opts.lua()
                         "undefined-field",
                         "empty-block",
                         "missing-fields",
-                        "inject-field"
+                        "inject-field",
+                        "lowercase-global",
                     },
                     --neededFileStatus = {
                     --    ['codestyle-check'] = 'Any',
@@ -314,6 +317,8 @@ function M.setup()
         map("n", "<leader>ltd", '<cmd>lua require("lsp").diagnostic_toggle()<CR>', opts)
         map("n", "<leader>lf", "<cmd>lua require('lsp').format()<CR>", opts)
         map("v", "<leader>lf", "<cmd>lua require('lsp').format()<CR><ESC>", opts)
+
+        --client.server_capabilities.semanticTokensProvider = nil
     end)
 
     for _, set in pairs(lsp_opts) do

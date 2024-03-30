@@ -94,6 +94,15 @@ map("c", "<C-b>", "<left>")
 map("c", "<C-d>", "<del>")
 map("c", "<C-_>", "<c-k>")
 
+-- cmd history search {{{
+map("c", "<c-k>", function()
+    return vim.fn.pumvisible() == 1 and "<c-p>" or "<up>"
+end, { expr = true, silent = false })
+map("c", "<c-j>", function()
+    return vim.fn.pumvisible() == 1 and "<c-n>" or "<down>"
+end, { expr = true, silent = false })
+
+
 -- paste without overwrite register {{{
 map("x", "p", function()
     -- virtual block

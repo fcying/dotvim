@@ -129,7 +129,7 @@ autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
 autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
 autocmd myau BufNewFile,BufRead .tasks setl filetype=taskini
 autocmd myau BufNewFile,BufRead syslog setl filetype=messages
-autocmd myau BufNewFile,BufRead *rc.local setl filetype=sh
+autocmd myau BufNewFile,BufRead *shrc.local setl filetype=sh
 
 autocmd myau BufNewFile,BufRead gitconfig setl filetype=gitconfig
 autocmd myau FileType gitconfig

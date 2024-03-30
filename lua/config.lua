@@ -300,22 +300,85 @@ function M.treesitter()
                 ignore_install = {},
                 matchup = { enable = true },
                 highlight = {
-                    enable = false,
+                    enable = true,
                     additional_vim_regex_highlighting = false,
                     disable = function(lang, buf)
-                        local disable_hl = { "help", "lua", "cpp", "c" }
-                        for _, l in ipairs(disable_hl) do
-                            if l == lang then
-                                return true
-                            end
-                        end
                         local max_filesize = 100 * 1024
                         local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
                         if ok and stats and stats.size > max_filesize then
                             return true
                         end
+
+                        local disable_hl = { "help" }
+                        if vim.tbl_contains(disable_hl, lang) then
+                            return true
+                        end
                     end,
                 },
+            })
+        end
+    }
+end
+
+function M.nt_textobjects()
+    return {
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        dependencies = { "nvim-treesitter/nvim-treesitter" },
+        config = function()
+            require("nvim-treesitter.configs").setup({
+                textobjects = {
+                    select = {
+                        enable = true,
+                        -- Automatically jump forward to textobj, similar to targets.vim
+                        lookahead = true,
+                        keymaps = {
+                            -- You can use the capture groups defined in textobjects.scm
+                            ["af"] = "@function.outer",
+                            ["if"] = "@function.inner",
+                            ["ac"] = "@class.outer",
+                            ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
+                            ["as"] = { query = "@scope", query_group = "locals", desc = "Select language scope" },
+                            ["al"] = "@loop.outer",
+                            ["il"] = "@loop.inner",
+                        },
+                        selection_modes = {
+                            ["@parameter.outer"] = "v", -- charwise
+                            ["@function.outer"] = "V",  -- linewise
+                            ["@class.outer"] = "<c-v>", -- blockwise
+                        },
+                        include_surrounding_whitespace = false,
+                    },
+                    move = {
+                        enable = true,
+                        set_jumps = true, -- whether to set jumps in the jumplist
+                        goto_next_start = {
+                            ["]c"] = "@class.outer",
+                            ["]]"] = { query = "@function.outer", desc = "Next function start" },
+                            ["]l"] = "@loop.*",
+                            ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
+                        },
+                        goto_previous_start = {
+                            ["[c"] = "@class.outer",
+                            ["[["] = { query = "@function.outer", desc = "Previous function start" },
+                            ["[l"] = { query = { "@loop.inner", "@loop.outer" } },
+                            ["[z"] = { query = "@fold", query_group = "folds", desc = "Previous fold" },
+                        },
+                        goto_next_end = {
+                            ["]C"] = "@class.outer",
+                            ["]}"] = "@function.outer",
+                        },
+                        goto_previous_end = {
+                            ["[C"] = "@class.outer",
+                            ["[{"] = "@function.outer",
+                        },
+                        goto_next = {
+                            ["]w"] = "@conditional.outer",
+                        },
+                        goto_previous = {
+                            ["[w"] = "@conditional.outer",
+                        }
+                    },
+                }
             })
         end
     }

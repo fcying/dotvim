@@ -113,6 +113,7 @@ local plugins = {
 
     -- coding {{{
     require("config").treesitter(),
+    require("config").nt_textobjects(),
     require("config").nt_cpp_tools(),
     --require("lsp").null_ls(),
     {
@@ -147,13 +148,15 @@ local plugins = {
     { "othree/xml.vim", ft = "xml" },
     { "wsdjeg/vim-autohotkey", ft = "autohotkey" },
     { "plasticboy/vim-markdown", ft = "markdown", dependencies = "godlygeek/tabular" },
+
+    -- misc {{{
 }
 
 -- lazy config {{{
 require("lazy").setup(plugins, {
     root = g.plug_dir,
     checker = {
-        enabled = true,
+        enabled = false,
         notify = true,
         frequency = 3600 * 12,
         check_pinned = false,

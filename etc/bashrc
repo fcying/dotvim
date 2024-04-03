@@ -182,8 +182,7 @@ type atuin >/dev/null 2>&1 && {
     eval "$(atuin init bash --disable-up-arrow)"
 }
 
-# z.lua {{{
-function z_lua_setup() {
+function zlua_install() {
     # wsl1 need it
     # sudo apt install lua-filesystem
     if [[ ! -f "$HOME/bin/z.lua" ]] || [[ "$1" == "update" ]]; then
@@ -198,15 +197,27 @@ function z_lua_setup() {
     alias zb='z -b'      # quickly cd to the parent directory
     alias zh='z -I -t .'
 }
-eval "$(lua $HOME/bin/z.lua --init bash once enhanced fzf)"
-function z_dirstack(){
-    if [ -z "$*" ]; then
-        _zlua --
-    else
-        _zlua -"$*"
-    fi
+
+use_zlua=1
+type zoxide >/dev/null 2>&1 && { 
+    use_zlua=1
 }
-alias d=' z_dirstack'
+
+# zoxide zlua {{{
+if [ $use_zlua -eq 0 ]; then
+    eval "$(zoxide init bash --cmd z)"
+else
+    zlua_install
+    eval "$(lua $HOME/bin/z.lua --init bash once enhanced fzf)"
+    function z_dirstack(){
+        if [ -z "$*" ]; then
+            _zlua --
+        else
+            _zlua -"$*"
+        fi
+    }
+    alias d=' z_dirstack'
+fi
 
 export GOPATH=$HOME/go
 PATH=$HOME/bin:$HOME/.local/bin:$HOME/tool/go/bin:$HOME/.cargo/bin:$PATH

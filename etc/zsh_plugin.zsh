@@ -1,39 +1,3 @@
-# https://github.com/robbyrussell/oh-my-zsh/tree/master/plugins/colored-man-pages
-if [[ "$OSTYPE" = solaris* ]]
-then
-	if [[ ! -x "$HOME/bin/nroff" ]]
-	then
-		mkdir -p "$HOME/bin"
-		cat > "$HOME/bin/nroff" <<EOF
-#!/bin/sh
-if [ -n "\$_NROFF_U" -a "\$1,\$2,\$3" = "-u0,-Tlp,-man" ]; then
-	shift
-	exec /usr/bin/nroff -u\$_NROFF_U "\$@"
-fi
-#-- Some other invocation of nroff
-exec /usr/bin/nroff "\$@"
-EOF
-		chmod +x "$HOME/bin/nroff"
-	fi
-fi
-
-function man() {
-	env \
-		LESS_TERMCAP_mb=$(printf "\e[1;31m") \
-		LESS_TERMCAP_md=$(printf "\e[1;31m") \
-		LESS_TERMCAP_me=$(printf "\e[0m") \
-		LESS_TERMCAP_se=$(printf "\e[0m") \
-		LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
-		LESS_TERMCAP_ue=$(printf "\e[0m") \
-		LESS_TERMCAP_us=$(printf "\e[1;32m") \
-		PAGER="${commands[less]:-$PAGER}" \
-		_NROFF_U=1 \
-		PATH="$HOME/bin:$PATH" \
-			man "$@"
-}
-
-
-
 # git alias {{{
 # https://github.com/robbyrussell/oh-my-zsh/tree/master/lib/git.zsh
 # https://github.com/robbyrussell/oh-my-zsh/tree/master/plugins/git
@@ -279,7 +243,7 @@ alias gwip='git add -A; git rm $(git ls-files --deleted) 2> /dev/null; git commi
 
 
 
-# zsh-completions
+# zsh-completions {{{
 setopt COMPLETE_IN_WORD    # Complete from both ends of a word.
 setopt ALWAYS_TO_END       # Move cursor to the end of a completed word.
 setopt PATH_DIRS           # Perform path search even on command names with slashes.

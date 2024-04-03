@@ -40,8 +40,9 @@ export LESS='-F -g -i -M -R -S -w -X -z-4'
 
 # LANG zh_CN.UTF-8 en_US.UTF-8 {{{
 export LANG=${ZSH_LANG:-"en_US.UTF-8"}
-export LC_ALL=$LANG
 export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
+# set LC_ALL nix get warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+#export LC_ALL=$LANG
 
 
 # path {{{
@@ -91,6 +92,10 @@ type nvim >/dev/null 2>&1 && {
     alias tvim='nvim -u ~/test/nvim/init.lua'
 }
 
+use_zlua=1
+type zoxide >/dev/null 2>&1 && {
+    use_zlua=1
+}
 
 # key bindings {{{
 bindkey -e  # Use emacs key bindings
@@ -107,7 +112,6 @@ zle -N edit-command-line
 bindkey '^xe' edit-command-line
 bindkey '^x^e' edit-command-line
 
-
 ### zinit {{{
 ZINIT_DIR=$HOME/.zinit
 if [ ! -f "$ZINIT_DIR/bin/zinit.zsh" ]; then
@@ -115,20 +119,18 @@ if [ ! -f "$ZINIT_DIR/bin/zinit.zsh" ]; then
     mkdir ~/.zinit
     git clone --depth 1 https://github.com/zdharma-continuum/zinit "$ZINIT_DIR"/bin
 fi
+declare -A ZINIT
+ZINIT[NO_ALIASES]=1
 source "$ZINIT_DIR/bin/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
 #zinit light Aloxaf/fzf-tab
 
-zinit ice wait'0' lucid; zinit light changyuheng/fz
-FZ_HISTORY_CD_CMD=_zlua
-
-#zinit ice wait'0' lucid; zinit light marlonrichert/zsh-hist
-#zstyle ':hist:*' auto-format no
-#hd() {
-#    hist delete $(history | fzf | awk '{print $1}')
-#}
+if [ $use_zlua -eq 1 ]; then
+    zinit ice wait'0' lucid; zinit light changyuheng/fz
+    FZ_HISTORY_CD_CMD=_zlua
+fi
 
 zinit ice wait'0' lucid; zinit light zsh-users/zsh-history-substring-search
 bindkey -M emacs '^p' history-substring-search-up
@@ -157,64 +159,58 @@ function PluginFinish() {
     if [ -n "$zinit_inited" ]; then
         zinit compile --all
     fi
-    source "$CONFIG_DIR"/zsh_plugin.zsh
+    source "$CONFIG_DIR/zsh_plugin.zsh"
     type PostLoad >/dev/null 2>&1 && PostLoad
-}
 
-
-# third party software {{{
-# fzf {{{
-function fzf_setup() {
-    local install=0
-    if [ ! -d ~/.fzf ]; then
-        install=1
-        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    elif [[ "$1" == "update" ]]; then
-        install=1
-        pushd ~/.fzf > /dev/null && git pull
-    fi
-    if [ $install -eq 1 ]; then
-        popd
-        ~/.fzf/install <<EOF
-        y
-EOF
-        ln -sf ~/.fzf/bin/fzf ~/bin/
+    # zoxide zlua {{{
+    if [ $use_zlua -eq 0 ]; then
+        eval "$(zoxide init zsh --cmd z)"
+    else
+        fzf_install
+        zlua_install
+        bindkey "^R" atuin-search
     fi
 }
-fzf_setup
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # atuin {{{
 type atuin >/dev/null 2>&1 && {
     eval "$(atuin init zsh --disable-up-arrow)"
 }
 
-# z.lua {{{
-function z_lua_setup() {
+function fzf_install() {
+    if [[ ! -f "$HOME/.fzf/install" ]] || [[ "$1" == "update" ]]; then
+        mkdir -p ~/.fzf
+        curl -sLo$HOME/.fzf/install https://raw.githubusercontent.com/junegunn/fzf/master/install
+        if [ $? -eq 0 ]; then
+            bash ~/.fzf/install --all
+            ln -sf ~/.fzf/bin/fzf ~/bin/
+        fi
+    fi
+    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+}
+
+function zlua_install() {
     # wsl1 need it
     # sudo apt install lua-filesystem
     if [[ ! -f "$HOME/bin/z.lua" ]] || [[ "$1" == "update" ]]; then
-        mkdir -p ~/bin
-        pushd ~/bin > /dev/null && curl -LO https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua
-        popd
+        curl -Lo$HOME/bin/z.lua https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua
     fi
     export _ZL_HYPHEN=1
-    alias zz='z -c'      # restrict matches to subdirs of $PWD
+    alias zc='z -c'      # restrict matches to subdirs of $PWD
     alias zi='z -i'      # cd with interactive selection
     alias zf='z -I'      # use fzf to select in multiple matches
     alias zb='z -b'      # quickly cd to the parent directory
     alias zh='z -I -t .'
+    function z_dirstack(){
+        if [ -z "$*" ]; then
+            _zlua --
+        else
+            _zlua -"$*"
+        fi
+    }
+    alias d=' z_dirstack'
+    eval "$(lua "$HOME/bin/z.lua" --init zsh enhanced once fzf)"
 }
-eval "$(lua "$HOME/bin/z.lua" --init zsh once enhanced fzf)"
-z_lua_setup
-function z_dirstack(){
-    if [ -z "$*" ]; then
-        _zlua --
-    else
-        _zlua -"$*"
-    fi
-}
-alias d=' z_dirstack'
 
 # tmux {{{
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
@@ -225,36 +221,47 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
 fi
 
 # nix {{{
-export NIX_MIRROR=${NIX_MIRROR:-"cn"}
+NIX_MIRROR=${NIX_MIRROR:-"cn"}
 function nix_install() {
+    if [ $(mount | grep -c "/nix") -eq 0 ]; then
+        sudo mkdir -p /home/nix
+        sudo mount --bind /home/nix /nix
+    fi
+    mkdir -p ~/.config/nix
     if [[ "$NIX_MIRROR" == "cn" ]]; then
         sh <(curl https://mirrors.tuna.tsinghua.edu.cn/nix/latest/install) --no-modify-profile --no-channel-add "$@"
-        mkdir -p ~/.config/nix
-        #echo 'substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://cache.nixos.org/' > ~/.config/nix/nix.conf
-        echo 'substituters = https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org/' > ~/.config/nix/nix.conf
+        echo 'substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://cache.nixos.org/' > ~/.config/nix/nix.conf
     else
         sh <(curl -L https://nixos.org/nix/install) --no-modify-profile "$@"
         #nix-channel --add https://nixos.org/channels/nixpkgs-unstable
     fi
+    echo 'extra-experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
     if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi
     if [[ "$NIX_MIRROR" == "cn" ]]; then
-        #nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixpkgs-unstable nixpkgs
-        nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixpkgs-unstable nixpkgs
+        nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixpkgs-unstable nixpkgs
         nix-channel --update
+    fi
+}
+function nix_update(){
+    if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
+        USER=$(id -u -n)
+        . $HOME/.nix-profile/etc/profile.d/nix.sh
+        nix-channel --update
+        nix profile upgrade --all
+        nix-collect-garbage --delete-older-than 7d
     fi
 }
 alias nix_uninstall='sudo rm -rf ~/.nix-profile ~/.nix-channels ~/.nix-defexpr ~/.local/state/nix ~/.config/nix /nix/*'
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi
 
 # linuxbrew {{{
-export BREW_MIRROR=${BREW_MIRROR:-"cn"}
+BREW_MIRROR=${BREW_MIRROR:-"cn"}
 if [[ "$BREW_MIRROR" == "cn" ]]; then
-    #export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
-    #export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
-    #export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles"
-    export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.ustc.edu.cn/brew.git"
-    export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.ustc.edu.cn/homebrew-core.git"
-    export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.ustc.edu.cn/homebrew-bottles/bottles"
+    export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
+    export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+    export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
+else
+    export HOMEBREW_BREW_GIT_REMOTE="https://github.com/Homebrew/brew.git"
 fi
 BREW_PREFIX=""
 if [ -d "$HOME/.linuxbrew/bin" ]; then
@@ -263,11 +270,10 @@ elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
     BREW_PREFIX=/home/linuxbrew/.linuxbrew
 fi
 if [ -n "$BREW_PREFIX" ]; then
-    export FPATH="$BREW_PREFIX/share/zsh/site-functions:$FPATH"
     export HOMEBREW_PREFIX="$BREW_PREFIX"
-    export HOMEBREW_CELLAR="$BREW_PREFIX/Cellar"
-    export MANPATH="$BREW_PREFIX/share/man:$MANPATH"
-    export INFOPATH="$BREW_PREFIX/share/info:$INFOPATH"
+    export FPATH="$HOMEBREW_PREFIX/share/zsh/site-functions:$FPATH"
+    export MANPATH="$HOMEBREW_PREFIX/share/man:$MANPATH"
+    export INFOPATH="$HOMEBREW_PREFIX/share/info:$INFOPATH"
     function brew() {
         PATH_TEMP=$PATH
         #export LDFLAGS="-R$HOMEBREW_PREFIX/lib"
@@ -277,10 +283,9 @@ if [ -n "$BREW_PREFIX" ]; then
         unset PATH_TEMP
     }
     function brew_gcc() {
-        type "$HOMEBREW_PREFIX/bin/gcc-$1" > /dev/null 2>&1
-        if [ $? -eq 0 ]; then
-            export HOMEBREW_CC=gcc-$1
-            export HOMEBREW_CXX=g++-$1
+        if type "$HOMEBREW_PREFIX/bin/gcc-$1" > /dev/null 2>&1; then
+            export HOMEBREW_CC=$HOMEBREW_PREFIX/bin/gcc-$1
+            export HOMEBREW_CXX=$HOMEBREW_PREFIX/bin/g++-$1
             echo "brew set gcc version: $1"
         else
             echo "brew can't found gcc version: $1"
@@ -293,10 +298,9 @@ if [ -n "$BREW_PREFIX" ]; then
         export PATH=${PATH##*"linuxbrew/sbin:"}
     }
 fi
-unset BREW_PREFIX
-alias brew_autoremove='brew bundle dump && brew bundle --force cleanup && rm Brewfile'
 function brew_doctor() {
-    brew doctor $(brew doctor --list-checks | grep -v stray_headers)
+    # stray_headers check_cask_quarantine_support check_cask_software_versions
+    brew doctor $(brew doctor --list-checks | grep -Pv "stray_headers|check_cask_quarantine_support|check_cask_software_versions")
 }
 function brew_update() {
     brew update
@@ -305,23 +309,20 @@ function brew_update() {
     brew_doctor
 }
 function brew_install() {
-    if [[ "$1" == "origin" ]]; then
-        bash -c "$(curl -fsSL https://github.com/Homebrew/install/raw/master/install.sh)"
+    if [[ "$BREW_MIRROR" == "cn" ]]; then
+        pushd /tmp
+        rm -rf brew-install
+        git clone --depth=1 https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/install.git brew-install
+        bash brew-install/install.sh
+        rm -rf brew-install
+        popd
     else
-        echo "install from cdn"
-        bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/Homebrew/install@master/install.sh)"
+        bash -c "$(curl -fsSL https://github.com/Homebrew/install/raw/master/install.sh)"
     fi
 }
 function brew_set_mirror() {
-    if [[ "$1" == "origin" ]]; then
-        git -C "$(brew --repo)" remote set-url origin https://github.com/Homebrew/brew.git
-        git -C "$(brew --repo homebrew/core)" remote set-url origin https://github.com/Homebrew/homebrew-core.git
-        brew update-reset
-    else
-        git -C "$(brew --repo)" remote set-url origin $HOMEBREW_BREW_GIT_REMOTE
-        git -C "$(brew --repo homebrew/core)" remote set-url origin $HOMEBREW_CORE_GIT_REMOTE
-        brew update-reset
-    fi
+    git -C "$(brew --repo)" remote set-url origin $HOMEBREW_BREW_GIT_REMOTE
+    brew update-reset
 }
 function brew_fix_ssl() {
     sed -i '/^insecure$/d' ~/.curlrc
@@ -337,10 +338,13 @@ function soft_update() {
     zinit update --all
     zinit compile --all
 
-    fzf_setup update
-    z_lua_setup update
+    fzf_install update
+    zlua_install update
 
     tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/update_plugins all
+
+    brew_update
+    nix_update
 }
 
 # PROMPT {{{

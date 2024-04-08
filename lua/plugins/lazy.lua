@@ -15,16 +15,9 @@ map("n", "<leader>pr", ":Lazy clean<CR>")
 
 local plugins = {
     require("config").gen_clang_conf(),
+    require("config").suda(),
     { "wsdjeg/vim-fetch", lazy = false },
     { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
-    {
-        "lambdalisue/suda.vim",
-        cmd = { "SudoRead", "SudoWrite" },
-        config = function()
-            api.nvim_create_user_command("SudoRead", "SudaRead", {})
-            api.nvim_create_user_command("SudoWrite", "SudaWrite", {})
-        end,
-    },
     {
         "mbbill/fencview",
         cmd = { "FencView", "FencAutoDetect" },

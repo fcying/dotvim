@@ -782,6 +782,16 @@ function M.gen_clang_conf()
     return { "fcying/gen_clang_conf.vim", lazy = false }
 end
 
+function M.suda()
+    return {
+        "lambdalisue/suda.vim",
+        lazy = false,
+        init = function()
+            vim.g.suda_smart_edit = 1
+        end
+    }
+end
+
 function M.lastplace()
     return {
         "ethanholz/nvim-lastplace",

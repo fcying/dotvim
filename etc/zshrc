@@ -41,8 +41,7 @@ export LESS='-F -g -i -M -R -S -w -X -z-4'
 # LANG zh_CN.UTF-8 en_US.UTF-8 {{{
 export LANG=${ZSH_LANG:-"en_US.UTF-8"}
 export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
-# set LC_ALL nix get warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
-#export LC_ALL=$LANG
+export LC_ALL=$LANG
 
 
 # path {{{
@@ -159,8 +158,21 @@ function PluginFinish() {
     if [ -n "$zinit_inited" ]; then
         zinit compile --all
     fi
-    source "$CONFIG_DIR/zsh_plugin.zsh"
+    if [ -f "$CONFIG_DIR/zsh_plugin.zsh" ]; then
+        source "$CONFIG_DIR/zsh_plugin.zsh"
+    fi
     type PostLoad >/dev/null 2>&1 && PostLoad
+
+    if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
+        . $HOME/.nix-profile/etc/profile.d/nix.sh;
+        if [ -z "$LOCALE_ARCHIVE" ]; then
+            # slow nix eval nixpkgs#glibcLocales.outPath
+            local ret=$(nix profile list 2>/dev/null | grep glibcLocales -A 3 | tail -1 | grep -o "/nix.*")
+            if [ -n "$ret" ]; then
+                export LOCALE_ARCHIVE=$ret/lib/locale/locale-archive
+            fi
+        fi
+    fi
 
     # zoxide zlua {{{
     if [ $use_zlua -eq 0 ]; then
@@ -222,24 +234,48 @@ fi
 
 # nix {{{
 NIX_MIRROR=${NIX_MIRROR:-"cn"}
+function nix_subtituters() {
+    local name=$1
+    sed -i "/substituters/d" ~/.config/nix/nix.conf
+    if [ "$name" == "tuna" ]; then
+        echo "substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://cache.nixos.org/" >> ~/.config/nix/nix.conf
+    elif [ "$name" == "bfsu" ]; then
+        echo "substituters = https://mirrors.bfsu.edu.cn/nix-channels/store https://cache.nixos.org/" >> ~/.config/nix/nix.conf
+    elif [ "$name" == "ustc" ]; then
+        echo "substituters = https://mirrors.ustc.edu.cn/nix-channels/store https://cache.nixos.org/" >> ~/.config/nix/nix.conf
+    elif [ "$name" == "sjtu" ]; then
+        echo "substituters = https://mirror.sjtu.edu.cn/nix-channels/store https://cache.nixos.org/" >> ~/.config/nix/nix.conf
+    fi
+}
+function nix_channel() {
+    local name=$1
+    if [ "$name" == "tuna" ]; then
+        nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixpkgs-unstable nixpkgs
+    elif [ "$name" == "bfsu" ]; then
+        nix-channel --add https://mirrors.bfsu.edu.cn/nix-channels/nixpkgs-unstable nixpkgs
+    elif [ "$name" == "ustc" ]; then
+        nix-channel --add https://mirrors.ustc.edu.cn/nix-channels/nixpkgs-unstable nixpkgs
+    else
+        nix-channel --add https://nixos.org/channels/nixpkgs-unstable
+    fi
+    nix-channel --update
+}
 function nix_install() {
     if [ $(mount | grep -c "/nix") -eq 0 ]; then
-        sudo mkdir -p /home/nix
+        sudo mkdir -p /home/nix /nix
         sudo mount --bind /home/nix /nix
+        sudo chown -R $(id -u -n):$(id -g -n) /nix
     fi
     mkdir -p ~/.config/nix
+    echo 'extra-experimental-features = nix-command flakes' > ~/.config/nix/nix.conf
     if [[ "$NIX_MIRROR" == "cn" ]]; then
-        sh <(curl https://mirrors.tuna.tsinghua.edu.cn/nix/latest/install) --no-modify-profile --no-channel-add "$@"
-        echo 'substituters = https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store https://cache.nixos.org/' > ~/.config/nix/nix.conf
+        #sh <(curl https://mirrors.tuna.tsinghua.edu.cn/nix/latest/install) --no-modify-profile --no-channel-add "$@"
+        sh <(curl https://mirrors.bfsu.edu.cn/nix/latest/install) --no-modify-profile --no-channel-add "$@"
+        nix_subtituters ustc
+        if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi
+        nix_channel bfsu
     else
         sh <(curl -L https://nixos.org/nix/install) --no-modify-profile "$@"
-        #nix-channel --add https://nixos.org/channels/nixpkgs-unstable
-    fi
-    echo 'extra-experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
-    if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi
-    if [[ "$NIX_MIRROR" == "cn" ]]; then
-        nix-channel --add https://mirrors.tuna.tsinghua.edu.cn/nix-channels/nixpkgs-unstable nixpkgs
-        nix-channel --update
     fi
 }
 function nix_update(){
@@ -252,7 +288,6 @@ function nix_update(){
     fi
 }
 alias nix_uninstall='sudo rm -rf ~/.nix-profile ~/.nix-channels ~/.nix-defexpr ~/.local/state/nix ~/.config/nix /nix/*'
-if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi
 
 # linuxbrew {{{
 BREW_MIRROR=${BREW_MIRROR:-"cn"}
@@ -263,14 +298,13 @@ if [[ "$BREW_MIRROR" == "cn" ]]; then
 else
     export HOMEBREW_BREW_GIT_REMOTE="https://github.com/Homebrew/brew.git"
 fi
-BREW_PREFIX=""
+export HOMEBREW_PREFIX=""
 if [ -d "$HOME/.linuxbrew/bin" ]; then
-    BREW_PREFIX=$HOME/.linuxbrew
+    HOMEBREW_PREFIX=$HOME/.linuxbrew
 elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
-    BREW_PREFIX=/home/linuxbrew/.linuxbrew
+    HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
 fi
-if [ -n "$BREW_PREFIX" ]; then
-    export HOMEBREW_PREFIX="$BREW_PREFIX"
+if [ -n "$HOMEBREW_PREFIX" ]; then
     export FPATH="$HOMEBREW_PREFIX/share/zsh/site-functions:$FPATH"
     export MANPATH="$HOMEBREW_PREFIX/share/man:$MANPATH"
     export INFOPATH="$HOMEBREW_PREFIX/share/info:$INFOPATH"
@@ -303,10 +337,12 @@ function brew_doctor() {
     brew doctor $(brew doctor --list-checks | grep -Pv "stray_headers|check_cask_quarantine_support|check_cask_software_versions")
 }
 function brew_update() {
-    brew update
-    brew upgrade
-    brew cleanup --prune 7
-    brew_doctor
+    if [ -n "$HOMEBREW_PREFIX" ]; then
+        brew update
+        brew upgrade
+        brew cleanup --prune 7
+        brew_doctor
+    fi
 }
 function brew_install() {
     if [[ "$BREW_MIRROR" == "cn" ]]; then

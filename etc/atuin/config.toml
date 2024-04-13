@@ -133,3 +133,6 @@ common_subcommands = [
 common_prefix = [
   "sudo",
 ]
+
+[sync]
+records = true

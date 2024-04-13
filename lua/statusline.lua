@@ -46,7 +46,7 @@ function M.lsp_progress()
 
     if vim.tbl_count(messages) > 0 then
         local message1 = messages[1]
-        --vim.notify(vim.inspect(messages))
+        --vim.print(messages)
 
         local name = message1.name or nil
         local title = message1.title or nil

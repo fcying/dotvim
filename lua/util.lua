@@ -98,7 +98,7 @@ function M.update_ignore_config()
     g.gencconf_ignore_dir = M.option.dir
     g.gencconf_ignore_file = M.option.file
     g.gencconf_default_option = vim.tbl_deep_extend("force", M.option.cconf, Option.cconf)
-    --vim.notify(vim.inspect(g.gencconf_default_option))
+    --vim.print(g.gencconf_default_option)
 
     require("plugins.telescope").telescope_update_ignore()
 end
@@ -125,7 +125,7 @@ function M.go2def(str, opts)
                 ---@diagnostic disable-next-line
                 local ret = vim.lsp.buf_request_sync(0, "textDocument/definition", params, 1000)
 
-                --vim.notify(vim.inspect(ret))
+                --vim.print(ret)
                 if ret ~= nil and next(ret) then
                     local result = ret[next(ret)].result or {}
                     if #result == 1 then

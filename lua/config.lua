@@ -25,7 +25,7 @@ function M.fugitive()
                     local run = ""
                     if vim.bo.filetype == "git" then
                         result = fn["fugitive#Cfile"]()
-                        --print(vim.inspect(result))
+                        --vim.print(result)
                         if #result > 0 then
                             if string.match(result, "+Gdiffsplit") then
                                 run = "G" .. mode .. " " .. result
@@ -541,7 +541,7 @@ function M.cmp_dictionary()
             paths = dict[vim.bo.filetype] or {}
         end
         vim.list_extend(paths, dict["*"])
-        --vim.notify(vim.inspect(paths))
+        --vim.print(paths)
         return paths
     end
 
@@ -732,6 +732,17 @@ function M.nvim_notify()
                     local msg = table.concat(print_safe_args, " ")
                     vim.notify(msg, vim.log.levels.INFO)
                 end
+                --- @diagnostic disable-next-line
+                vim.print = function(...)
+                    for i = 1, select("#", ...) do
+                        local o = select(i, ...)
+                        if type(o) == "string" then
+                            vim.notify(o, vim.log.levels.INFO)
+                        else
+                            vim.notify(vim.inspect(o), vim.log.levels.INFO)
+                        end
+                    end
+                end
                 -- redir pcall message, get treesitter error
                 --_G.error = function(...)
                 --    local print_safe_args = {}
@@ -836,8 +847,8 @@ end
 
 function M.foldsearch()
     return {
-        "fcying/vim-foldsearch",
-        cmd = { "Fp", "Fw", "Fs", "FS", "Fl", "Fi", "Fd", "Fe" },
+        "embear/vim-foldsearch",
+        cmd = { "Fw", "Fs", "Fp", "FS", "Ft", "Fl", "Fi", "Fd", "Fe" },
         init = function()
             g.foldsearch_highlight = 1
             g.foldsearch_disable_mappings = 0
@@ -960,7 +971,7 @@ function M.nvim_tree()
                     if guifg or guibg then
                         vim.cmd(cmd)
                     end
-                    --print(vim.inspect(hl_group))
+                    --vim.print(hl_group)
                 end,
             })
             require("nvim-tree").setup({

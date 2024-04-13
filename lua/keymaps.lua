@@ -115,7 +115,7 @@ end)
 
 -- print current mode {{{
 map({ "x", "n" }, "<leader>um", function()
-    print(vim.inspect(vim.api.nvim_get_mode()))
+    vim.print(vim.api.nvim_get_mode())
 end)
 
 -- Start new line {{{

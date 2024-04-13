@@ -49,7 +49,7 @@ function M.telescope_ltaglist(opts)
     })
 
     local make_display = function(entry)
-        --vim.notify(vim.inspect(entry))
+        --vim.print(entry)
         return displayer({
             { entry.filename },
             { entry.text },

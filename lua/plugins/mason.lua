@@ -19,7 +19,7 @@ function M.get_version(name)
         ver = nil
     end
 
-    --vim.notify("get " .. vim.inspect(name) .. " " .. vim.inspect(ver))
+    --vim.print("get " .. name .. " " .. ver)
     return ver
 end
 

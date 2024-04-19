@@ -8,7 +8,7 @@ Option = {
     mru = {},   -- ignore mru
     rg = {},    -- ignore rg
     lsp = {},   -- ignore lsp server
-    cconf = {}, -- for g:gencconf_default_option
+    gencconf_default_option = {}, -- for g:gencconf_default_option
 }
 local option_default = {
     -- ignore list
@@ -16,7 +16,7 @@ local option_default = {
     file = { "*.sw?", "~$*", "*.bak", "*.exe", "*.o", "*.so", "*.py[co]", "tags" },
     mru = { "*.so", "*.exe", "*.py[co]", "*.sw?", "~$*", "*.bak", "*.tmp", "*.dll" },
     rg = { "--max-columns=300", "--iglob=!obj", "--iglob=!out" },
-    cconf = {
+    gencconf_default_option = {
         ["*"] = { "-ferror-limit=0" },
         c = { "gcc", "-c", "-std=c11" },
         cpp = { "g++", "-c", "-std=c++14" },
@@ -97,7 +97,7 @@ function M.update_ignore_config()
     -- gen_clang_conf.vim
     g.gencconf_ignore_dir = M.option.dir
     g.gencconf_ignore_file = M.option.file
-    g.gencconf_default_option = vim.tbl_deep_extend("force", M.option.cconf, Option.cconf)
+    g.gencconf_default_option = vim.tbl_deep_extend("force", M.option.gencconf_default_option, Option.gencconf_default_option)
     --vim.print(g.gencconf_default_option)
 
     require("plugins.telescope").telescope_update_ignore()

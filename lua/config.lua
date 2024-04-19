@@ -789,8 +789,13 @@ function M.marks()
 end
 
 function M.gen_clang_conf()
-    vim.cmd([[ let g:gencconf_storein_rootmarker = get(g:,'gencconf_storein_rootmarker',1) ]])
-    return { "fcying/gen_clang_conf.vim", lazy = false }
+    return {
+        "fcying/gen_clang_conf.vim",
+        lazy = false,
+        init = function()
+            vim.cmd([[ let g:gencconf_storein_rootmarker = get(g:,'gencconf_storein_rootmarker',1) ]])
+        end
+    }
 end
 
 function M.suda()

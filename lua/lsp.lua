@@ -2,6 +2,7 @@ local g, cmd, fn, lsp, api = vim.g, vim.cmd, vim.fn, vim.lsp, vim.api
 local util = require("util")
 local map = util.map
 local M = {}
+local configs = {}
 local lsp_opts = {}
 
 local formats = {
@@ -105,27 +106,26 @@ function M.null_ls()
     }
 end
 
-function lsp_opts.qmlls()
-    local lsp_zero = require("lsp-zero")
+function configs.qmlls()
     local lsp_util = require("lspconfig/util")
-    local opts = {
+    lsp_opts["qmlls"] = {
         cmd = { "qmlls", "--build-dir", util.root_dir .. "/build" },
         filetypes = { "qml" },
         root_dir = function(fname)
             return lsp_util.find_git_ancestor(fname)
         end,
     }
-    lsp_zero.configure("qmlls", opts)
 end
 
-function lsp_opts.clangd()
-    local lsp_zero = require("lsp-zero")
-    local clangd_cmd = { "clangd" }
-    table.insert(clangd_cmd, "--background-index")
-    table.insert(clangd_cmd, "--all-scopes-completion")
-    table.insert(clangd_cmd, "--completion-style=detailed")
-    table.insert(clangd_cmd, "--header-insertion=iwyu")
-    table.insert(clangd_cmd, "--pch-storage=memory")
+function configs.clangd()
+    local clangd_cmd = {
+        "clangd",
+        "--background-index",
+        "--all-scopes-completion",
+        "--completion-style=detailed",
+        "--header-insertion=iwyu",
+        "--pch-storage=memory",
+    }
     if g.clangd_query_driver then
         table.insert(clangd_cmd, "--query-driver=" .. g.clangd_query_driver)
     end
@@ -135,15 +135,13 @@ function lsp_opts.clangd()
 
     cmd([[ autocmd myau FileType c,cpp nnoremap <silent> <buffer> <Leader>h <ESC>:ClangdSwitchSourceHeader<CR> ]])
 
-    local opts = {
+    lsp_opts["clangd"] = {
         cmd = clangd_cmd,
         --handlers = { ['textDocument/publishDiagnostics'] = diagnostics_config(0) },
     }
-    lsp_zero.configure("clangd", opts)
 end
 
-function lsp_opts.ahk2()
-    local lsp_zero = require("lsp-zero")
+function configs.ahk2()
     local path = require("mason-core.path").package_prefix("autohotkey2-lsp")
     local InterpreterPath = "AutoHotkey64.exe"
     if fn.has("linux") == 1 then
@@ -161,12 +159,10 @@ function lsp_opts.ahk2()
         end,
     }
     require("lspconfig.configs")["ahk2"] = { default_config = opts }
-    lsp_zero.configure("ahk2")
 end
 
-function lsp_opts.bashls()
-    local lsp_zero = require("lsp-zero")
-    local opts = {
+function configs.bashls()
+    lsp_opts["bashls"] = {
         filetypes = { "sh", "zsh" },
         settings = {
             bashIde = {
@@ -175,13 +171,11 @@ function lsp_opts.bashls()
             }
         }
     }
-    lsp_zero.configure("bashls", opts)
 end
 
-function lsp_opts.gopls()
-    local lsp_zero = require("lsp-zero")
+function configs.gopls()
     local lsp_util = require("lspconfig/util")
-    local opts = {
+    lsp_opts["gopls"] = {
         settings = {
             gopls = {
                 semanticTokens = true,
@@ -194,12 +188,10 @@ function lsp_opts.gopls()
             return lsp_util.root_pattern("go.work", "go.mod", ".root", ".git")(fname)
         end,
     }
-    lsp_zero.configure("gopls", opts)
 end
 
-function lsp_opts.python()
-    local lsp_zero = require("lsp-zero")
-    local opts = {
+function configs.python()
+    lsp_opts["pylsp"] = {
         settings = {
             pylsp = {
                 plugins = {
@@ -214,14 +206,12 @@ function lsp_opts.python()
             },
         },
     }
-    lsp_zero.configure("pylsp", opts)
 end
 
-function lsp_opts.lua()
+function configs.lua()
     local libs = {
         g.config_dir .. "/lua",
     }
-    local lsp_zero = require("lsp-zero")
     require("neodev").setup({
         override = function(root_dir, library)
             local filename = vim.fn.expand("%:t")
@@ -275,8 +265,9 @@ function lsp_opts.lua()
             },
         },
     }
-    --require("lspconfig").lua_ls.setup(opts)
-    lsp_zero.configure("lua_ls", lsp_zero.nvim_lua_ls(opts))
+
+    local lsp_zero = require("lsp-zero")
+    lsp_opts["lua_ls"] = lsp_zero.nvim_lua_ls(opts)
 end
 
 function M.setup()
@@ -321,7 +312,7 @@ function M.setup()
         --client.server_capabilities.semanticTokensProvider = nil
     end)
 
-    for _, set in pairs(lsp_opts) do
+    for _, set in pairs(configs) do
         set()
     end
 
@@ -334,7 +325,12 @@ function M.setup()
         automatic_installation = false,
         handlers = {
             function(server_name)
-                if fn.index(Option.lsp, server_name) == -1 then
+                --vim.print(server_name)
+                if fn.index(Option.lsp, server_name) ~= -1 then
+                    return
+                elseif lsp_opts[server_name] ~= nil then
+                    lsp_zero.configure(server_name, lsp_opts[server_name])
+                else
                     lsp_zero.default_setup(server_name)
                 end
             end,
@@ -342,7 +338,9 @@ function M.setup()
     })
 
     -- not managed by mason
-    lsp_zero.default_setup("qmlls")
+    if fn.executable("qmlls") == 1 then
+        lsp_zero.configure("qmlls", lsp_opts["qmlls"])
+    end
 end
 
 return M

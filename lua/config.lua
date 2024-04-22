@@ -201,7 +201,9 @@ end
 
 function M.window_picker()
     return {
-        "s1n7ax/nvim-window-picker",
+        --"s1n7ax/nvim-window-picker",
+        "fcying/nvim-window-picker",
+        branch = "prompt",
         event = "VeryLazy",
         keys = {
             {
@@ -223,7 +225,7 @@ function M.window_picker()
                 autoselect_one = true,
                 include_current_win = true,
                 bo = {
-                    filetype = { "incline", "NvimTree" },
+                    filetype = { "incline" },
                     buftype = { "terminal", "quickfix" },
                 },
             },
@@ -983,9 +985,24 @@ function M.nvim_tree()
                 actions = {
                     open_file = {
                         window_picker = {
-                            enable = true,
-                            picker = require("window-picker").pick_window,
+                            enable = false,
                             --picker = "default",
+                            --picker = require("window-picker").pick_window,
+                            picker = function()
+                                local win_id = require("window-picker").pick_window({
+                                    show_no_windows_prompt = false,
+                                    filter_rules = {
+                                        autoselect_one = true,
+                                        include_current_win = false,
+                                    },
+                                })
+                                if win_id then
+                                    return win_id
+                                else
+                                    require("nvim-tree.api").node.open.no_window_picker()
+                                    return nil
+                                end
+                            end,
                         }
                     },
                 },

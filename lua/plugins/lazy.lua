@@ -166,10 +166,11 @@ require("lazy").setup(plugins, {
             reset = true,
             paths = { g.config_dir },
             disabled_plugins = {
-                "gzip",
                 --"matchit",
                 --"matchparen",
-                --"netrwPlugin",
+                "gzip",
+                "netrw",
+                "netrwPlugin",
                 "tarPlugin",
                 "tohtml",
                 "tutor",

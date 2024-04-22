@@ -10,7 +10,8 @@ end
 
 local function find_config()
     for _, name in ipairs(config_name) do
-        config_path = fn.findfile(name, util.root_marker .. "," .. util.root_dir)
+        --config_path = fn.findfile(name, util.root_marker .. "," .. util.root_dir)
+        config_path = fn.findfile(name, util.root_marker .. ".;")
         if config_path ~= "" then
             break
         end

@@ -57,6 +57,12 @@ function M.get_root_marker(root_markers)
     return M.root_marker, M.root_dir
 end
 
+function M.get_last_directory(path)
+    path = path:gsub("[/\\]$", "")
+    local last_dir = path:match("[\\/]([^\\/]+)$")
+    return last_dir
+end
+
 -- FIXME add getregion() function echo has("patch-9.1.0127")
 function M.get_visual_selection()
     local _, ls, cs = unpack(vim.fn.getpos("v"))

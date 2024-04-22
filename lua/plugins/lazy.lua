@@ -128,7 +128,7 @@ local plugins = {
         event = { "BufReadPre", "BufNewFile" },
         dependencies = {
             require("plugins.mason").setup(),
-            { "folke/neodev.nvim" },
+            { "folke/neodev.nvim", lazy = true },
             { "williamboman/mason-lspconfig.nvim" },
         },
     },

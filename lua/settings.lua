@@ -118,22 +118,22 @@ opt.wildignore = opt.wildignore + "*.gba,*.sfc,*.078,*.nds,*.smd,*.smc"
 opt.wildignore = opt.wildignore + "*.linux2,*.win32,*.darwin,*.freebsd,*.linux,*.android"
 
 -- filetype {{{
+vim.api.nvim_create_augroup("myft", { clear = true })
 vim.cmd([[
-autocmd myau FileType go setlocal noexpandtab nolist
-autocmd myau FileType vim,json,jsonc,yaml,toml,dosbatch
+autocmd myft FileType go setlocal noexpandtab nolist
+autocmd myft FileType vim,json,jsonc,yaml,toml,dosbatch
     \ setlocal shiftwidth=2
     \ softtabstop=2
     \ tabstop=2
     \ expandtab
-autocmd myau BufNewFile,BufRead *.conf setl filetype=conf
-autocmd myau BufNewFile,BufRead *.json setl filetype=jsonc
-autocmd myau BufNewFile,BufRead .tasks setl filetype=taskini
-autocmd myau BufNewFile,BufRead syslog setl filetype=messages
-autocmd myau BufNewFile,BufRead *shrc.local,rc.local setl filetype=sh
+autocmd myft BufNewFile,BufRead *.conf setl filetype=conf
+autocmd myft BufNewFile,BufRead *.json setl filetype=jsonc
+autocmd myft BufNewFile,BufRead .tasks setl filetype=taskini
+autocmd myft BufNewFile,BufRead syslog setl filetype=messages
+autocmd myft BufNewFile,BufRead *shrc.local,rc.local setl filetype=sh
 
-autocmd myau BufNewFile,BufRead gitconfig setl filetype=gitconfig
-autocmd myau FileType gitconfig
-    \ setl noexpandtab
+autocmd myft BufNewFile,BufRead gitconfig setl filetype=gitconfig
+autocmd myft FileType gitconfig setl noexpandtab
 ]])
 
 -- close some filetypes with <q> {{{

@@ -1,10 +1,16 @@
 return {
+    --{
+    --    "skywind3000/vim-color-patch",
+    --    lazy = false,
+    --    init = function()
+    --        vim.g.cpatch_path = vim.g.config_dir .. vim.g.dir_separator .. "colors_patch"
+    --    end
+    --},
     {
         "maxmx03/solarized.nvim",
         lazy = true,
-        priority = 1000,
         opts = {
-            --theme = 'neo',
+            --theme = "neo",
             highlights = function(c)
                 return {
                     SpecialKey = { fg = c.red, reverse = false },
@@ -15,7 +21,7 @@ return {
             end
         }
     },
-    { "sainnhe/everforest", lazy = true, priority = 1000 },
-    { "rose-pine/neovim", name = "rose-pine", lazy = true, priority = 1000 },
-    { "folke/tokyonight.nvim", lazy = true, priority = 1000 },
+    { "sainnhe/everforest", lazy = true },
+    { "rose-pine/neovim", name = "rose-pine", lazy = true },
+    { "folke/tokyonight.nvim", lazy = true },
 }

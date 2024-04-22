@@ -77,7 +77,7 @@ function M.asynctasks()
                 g.asyncrun_silent = 0
                 g.asyncrun_open = 6
                 vim.api.nvim_create_autocmd("User", {
-                    group = "myau",
+                    group = vim.api.nvim_create_augroup("asyncrun", { clear = true }),
                     pattern = { "AsyncRunStop" },
                     callback = function()
                         if g.asyncrun_code == 0 then
@@ -295,7 +295,7 @@ function M.treesitter()
                 ensure_installed = {
                     "vim", "vimdoc", "lua", "query",
                     "bash", "regex", "markdown", "markdown_inline",
-                    "cpp",
+                    "cpp", "comment"
                 },
                 sync_install = false,
                 auto_install = false,
@@ -303,7 +303,7 @@ function M.treesitter()
                 matchup = { enable = true },
                 highlight = {
                     enable = true,
-                    additional_vim_regex_highlighting = false,
+                    --additional_vim_regex_highlighting = true,
                     disable = function(lang, buf)
                         local max_filesize = 100 * 1024
                         local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
@@ -311,10 +311,11 @@ function M.treesitter()
                             return true
                         end
 
-                        local disable_hl = { "help" }
-                        if vim.tbl_contains(disable_hl, lang) then
+                        local hl_disable = { "help" }
+                        if vim.tbl_contains(hl_disable, lang) then
                             return true
                         end
+                        return false
                     end,
                 },
             })

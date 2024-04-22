@@ -209,37 +209,36 @@ function configs.python()
 end
 
 function configs.lua()
-    local libs = {
-        g.config_dir .. "/lua",
-    }
-    require("neodev").setup({
-        override = function(root_dir, library)
-            local filename = vim.fn.expand("%:t")
-            if filename == ".nvim.lua" then
-                library.enabled = true
-                library.plugins = false
-            elseif vim.loop.fs_stat(root_dir .. "/lua") then
-                library.enabled = true
-                library.plugins = {
-                    "plenary.nvim",
-                    "telescope.nvim",
-                    --"mason.nvim",
-                    --"nvim-treesitter",
-                }
-            end
-            --vim.print(root_dir, library)
-            --library.enabled = true
-            --library.plugins = true
-        end,
-    })
+    --FIXME https://github.com/folke/neodev.nvim/issues/191
+    --require("neodev").setup({
+    --    override = function(root_dir, library)
+    --        local filename = vim.fn.expand("%:t")
+    --        if filename == ".nvim.lua" then
+    --            library.enabled = true
+    --            library.plugins = false
+    --        elseif vim.loop.fs_stat(root_dir .. "/lua") then
+    --            library.enabled = true
+    --            library.plugins = {
+    --                "plenary.nvim",
+    --                "telescope.nvim",
+    --                --"mason.nvim",
+    --                --"nvim-treesitter",
+    --            }
+    --        end
+    --        --vim.print(root_dir, library)
+    --        --library.enabled = true
+    --        --library.plugins = true
+    --    end,
+    --})
 
     -- :lua vim.print(vim.lsp.get_active_clients({ name = "lua_ls" })[1].config.settings.Lua)
     local opts = {
         settings = {
             Lua = {
-                workspace = { library = libs, },
+                workspace = { checkThirdParty = false, },
                 completion = { callSnippet = "Replace", },
                 diagnostics = {
+                    globals = { "vim" },
                     enable = true,
                     disable = {
                         "undefined-global",
@@ -249,9 +248,6 @@ function configs.lua()
                         "inject-field",
                         "lowercase-global",
                     },
-                    --neededFileStatus = {
-                    --    ['codestyle-check'] = 'Any',
-                    --},
                 },
                 format = {
                     enable = true,
@@ -266,8 +262,17 @@ function configs.lua()
         },
     }
 
-    local lsp_zero = require("lsp-zero")
-    lsp_opts["lua_ls"] = lsp_zero.nvim_lua_ls(opts)
+    local filename = vim.fn.expand("%:t")
+    if filename == ".nvim.lua" or vim.loop.fs_stat(util.root_dir .. "/lua") then
+        local plugins_dir = g.config_dir .. "/.run/plugins"
+        opts.settings.Lua.workspace.library = {
+            plugins_dir .. "/neodev.nvim/types/stable",
+            g.config_dir .. "/lua",
+            vim.fn.expand("$VIMRUNTIME/lua"),
+        }
+        local lsp_zero = require("lsp-zero")
+        lsp_opts["lua_ls"] = lsp_zero.nvim_lua_ls(opts)
+    end
 end
 
 function M.setup()

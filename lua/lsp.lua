@@ -264,7 +264,7 @@ function configs.lua()
 
     local filename = vim.fn.expand("%:t")
     if filename == ".nvim.lua" or vim.loop.fs_stat(util.root_dir .. "/lua") then
-        local plugins_dir = g.config_dir .. "/.run/plugins"
+        local plugins_dir = g.runtime_dir .. "/plugins"
         opts.settings.Lua.workspace.library = {
             plugins_dir .. "/neodev.nvim/types/stable",
             g.config_dir .. "/lua",

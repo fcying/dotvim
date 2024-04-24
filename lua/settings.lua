@@ -120,20 +120,12 @@ opt.wildignore = opt.wildignore + "*.linux2,*.win32,*.darwin,*.freebsd,*.linux,*
 -- filetype {{{
 vim.api.nvim_create_augroup("myft", { clear = true })
 vim.cmd([[
-autocmd myft FileType go setlocal noexpandtab nolist
-autocmd myft FileType vim,json,jsonc,yaml,toml,dosbatch
-    \ setlocal shiftwidth=2
-    \ softtabstop=2
-    \ tabstop=2
-    \ expandtab
 autocmd myft BufNewFile,BufRead *.conf setl filetype=conf
 autocmd myft BufNewFile,BufRead *.json setl filetype=jsonc
 autocmd myft BufNewFile,BufRead .tasks setl filetype=taskini
 autocmd myft BufNewFile,BufRead syslog setl filetype=messages
 autocmd myft BufNewFile,BufRead *shrc.local,rc.local setl filetype=sh
-
 autocmd myft BufNewFile,BufRead gitconfig setl filetype=gitconfig
-autocmd myft FileType gitconfig setl noexpandtab
 ]])
 
 -- close some filetypes with <q> {{{

@@ -14,7 +14,7 @@ map("n", "<leader>pu", ":Lazy update<CR>")
 map("n", "<leader>pr", ":Lazy clean<CR>")
 
 local plugins = {
-    require("config").gen_clang_conf(),
+    -- misc {{{
     require("config").suda(),
     { "wsdjeg/vim-fetch", lazy = false },
     { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
@@ -105,6 +105,7 @@ local plugins = {
     require("config").whichkey(),
 
     -- coding {{{
+    require("config").gen_clang_conf(),
     require("config").treesitter(),
     require("config").nt_textobjects(),
     require("config").nt_cpp_tools(),
@@ -138,11 +139,7 @@ local plugins = {
     --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },
     { "Vimjas/vim-python-pep8-indent", ft = "python" },
     { "peterhoeg/vim-qml", ft = "qml" }, --FIXME https://github.com/neovim/neovim/pull/24812 echo has("patch-9.0.1768")
-    { "othree/xml.vim", ft = "xml" },
     { "wsdjeg/vim-autohotkey", ft = "autohotkey" },
-    { "plasticboy/vim-markdown", ft = "markdown", dependencies = "godlygeek/tabular" },
-
-    -- misc {{{
 }
 
 -- lazy config {{{

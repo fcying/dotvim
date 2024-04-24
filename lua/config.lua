@@ -806,7 +806,8 @@ function M.suda()
         "lambdalisue/suda.vim",
         lazy = false,
         init = function()
-            vim.g.suda_smart_edit = 1
+            --FIXME https://github.com/lambdalisue/suda.vim/issues/54
+            vim.g.suda_smart_edit = 0
         end
     }
 end

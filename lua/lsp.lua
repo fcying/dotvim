@@ -126,7 +126,7 @@ function configs.clangd()
         "--header-insertion=iwyu",
         "--pch-storage=memory",
     }
-    if g.clangd_query_driver then
+    if Option.clangd_query_driver then
         table.insert(clangd_cmd, "--query-driver=" .. g.clangd_query_driver)
     end
     if g.gencconf_storein_rootmarker == 1 then

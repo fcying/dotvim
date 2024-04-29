@@ -28,10 +28,10 @@ local plugins = {
     },
     { -- auto adjust 'shiftwidth' and 'expandtab'
         "tpope/vim-sleuth",
-        event = "VeryLazy",
         config = function()
             --g.sleuth_make_heuristics = 0
             g.sleuth_heuristics = 0
+            g.sleuth_vue_heuristics = 1
         end,
     },
     require("config").lastplace(),

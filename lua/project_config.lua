@@ -65,7 +65,7 @@ function M.setup()
         group = "project_config",
         pattern = config_name,
         callback = function()
-            set_config()
+            M.load_config()
         end,
         nested = true,
     })

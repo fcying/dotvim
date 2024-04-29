@@ -9,6 +9,7 @@ Option = {
     rg = {},    -- ignore rg
     lsp = {},   -- ignore lsp server
     gencconf_default_option = {}, -- for g:gencconf_default_option
+    clangd_query_driver = nil,
 }
 local option_default = {
     -- ignore list

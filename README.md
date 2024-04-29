@@ -65,9 +65,8 @@ default `<leader>` is `<space>`
 | `fh`              | Normal        | fuzzy find help tags                            |
 | `fj`              | Normal        | fuzzy find jumplist                             |
 | `fl`              | Normal        | fuzzy find in current buffer                    |
-| `fm`              | Normal        | fuzzy mru file search                           |
-| `fo`              | Normal        | ctags outline                                   |
-| `fO`              | Normal        | ctags all buffer outline                        |
+| `fm`              | Normal        | fuzzy marks file search                         |
+| `fo`              | Normal        | fuzzy mru file search                           |
 | `fr`              | Normal        | resume last search                              |
 | `ft`              | Normal        | fuzzy find tags                                 |
 | `f/`              | Normal        | live grep                                       |
@@ -75,9 +74,11 @@ default `<leader>` is `<space>`
 | `gsiw`            | Normal        | search under cursor (display in quickfix)       |
 | `gs`              | Visual        | search visual selection (display in quickfix)   |
 | `gd`              | Normal        | goto definitions                                |
-| `gI`              | Normal        | lsp_implementations                             |
+| `gi`              | Normal        | lsp_implementations                             |
 | `gr`              | Normal        | lsp_references                                  |
 | `gt`              | Normal        | lsp_type_definitions                            |
+| `go`              | Normal        | ctags outline                                   |
+| `gO`              | Normal        | ctags all buffer outline                        |
 | `K`               | Normal        | lsp_hover                                       |
 | `<leader>la`      | Normal        | lsp_code_actions                                |
 | `<leader>ls`      | Normal        | lsp_document_symbols                            |

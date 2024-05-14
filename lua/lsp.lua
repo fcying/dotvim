@@ -12,11 +12,13 @@ local formats = {
         "--quote-style", "AutoPreferDouble", -- AutoPreferDouble, AutoPreferSingle, ForceDouble, ForceSingle
     },
     astyle = {
-        "-A1", "-s4", "-S", "-N",
-        "-L", "-w", "-m0", "-M100",
-        "-p", "-H", "-k3", "-W3",
-        "-c", "-n", "-j", "-xC120",
-        "--lineend=linux",
+        "-A1", "--lineend=linux",
+        "--convert-tabs", "--suffix=none", "--add-braces", "--max-code-length=120",
+        "--min-conditional-indent=0", "--max-continuation-indent=100",
+        "--indent=spaces=4", "--indent-switches", "--indent-namespaces",
+        "--indent-labels", "--indent-preproc-define",
+        "--pad-oper", "--pad-header",
+        "--align-pointer=name", "--align-reference=name",
     },
 }
 

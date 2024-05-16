@@ -26,10 +26,10 @@ local diagnostics_on = true
 function M.diagnostic_toggle()
     if diagnostics_on then
         vim.notify("disable diagnostics")
-        vim.diagnostic.disable()
+        vim.diagnostic.enable(false)
     else
         vim.notify("enable diagnostics")
-        vim.diagnostic.enable()
+        vim.diagnostic.enable(true)
     end
     diagnostics_on = not diagnostics_on
 end

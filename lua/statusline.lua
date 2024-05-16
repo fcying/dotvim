@@ -42,24 +42,32 @@ function M.indent()
 end
 
 function M.lsp_progress()
-    local messages = vim.lsp.util.get_progress_messages()
-
-    if vim.tbl_count(messages) > 0 then
-        local message1 = messages[1]
-        --vim.print(messages)
-
-        local name = message1.name or nil
-        local title = message1.title or nil
-        local msg = message1.message or nil
-        local percentage = message1.percentage or nil
-        local progress = message1.progress or true
-
-        if progress then
-            return (name or "")
-                .. (title and (" " .. title) or "")
-                .. (msg and (" " .. msg) or "")
-                .. (percentage and (" " .. percentage .. "%%") or "")
+    --local msg = vim.lsp.util.get_progress_messages()
+    local msg = {}
+    for _, client in ipairs(vim.lsp.get_clients()) do
+        for progress in client.progress do
+            local value = progress.value
+            if type(value) == "table" and value.kind then
+                msg.name = client.name
+                msg.message = value.message
+                msg.title = value.title
+                msg.kind = value.kind
+                if value.kind == "end" then
+                    msg.percentage = 100
+                else
+                    msg.percentage = value.percentage
+                end
+            end
         end
+    end
+
+    if vim.tbl_count(msg) > 0 then
+        --vim.print(msg)
+
+        return (msg.name or "")
+            .. (msg.title and (" " .. msg.title) or "")
+            .. (msg.message and (" " .. msg.message) or "")
+            .. (msg.percentage and (" " .. msg.percentage .. "%%") or "")
     end
 
     return ""

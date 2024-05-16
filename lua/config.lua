@@ -967,7 +967,7 @@ function M.nvim_tree()
                 pattern = "*",
                 group = vim.api.nvim_create_augroup("nvim_tree_color", { clear = true }),
                 callback = function()
-                    local hl_group = vim.api.nvim_get_hl_by_name("Normal", true)
+                    local hl_group = vim.api.nvim_get_hl(0, { name = "Normal" })
                     local guifg = hl_group.foreground
                     local guibg = hl_group.background
                     local cmd = "highlight NvimTreeNormal"
@@ -1106,10 +1106,8 @@ function M.setup()
     local background = g.background or "light"
     vim.opt.background = background
 
-    require("plugins.lazy")
-
+    require("plugins._lazy")
     vim.cmd.colorscheme(colorscheme)
-
     util.update_ignore_config()
 end
 

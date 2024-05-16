@@ -1,4 +1,4 @@
-local g, api = vim.g, vim.api
+local g = vim.g
 local map = require("util").map
 
 g.plug_dir = g.runtime_dir .. "/plugins"
@@ -15,9 +15,9 @@ map("n", "<leader>pr", ":Lazy clean<CR>")
 
 local plugins = {
     -- misc {{{
+    { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
     require("config").suda(),
     { "wsdjeg/vim-fetch", lazy = false },
-    { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
     {
         "mbbill/fencview",
         cmd = { "FencView", "FencAutoDetect" },
@@ -138,7 +138,6 @@ local plugins = {
     -- filetype {{{
     --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },
     { "Vimjas/vim-python-pep8-indent", ft = "python" },
-    { "peterhoeg/vim-qml", ft = "qml" }, --FIXME https://github.com/neovim/neovim/pull/24812 echo has("patch-9.0.1768")
     { "wsdjeg/vim-autohotkey", ft = "autohotkey" },
 }
 

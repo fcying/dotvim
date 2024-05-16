@@ -20,9 +20,6 @@ end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- optionally enable 24-bit colour
-vim.opt.termguicolors = true
-
 -- options {{{
 opt.autochdir = false
 opt.autoread = true
@@ -31,10 +28,10 @@ opt.backup = false
 opt.clipboard = "unnamedplus" -- Sync with system clipboard
 opt.cinkeys = opt.cinkeys - "0#"
 opt.cmdheight = 1
-opt.confirm = false           -- Confirm to save changes before exiting modified buffer
+opt.confirm = false   -- Confirm to save changes before exiting modified buffer
 opt.completeopt = "menu,menuone,noselect,noinsert"
-opt.cursorline = true         -- Enable highlighting of the current line
-opt.expandtab = true          -- Use spaces instead of tabs
+opt.cursorline = true -- Enable highlighting of the current line
+opt.expandtab = true  -- Use spaces instead of tabs
 
 opt.modeline = false
 opt.bomb = false
@@ -162,6 +159,23 @@ vim.api.nvim_create_autocmd("VimLeave", {
 })
 
 -- osc52 clip {{{
+-- FIXME https://github.com/neovim/neovim/discussions/28010
+--function no_paste(reg)
+--    return function(lines)
+--        -- Do nothing! We can't paste with OSC52
+--    end
+--end
+--vim.g.clipboard = {
+--    name = "osc52",
+--    copy = {
+--        ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+--        ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+--    },
+--    paste = {
+--        ["+"] = no_paste("+"), -- Pasting disabled
+--        ["*"] = no_paste("*"), -- Pasting disabled
+--    },
+--}
 local function copy(lines, _)
     require("osc52").copy(table.concat(lines, "\n"))
 end
@@ -197,6 +211,7 @@ else
         paste = { ["+"] = paste, ["*"] = paste },
     }
 end
+
 
 -- large file {{{
 vim.cmd([[

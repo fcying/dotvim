@@ -46,8 +46,8 @@ local plugins = {
             vim.api.nvim_create_user_command("Bclose", "Bdelete", { bang = true })
         end
     },
+    require("config").Comment(),
     require("config").sandwich(),
-    require("config").nerdcommenter(),
     require("config").window_picker(),
     --require("config").incline(),
     require("config").tagbar(),
@@ -83,7 +83,7 @@ local plugins = {
     require("config").nvim_tree(),
     require("config").dashboard(),
     require("config").lualine(),
-    require("plugins.telescope").lazy,
+    require("plugins._telescope").lazy,
     { import = "plugins.colorscheme" },
 
     -- tool {{{
@@ -107,7 +107,6 @@ local plugins = {
     -- coding {{{
     require("config").gen_clang_conf(),
     require("config").treesitter(),
-    require("config").nt_textobjects(),
     require("config").nt_cpp_tools(),
     --require("lsp").null_ls(),
     {

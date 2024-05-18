@@ -1,5 +1,4 @@
 local Pkg = require("mason-core.package")
-local path = require("mason-core.path")
 local std = require("mason-core.managers.std")
 local m = require("plugins.mason")
 

@@ -284,9 +284,9 @@ end
 
 function M.treesitter()
     return {
-        "nvim-treesitter/nvim-treesitter",
+        "nvim-treesitter/nvim-treesitter-textobjects",
         event = "VeryLazy",
-        build = ":TSUpdate",
+        dependencies = { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
         config = function()
             local parser_install_dir = g.runtime_dir .. "/parsers"
             vim.opt.runtimepath:prepend(parser_install_dir)
@@ -318,17 +318,6 @@ function M.treesitter()
                         return false
                     end,
                 },
-            })
-        end
-    }
-end
-
-function M.nt_textobjects()
-    return {
-        "nvim-treesitter/nvim-treesitter-textobjects",
-        dependencies = { "nvim-treesitter/nvim-treesitter" },
-        config = function()
-            require("nvim-treesitter.configs").setup({
                 textobjects = {
                     select = {
                         enable = true,
@@ -876,41 +865,88 @@ function M.foldsearch()
     }
 end
 
-function M.nerdcommenter()
-    vim.opt.commentstring = "#%s"
-    g.NERDCreateDefaultMappings = 0
-    g.NERDSpaceDelims = 0
-    --g.NERDRemoveExtraSpaces = 0
-    g.NERDCommentEmptyLines = 1
-    g.NERDDefaultAlign = "left"
-    g.NERDToggleCheckAllLines = 1
+---Operator function to invert comments on each line
+function _G.__flip_flop_comment()
+    local U = require("Comment.utils")
+    local s = vim.api.nvim_buf_get_mark(0, "[")
+    local e = vim.api.nvim_buf_get_mark(0, "]")
+    local range = { srow = s[1], scol = s[2], erow = e[1], ecol = e[2] }
+    local ctx = {
+        ctype = U.ctype.linewise,
+        range = range,
+    }
+    local cstr = require("Comment.ft").calculate(ctx) or vim.bo.commentstring
+    local ll, rr = U.unwrap_cstr(cstr)
+    local padding = true
+    local is_commented = U.is_commented(ll, rr, padding)
 
-    map("n", "<a-/>", "<plug>NERDCommenterToggle", { desc = "NERDCommenterToggle" })
-    map("v", "<a-/>", "<plug>NERDCommenterToggle", { desc = "NERDCommenterToggle" })
-    map("n", "<leader>gc", "<plug>NERDCommenterToggle", { desc = "NERDCommenterToggle" })
-    map("v", "<leader>gc", "<plug>NERDCommenterToggle", { desc = "NERDCommenterToggle" })
-    map("v", "<leader>gC", "<plug>NERDCommenterComment", { desc = "NERDCommenterComment" })
-    map("v", "<leader>gU", "<plug>NERDCommenterUncomment", { desc = "NERDCommenterUncomment" })
-    map("n", "<leader>gi", "<plug>NERDCommenterInvert", { desc = "NERDCommenterInvert" })
-    map("v", "<leader>gi", "<plug>NERDCommenterInvert", { desc = "NERDCommenterInvert" })
-    map("n", "<leader>gs", "<plug>NERDCommenterSexy", { desc = "NERDCommenterSexy" })
-    map("v", "<leader>gs", "<plug>NERDCommenterSexy", { desc = "NERDCommenterSexy" })
-    vim.cmd([[
-        let g:NERDCustomDelimiters = {
-                \ 'c': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-                \ 'cpp': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-                \ 'go': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-                \ 'qml': { 'leftAlt': '/*', 'rightAlt': '*/', 'left': '//' },
-                \ 'conf': { 'left': '#' },
-                \ 'aptconf': { 'left': '//' },
-                \ 'json': { 'left': '//' },
-                \ 'jsonc': { 'left': '//' },
-                \ 'rc': { 'left': '#' },
-                \ '*': { 'left': '#' },
-                \ }
-    ]])
+    local rcom = {}         -- ranges of commented lines
+    local cl = s[1]         -- current line
+    local rs, re = nil, nil -- range start and end
+    local lines = U.get_lines(range)
+    for _, line in ipairs(lines) do
+        if #line == 0 or not is_commented(line) then -- empty or uncommented line
+            if rs ~= nil then
+                table.insert(rcom, { rs, re })
+                rs, re = nil, nil
+            end
+        else
+            rs = rs or cl -- set range start if not set
+            re = cl       -- update range end
+        end
+        cl = cl + 1
+    end
+    if rs ~= nil then
+        table.insert(rcom, { rs, re })
+    end
 
-    return { "preservim/nerdcommenter", event = "VeryLazy" }
+    local cursor_position = vim.api.nvim_win_get_cursor(0)
+    local vmark_start = vim.api.nvim_buf_get_mark(0, "<")
+    local vmark_end = vim.api.nvim_buf_get_mark(0, ">")
+
+    ---Toggle comments on a range of lines
+    ---@param sl integer: starting line
+    ---@param el integer: ending line
+    local toggle_lines = function(sl, el)
+        vim.api.nvim_win_set_cursor(0, { sl, 0 }) -- idk why it's needed to prevent one-line ranges from being substituted with line under cursor
+        vim.api.nvim_buf_set_mark(0, "[", sl, 0, {})
+        vim.api.nvim_buf_set_mark(0, "]", el, 0, {})
+        require("Comment.api").locked("toggle.linewise")("")
+    end
+
+    toggle_lines(s[1], e[1])
+    for _, r in ipairs(rcom) do
+        toggle_lines(r[1], r[2]) -- uncomment lines twice to remove previous comment
+        toggle_lines(r[1], r[2])
+    end
+
+    vim.api.nvim_win_set_cursor(0, cursor_position)
+    vim.api.nvim_buf_set_mark(0, "<", vmark_start[1], vmark_start[2], {})
+    vim.api.nvim_buf_set_mark(0, ">", vmark_end[1], vmark_end[2], {})
+    vim.o.operatorfunc = "v:lua.__flip_flop_comment" -- make it dot-repeatable
+end
+
+function M.Comment()
+    return {
+        "numToStr/Comment.nvim",
+        event = "VeryLazy",
+        dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
+        config = function()
+            vim.keymap.del({ "n" }, "gcc")
+            vim.keymap.del({ "n", "o", "x" }, "gc")
+            require("Comment").setup({
+                pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+            })
+
+            local ft = require("Comment.ft")
+            ft({ "taskini" }, "# %s")
+
+            -- Invert (flip flop) comments with gC, in normal and visual mode
+            map({ "n", "x" }, "gC", "<cmd>set operatorfunc=v:lua.__flip_flop_comment<cr>g@",
+                { silent = true, desc = "Invert comments" }
+            )
+        end
+    }
 end
 
 function M.fern()
@@ -968,8 +1004,8 @@ function M.nvim_tree()
                 group = vim.api.nvim_create_augroup("nvim_tree_color", { clear = true }),
                 callback = function()
                     local hl_group = vim.api.nvim_get_hl(0, { name = "Normal" })
-                    local guifg = hl_group.foreground
-                    local guibg = hl_group.background
+                    local guifg = hl_group.fg
+                    local guibg = hl_group.bg
                     local cmd = "highlight NvimTreeNormal"
                     if guifg then
                         cmd = cmd .. " guifg=" .. string.format("#%x", guifg)
@@ -980,10 +1016,26 @@ function M.nvim_tree()
                     if guifg or guibg then
                         vim.cmd(cmd)
                     end
-                    --vim.print(hl_group)
+                    -- vim.print(hl_group)
                 end,
             })
+            local function nvim_tree_attach(bufnr)
+                local api = require "nvim-tree.api"
+
+                local function opts(desc)
+                    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+                end
+
+                -- default mappings
+                api.config.mappings.default_on_attach(bufnr)
+
+                -- custom mappings
+                vim.keymap.del({ "n" }, "-", { buffer = bufnr })
+                map("n", "u", api.tree.change_root_to_parent, opts("Up"))
+                map("n", "r", api.fs.rename_full, opts("Rename: Full Path"))
+            end
             require("nvim-tree").setup({
+                on_attach = nvim_tree_attach,
                 actions = {
                     open_file = {
                         window_picker = {

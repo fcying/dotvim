@@ -233,7 +233,7 @@ function configs.lua()
     --    end,
     --})
 
-    -- :lua vim.print(vim.lsp.get_active_clients({ name = "lua_ls" })[1].config.settings.Lua)
+    -- :lua vim.print(vim.lsp.get_clients({ name = "lua_ls" })[1].config.settings.Lua)
     local opts = {
         settings = {
             Lua = {
@@ -287,7 +287,7 @@ function M.setup()
         virtual_text = false,
         float = {
             show_header = true,
-            source = "always",
+            source = true,
             focusable = false,
             format = function(diagnostic)
                 --vim.print(diagnostic)

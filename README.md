@@ -90,10 +90,7 @@ default `<leader>` is `<space>`
 | `tc`              | Normal        | remove tas and compile_commands.json            |
 | `<leader>wf`      | Normal        | open file explorer                              |
 | `<leader>wl`      | Normal        | locating current file in file explorer          |
-| `<leader>gc`      | Normal/Visual | comment toggle                                  |
-| `<leader>gC`      | Visual        | comment                                         |
-| `<leader>gU`      | Visual        | uncomment                                       |
-| `<leader>gi`      | Normal/Visual | comment invert                                  |
+| `gcc`             | Normal/Visual | comment toggle                                  |
 | `<leader>fp`      | Normal/Visual | fold search                                     |
 | `<leader>q`       | Normal        | close current buffer                            |
 | `v`               | Visual        | expand select region                            |

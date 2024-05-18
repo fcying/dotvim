@@ -107,7 +107,7 @@ function M.update_ignore_config()
     g.gencconf_default_option = vim.tbl_deep_extend("force", M.option.gencconf_default_option, Option.gencconf_default_option)
     --vim.print(g.gencconf_default_option)
 
-    require("plugins.telescope").telescope_update_ignore()
+    require("plugins._telescope").telescope_update_ignore()
 end
 
 function M.go2def(str, opts)
@@ -124,7 +124,7 @@ function M.go2def(str, opts)
         local lnum = fn.line(".")
 
         if opts.mode == "lsp" then
-            local clients = vim.lsp.get_active_clients({ bufnr = 0 })
+            local clients = vim.lsp.get_clients({ bufnr = 0 })
             local client = clients[next(clients)]
 
             if client ~= nil then
@@ -167,7 +167,7 @@ function M.go2def(str, opts)
                 vim.cmd("normal " .. lnum .. "G^")
             end
 
-            require("plugins.telescope").telescope_ltaglist()
+            require("plugins._telescope").telescope_ltaglist()
         end
         vim.o.tagfunc = backup
     end

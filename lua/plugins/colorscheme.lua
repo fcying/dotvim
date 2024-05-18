@@ -24,4 +24,5 @@ return {
     { "sainnhe/everforest", lazy = true },
     { "rose-pine/neovim", name = "rose-pine", lazy = true },
     { "folke/tokyonight.nvim", lazy = true },
+    { "Verf/deepwhite.nvim", lazy = true },
 }

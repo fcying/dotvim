@@ -10,8 +10,7 @@ end
 
 local function find_config()
     for _, name in ipairs(config_name) do
-        --config_path = fn.findfile(name, util.root_marker .. "," .. util.root_dir)
-        config_path = fn.findfile(name, util.root_marker .. ".;")
+        config_path = vim.fs.find({ name }, { type = "file", path = util.root_marker, upward = true })
         if config_path ~= "" then
             break
         end

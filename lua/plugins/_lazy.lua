@@ -1,4 +1,5 @@
 local g = vim.g
+local util = require("util")
 local map = require("util").map
 
 g.plug_dir = g.runtime_dir .. "/plugins"
@@ -88,6 +89,8 @@ local plugins = {
 
     -- tool {{{
     { "chrisbra/Colorizer", cmd = { "ColorToggle" } },
+    { "fcying/vim-plugin-AnsiEsc", cmd = { "AnsiEsc", "AnsiEscClear" } },
+    { "stevearc/dressing.nvim" },
     --require("config").noice(),
     require("config").nvim_notify(),
     require("config").ZFVimIM(),
@@ -101,11 +104,35 @@ local plugins = {
         end,
     },
     require("config").fugitive(),
+    require("config").toggleterm(),
     require("config").asynctasks(),
+    -- require("config").overseer(),
     require("config").whichkey(),
 
     -- coding {{{
     require("config").gen_clang_conf(),
+    {
+        "folke/lazydev.nvim",
+        ft = "lua",
+        opts = {
+            library = {
+                "luvit-meta/library",
+                g.config_dir .. "/lua",
+            },
+            enabled = function(_)
+                if vim.g.lazydev_enabled ~= nil then
+                    return vim.g.lazydev_enabled
+                end
+                local filename = vim.fn.expand("%:t")
+                if filename == ".nvim.lua" or vim.uv.fs_stat(util.root_dir .. "/lua") then
+                    return true
+                else
+                    return false
+                end
+            end,
+        },
+    },
+    { "Bilal2453/luvit-meta", lazy = true }, -- optional `vim.uv` typings
     require("config").treesitter(),
     require("config").nt_cpp_tools(),
     --require("lsp").null_ls(),
@@ -128,7 +155,6 @@ local plugins = {
         event = { "BufReadPre", "BufNewFile" },
         dependencies = {
             require("plugins.mason").setup(),
-            { "folke/neodev.nvim", lazy = true },
             { "williamboman/mason-lspconfig.nvim" },
         },
     },

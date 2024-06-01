@@ -3,13 +3,15 @@ local fn, g, cmd = vim.fn, vim.g, vim.cmd
 
 --custome Option
 Option = {
-    dir = {},   -- ignore dir
-    file = {},  -- ignore file
-    mru = {},   -- ignore mru
-    rg = {},    -- ignore rg
-    lsp = {},   -- ignore lsp server
+    dir = {},                     -- ignore dir
+    file = {},                    -- ignore file
+    mru = {},                     -- ignore mru
+    rg = {},                      -- ignore rg
+    lsp = {},                     -- ignore lsp server
     gencconf_default_option = {}, -- for g:gencconf_default_option
     clangd_query_driver = nil,
+    build = function() return { cmd = "", name = "Build Task", } end,
+    release = function() return { cmd = "", name = "Release Task", } end,
 }
 local option_default = {
     -- ignore list
@@ -30,10 +32,9 @@ M.root_dir = ""
 M.root_marker = ""
 
 -- issue list
+-- https://github.com/neovim/neovim/issues/16843  lua function to get current visual selection
 -- https://github.com/neovim/neovim/issues/12544 store metatables on vim.b/vim.w/vim.t scopes
 -- https://github.com/neovim/neovim/issues/4396 nvim not restore terminal cursorshape settings.lua
--- https://github.com/neovim/neovim/pull/24812 echo has("patch-9.0.1768") lazy.lua
--- https://github.com/neovim/neovim/issues/16843  lua function to get current visual selection
 -- https://github.com/neovim/neovim/issues/22478  Press ENTER message
 
 function M.map(mode, lhs, rhs, opts)
@@ -82,7 +83,7 @@ function M.live_grep()
         require("telescope-live-grep-args.shortcuts").grep_visual_selection()
     else
         --require("telescope-live-grep-args.shortcuts").grep_word_under_cursor()
-        require('telescope').extensions.live_grep_args.live_grep_args()
+        require("telescope").extensions.live_grep_args.live_grep_args()
     end
 end
 
@@ -104,7 +105,8 @@ function M.update_ignore_config()
     -- gen_clang_conf.vim
     g.gencconf_ignore_dir = M.option.dir
     g.gencconf_ignore_file = M.option.file
-    g.gencconf_default_option = vim.tbl_deep_extend("force", M.option.gencconf_default_option, Option.gencconf_default_option)
+    g.gencconf_default_option = vim.tbl_deep_extend("force", M.option.gencconf_default_option,
+        Option.gencconf_default_option)
     --vim.print(g.gencconf_default_option)
 
     require("plugins._telescope").telescope_update_ignore()

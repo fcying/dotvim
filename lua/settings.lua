@@ -123,6 +123,36 @@ autocmd myft BufNewFile,BufRead .tasks setl filetype=taskini
 autocmd myft BufNewFile,BufRead syslog setl filetype=messages
 autocmd myft BufNewFile,BufRead *shrc.local,rc.local setl filetype=sh
 autocmd myft BufNewFile,BufRead gitconfig setl filetype=gitconfig
+
+
+function! s:run_ansi_esc_in_qf()
+  " 获取当前窗口号
+  let l:current_win = winnr()
+  " 获取 quickfix 窗口号
+  let l:qf_win = bufwinnr('quickfix')
+  " 切换到 quickfix 窗口
+  if l:qf_win != -1
+    exe l:qf_win . "wincmd w"
+    AnsiEsc
+    " 切换回原窗口
+    exe l:current_win . "wincmd w"
+  endif
+endfunction
+
+function! s:apply_ansiesc()
+  augroup ApplyAnsiEsc
+    autocmd!
+    autocmd BufReadPost quickfix call s:run_ansi_esc_in_qf()
+    autocmd BufWinEnter quickfix call s:run_ansi_esc_in_qf()
+  augroup END
+endfunction
+
+augroup AnsiColorInQuickfix
+  autocmd!
+  autocmd FileType qf setlocal nowrap
+  autocmd FileType qf call s:apply_ansiesc()
+augroup END
+
 ]])
 
 -- close some filetypes with <q> {{{

@@ -12,6 +12,7 @@ vim.opt.rtp:prepend(g.config_dir)
 
 g.etc_dir = g.config_dir .. g.dir_separator .. "etc"
 g.runtime_dir = g.config_dir .. g.dir_separator .. ".run"
+g.plugins_dir = g.runtime_dir .. g.dir_separator .. "plugins"
 
 for _, name in ipairs({ "config", "data", "state", "cache" }) do
     vim.env[("XDG_%s_HOME"):format(name:upper())] = g.runtime_dir .. g.dir_separator .. name

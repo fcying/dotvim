@@ -67,6 +67,39 @@ function M.fugitive()
     }
 end
 
+function M.toggleterm()
+    return {
+        "akinsho/toggleterm.nvim",
+        version = "*",
+        -- cmd = { "ToggleTerm", "TermExec" },
+        config = function()
+            require("toggleterm").setup({
+                highlights = {
+                    Normal = { link = "Normal" },
+                    NormalNC = { link = "NormalNC" },
+                    NormalFloat = { link = "NormalFloat" },
+                    FloatBorder = { link = "FloatBorder" },
+                    StatusLine = { link = "StatusLine" },
+                    StatusLineNC = { link = "StatusLineNC" },
+                    WinBar = { link = "WinBar" },
+                    WinBarNC = { link = "WinBarNC" },
+                },
+                direction = "horizontal", --'vertical' | 'horizontal' | 'tab' | 'float'
+                ---@diagnostic disable-next-line
+                ---@param t Terminal
+                on_create = function(t)
+                    vim.opt_local.foldcolumn = "0"
+                    vim.opt_local.signcolumn = "no"
+                    if t.hidden then
+                    end
+                end,
+            })
+            map({ "n", "i", "t" }, "<C-t>", "<cmd>ToggleTerm<CR>", { desc = "ToggleTerm" })
+            map("n", "<leader>tf", "<Cmd>ToggleTerm direction=float<CR>", { desc = "ToggleTerm float" })
+        end
+    }
+end
+
 function M.asynctasks()
     return {
         {
@@ -75,23 +108,52 @@ function M.asynctasks()
             config = function()
                 g.asyncrun_bell = 1
                 g.asyncrun_silent = 0
-                g.asyncrun_open = 6
+                g.asyncrun_open = 8
+                local function set_qf_ansi_color()
+                    local qf_win = nil
+                    for _, win in pairs(vim.fn.getwininfo()) do
+                        if win.quickfix == 1 then
+                            qf_win = win.winid
+                            break
+                        end
+                    end
+                    if qf_win then
+                        if vim.api.nvim_get_current_win() ~= qf_win then
+                            current_win = vim.api.nvim_get_current_win()
+                            vim.api.nvim_set_current_win(qf_win)
+                            vim.cmd("AnsiEscClear")
+                            vim.cmd("AnsiEsc")
+                            vim.api.nvim_set_current_win(current_win)
+                        end
+                    end
+                end
+                vim.api.nvim_create_augroup("asyncrun", { clear = true })
                 vim.api.nvim_create_autocmd("User", {
-                    group = vim.api.nvim_create_augroup("asyncrun", { clear = true }),
+                    group = "asyncrun",
                     pattern = { "AsyncRunStop" },
                     callback = function()
                         if g.asyncrun_code == 0 then
+                            vim.notify("AsyncRun Success", "info") ---@diagnostic disable-line
                             vim.cmd("cclose")
-                            vim.print("AsyncRun Success")
                         else
-                            --call ShowQuickfix()
-                            vim.cmd("copen")
-                            vim.cmd("cnext")
+                            vim.notify("AsyncRun Failed!", "error") ---@diagnostic disable-line
                         end
                     end,
                 })
+                vim.api.nvim_create_autocmd("User", {
+                    group = "asyncrun",
+                    pattern = { "AsyncRunStart" },
+                    callback = function()
+                        set_qf_ansi_color()
+                    end,
+                })
+
 
                 g.asyncrun_rootmarks = { ".root", ".git", ".svn" }
+                require("asyncrun_toggleterm").setup({
+                    mapping = "<leader>tt",
+                    start_in_insert = false,
+                })
             end
         },
         {
@@ -103,9 +165,36 @@ function M.asynctasks()
             },
             init = function()
                 g.asynctasks_config_name = { ".root/.tasks", ".git/.tasks", ".tasks" }
-                g.asynctasks_rtp_config = "asynctasks.ini"
+                g.asynctasks_rtp_config  = "asynctasks.ini"
+                g.asynctasks_term_pos    = "quickfix"
+                g.asynctasks_term_reuse  = 1
+                g.asynctasks_term_focus  = 0
+                g.asynctasks_term_close  = 0
             end
         }
+    }
+end
+
+function M.overseer()
+    return {
+        "stevearc/overseer.nvim",
+        cmd = { "OverseerRun", "OverseerToggle" },
+        keys = {
+            { "<leader>or", "<cmd>OverseerRun<CR>", desc = "OverseerRun" },
+            { "<leader>ot", "<cmd>OverseerToggle<CR>", desc = "OverseerToggle" },
+            { "<leader>bb", "<cmd>lua Option.build()<CR>", desc = "Overseer build" },
+            { "<leader>br", "<cmd>lua Option.release()<CR>", desc = "Overseer release" },
+        },
+        config = function()
+            require("overseer").setup({
+                -- strategy = {
+                --     "terminal",
+                --     -- "toggleterm",
+                --     use_shell = true,
+                --     quit_on_exit = "never", -- never success always
+                -- }
+            })
+        end
     }
 end
 
@@ -226,7 +315,7 @@ function M.window_picker()
                 include_current_win = true,
                 bo = {
                     filetype = { "incline" },
-                    buftype = { "terminal", "quickfix" },
+                    -- buftype = { "terminal", "quickfix" },
                 },
             },
         },
@@ -295,7 +384,7 @@ function M.treesitter()
                 ensure_installed = {
                     "vim", "vimdoc", "lua", "query",
                     "bash", "regex", "markdown", "markdown_inline",
-                    "cpp", "comment"
+                    "cpp", "go", "comment"
                 },
                 sync_install = false,
                 auto_install = false,
@@ -317,6 +406,14 @@ function M.treesitter()
                         end
                         return false
                     end,
+                },
+                incremental_selection = {
+                    enable = true,
+                    keymaps = {
+                        node_incremental = "v",
+                        node_decremental = "V",
+                        scope_incremental = "<leader><C-v>",
+                    },
                 },
                 textobjects = {
                     select = {
@@ -459,6 +556,7 @@ function M.cmp()
                     ["<CR>"] = cmp.mapping.confirm({ select = false }),
                 },
                 sources = cmp.config.sources({
+                    { name = "lazydev", group_index = 0 },
                     { name = "luasnip" },
                     { name = "path" },
                     { name = "dictionary" },
@@ -1159,6 +1257,7 @@ function M.setup()
     vim.opt.background = background
 
     require("plugins._lazy")
+
     vim.cmd.colorscheme(colorscheme)
     util.update_ignore_config()
 end

@@ -189,29 +189,6 @@ vim.api.nvim_create_autocmd("VimLeave", {
 })
 
 -- osc52 clip {{{
--- FIXME https://github.com/neovim/neovim/discussions/28010
---function no_paste(reg)
---    return function(lines)
---        -- Do nothing! We can't paste with OSC52
---    end
---end
---vim.g.clipboard = {
---    name = "osc52",
---    copy = {
---        ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
---        ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
---    },
---    paste = {
---        ["+"] = no_paste("+"), -- Pasting disabled
---        ["*"] = no_paste("*"), -- Pasting disabled
---    },
---}
-local function copy(lines, _)
-    require("osc52").copy(table.concat(lines, "\n"))
-end
-local function paste()
-    return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
-end
 if g.is_tmux == 1 then
     vim.g.clipboard = {
         name = "tmux",
@@ -224,23 +201,17 @@ if g.is_tmux == 1 then
             ["*"] = { "tmux", "save-buffer", "-" },
         },
     }
-    vim.api.nvim_create_autocmd("TextYankPost", {
-        group = vim.api.nvim_create_augroup("osc52", { clear = true }),
-        pattern = { "*" },
-        callback = function()
-            --vim.print(vim.v.event)
-            if vim.v.operator == "y" then
-                require("osc52").copy_register("+")
-            end
-        end,
-    })
-else
-    vim.g.clipboard = {
-        name = "osc52",
-        copy = { ["+"] = copy, ["*"] = copy },
-        paste = { ["+"] = paste, ["*"] = paste },
-    }
 end
+vim.api.nvim_create_autocmd("TextYankPost", {
+    group = vim.api.nvim_create_augroup("osc52", { clear = true }),
+    pattern = { "*" },
+    callback = function()
+        -- vim.print(vim.v.event)
+        if vim.v.operator == "y" then
+            require('vim.ui.clipboard.osc52').copy('+')(vim.v.event.regcontents)
+        end
+    end,
+})
 
 
 -- large file {{{

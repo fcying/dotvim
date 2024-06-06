@@ -91,11 +91,6 @@ type nvim >/dev/null 2>&1 && {
     alias tvim='nvim -u ~/test/nvim/init.lua'
 }
 
-use_zlua=1
-type zoxide >/dev/null 2>&1 && {
-    use_zlua=1
-}
-
 # key bindings {{{
 bindkey -e  # Use emacs key bindings
 bindkey "\e[3~" delete-char
@@ -126,10 +121,8 @@ autoload -Uz _zinit
 
 #zinit light Aloxaf/fzf-tab
 
-if [ $use_zlua -eq 1 ]; then
-    zinit ice wait'0' lucid; zinit light changyuheng/fz
-    FZ_HISTORY_CD_CMD=_zlua
-fi
+zinit ice wait'0' lucid; zinit light changyuheng/fz
+FZ_HISTORY_CD_CMD=_zlua
 
 zinit ice wait'0' lucid; zinit light zsh-users/zsh-history-substring-search
 bindkey -M emacs '^p' history-substring-search-up
@@ -174,19 +167,12 @@ function PluginFinish() {
         fi
     fi
 
-    # zoxide zlua {{{
-    if [ $use_zlua -eq 0 ]; then
-        eval "$(zoxide init zsh --cmd z)"
-    else
-        fzf_install
-        zlua_install
+    fzf_install
+    zlua_install
+    type atuin >/dev/null 2>&1 && {
+        eval "$(atuin init zsh --disable-up-arrow)"
         bindkey "^R" atuin-search
-    fi
-}
-
-# atuin {{{
-type atuin >/dev/null 2>&1 && {
-    eval "$(atuin init zsh --disable-up-arrow)"
+    }
 }
 
 function fzf_install() {

@@ -151,7 +151,7 @@ function configs.ahk2()
     end
     local opts = {
         cmd = { "node", path .. "/autohotkey2-lsp/server/dist/server.js", "--stdio" },
-        filetypes = { "ahk", "autohotkey", "ah2" },
+        filetypes = { "ahk", "autohotkey", "ah2", "ahk2" },
         init_options = {
             locale = "en-us",
             InterpreterPath = InterpreterPath,
@@ -160,7 +160,7 @@ function configs.ahk2()
             return util.root_dir
         end,
     }
-    require("lspconfig.configs")["ahk2"] = { default_config = opts }
+    require("lspconfig.configs")["autohotkey2-lsp"] = { default_config = opts }
 end
 
 function configs.bashls()
@@ -303,12 +303,15 @@ function M.setup()
         single_file_support = true,
     })
 
+    local mason_server = require("mason-lspconfig.mappings.server")
+    mason_server.package_to_lspconfig["autohotkey2-lsp"] = "autohotkey2-lsp"
+
     require("mason-lspconfig").setup({
         ensure_installed = { "lua_ls" },
         automatic_installation = false,
         handlers = {
             function(server_name)
-                --vim.print(server_name)
+                -- vim.print(server_name)
                 if fn.index(Option.lsp, server_name) ~= -1 then
                     return
                 elseif lsp_opts[server_name] ~= nil then

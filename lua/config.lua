@@ -71,7 +71,7 @@ function M.toggleterm()
     return {
         "akinsho/toggleterm.nvim",
         version = "*",
-        -- cmd = { "ToggleTerm", "TermExec" },
+        cmd = { "ToggleTerm", "TermExec" },
         config = function()
             require("toggleterm").setup({
                 highlights = {
@@ -242,7 +242,6 @@ end
 function M.flash()
     return {
         "folke/flash.nvim",
-        event = "VeryLazy",
         keys = {
             { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
             { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
@@ -373,18 +372,32 @@ end
 
 function M.treesitter()
     return {
-        "nvim-treesitter/nvim-treesitter-textobjects",
-        event = "VeryLazy",
-        dependencies = { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+        "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate",
+        cmd = {
+            "TSBufDisable",
+            "TSBufEnable",
+            "TSBufToggle",
+            "TSDisable",
+            "TSEnable",
+            "TSToggle",
+            "TSInstall",
+            "TSInstallInfo",
+            "TSInstallSync",
+            "TSModuleInfo",
+            "TSUninstall",
+            "TSUpdate",
+            "TSUpdateSync",
+        },
+        dependencies = { "nvim-treesitter/nvim-treesitter-textobjects", lazy = true },
         config = function()
             local parser_install_dir = g.runtime_dir .. "/parsers"
             vim.opt.runtimepath:prepend(parser_install_dir)
             require("nvim-treesitter.configs").setup({
                 parser_install_dir = parser_install_dir,
                 ensure_installed = {
-                    "vim", "vimdoc", "lua", "query",
-                    "bash", "regex", "markdown", "markdown_inline",
-                    "cpp", "go", "comment"
+                    "vim", "vimdoc", "lua", "query", "comment",
+                    "cpp",
                 },
                 sync_install = false,
                 auto_install = false,
@@ -407,33 +420,40 @@ function M.treesitter()
                         return false
                     end,
                 },
-                incremental_selection = {
-                    enable = true,
-                    keymaps = {
-                        node_incremental = "v",
-                        node_decremental = "V",
-                        scope_incremental = "<leader><C-v>",
-                    },
-                },
+                -- FIXME can't use in c comment
+                -- incremental_selection = {
+                --     enable = true,
+                --     keymaps = {
+                --         node_incremental = "v",
+                --         node_decremental = "V",
+                --         scope_incremental = "<leader><C-v>",
+                --     },
+                --     disable = function(lang, _)
+                --         local enable = { "c", "cpp", "lua" }
+                --         if vim.tbl_contains(enable, lang) then
+                --             return false
+                --         end
+                --         return true
+                --     end,
+                -- },
                 textobjects = {
                     select = {
                         enable = true,
                         -- Automatically jump forward to textobj, similar to targets.vim
                         lookahead = true,
                         keymaps = {
-                            -- You can use the capture groups defined in textobjects.scm
-                            ["af"] = "@function.outer",
-                            ["if"] = "@function.inner",
-                            ["ac"] = "@class.outer",
-                            ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-                            ["as"] = { query = "@scope", query_group = "locals", desc = "Select language scope" },
-                            ["al"] = "@loop.outer",
-                            ["il"] = "@loop.inner",
-                        },
-                        selection_modes = {
-                            ["@parameter.outer"] = "v", -- charwise
-                            ["@function.outer"] = "V",  -- linewise
-                            ["@class.outer"] = "<c-v>", -- blockwise
+                            ["ab"] = { query = "@block.outer", desc = "around block" },
+                            ["ib"] = { query = "@block.inner", desc = "inside block" },
+                            ["ac"] = { query = "@class.outer", desc = "around class" },
+                            ["ic"] = { query = "@class.inner", desc = "inside class" },
+                            ["a?"] = { query = "@conditional.outer", desc = "around conditional" },
+                            ["i?"] = { query = "@conditional.inner", desc = "inside conditional" },
+                            ["af"] = { query = "@function.outer", desc = "around function " },
+                            ["if"] = { query = "@function.inner", desc = "inside function " },
+                            ["al"] = { query = "@loop.outer", desc = "around loop" },
+                            ["il"] = { query = "@loop.inner", desc = "inside loop" },
+                            ["ap"] = { query = "@parameter.outer", desc = "around parameter" },
+                            ["ip"] = { query = "@parameter.inner", desc = "inside parameter" },
                         },
                         include_surrounding_whitespace = false,
                     },
@@ -441,24 +461,31 @@ function M.treesitter()
                         enable = true,
                         set_jumps = true, -- whether to set jumps in the jumplist
                         goto_next_start = {
-                            ["]c"] = "@class.outer",
+                            ["]b"] = { query = "@block.outer", desc = "Next block start" },
+                            ["]f"] = { query = "@function.outer", desc = "Next function start" },
+                            ["]p"] = { query = "@parameter.inner", desc = "Next parameter start" },
+                            ["]c"] = { query = "@class.outer", desc = "Next class start" },
+                            ["]l"] = { query = "@loop.outer", desc = "Next loop start" },
                             ["]]"] = { query = "@function.outer", desc = "Next function start" },
-                            ["]l"] = "@loop.*",
-                            ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
-                        },
-                        goto_previous_start = {
-                            ["[c"] = "@class.outer",
-                            ["[["] = { query = "@function.outer", desc = "Previous function start" },
-                            ["[l"] = { query = { "@loop.inner", "@loop.outer" } },
-                            ["[z"] = { query = "@fold", query_group = "folds", desc = "Previous fold" },
                         },
                         goto_next_end = {
-                            ["]C"] = "@class.outer",
-                            ["]}"] = "@function.outer",
+                            ["]B"] = { query = "@block.outer", desc = "Next block end" },
+                            ["]F"] = { query = "@function.outer", desc = "Next function end" },
+                            ["]P"] = { query = "@parameter.inner", desc = "Next parameter end" },
+                            ["]C"] = { query = "@class.outer", desc = "Next class end" },
+                        },
+                        goto_previous_start = {
+                            ["[b"] = { query = "@block.outer", desc = "Previous block start" },
+                            ["[f"] = { query = "@function.outer", desc = "Previous function start" },
+                            ["[p"] = { query = "@parameter.inner", desc = "Previous parameter start" },
+                            ["[c"] = { query = "@class.outer", desc = "Previous class start" },
+                            ["[l"] = { query = "@loop.outer", desc = "Previous loop start" },
+                            ["[["] = { query = "@function.outer", desc = "Previous function start" },
                         },
                         goto_previous_end = {
-                            ["[C"] = "@class.outer",
-                            ["[{"] = "@function.outer",
+                            ["[B"] = { query = "@block.outer", desc = "Previous block end" },
+                            ["[F"] = { query = "@function.outer", desc = "Previous function end" },
+                            ["[P"] = { query = "@parameter.inner", desc = "Previous parameter end" },
                         },
                         goto_next = {
                             ["]w"] = "@conditional.outer",
@@ -466,6 +493,19 @@ function M.treesitter()
                         goto_previous = {
                             ["[w"] = "@conditional.outer",
                         }
+                    },
+                    swap = {
+                        enable = true,
+                        swap_next = {
+                            [">B"] = { query = "@block.outer", desc = "Swap next block" },
+                            [">F"] = { query = "@function.outer", desc = "Swap next function" },
+                            [">P"] = { query = "@parameter.inner", desc = "Swap next parameter" },
+                        },
+                        swap_previous = {
+                            ["<B"] = { query = "@block.outer", desc = "Swap previous block" },
+                            ["<F"] = { query = "@function.outer", desc = "Swap previous function" },
+                            ["<P"] = { query = "@parameter.inner", desc = "Swap previous parameter" },
+                        },
                     },
                 }
             })
@@ -486,6 +526,26 @@ function M.nt_cpp_tools()
             header_extension = "h",
             source_extension = "cpp",
         }
+    }
+end
+
+function M.mason()
+    return {
+        "williamboman/mason.nvim",
+        lazy = false,
+        build = ":MasonUpdate",
+        config = function()
+            require("mason").setup({
+                install_root_dir = g.runtime_dir .. "/mason",
+                --pip = {
+                --    install_args = { "-i", "https://pypi.tuna.tsinghua.edu.cn/simple" },
+                --},
+                registries = {
+                    "github:fcying/my-mason-registry",
+                    "github:mason-org/mason-registry",
+                },
+            })
+        end
     }
 end
 
@@ -916,7 +976,6 @@ end
 function M.vim_expand_region()
     return {
         "terryma/vim-expand-region",
-        event = "VeryLazy",
         keys = {
             { "v", mode = { "x" }, "<Plug>(expand_region_expand)", desc = "expand_region_expand" },
             { "V", mode = { "x" }, "<Plug>(expand_region_shrink)", desc = "expand_region_shrink" },
@@ -1172,7 +1231,7 @@ function M.whichkey()
             vim.o.timeoutlen = 500
             local wk = require("which-key")
             wk.setup({
-                triggers = { "<leader>", "g", "f" }, -- specifiy a list or auto
+                triggers = { "<leader>", "g", "f", "v", "[", "]" }, -- specifiy a list or auto
             })
             wk.register({
                 f = { name = "telescope" },
@@ -1234,7 +1293,7 @@ function M.ZFVimIM()
 
     return {
         "ZSaberLv0/ZFVimIM",
-        event = "VeryLazy",
+        event = "InsertEnter",
         dependencies = { "ZSaberLv0/ZFVimJob", "fcying/ZFVimIM_wubi_jidian" },
     }
 end

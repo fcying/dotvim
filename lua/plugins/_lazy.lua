@@ -16,6 +16,7 @@ map("n", "<leader>pr", ":Lazy clean<CR>")
 
 local plugins = {
     -- misc {{{
+    { import = "plugins.colorscheme" },
     { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
     require("config").suda(),
     { "wsdjeg/vim-fetch", lazy = false },
@@ -85,12 +86,11 @@ local plugins = {
     require("config").dashboard(),
     require("config").lualine(),
     require("plugins._telescope").lazy,
-    { import = "plugins.colorscheme" },
 
     -- tool {{{
     { "chrisbra/Colorizer", cmd = { "ColorToggle" } },
     { "fcying/vim-plugin-AnsiEsc", cmd = { "AnsiEsc", "AnsiEscClear" } },
-    { "stevearc/dressing.nvim" },
+    { "stevearc/dressing.nvim", opts = {} },
     --require("config").noice(),
     require("config").nvim_notify(),
     require("config").ZFVimIM(),
@@ -154,7 +154,7 @@ local plugins = {
         config = require("lsp").setup,
         event = { "BufReadPre", "BufNewFile" },
         dependencies = {
-            require("plugins.mason").setup(),
+            require("config").mason(),
             { "williamboman/mason-lspconfig.nvim" },
         },
     },

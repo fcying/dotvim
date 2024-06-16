@@ -18,81 +18,81 @@ local plugins = {
     -- misc {{{
     { import = "plugins.colorscheme" },
     { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
-    require("config").suda(),
-    { "wsdjeg/vim-fetch", lazy = false },
-    {
-        "mbbill/fencview",
-        cmd = { "FencView", "FencAutoDetect" },
-        config = function()
-            g.fencview_autodetect = 0
-            g.fencview_checklines = 10
-        end,
-    },
-    { -- auto adjust 'shiftwidth' and 'expandtab'
-        "tpope/vim-sleuth",
-        config = function()
-            --g.sleuth_make_heuristics = 0
-            g.sleuth_heuristics = 0
-            g.sleuth_vue_heuristics = 1
-        end,
-    },
-    require("config").lastplace(),
+    -- require("config").suda(),
+    -- { "wsdjeg/vim-fetch", lazy = false },
+    -- {
+    --     "mbbill/fencview",
+    --     cmd = { "FencView", "FencAutoDetect" },
+    --     config = function()
+    --         g.fencview_autodetect = 0
+    --         g.fencview_checklines = 10
+    --     end,
+    -- },
+    -- { -- auto adjust 'shiftwidth' and 'expandtab'
+    --     "tpope/vim-sleuth",
+    --     config = function()
+    --         --g.sleuth_make_heuristics = 0
+    --         g.sleuth_heuristics = 0
+    --         g.sleuth_vue_heuristics = 1
+    --     end,
+    -- },
+    -- require("config").lastplace(),
     --{ 'simnalamburt/vim-mundo', event = 'VimEnter' },
 
     -- editor {{{
-    {
-        "moll/vim-bbye",
-        cmd = { "Bdelete", "Bclose" },
-        keys = { { "<leader>q", "<cmd>Bdelete<CR>", desc = "Quit Buffer" } },
-        config = function()
-            vim.api.nvim_create_user_command("Bclose", "Bdelete", { bang = true })
-        end
-    },
-    require("config").Comment(),
-    require("config").sandwich(),
-    require("config").window_picker(),
-    --require("config").incline(),
-    require("config").tagbar(),
-    require("config").marks(),
-    {
-        "Yggdroot/indentLine",
-        cmd = "IndentLinesToggle",
-        keys = { { "<leader>i", "<cmd>IndentLinesToggle<CR>", desc = "IndentLinesToggle" } },
-        config = function()
-            g.indentLine_setColors = 1
-            g.indentLine_enabled = 0
-            g.indentLine_char_list = { "|", "¦", "┆", "┊" }
-        end,
-    },
-    {
-        "mg979/vim-visual-multi",
-        event = "VeryLazy",
-        config = function()
-            vim.cmd([[
-                let g:VM_maps = {}
-                let g:VM_maps['Find Under']         = '<C-n>'
-                let g:VM_maps['Find Subword Under'] = '<C-n>'
-                let g:VM_cmdheight = 1
-            ]])
-        end,
-    },
+    -- {
+    --     "moll/vim-bbye",
+    --     cmd = { "Bdelete", "Bclose" },
+    --     keys = { { "<leader>q", "<cmd>Bdelete<CR>", desc = "Quit Buffer" } },
+    --     config = function()
+    --         vim.api.nvim_create_user_command("Bclose", "Bdelete", { bang = true })
+    --     end
+    -- },
+    -- require("config").Comment(),
+    -- require("config").sandwich(),
+    -- require("config").window_picker(),
+    -- --require("config").incline(),
+    -- require("config").tagbar(),
+    -- require("config").marks(),
+    -- {
+    --     "Yggdroot/indentLine",
+    --     cmd = "IndentLinesToggle",
+    --     keys = { { "<leader>i", "<cmd>IndentLinesToggle<CR>", desc = "IndentLinesToggle" } },
+    --     config = function()
+    --         g.indentLine_setColors = 1
+    --         g.indentLine_enabled = 0
+    --         g.indentLine_char_list = { "|", "¦", "┆", "┊" }
+    --     end,
+    -- },
+    -- {
+    --     "mg979/vim-visual-multi",
+    --     event = "VeryLazy",
+    --     config = function()
+    --         vim.cmd([[
+    --             let g:VM_maps = {}
+    --             let g:VM_maps['Find Under']         = '<C-n>'
+    --             let g:VM_maps['Find Subword Under'] = '<C-n>'
+    --             let g:VM_cmdheight = 1
+    --         ]])
+    --     end,
+    -- },
     --{ "andymass/vim-matchup", event = "VimEnter" },
-    require("config").vim_expand_region(),
-    --require("config").leap(),
-    require("config").flash(),
-    require("config").foldsearch(),
-    --require("config").fern(),
-    require("config").nvim_tree(),
-    require("config").dashboard(),
-    require("config").lualine(),
-    require("plugins._telescope").lazy,
+    -- require("config").vim_expand_region(),
+    -- --require("config").leap(),
+    -- require("config").flash(),
+    -- require("config").foldsearch(),
+    -- --require("config").fern(),
+    -- require("config").nvim_tree(),
+    -- require("config").dashboard(),
+    -- require("config").lualine(),
+    -- require("plugins._telescope").lazy,
 
     -- tool {{{
     { "chrisbra/Colorizer", cmd = { "ColorToggle" } },
     { "fcying/vim-plugin-AnsiEsc", cmd = { "AnsiEsc", "AnsiEscClear" } },
-    { "stevearc/dressing.nvim", opts = {} },
+    -- { "stevearc/dressing.nvim", opts = {} },
     --require("config").noice(),
-    require("config").nvim_notify(),
+    -- require("config").nvim_notify(),
     require("config").ZFVimIM(),
     {
         "ZSaberLv0/ZFVimDirDiff",
@@ -103,39 +103,40 @@ local plugins = {
             g.ZFDirDiffUI_showSameFile = 1
         end,
     },
-    require("config").fugitive(),
+    -- require("config").fugitive(),
     require("config").toggleterm(),
-    require("config").asynctasks(),
+    -- require("config").asynctasks(),
     -- require("config").overseer(),
-    require("config").whichkey(),
+    -- require("config").whichkey(),
 
     -- coding {{{
-    require("config").gen_clang_conf(),
-    {
-        "folke/lazydev.nvim",
-        ft = "lua",
-        opts = {
-            library = {
-                "luvit-meta/library",
-                g.config_dir .. "/lua",
-            },
-            enabled = function(_)
-                if vim.g.lazydev_enabled ~= nil then
-                    return vim.g.lazydev_enabled
-                end
-                local filename = vim.fn.expand("%:t")
-                if filename == ".nvim.lua" or vim.uv.fs_stat(util.root_dir .. "/lua") then
-                    return true
-                else
-                    return false
-                end
-            end,
-        },
-    },
-    { "Bilal2453/luvit-meta", lazy = true }, -- optional `vim.uv` typings
-    require("config").treesitter(),
-    require("config").nt_cpp_tools(),
+    -- require("config").gen_clang_conf(),
+    -- {
+    --     "folke/lazydev.nvim",
+    --     ft = "lua",
+    --     opts = {
+    --         library = {
+    --             "luvit-meta/library",
+    --             g.config_dir .. "/lua",
+    --         },
+    --         enabled = function(_)
+    --             if vim.g.lazydev_enabled ~= nil then
+    --                 return vim.g.lazydev_enabled
+    --             end
+    --             local filename = vim.fn.expand("%:t")
+    --             if filename == ".nvim.lua" or vim.uv.fs_stat(util.root_dir .. "/lua") then
+    --                 return true
+    --             else
+    --                 return false
+    --             end
+    --         end,
+    --     },
+    -- },
+    -- { "Bilal2453/luvit-meta", lazy = true }, -- optional `vim.uv` typings
+    -- require("config").treesitter(),
+    -- require("config").nt_cpp_tools(),
     --require("lsp").null_ls(),
+    -- require("lsp").guard(),
     {
         "VonHeikemen/lsp-zero.nvim",
         branch = "v3.x",
@@ -148,7 +149,6 @@ local plugins = {
             vim.g.lsp_zero_ui_float_border = 0
         end,
     },
-    require("lsp").guard(),
     {
         "neovim/nvim-lspconfig",
         config = require("lsp").setup,
@@ -158,12 +158,12 @@ local plugins = {
             { "williamboman/mason-lspconfig.nvim" },
         },
     },
-    require("config").cmp(),
+    -- require("config").cmp(),
 
     -- filetype {{{
     --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },
-    { "Vimjas/vim-python-pep8-indent", ft = "python" },
-    { "wsdjeg/vim-autohotkey", ft = "autohotkey" },
+    -- { "Vimjas/vim-python-pep8-indent", ft = "python" },
+    -- { "wsdjeg/vim-autohotkey", ft = "autohotkey" },
 }
 
 -- lazy config {{{

@@ -777,7 +777,7 @@ function M.lualine()
                 lualine_b = { s.git_status, "diff", "diagnostics" },
                 lualine_c = { "filename" },
                 lualine_x = {
-                    s.lsp_progress,
+                    -- s.lsp_progress,
                     --s.search,
                     --s.macro_recording,
                     "fileformat",
@@ -1318,7 +1318,7 @@ function M.setup()
     require("plugins._lazy")
 
     vim.cmd.colorscheme(colorscheme)
-    util.update_ignore_config()
+    -- util.update_ignore_config()
 end
 
 return M

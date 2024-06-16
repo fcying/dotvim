@@ -21,7 +21,7 @@ map("", "<esc>", function()
     if vim.v.hlsearch == 1 then
         vim.cmd("noh")
     end
-    require("notify").dismiss()
+    -- require("notify").dismiss()
 end)
 
 -- cmd-line window dd {{{

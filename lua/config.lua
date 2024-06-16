@@ -201,7 +201,12 @@ end
 function M.sandwich()
     return {
         "machakann/vim-sandwich",
-        event = "VeryLazy",
+        keys = {
+            "<leader>srb", "<leader>sdb", "<leader>sr", "<leader>sd",
+            { "<leader>sr", mode = "x" },
+            { "<leader>sd", mode = "x" },
+            { "<leader>sa", mode = { "x", "o", "n" } },
+        },
         config = function()
             vim.cmd([[
                 let g:sandwich_no_default_key_mappings = 1
@@ -228,7 +233,9 @@ end
 function M.leap()
     return {
         "ggandor/leap.nvim",
-        event = "VeryLazy",
+        keys = {
+            { "s", mode = { "n", "v" } },
+        },
         dependencies = "tpope/vim-repeat",
         config = function()
             vim.keymap.set({ "n", "v" }, "s", function()
@@ -292,7 +299,6 @@ function M.window_picker()
         --"s1n7ax/nvim-window-picker",
         "fcying/nvim-window-picker",
         branch = "prompt",
-        event = "VeryLazy",
         keys = {
             {
                 "-",
@@ -374,21 +380,22 @@ function M.treesitter()
     return {
         "nvim-treesitter/nvim-treesitter",
         build = ":TSUpdate",
-        cmd = {
-            "TSBufDisable",
-            "TSBufEnable",
-            "TSBufToggle",
-            "TSDisable",
-            "TSEnable",
-            "TSToggle",
-            "TSInstall",
-            "TSInstallInfo",
-            "TSInstallSync",
-            "TSModuleInfo",
-            "TSUninstall",
-            "TSUpdate",
-            "TSUpdateSync",
-        },
+        event = "VeryLazy",
+        -- cmd = {
+        --     "TSBufDisable",
+        --     "TSBufEnable",
+        --     "TSBufToggle",
+        --     "TSDisable",
+        --     "TSEnable",
+        --     "TSToggle",
+        --     "TSInstall",
+        --     "TSInstallInfo",
+        --     "TSInstallSync",
+        --     "TSModuleInfo",
+        --     "TSUninstall",
+        --     "TSUpdate",
+        --     "TSUpdateSync",
+        -- },
         dependencies = { "nvim-treesitter/nvim-treesitter-textobjects", lazy = true },
         config = function()
             local parser_install_dir = g.runtime_dir .. "/parsers"
@@ -516,7 +523,7 @@ end
 function M.nt_cpp_tools()
     return {
         "Badhi/nvim-treesitter-cpp-tools",
-        dependencies = { "nvim-treesitter/nvim-treesitter" },
+        -- dependencies = { "nvim-treesitter/nvim-treesitter" },
         ft = { "c", "cpp" },
         opts = {
             preview = {
@@ -872,7 +879,9 @@ function M.nvim_notify()
             --]])
 
             if M.use_noice == nil then
-                vim.notify = require("notify")
+                --FIXME https://github.com/rcarriga/nvim-notify/issues/205
+                -- vim.notify = require("notify")
+                vim.notify = vim.schedule_wrap(require("notify")) ---@diagnostic disable-line
                 _G.print = function(...)
                     local print_safe_args = {}
                     local _ = { ... }
@@ -943,7 +952,7 @@ function M.gen_clang_conf()
         "fcying/gen_clang_conf.vim",
         lazy = false,
         init = function()
-            vim.cmd([[ let g:gencconf_storein_rootmarker = get(g:,'gencconf_storein_rootmarker',1) ]])
+            vim.g.gencconf_storein_rootmarker = vim.g.gencconf_storein_rootmarker or 1
         end
     }
 end
@@ -951,7 +960,8 @@ end
 function M.suda()
     return {
         "lambdalisue/suda.vim",
-        lazy = false,
+        -- lazy = false,
+        cmd = { "SudaRead", "SudaWrite" },
         init = function()
             --FIXME https://github.com/lambdalisue/suda.vim/issues/54
             vim.g.suda_smart_edit = 0
@@ -1084,13 +1094,17 @@ function _G.__flip_flop_comment()
 end
 
 function M.Comment()
+    vim.keymap.del({ "n" }, "gcc")
+    vim.keymap.del({ "n", "o", "x" }, "gc")
     return {
         "numToStr/Comment.nvim",
-        event = "VeryLazy",
+        keys = {
+            "gcc", "gbc", "gco", "gcO", "gcA",
+            { "gc", mode = "x" },
+            { "gb", mode = "x" },
+        },
         dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
         config = function()
-            vim.keymap.del({ "n" }, "gcc")
-            vim.keymap.del({ "n", "o", "x" }, "gc")
             require("Comment").setup({
                 pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
             })

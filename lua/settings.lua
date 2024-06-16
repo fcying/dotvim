@@ -201,18 +201,36 @@ if g.is_tmux == 1 then
             ["*"] = { "tmux", "save-buffer", "-" },
         },
     }
+    vim.api.nvim_create_autocmd("TextYankPost", {
+        group = vim.api.nvim_create_augroup("osc52", { clear = true }),
+        callback = function()
+            -- vim.print(vim.v.event)
+            if vim.v.operator == "y" then
+                -- require("vim.ui.clipboard.osc52").copy("+")(vim.v.event.regcontents)
+                require("osc52").copy_register("+")
+            end
+        end,
+    })
+else
+    local function paste()
+        return {vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('')}
+        -- return {
+        --     vim.fn.split(vim.fn.getreg(""), "\n"),
+        --     vim.fn.getregtype(""),
+        -- }
+    end
+    vim.g.clipboard = {
+        name = "osc52",
+        copy = {
+            ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+            ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+        },
+        paste = {
+            ["+"] = paste,
+            ["*"] = paste,
+        },
+    }
 end
-vim.api.nvim_create_autocmd("TextYankPost", {
-    group = vim.api.nvim_create_augroup("osc52", { clear = true }),
-    pattern = { "*" },
-    callback = function()
-        -- vim.print(vim.v.event)
-        if vim.v.operator == "y" then
-            require('vim.ui.clipboard.osc52').copy('+')(vim.v.event.regcontents)
-        end
-    end,
-})
-
 
 -- large file {{{
 vim.cmd([[

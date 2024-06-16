@@ -74,6 +74,17 @@ function M.get_visual_selection()
     return result
 end
 
+function M.printCallerInfo(f)
+    f = f or 3
+    local info = debug.getinfo(f, "Sl")
+    if info then
+        print("Called from: " .. (info.short_src or "unknown source")
+            .. " :" .. (info.currentline or "unknown line"))
+    else
+        print("No caller information available.")
+    end
+end
+
 function M.find_file()
     fn.execute(M.find_command)
 end

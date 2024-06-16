@@ -19,17 +19,18 @@ local plugins = {
     { import = "plugins.colorscheme" },
     require("config").suda(),
     { "wsdjeg/vim-fetch", lazy = false },
+    { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
     {
         "mbbill/fencview",
         cmd = { "FencView", "FencAutoDetect" },
-        config = function()
+        init = function()
             g.fencview_autodetect = 0
             g.fencview_checklines = 10
         end,
     },
     { -- auto adjust 'shiftwidth' and 'expandtab'
         "tpope/vim-sleuth",
-        config = function()
+        init = function()
             --g.sleuth_make_heuristics = 0
             g.sleuth_heuristics = 0
             g.sleuth_vue_heuristics = 1
@@ -57,7 +58,7 @@ local plugins = {
         "Yggdroot/indentLine",
         cmd = "IndentLinesToggle",
         keys = { { "<leader>i", "<cmd>IndentLinesToggle<CR>", desc = "IndentLinesToggle" } },
-        config = function()
+        init = function()
             g.indentLine_setColors = 1
             g.indentLine_enabled = 0
             g.indentLine_char_list = { "|", "¦", "┆", "┊" }
@@ -66,7 +67,7 @@ local plugins = {
     {
         "mg979/vim-visual-multi",
         event = "VeryLazy",
-        config = function()
+        init = function()
             vim.cmd([[
                 let g:VM_maps = {}
                 let g:VM_maps['Find Under']         = '<C-n>'
@@ -85,6 +86,7 @@ local plugins = {
     require("config").dashboard(),
     require("config").lualine(),
     require("plugins._telescope").lazy,
+    -- { "Yggdroot/LeaderF", cmd = { "Leaderf" }, build = ":LeaderfInstallCExtension" },
 
     -- tool {{{
     { "chrisbra/Colorizer", cmd = { "ColorToggle" } },
@@ -97,7 +99,7 @@ local plugins = {
         "ZSaberLv0/ZFVimDirDiff",
         cmd = "ZFDirDiff",
         dependencies = "ZSaberLv0/ZFVimJob",
-        config = function()
+        init = function()
             g.ZFJobVerboseLogEnable = 0
             g.ZFDirDiffUI_showSameFile = 1
         end,

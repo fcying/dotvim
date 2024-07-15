@@ -1245,30 +1245,30 @@ function M.whichkey()
             vim.o.timeoutlen = 500
             local wk = require("which-key")
             wk.setup({
-                triggers = { "<leader>", "g", "f", "v", "[", "]" }, -- specifiy a list or auto
+                icons = { mappings = false },
+                triggers = {
+                    { "<leader>", mode = { "n", "v" } },
+                    { "g", mode = { "n", "v" } },
+                    { "f", mode = { "n", "v" } },
+                    { "v", mode = { "n", "v" } },
+                    { "[", mode = { "n", "v" } },
+                    { "]", mode = { "n", "v" } },
+                }
             })
-            wk.register({
-                f = { name = "telescope" },
+            wk.add({
+                { "<leader>c", group = "cd ..." },
+                { "<leader>d", group = "delete ..." },
+                { "<leader>e", group = "edit ..." },
+                { "<leader>l", group = "lsp" },
+                { "<leader>m", group = "mark" },
+                { "<leader>s", group = "sandwich" },
+                { "<leader>p", group = "plugin" },
+                { "<leader>t", group = "tab" },
+                { "<leader>u", group = "util" },
+                { "<leader>w", group = "window" },
+                { "<leader>um", desc = "print current mode" },
+                { "<leader>sn", desc = "noice" },
             })
-            wk.register({
-                c = { name = "cd ..." },
-                d = { name = "delete ..." },
-                e = { name = "edit ..." },
-                g = { name = "nerdcommenter" },
-                l = { name = "lsp" },
-                m = { name = "mark" },
-                s = { name = "sandwich | noice" },
-                p = { name = "plugin" },
-                t = { name = "tab" },
-                u = { name = "util" },
-                w = { name = "window" },
-            }, { prefix = "<leader>" })
-            wk.register({
-                m = { name = "print current mode" },
-            }, { prefix = "<leader>u" })
-            wk.register({
-                n = { name = "noice" },
-            }, { prefix = "<leader>s" })
         end
     }
 end

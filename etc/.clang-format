@@ -1,0 +1,13 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+IndentWidth: 4
+AccessModifierOffset: -4
+ColumnLimit: 120
+UseTab: Never
+SkipMacroDefinitionBody: true
+AllowShortLoopsOnASingleLine: true
+
+BreakBeforeBraces: Linux   # Allman Linux
+AllowShortIfStatementsOnASingleLine: false
+IndentCaseLabels: false

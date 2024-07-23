@@ -213,11 +213,7 @@ if g.is_tmux == 1 then
     })
 else
     local function paste()
-        return {vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('')}
-        -- return {
-        --     vim.fn.split(vim.fn.getreg(""), "\n"),
-        --     vim.fn.getregtype(""),
-        -- }
+        return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
     end
     vim.g.clipboard = {
         name = "osc52",

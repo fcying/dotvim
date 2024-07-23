@@ -2,7 +2,24 @@ local M = {}
 
 local util = require("util")
 local map = util.map
-local g, fn = vim.g, vim.fn
+local g, fn, api = vim.g, vim.fn, vim.api
+
+function M.mini()
+    return {
+        {
+            "echasnovski/mini.bufremove",
+            keys = { { "<leader>q", function() require("mini.bufremove").delete() end, desc = "Quit Buffer" } },
+            config = function()
+                require("mini.bufremove").setup()
+                -- api.nvim_create_user_command("Bclose", "Bdelete", { bang = true })
+            end
+        },
+        {
+            "echasnovski/mini.surround",
+            opts = {},
+        },
+    }
+end
 
 function M.fugitive()
     return {
@@ -198,38 +215,6 @@ function M.overseer()
     }
 end
 
-function M.sandwich()
-    return {
-        "machakann/vim-sandwich",
-        keys = {
-            "<leader>srb", "<leader>sdb", "<leader>sr", "<leader>sd",
-            { "<leader>sr", mode = "x" },
-            { "<leader>sd", mode = "x" },
-            { "<leader>sa", mode = { "x", "o", "n" } },
-        },
-        config = function()
-            vim.cmd([[
-                let g:sandwich_no_default_key_mappings = 1
-                let g:textobj_sandwich_no_default_key_mappings = 1
-                let g:operator_sandwich_no_default_key_mappings = 1
-                nmap <leader>srb <Plug>(operator-sandwich-replace)
-                \<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
-                nmap <leader>sdb <Plug>(operator-sandwich-delete)
-                \<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-auto-a)
-                nmap <leader>sr <Plug>(operator-sandwich-replace)
-                \<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
-                nmap <leader>sd <Plug>(operator-sandwich-delete)
-                \<Plug>(operator-sandwich-release-count)<Plug>(textobj-sandwich-query-a)
-                xmap <leader>sr <Plug>(operator-sandwich-replace)
-                xmap <leader>sd <Plug>(operator-sandwich-delete)
-                omap <leader>sa <Plug>(operator-sandwich-g@)
-                xmap <leader>sa <Plug>(operator-sandwich-add)
-                nmap <leader>sa <Plug>(operator-sandwich-add)
-                ]])
-        end,
-    }
-end
-
 function M.leap()
     return {
         "ggandor/leap.nvim",
@@ -404,7 +389,7 @@ function M.treesitter()
                 parser_install_dir = parser_install_dir,
                 ensure_installed = {
                     "vim", "vimdoc", "lua", "query", "comment",
-                    "cpp",
+                    "cpp", "typescript", "vue"
                 },
                 sync_install = false,
                 auto_install = false,
@@ -1103,7 +1088,14 @@ function M.Comment()
             { "gc", mode = "x" },
             { "gb", mode = "x" },
         },
-        dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
+        dependencies = {
+            "JoosepAlviste/nvim-ts-context-commentstring",
+            opts = {
+                languages = {
+                    c = { __default = "// %s", __multiline = "/* %s */" },
+                },
+            }
+        },
         config = function()
             require("Comment").setup({
                 pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),

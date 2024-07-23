@@ -18,6 +18,7 @@ local plugins = {
     -- misc {{{
     { import = "plugins.colorscheme" },
     require("config").suda(),
+    require("config").mini(),
     { "wsdjeg/vim-fetch", lazy = false },
     { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
     {
@@ -40,16 +41,7 @@ local plugins = {
     --{ 'simnalamburt/vim-mundo', event = 'VimEnter' },
 
     -- editor {{{
-    {
-        "moll/vim-bbye",
-        cmd = { "Bdelete", "Bclose" },
-        keys = { { "<leader>q", "<cmd>Bdelete<CR>", desc = "Quit Buffer" } },
-        config = function()
-            vim.api.nvim_create_user_command("Bclose", "Bdelete", { bang = true })
-        end
-    },
     require("config").Comment(),
-    require("config").sandwich(),
     require("config").window_picker(),
     --require("config").incline(),
     require("config").tagbar(),
@@ -149,7 +141,7 @@ local plugins = {
             vim.g.lsp_zero_ui_float_border = 0
         end,
     },
-    require("lsp").guard(),
+    require("lsp").conform(),
     {
         "neovim/nvim-lspconfig",
         config = require("lsp").setup,

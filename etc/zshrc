@@ -20,21 +20,6 @@ export EDITOR="$VISUAL"
 export LESS='-F -g -i -M -R -S -w -X -z-4'
 
 
-# wsl2 {{{
-[ -d "/mnt/c" ] && [[ "$(uname -a)" == *microsoft* ]] && {
-    export SCOOP=${SCOOP:-"/mnt/d/tool/scoop"}
-    export PATH=$PATH:$SCOOP/shims:/usr/lib/wsl/lib
-    alias cmd='/mnt/c/Windows/System32/cmd.exe'
-    alias adb='$SCOOP/shims/adb.exe'
-    alias fastboot='$SCOOP/shims/fastboot.exe'
-    alias wtail='/mnt/d/tool/msys64/usr/bin/tail.exe'
-
-    # run adb in ssh tmux
-    if [ -z "$WSL_INTEROP" ]; then
-        export WSL_INTEROP="/run/WSL/$(ls -t /run/WSL | head -1)"
-    fi
-}
-
 # screen-256color xterm-256color
 #TERM=${ZSH_TERM:-"xterm-256color"}
 
@@ -42,7 +27,6 @@ export LESS='-F -g -i -M -R -S -w -X -z-4'
 export LANG=${ZSH_LANG:-"en_US.UTF-8"}
 export LANGUAGE=${ZSH_LANGUAGE:-"en_US:en"}
 export LC_ALL=$LANG
-
 
 # path {{{
 # Ensure path arrays do not contain duplicates.
@@ -80,6 +64,28 @@ fpath=(
     $fpath
     $CONFIG_DIR/fpath
 )
+
+# wsl2 {{{
+[ -d "/mnt/c" ] && [[ "$(uname -a)" == *microsoft* ]] && {
+    export SCOOP=${SCOOP:-"/mnt/d/tool/scoop"}
+    export PATH=$PATH:$SCOOP/shims:/usr/lib/wsl/lib
+    alias cmd='/mnt/c/Windows/System32/cmd.exe'
+    alias adb='$SCOOP/shims/adb.exe'
+    alias fastboot='$SCOOP/shims/fastboot.exe'
+    alias wtail='/mnt/d/tool/msys64/usr/bin/tail.exe'
+
+    # run adb in ssh tmux
+    if [ -z "$WSL_INTEROP" ]; then
+        export WSL_INTEROP="/run/WSL/$(ls -t /run/WSL | head -1)"
+    fi
+
+    type wsl2-ssh-agent >/dev/null 2>&1 && {
+        # if [ -z "$SSH_AUTH_SOCK" ]; then
+            WSL2_AGENT=true
+            eval "$(wsl2-ssh-agent)"
+        # fi
+    }
+}
 
 type nvim >/dev/null 2>&1 && {
     export VISUAL=${VISUAL:-"nvim"}

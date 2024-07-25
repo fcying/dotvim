@@ -12,8 +12,7 @@ export PAGER=${PAGER:-"less"}
 export VISUAL=${VISUAL:-"nvim"}
 export EDITOR="$VISUAL"
 
-alias vim='nvim'
-alias vi='vim'
+PATH=$HOME/bin:$HOME/.local/bin:$HOME/tool/go/bin:$HOME/.cargo/bin:$PATH
 
 # wsl2 {{{
 [ -d "/mnt/c" ] && [[ "$(uname -a)" == *microsoft* ]] && {
@@ -28,6 +27,13 @@ alias vi='vim'
     if [ -z "$WSL_INTEROP" ]; then
         export WSL_INTEROP="/run/WSL/$(ls -t /run/WSL | head -1)"
     fi
+
+    type wsl2-ssh-agent >/dev/null 2>&1 && {
+        # if [ -z "$SSH_AUTH_SOCK" ]; then
+            WSL2_AGENT=true
+            eval "$(wsl2-ssh-agent)"
+        # fi
+    }
 }
 
 # don't put duplicate lines or lines starting with space in the history.
@@ -220,7 +226,6 @@ else
 fi
 
 export GOPATH=$HOME/go
-PATH=$HOME/bin:$HOME/.local/bin:$HOME/tool/go/bin:$HOME/.cargo/bin:$PATH
 
 # nix {{{
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi

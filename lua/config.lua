@@ -126,24 +126,6 @@ function M.asynctasks()
                 g.asyncrun_bell = 1
                 g.asyncrun_silent = 0
                 g.asyncrun_open = 8
-                local function set_qf_ansi_color()
-                    local qf_win = nil
-                    for _, win in pairs(vim.fn.getwininfo()) do
-                        if win.quickfix == 1 then
-                            qf_win = win.winid
-                            break
-                        end
-                    end
-                    if qf_win then
-                        if vim.api.nvim_get_current_win() ~= qf_win then
-                            current_win = vim.api.nvim_get_current_win()
-                            vim.api.nvim_set_current_win(qf_win)
-                            vim.cmd("AnsiEscClear")
-                            vim.cmd("AnsiEsc")
-                            vim.api.nvim_set_current_win(current_win)
-                        end
-                    end
-                end
                 vim.api.nvim_create_augroup("asyncrun", { clear = true })
                 vim.api.nvim_create_autocmd("User", {
                     group = "asyncrun",
@@ -151,20 +133,14 @@ function M.asynctasks()
                     callback = function()
                         if g.asyncrun_code == 0 then
                             vim.notify("AsyncRun Success", "info") ---@diagnostic disable-line
-                            vim.cmd("cclose")
+                            if Option.asyncrun_auto_close_qf then
+                                vim.cmd("cclose")
+                            end
                         else
                             vim.notify("AsyncRun Failed!", "error") ---@diagnostic disable-line
                         end
                     end,
                 })
-                vim.api.nvim_create_autocmd("User", {
-                    group = "asyncrun",
-                    pattern = { "AsyncRunStart" },
-                    callback = function()
-                        set_qf_ansi_color()
-                    end,
-                })
-
 
                 g.asyncrun_rootmarks = { ".root", ".git", ".svn" }
                 require("asyncrun_toggleterm").setup({
@@ -673,6 +649,7 @@ function M.cmp_dictionary()
         ["*"] = { dict_path .. "dictionary" },
         ["xmake"] = { dict_path .. "xmake.dict" },
         ["go"] = { dict_path .. "go.dict" },
+        ["cmake"] = { dict_path .. "cmake.dict" },
     }
 
     local function get_dict_path(file)

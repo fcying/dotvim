@@ -124,7 +124,7 @@ function configs.clangd()
         "--background-index",
         "--all-scopes-completion",
         "--completion-style=detailed",
-        "--header-insertion=iwyu",
+        "--header-insertion=never",      -- iwyu never
         "--pch-storage=memory",
     }
     if Option.clangd_query_driver then

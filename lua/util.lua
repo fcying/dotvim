@@ -10,6 +10,7 @@ Option = {
     lsp = {},                     -- ignore lsp server
     gencconf_default_option = {}, -- for g:gencconf_default_option
     clangd_query_driver = nil,
+    asyncrun_auto_close_qf = false,
     build = function() return { cmd = "", name = "Build Task", } end,
     release = function() return { cmd = "", name = "Release Task", } end,
 }

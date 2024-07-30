@@ -1,6 +1,14 @@
+CompileFlags:
+  Add: -Wno-unknown-warning-option
+  Remove: [
+    -m*, -f*, 
+    -pi32v2-large-program*,
+    -target*,
+  ]
+
 Diagnostics:
-  Suppress:
-    [ 'pp_file_not_found',
+  Suppress: [ 
+    'pp_file_not_found',
     '-Wimplicit-function-declaration',
     '-Wunused-value',
     '-Wincompatible-pointer-types',
@@ -15,4 +23,5 @@ Diagnostics:
     'sizeof_alignof_incomplete_or_sizeless_type',
     'invalid_token_after_toplevel_declarator',
     'unknown_typename_suggest',
-    'unknown_typename']
+    'unknown_typename',
+  ]

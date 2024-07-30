@@ -89,8 +89,18 @@ function M.toggleterm()
         "akinsho/toggleterm.nvim",
         version = "*",
         cmd = { "ToggleTerm", "TermExec" },
+        keys = {
+            { [[<c-\>]], "<cmd>ToggleTerm<CR>", desc = "ToggleTerm OpenMapping" },
+            { "<leader>tt", "<cmd>ToggleTerm<CR>", desc = "ToggleTerm" },
+            { "<leader>tf", "<cmd>ToggleTerm direction=float<CR>", desc = "ToggleTerm float" },
+        },
         config = function()
             require("toggleterm").setup({
+                size = 20,
+                open_mapping = [[<c-\>]],
+                direction = "horizontal", --'vertical' | 'horizontal' | 'tab' | 'float'
+                hide_numbers = true,
+                insert_mappings = true,
                 highlights = {
                     Normal = { link = "Normal" },
                     NormalNC = { link = "NormalNC" },
@@ -101,18 +111,12 @@ function M.toggleterm()
                     WinBar = { link = "WinBar" },
                     WinBarNC = { link = "WinBarNC" },
                 },
-                direction = "horizontal", --'vertical' | 'horizontal' | 'tab' | 'float'
-                ---@diagnostic disable-next-line
                 ---@param t Terminal
                 on_create = function(t)
-                    vim.opt_local.foldcolumn = "0"
-                    vim.opt_local.signcolumn = "no"
                     if t.hidden then
                     end
                 end,
             })
-            map({ "n", "i", "t" }, "<C-t>", "<cmd>ToggleTerm<CR>", { desc = "ToggleTerm" })
-            map("n", "<leader>tf", "<Cmd>ToggleTerm direction=float<CR>", { desc = "ToggleTerm float" })
         end
     }
 end
@@ -123,9 +127,10 @@ function M.asynctasks()
             "skywind3000/asyncrun.vim",
             cmd = { "AsyncRun", "AsyncStop" },
             config = function()
-                g.asyncrun_bell = 1
-                g.asyncrun_silent = 0
-                g.asyncrun_open = 8
+                vim.g.asyncrun_bell = 1
+                vim.g.asyncrun_silent = 0
+                vim.g.asyncrun_open = 8
+                vim.g.asyncrun_rootmarks = { ".root", ".git", ".svn" }
                 vim.api.nvim_create_augroup("asyncrun", { clear = true })
                 vim.api.nvim_create_autocmd("User", {
                     group = "asyncrun",
@@ -136,16 +141,13 @@ function M.asynctasks()
                             if Option.asyncrun_auto_close_qf then
                                 vim.cmd("cclose")
                             end
+                            if Option.asyncrun_post_run then
+                                Option.asyncrun_post_run()
+                            end
                         else
                             vim.notify("AsyncRun Failed!", "error") ---@diagnostic disable-line
                         end
                     end,
-                })
-
-                g.asyncrun_rootmarks = { ".root", ".git", ".svn" }
-                require("asyncrun_toggleterm").setup({
-                    mapping = "<leader>tt",
-                    start_in_insert = false,
                 })
             end
         },
@@ -159,7 +161,8 @@ function M.asynctasks()
             init = function()
                 g.asynctasks_config_name = { ".root/.tasks", ".git/.tasks", ".tasks" }
                 g.asynctasks_rtp_config  = "asynctasks.ini"
-                g.asynctasks_term_pos    = "quickfix"
+                g.asynctasks_term_pos    = "bottom"
+                -- g.asynctasks_term_pos = "toggleterm"
                 g.asynctasks_term_reuse  = 1
                 g.asynctasks_term_focus  = 0
                 g.asynctasks_term_close  = 0
@@ -257,9 +260,7 @@ end
 
 function M.window_picker()
     return {
-        --"s1n7ax/nvim-window-picker",
-        "fcying/nvim-window-picker",
-        branch = "prompt",
+        "s1n7ax/nvim-window-picker",
         keys = {
             {
                 "-",

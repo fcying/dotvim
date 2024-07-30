@@ -35,9 +35,8 @@ if [[ $app == "ln" ]]; then
     mkdir -p ~/.config/tig
     ln -sfv $PWD/tigrc ~/.config/tig/config
 
-    mkdir -p ~/.config/clangd
-    ln -sfv $PWD/clangd.yaml ~/.config/clangd/config.yaml
-    ln -sfv $PWD/.clang-format ~/.clang-format
+    ln -sfv $PWD/.clangd ~/
+    ln -sfv $PWD/.clang-format ~/
 
 fi
 

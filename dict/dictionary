@@ -6,3 +6,4 @@ x86_64-windows-gnu
 APP_ABI
 arm64-v8a
 armeabi
+asynctasks_term_pos

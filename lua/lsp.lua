@@ -130,7 +130,9 @@ function configs.clangd()
     if Option.clangd_query_driver then
         table.insert(clangd_cmd, "--query-driver=" .. g.clangd_query_driver)
     end
-    if g.gencconf_storein_rootmarker == 1 then
+    if Option.compile_commands_dir ~= nil then
+        table.insert(clangd_cmd, "--compile-commands-dir=" .. Option.compile_commands_dir)
+    elseif g.gencconf_storein_rootmarker == 1 then
         table.insert(clangd_cmd, "--compile-commands-dir=" .. util.root_marker)
     end
 

@@ -9,14 +9,16 @@ Option = {
     rg = {},                      -- ignore rg
     lsp = {},                     -- ignore lsp server
     gencconf_default_option = {}, -- for g:gencconf_default_option
+    asyncrun_auto_close_qf = true,
+    asyncrun_post_run = nil,
     clangd_query_driver = nil,
-    asyncrun_auto_close_qf = false,
+    compile_commands_dir = nil,
     build = function() return { cmd = "", name = "Build Task", } end,
     release = function() return { cmd = "", name = "Release Task", } end,
 }
 local option_default = {
     -- ignore list
-    dir = { ".root", ".svn", ".git", ".repo", ".ccls-cache", ".cache", ".ccache" },
+    dir = { ".root", ".svn", ".git", ".repo", ".ccls-cache", ".cache", ".ccache", "CMakeFiles" },
     file = { "*.sw?", "~$*", "*.bak", "*.exe", "*.o", "*.so", "*.py[co]", "tags" },
     mru = { "*.so", "*.exe", "*.py[co]", "*.sw?", "~$*", "*.bak", "*.tmp", "*.dll" },
     rg = { "--max-columns=300", "--iglob=!obj", "--iglob=!out" },

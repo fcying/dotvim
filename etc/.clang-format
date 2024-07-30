@@ -15,7 +15,7 @@ AlignConsecutiveDeclarations: false
 SkipMacroDefinitionBody: true
 SeparateDefinitionBlocks: Always
 
-BreakBeforeBraces: Linux   # Allman Linux
+BreakBeforeBraces: Allman   # Allman Linux
 AccessModifierOffset: -4
 AlwaysBreakBeforeMultilineStrings: false
 AllowShortIfStatementsOnASingleLine: false

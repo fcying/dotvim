@@ -519,6 +519,7 @@ alias docker_autoremove='docker rmi $(docker images -f "dangling=true" -q)'
 function tmux_attach {
     local attach=""
     local new=""
+    [ -n "$TMUX" ] && echo "not run tmux inside tmux" && return
     [ -n "$1" ] && attach="-t$1" && new="-s$1"
     tmux a $attach 2>/dev/null
     # add sleep fix "server exited unexpectedly" in some platform

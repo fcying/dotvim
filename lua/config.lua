@@ -87,7 +87,6 @@ end
 function M.toggleterm()
     return {
         "akinsho/toggleterm.nvim",
-        version = "*",
         cmd = { "ToggleTerm", "TermExec" },
         keys = {
             { [[<c-\>]], "<cmd>ToggleTerm<CR>", desc = "ToggleTerm OpenMapping" },
@@ -98,9 +97,10 @@ function M.toggleterm()
             require("toggleterm").setup({
                 size = 20,
                 open_mapping = [[<c-\>]],
+                clear_env = true,
                 direction = "horizontal", --'vertical' | 'horizontal' | 'tab' | 'float'
-                hide_numbers = true,
                 insert_mappings = true,
+                hide_numbers = true,
                 highlights = {
                     Normal = { link = "Normal" },
                     NormalNC = { link = "NormalNC" },

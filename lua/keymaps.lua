@@ -167,3 +167,9 @@ map("n", "<F3>", ":set list! list?<CR>")
 map("n", "<F4>", ":set wrap! wrap?<CR>")
 map("n", "<F6>", ":exec exists('syntax_on') ? 'syn off' : 'syn on'<CR>")
 
+function _tig_toggle()
+    local Terminal = require("toggleterm.terminal").Terminal
+    local tig  = Terminal:new({ cmd = "tig", hidden = true, clear_env = true, direction = "float" })
+    tig:toggle()
+end
+map("n", "<leader>g", "<cmd>lua _tig_toggle()<CR>", { desc = "tig" })

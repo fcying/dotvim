@@ -82,9 +82,11 @@ bind generic ul stage-update-line
 bind generic up stage-update-part
 bind generic us stage-split-chunk
 
-bind generic c  none
-bind generic cc !git commit
-bind generic ca !?@git commit --amend --no-edit
+bind generic c      none
+bind generic cc     !git commit
+bind generic ca     !?@git commit --amend --no-edit
+bind generic gaa    !git add --all
+bind generic gca!   !git commit -v -a --amend
 
 bind generic K view-help
 bind generic <C-w><C-w> view-next

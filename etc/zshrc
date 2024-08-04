@@ -14,6 +14,8 @@ fi
 export PAGER=${PAGER:-"less"}
 export EDITOR="$VISUAL"
 
+USER=${USER:-$(id -u -n)}
+
 # Set the default Less options.
 # Mouse-wheel scrolling has been disabled by -X (disable screen clearing).
 # Remove -X and -F (exit if the content fits on one screen) to enable it.
@@ -272,7 +274,6 @@ function nix_install() {
 }
 function nix_update(){
     if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
-        USER=$(id -u -n)
         . $HOME/.nix-profile/etc/profile.d/nix.sh
         nix-channel --update
         nix profile upgrade --all

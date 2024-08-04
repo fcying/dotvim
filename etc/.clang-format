@@ -13,7 +13,7 @@ AlignConsecutiveBitFields: false
 AlignConsecutiveDeclarations: false
 # AlignConsecutiveMacros: Consecutive
 SkipMacroDefinitionBody: true
-SeparateDefinitionBlocks: Always
+SeparateDefinitionBlocks: Leave
 
 BreakBeforeBraces: Allman   # Allman Linux
 AccessModifierOffset: -4

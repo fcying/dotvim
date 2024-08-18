@@ -164,7 +164,6 @@ function M.asynctasks()
                 g.asynctasks_config_name = { ".root/.tasks", ".git/.tasks", ".tasks" }
                 g.asynctasks_rtp_config  = "asynctasks.ini"
                 g.asynctasks_term_pos    = "bottom"
-                -- g.asynctasks_term_pos = "toggleterm"
                 g.asynctasks_term_reuse  = 1
                 g.asynctasks_term_focus  = 0
                 g.asynctasks_term_close  = 0

@@ -9,6 +9,8 @@ return {
     {
         "maxmx03/solarized.nvim",
         lazy = true,
+        -- FIXME test new version
+        commit = "3a19787",
         opts = {
             --theme = "neo",
             highlights = function(c)

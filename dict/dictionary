@@ -8,3 +8,4 @@ arm64-v8a
 armeabi
 asynctasks_term_pos
 H=windowsgui
+compile_commands.json

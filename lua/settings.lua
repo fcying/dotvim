@@ -125,6 +125,7 @@ autocmd myft BufNewFile,BufRead *shrc.local,rc.local setl filetype=sh
 autocmd myft BufNewFile,BufRead gitconfig setl filetype=gitconfig
 
 
+" quickfix config: ansi_color ... {{{
 function! s:run_ansi_esc_in_qf()
   " 获取当前窗口号
   let l:current_win = winnr()
@@ -147,10 +148,10 @@ function! s:apply_ansiesc()
   augroup END
 endfunction
 
-augroup AnsiColorInQuickfix
+augroup QuickfixConfig
   autocmd!
   autocmd FileType qf setlocal nowrap
-  autocmd FileType qf call s:apply_ansiesc()
+  "autocmd FileType qf call s:apply_ansiesc()
 augroup END
 
 ]])

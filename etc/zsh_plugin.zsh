@@ -92,6 +92,23 @@ compdef _grep gfg
 alias gg='git gui citool'
 alias gga='git gui citool --amend'
 
+git_analyze() {
+    git filter-repo --analyze
+}
+
+git_rm_history() {
+    [ -z "$1" ] && return
+    git filter-branch --force --index-filter "git rm --cached --ignore-unmatch $1" --prune-empty --tag-name-filter cat -- --all
+}
+
+git_reflog_clean() {
+    git reflog expire --expire=now --all
+}
+
+ggc() {
+    git gc --prune=now --aggressive
+}
+
 ggf() {
   [[ "$#" != 1 ]] && local b="$(git_current_branch)"
   git push --force origin "${b:=$1}"

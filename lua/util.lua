@@ -196,13 +196,17 @@ function M.removetags()
     cmd("ClearCtags")
 end
 
+function M.lspRestart()
+    if vim.fn.exists(":LspRestart") ~= 0 then
+        cmd("LspRestart")
+    end
+end
+
 function M.gentags(type)
     type = type or 0
     cmd("ClearClangConf")
     cmd("GenClangConf")
-    if vim.fn.exists(":LspRestart") ~= 0 then
-        cmd("LspRestart")
-    end
+    M.lspRestart()
     if type == 0 then
         cmd("GenCtags")
     end

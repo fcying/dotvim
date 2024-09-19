@@ -11,7 +11,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-map("n", "<leader>pu", ":Lazy update<CR>")
+map("n", "<leader>pu", ":Lazy update<CR>:RemoveLsplog<CR>")
 map("n", "<leader>pr", ":Lazy clean<CR>")
 
 local plugins = {
@@ -151,7 +151,7 @@ local plugins = {
             { "williamboman/mason-lspconfig.nvim" },
         },
     },
-    require("config").cmp(),
+    require("plugins._cmp"),
 
     -- filetype {{{
     --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },

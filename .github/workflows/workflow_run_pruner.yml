@@ -1,8 +1,8 @@
 name: workflow run pruner
 
 on:
-  schedule:
-  - cron: '15 19 1 * *'
+  # schedule:
+  # - cron: '15 19 1 * *'
   #push:
   #  branches: [ master ]
   workflow_dispatch:

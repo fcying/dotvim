@@ -93,15 +93,15 @@ alias gg='git gui citool'
 alias gga='git gui citool --amend'
 
 git_analyze() {
-    git filter-repo --analyze
+    git filter-repo --analyze --force
 }
 
-git_rm_history() {
+grmh() {
     [ -z "$1" ] && return
     git filter-branch --force --index-filter "git rm --cached --ignore-unmatch $1" --prune-empty --tag-name-filter cat -- --all
 }
 
-git_reflog_clean() {
+grc() {
     git reflog expire --expire=now --all
 }
 

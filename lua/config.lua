@@ -519,167 +519,6 @@ function M.mason()
     }
 end
 
-function M.luasnip()
-    local paths = {}
-    paths[#paths + 1] = g.config_dir .. "/snippets"
-    paths[#paths + 1] = g.plug_dir .. "/friendly-snippets"
-    require("luasnip.loaders.from_vscode").lazy_load({ paths = paths })
-
-    vim.cmd([[
-    imap <silent><expr> <Tab> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<Tab>'
-    " -1 for jumping backwards.
-    inoremap <silent> <S-Tab> <cmd>lua require'luasnip'.jump(-1)<Cr>
-
-    snoremap <silent> <Tab> <cmd>lua require('luasnip').jump(1)<Cr>
-    snoremap <silent> <S-Tab> <cmd>lua require('luasnip').jump(-1)<Cr>
-
-    " For changing choices in choiceNodes (not strictly necessary for a basic setup).
-    imap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
-    smap <silent><expr> <C-E> luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'
-    ]])
-end
-
-function M.cmp()
-    return {
-        "hrsh7th/nvim-cmp",
-        event = { "InsertEnter", "CmdlineEnter" },
-        version = false, -- last release is way too old
-        dependencies = {
-            { "hrsh7th/cmp-nvim-lsp" },
-            {
-                "L3MON4D3/LuaSnip",
-                build = (g.is_win == 0) and g.make .. " install_jsregexp" or nil,
-                config = M.luasnip,
-                dependencies = { "rafamadriz/friendly-snippets" }
-            },
-            { "saadparwaiz1/cmp_luasnip" },
-            { "hrsh7th/cmp-path" },
-            { "hrsh7th/cmp-buffer" },
-            { "hrsh7th/cmp-cmdline" },
-            { "dmitmel/cmp-cmdline-history" },
-            { "hrsh7th/cmp-omni" },
-            { "quangnguyen30192/cmp-nvim-tags" },
-            { "uga-rosa/cmp-dictionary", config = M.cmp_dictionary },
-        },
-        config = function()
-            local cmp = require("cmp")
-            cmp.setup({
-                snippet = {
-                    expand = function(args)
-                        require("luasnip").lsp_expand(args.body)
-                    end,
-                },
-                preselect = cmp.PreselectMode.None,
-                mapping = {
-                    ["<Tab>"] = cmp.mapping.select_next_item(),
-                    ["<S-Tab>"] = cmp.mapping.select_prev_item(),
-                    ["<C-n>"] = cmp.mapping.select_next_item(),
-                    ["<C-p>"] = cmp.mapping.select_prev_item(),
-                    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-                    ["<C-f>"] = cmp.mapping.scroll_docs(4),
-                    ["<C-l>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
-                    ["<C-y>"] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
-                    ["<C-e>"] = cmp.mapping({
-                        i = cmp.mapping.abort(),
-                        c = cmp.mapping.close(),
-                    }),
-                    ["<CR>"] = cmp.mapping.confirm({ select = false }),
-                },
-                sources = cmp.config.sources({
-                    { name = "lazydev", group_index = 0 },
-                    { name = "luasnip" },
-                    { name = "path" },
-                    { name = "dictionary" },
-                    { name = "nvim_lsp" },
-                    { name = "buffer" },
-                    { name = "tags" },
-                    { name = "omni", priority = -1 },
-                }),
-                formatting = {
-                    format = function(entry, vim_item)
-                        vim_item.menu = ({
-                            buffer = "[Buf]",
-                            path = "[Path]",
-                            cmdline = "[Cmd]",
-                            nvim_lsp = "[Lsp]",
-                            tags = "[Tag]",
-                            tmux = "[Tmux]",
-                            luasnip = "[Snip]",
-                            dictionary = "[Dict]",
-                            omni = "[Omni]",
-                            cmdline_history = "[History]",
-                        })[entry.source.name]
-                        vim_item.dup = ({
-                            nvim_lsp = 0,
-                            buffer = 1,
-                            path = 1,
-                        })[entry.source.name] or 0
-                        return vim_item
-                    end,
-                },
-            })
-
-            cmp.setup.filetype("gitcommit", {
-                sources = cmp.config.sources({
-                    { name = "buffer" },
-                }),
-            })
-
-            cmp.setup.cmdline({ "/", "?" }, {
-                mapping = cmp.mapping.preset.cmdline(),
-                sources = cmp.config.sources({
-                    { name = "buffer" },
-                    { name = "cmdline_history" },
-                }),
-            })
-
-            cmp.setup.cmdline(":", {
-                mapping = cmp.mapping.preset.cmdline(),
-                sources = cmp.config.sources({
-                    { name = "path" },
-                    { name = "cmdline" },
-                    { name = "cmdline_history" },
-                }),
-            })
-        end,
-    }
-end
-
-function M.cmp_dictionary()
-    local dict_path = g.config_dir .. "/dict/"
-    local dict = {
-        ["*"] = { dict_path .. "dictionary" },
-        ["xmake"] = { dict_path .. "xmake.dict" },
-        ["go"] = { dict_path .. "go.dict" },
-        ["cmake"] = { dict_path .. "cmake.dict" },
-    }
-
-    local function get_dict_path(file)
-        local paths = {}
-        if file:find(".*xmake.lua") then
-            paths = dict.xmake
-        else
-            paths = dict[vim.bo.filetype] or {}
-        end
-        vim.list_extend(paths, dict["*"])
-        --vim.print(paths)
-        return paths
-    end
-
-    require("cmp_dictionary").setup({
-        paths = get_dict_path(fn.expand("%")),
-        exact_length = 2,
-        first_case_insensitive = false,
-    })
-
-    vim.api.nvim_create_autocmd("BufEnter", {
-        pattern = "*",
-        callback = function(ev)
-            require("cmp_dictionary").setup({ paths = get_dict_path(ev.file) })
-        end,
-    })
-end
-
 function M.dashboard()
     --- @format disable-next
     local opts = {
@@ -1212,18 +1051,49 @@ function M.whichkey()
         "folke/which-key.nvim",
         event = "VeryLazy",
         config = function()
-            vim.o.timeout = true
-            vim.o.timeoutlen = 500
             local wk = require("which-key")
             wk.setup({
                 icons = { mappings = false },
+                delay = function(ctx)
+                    return ctx.plugin and 0 or 200
+                end,
+                plugins = {
+                    presets = {
+                        g = true,
+                        z = true,
+                    }
+                },
+                -- Start hidden and wait for a key to be pressed before showing the popup
+                -- Only used by enabled xo mapping modes.
+                ---@param ctx { mode: string, operator: string }
+                defer = function(ctx)
+                    return ctx.mode == "V" or ctx.mode == "<C-V>"
+                end,
+                replace = {
+                    key = {
+                        function(key)
+                            return require("which-key.view").format(key)
+                        end,
+                        -- { "<Space>", "SPC" },
+                    },
+                    desc = {
+                        { "<Plug>%(?(.*)%)?", "%1" },
+                        { "^%+", "" },
+                        { "<[cC]md>", "" },
+                        { "<[cC][rR]>", "" },
+                        { "<[sS]ilent>", "" },
+                        { "^lua%s+", "" },
+                        { "^call%s+", "" },
+                        { "^:%s*", "" },
+                    },
+                },
                 triggers = {
-                    { "<leader>", mode = { "n", "v" } },
-                    { "g", mode = { "n", "v" } },
-                    { "f", mode = { "n", "v" } },
-                    { "v", mode = { "n", "v" } },
-                    { "[", mode = { "n", "v" } },
-                    { "]", mode = { "n", "v" } },
+                    { "<leader>", mode = "nxso" },
+                    { "g", mode = "n" },
+                    { "f", mode = "n" },
+                    { "v", mode = "n" },
+                    { "[", mode = "nv" },
+                    { "]", mode = "nv" },
                 }
             })
             wk.add({

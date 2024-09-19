@@ -173,7 +173,12 @@ map("n", "[q", ":cprev<CR>")
 
 function _tig_toggle()
     local Terminal = require("toggleterm.terminal").Terminal
-    local tig  = Terminal:new({ cmd = "tig", hidden = true, clear_env = true, direction = "float" })
+    local tig      = Terminal:new({ cmd = "tig", hidden = true, clear_env = true, direction = "float" })
     tig:toggle()
 end
+
 -- map("n", "<leader>g", "<cmd>lua _tig_toggle()<CR>", { desc = "tig" })
+
+vim.api.nvim_create_user_command("RemoveLsplog", function()
+    vim.fn.writefile({}, vim.lsp.get_log_path())
+end, {})

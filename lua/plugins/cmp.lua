@@ -1,9 +1,7 @@
-local g, fn = vim.g, vim.fn
-
 local luasnip_opts = function()
     local paths = {}
-    paths[#paths + 1] = g.config_dir .. "/snippets"
-    paths[#paths + 1] = g.plug_dir .. "/friendly-snippets"
+    paths[#paths + 1] = vim.g.config_dir .. "/snippets"
+    paths[#paths + 1] = vim.g.plug_dir .. "/friendly-snippets"
     require("luasnip").config.setup({ enable_autosnippets = true })
     require("luasnip.loaders.from_vscode").lazy_load({ paths = paths })
 
@@ -22,7 +20,7 @@ local luasnip_opts = function()
 end
 
 local cmp_dictionary = function()
-    local dict_path = g.config_dir .. "/dict/"
+    local dict_path = vim.g.config_dir .. "/dict/"
     local dict = {
         ["*"] = { dict_path .. "dictionary" },
         ["xmake"] = { dict_path .. "xmake.dict" },
@@ -43,7 +41,7 @@ local cmp_dictionary = function()
     end
 
     require("cmp_dictionary").setup({
-        paths = get_dict_path(fn.expand("%")),
+        paths = get_dict_path(vim.fn.expand("%")),
         exact_length = 2,
         first_case_insensitive = false,
     })
@@ -165,7 +163,7 @@ return {
     dependencies = {
         {
             "L3MON4D3/LuaSnip",
-            build = (g.is_win == 0) and g.make .. " install_jsregexp" or nil,
+            build = (vim.g.is_win == 0) and vim.g.make .. " install_jsregexp" or nil,
             config = luasnip_opts,
             dependencies = { "rafamadriz/friendly-snippets" }
         },

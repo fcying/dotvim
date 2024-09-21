@@ -9,7 +9,7 @@ Option = {
     rg = {},                      -- ignore rg
     lsp = {},                     -- ignore lsp server
     gencconf_default_option = {}, -- for g:gencconf_default_option
-    asyncrun_auto_close_qf = true,
+    asyncrun_auto_close_qf = false,
     asyncrun_post_run = nil,
     clangd_query_driver = nil,
     compile_commands_dir = nil,
@@ -123,7 +123,7 @@ function M.update_ignore_config()
         Option.gencconf_default_option)
     --vim.print(g.gencconf_default_option)
 
-    require("plugins._telescope").telescope_update_ignore()
+    require("plugins.telescope").telescope_update_ignore()
 end
 
 function M.go2def(str, opts)

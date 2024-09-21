@@ -29,7 +29,12 @@ alias gapa='git add --patch'
 alias gau='git add --update'
 alias gav='git add --verbose'
 alias gap='git apply'
-alias gar='git archive -o diff.zip HEAD $(git diff --name-only HEAD~1)'
+alias gad='git archive -o diff.zip HEAD $(git diff --name-only HEAD~1)'
+gar() {
+    local name="release"
+    [ -n "$1" ] && name=$1
+    git archive -o $name.zip HEAD
+}
 
 alias gb='git branch'
 alias gba='git branch -a'

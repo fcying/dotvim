@@ -5,7 +5,7 @@ local M = {}
 local configs = {}
 local lsp_opts = {}
 
-local formats = {
+Formats = {
     stylua = {
         "--indent-type", "Spaces",
         "--indent-width", "4",
@@ -50,32 +50,6 @@ local function diagnostics_config(enable)
     end
 end
 
-function M.conform()
-    return {
-        "stevearc/conform.nvim",
-        event = "VeryLazy",
-        config = function()
-            require("conform").setup({
-                default_format_opts = {
-                    lsp_format = "fallback",
-                },
-                formatters_by_ft = {
-                    -- c = { "astyle" },
-                    -- cpp = { "astyle" },
-                },
-                formatters = {
-                    astyle = {
-                        inherit = false,
-                        command = "astyle",
-                        args = formats.astyle,
-                    },
-                },
-            })
-            vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
-        end
-    }
-end
-
 function M.format()
     require("conform").format()
 end
@@ -100,8 +74,8 @@ function M.null_ls()
                 formatting.gofmt,
                 formatting.goimports,
                 --formatting.clang_format,
-                formatting.astyle.with({ extra_args = formats.astyle }),
-                --formatting.stylua.with({ extra_args = formats.stylua }),
+                formatting.astyle.with({ extra_args = Formats.astyle }),
+                --formatting.stylua.with({ extra_args = Formats.stylua }),
             },
         }
     }

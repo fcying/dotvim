@@ -41,7 +41,7 @@ export QT_DIR=${QT_DIR:-"$HOME/tool/Qt"}
 export QT_VERSION=${QT_VERSION:-"5.15.2"}
 #export QT_WEBKIT=true
 #export QT_DEBUG_PLUGINS=1
-LD_LIBRARY_PATH=$HOME/bin/lib:$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$HOME/bin/lib:$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
 PKG_CONFIG_PATH=$QT_DIR/$QT_VERSION/gcc_64/lib/pkgconfig:$PKG_CONFIG_PATH
 PYTHONPATH=$PYTHONPATH:$CONFIG_DIR/python_script
 export RIPGREP_CONFIG_PATH=$CONFIG_DIR/ripgreprc
@@ -454,7 +454,7 @@ function myprecmd() {
 add-zsh-hook precmd myprecmd
 
 # setting {{{
-stty -ixon                              # disable terminal <c-s>
+[ -t 0 ] && stty -ixon                  # disable terminal <c-s>
 setopt nobeep nohistbeep nolistbeep     # no beep
 setopt rm_star_silent                   # silent rm
 setopt interactive_comments

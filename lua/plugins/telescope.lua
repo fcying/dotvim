@@ -108,7 +108,7 @@ function M.telescope_ltaglist(opts)
     }):find()
 end
 
-M.lazy = { --{{{
+M.setup = { --{{{
     "nvim-telescope/telescope.nvim",
     dependencies = {
         { "nvim-lua/plenary.nvim" },

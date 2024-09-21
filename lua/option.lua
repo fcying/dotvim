@@ -64,7 +64,7 @@ opt.scrolloff = 3
 opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize" }
 opt.shiftround = true -- Round indent
 opt.shiftwidth = 4
-opt.shortmess:append("I")
+-- opt.shortmess:append("I") -- intro message
 opt.shortmess:append("c")
 opt.shortmess:append("C")
 opt.shortmess:append("s")
@@ -90,6 +90,11 @@ opt.wildmode = "longest:full,full"
 opt.winminwidth = 5
 opt.wrap = true
 opt.whichwrap = opt.whichwrap + "<,>,[,],h,l"
+
+-- terminal {{{
+if g.is_win == 0 then
+    vim.o.shellcmdflag = "-ic"
+end
 
 -- foldmethod {{{
 opt.foldmethod = "manual"
@@ -214,7 +219,10 @@ if g.is_tmux == 1 then
     })
 else
     local function paste()
-        return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
+        return {
+            vim.split(vim.fn.getreg(""), "\n"),
+            vim.fn.getregtype(""),
+        }
     end
     vim.g.clipboard = {
         name = "osc52",

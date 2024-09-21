@@ -279,3 +279,4 @@ function brew_update() { #{{{
 }
 
 type LoadAfter >/dev/null 2>&1 && LoadAfter
+

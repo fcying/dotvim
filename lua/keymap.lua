@@ -21,7 +21,7 @@ map("", "<esc>", function()
     if vim.v.hlsearch == 1 then
         vim.cmd("noh")
     end
-    require("notify").dismiss()
+    require("notify").dismiss({})
 end)
 
 -- cmd-line window dd {{{
@@ -75,24 +75,15 @@ endfunction
 map("i", "{<CR>", "{<CR>}<c-o><s-o>")
 map("i", "}", "<c-r>=ClosePair('}')<CR>")
 
--- save with sudo;  use vim-eunuch instead {{{
---nnoremap <leader>ws :w !sudo tee %<CR>
-
 -- insert mode emacs {{{
 map("i", "<C-a>", "<home>")
 map("i", "<C-e>", "<end>")
 
--- cmd fast move {{{
-map("c", "<C-h>", "<left>")
-map("c", "<C-j>", "<down>")
-map("c", "<C-k>", "<up>")
-map("c", "<C-l>", "<right>")
-map("c", "<C-a>", "<home>")
-map("c", "<C-e>", "<end>")
-map("c", "<C-f>", "<c-d>")
-map("c", "<C-b>", "<left>")
-map("c", "<C-d>", "<del>")
-map("c", "<C-_>", "<c-k>")
+-- window fast move {{{
+-- map("n", "<C-h>", [[<Cmd>wincmd h<CR>]])
+-- map("n", "<C-j>", [[<Cmd>wincmd j<CR>]])
+-- map("n", "<C-k>", [[<Cmd>wincmd k<CR>]])
+-- map("n", "<C-l>", [[<Cmd>wincmd l<CR>]])
 
 -- cmd history search {{{
 map("c", "<c-k>", function()
@@ -170,14 +161,6 @@ map("n", "<F6>", ":exec exists('syntax_on') ? 'syn off' : 'syn on'<CR>")
 -- quickfix {{{
 map("n", "]q", ":cnext<CR>")
 map("n", "[q", ":cprev<CR>")
-
-function _tig_toggle()
-    local Terminal = require("toggleterm.terminal").Terminal
-    local tig      = Terminal:new({ cmd = "tig", hidden = true, clear_env = true, direction = "float" })
-    tig:toggle()
-end
-
--- map("n", "<leader>g", "<cmd>lua _tig_toggle()<CR>", { desc = "tig" })
 
 vim.api.nvim_create_user_command("RemoveLsplog", function()
     vim.fn.writefile({}, vim.lsp.get_log_path())

@@ -168,6 +168,20 @@ function PluginFinish() {
 
     if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
         . $HOME/.nix-profile/etc/profile.d/nix.sh;
+        unalias ni # register by  nix-zsh-completions
+        unalias ns
+        function ni() {
+            [ -z "$1" ] && return
+            nix profile install nixpkgs#$1
+        }
+        function nr() {
+            [ -z "$1" ] && return
+            nix profile remove $1
+        }
+        function ns() {
+            [ -z "$1" ] && return
+            nix search nixpkgs $1
+        }
         if [ -z "$LOCALE_ARCHIVE" ]; then
             # slow nix eval nixpkgs#glibcLocales.outPath
             local ret=$(nix profile list 2>/dev/null | grep glibcLocales -A 3 | tail -1 | grep -o "/nix.*")

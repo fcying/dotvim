@@ -28,7 +28,8 @@ local plugins = {
     { import = "plugins.tagbar" },
     { import = "plugins.marks" },
     { import = "plugins.indentLine" },
-    { import = "plugins.vim-visual-multi" },
+    -- { import = "plugins.vim-visual-multi" },
+    { import = "plugins.multicursor" },
     { import = "plugins.vim_expand_region" },
     { import = "plugins.flash" },
     { import = "plugins.foldsearch" },
@@ -41,6 +42,8 @@ local plugins = {
     require("plugins.telescope").setup,
     -- { "Yggdroot/LeaderF", cmd = { "Leaderf" }, build = ":LeaderfInstallCExtension" },
     { "chrisbra/Colorizer", cmd = { "ColorToggle" } },
+    -- { import = "plugins.baleia" },
+
     { "fcying/vim-plugin-AnsiEsc", cmd = { "AnsiEsc", "AnsiEscClear" } },
     { "stevearc/dressing.nvim", opts = {} },
     -- { import = "plugins.noice" },

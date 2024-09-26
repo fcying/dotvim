@@ -1,3 +1,7 @@
-github.com/RadhiFadlillah/qamel
-github.com/flopp/go-findfont
-fyne.io/fyne/v2
+github.com/fcying/util
+github.com/sirupsen/logrus
+github.com/josephspurrier/goversioninfo
+github.com/tidwall/gjson
+github.com/ying32/govcl/vcl
+github.com/ying32/govcl/vcl/types
+github.com/ying32/govcl/vcl/types/messages

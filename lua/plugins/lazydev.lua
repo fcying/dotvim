@@ -15,7 +15,9 @@ return {
                 return vim.g.lazydev_enabled
             end
             local filename = vim.fn.expand("%:t")
-            if filename == ".nvim.lua" or vim.uv.fs_stat(util.root_dir .. "/lua") then
+            if filename == ".nvim.lua"
+                or filename == "init.lua"
+                or vim.uv.fs_stat(util.root_dir .. "/lua") then
                 return true
             else
                 return false

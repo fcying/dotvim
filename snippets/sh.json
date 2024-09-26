@@ -17,6 +17,25 @@
     "body": "read -r ${0:VAR}",
     "description": "Read input of ${VAR}."
   },
+  "opt": {
+    "prefix": "opt",
+    "body": [
+      "TEMP=$(getopt -o ${1}:h --long help -- \"$@\")",
+      "eval set -- \"\\${TEMP}\"",
+      "unset TEMP",
+      "while true; do",
+      "    case \"\\${1}\" in",
+      "        ${2};;",
+      "        -h|--help) shift 1;;",
+      "        --) break;;",
+      "    esac",
+      "done"
+    ],
+
+
+
+    "description": "Read input parameters."
+  },
   "if": {
     "prefix": "if",
     "body": "if [ ${1:condition} ]; then\n\t${0}\nfi",

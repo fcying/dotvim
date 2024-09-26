@@ -264,6 +264,7 @@ function M.setup()
         map("n", "[d", vim.diagnostic.goto_prev, opts)
         map("n", "]d", vim.diagnostic.goto_next, opts)
         map("n", "<leader>ltd", '<cmd>lua require("lsp").diagnostic_toggle()<CR>', opts)
+        map("n", "<leader>lr", "<cmd>LspRestart<CR>", opts)
         map("n", "<leader>lf", "<cmd>lua require('lsp').format()<CR>", opts)
         map("v", "<leader>lf", "<cmd>lua require('lsp').format()<CR><ESC>", opts)
 

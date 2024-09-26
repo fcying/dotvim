@@ -157,8 +157,7 @@ end
 
 return {
     -- "hrsh7th/nvim-cmp",
-    "yioneko/nvim-cmp",
-    branch = "perf-up",
+    "iguanacucumber/magazine.nvim",
     event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
         {

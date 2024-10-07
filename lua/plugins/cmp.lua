@@ -65,7 +65,8 @@ local cmp_opts = function()
         },
         snippet = {
             expand = function(args)
-                luasnip.lsp_expand(args.body)
+                -- luasnip.lsp_expand(args.body)
+                vim.snippet.expand(args.body)
             end,
         },
         mapping = {
@@ -98,7 +99,7 @@ local cmp_opts = function()
             end, { "i", "s", "c" }),
         },
         sources = cmp.config.sources({
-            { name = "lazydev" },
+            { name = "lazydev", group_index = 0 }, -- set group index to 0 to skip loading LuaLS completions
             { name = "nvim_lsp" },
             { name = "luasnip" },
             { name = "async_path" },

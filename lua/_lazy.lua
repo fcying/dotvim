@@ -70,11 +70,12 @@ local plugins = {
     { import = "plugins.treesitter" },
     {
         "neovim/nvim-lspconfig",
-        config = require("lsp").setup,
+        cmd = { "LspInfo", "LspInstall", "LspStart", "LspRestart" },
         event = { "BufReadPre", "BufNewFile" },
+        config = require("lsp").setup,
         dependencies = {
-            { import = "plugins.lspzero" },
             { import = "plugins.mason" },
+            { "VonHeikemen/lsp-zero.nvim", branch = "v4.x" },
             { "williamboman/mason-lspconfig.nvim" },
         },
     },

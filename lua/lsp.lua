@@ -187,10 +187,19 @@ end
 
 function configs.lua()
     -- :lua vim.print(vim.lsp.get_clients({ name = "lua_ls" })[1].config.settings.Lua)
+    -- vim.g.lazydev_enabled = false
     local opts = {
+        root_dir = function(_)
+            return util.root_dir
+        end,
         settings = {
             Lua = {
-                workspace = { checkThirdParty = false, },
+                workspace = {
+                    checkThirdParty = false,
+                    library = {
+                        g.config_dir .. "/lua",
+                    },
+                },
                 completion = { callSnippet = "Replace", },
                 diagnostics = {
                     globals = { "vim" },
@@ -217,19 +226,10 @@ function configs.lua()
         },
     }
 
-    local filename = vim.fn.expand("%:t")
-    if filename == ".nvim.lua" or vim.uv.fs_stat(util.root_dir .. "/lua") then
-        opts.settings.Lua.workspace.library = {
-            g.config_dir .. "/lua",
-        }
-        -- local lsp_zero = require("lsp-zero")
-        -- lsp_opts["lua_ls"] = lsp_zero.nvim_lua_ls(opts)
-        lsp_opts["lua_ls"] = opts
-    end
+    lsp_opts["lua_ls"] = opts
 end
 
 function M.setup()
-    local lsp_zero = require("lsp-zero")
     --lsp.set_log_level('debug')
 
     api.nvim_create_user_command("Format", function() require("lsp").format() end, {})
@@ -247,29 +247,36 @@ function M.setup()
         },
     })
 
-    lsp_zero.extend_lspconfig()
-    ---@diagnostic disable-next-line unused-local
-    lsp_zero.on_attach(function(client, bufnr)
-        --lsp_zero.default_keymaps({ buffer = bufnr })
+    local lsp_zero = require("lsp-zero")
+    local lsp_attach = function(client, bufnr) ---@diagnostic disable-line
         local opts = { buffer = bufnr }
         map("n", "<leader>rn", vim.lsp.buf.rename, opts)
         map("n", "K", vim.lsp.buf.hover, opts)
         --map("n", "gd", vim.lsp.buf.definition, opts)
         map("n", "gD", vim.lsp.buf.declaration, opts)
-        --map("n", "gi", vim.lsp.buf.implementation, opts)
-        --map("n", "go", vim.lsp.buf.type_definition, opts)
-        --map("n", "gr", vim.lsp.buf.references, opts)
+        map("n", "gi", "<cmd>Telescope lsp_implementations<cr>", opts)
+        map("n", "gr", "<cmd>Telescope lsp_references include_current_line=true<cr>", opts)
         map("n", "gs", vim.lsp.buf.signature_help, opts)
+        map("n", "gt", "<cmd>Telescope lsp_type_definitions<cr>", opts)
         map("n", "gl", vim.diagnostic.open_float, opts)
         map("n", "[d", vim.diagnostic.goto_prev, opts)
         map("n", "]d", vim.diagnostic.goto_next, opts)
+        map("n", "<leader>la", function() require("actions-preview").code_actions() end, opts)
+        map("n", "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>", opts)
+        map("n", "<leader>ls", "<cmd>Telescope lsp_workspace_symbols<cr>", opts)
         map("n", "<leader>ltd", '<cmd>lua require("lsp").diagnostic_toggle()<CR>', opts)
         map("n", "<leader>lr", "<cmd>LspRestart<CR>", opts)
         map("n", "<leader>lf", "<cmd>lua require('lsp').format()<CR>", opts)
         map("v", "<leader>lf", "<cmd>lua require('lsp').format()<CR><ESC>", opts)
 
         --client.server_capabilities.semanticTokensProvider = nil
-    end)
+    end
+    lsp_zero.extend_lspconfig({
+        capabilities = require("cmp_nvim_lsp").default_capabilities(),
+        lsp_attach = lsp_attach,
+        float_border = "rounded",
+        sign_text = true,
+    })
 
     for _, set in pairs(configs) do
         set()
@@ -279,6 +286,7 @@ function M.setup()
         single_file_support = true,
     })
 
+    local lspconfig = require("lspconfig")
     local mason_server = require("mason-lspconfig.mappings.server")
     mason_server.package_to_lspconfig["autohotkey2-lsp"] = "autohotkey2-lsp"
 
@@ -290,10 +298,8 @@ function M.setup()
                 -- vim.print(server_name)
                 if fn.index(Option.lsp, server_name) ~= -1 then
                     return
-                elseif lsp_opts[server_name] ~= nil then
-                    lsp_zero.configure(server_name, lsp_opts[server_name])
                 else
-                    lsp_zero.default_setup(server_name)
+                    lspconfig[server_name].setup(lsp_opts[server_name] or {})
                 end
             end,
         }
@@ -301,7 +307,7 @@ function M.setup()
 
     -- not managed by mason
     if fn.executable("qmlls") == 1 then
-        lsp_zero.configure("qmlls", lsp_opts["qmlls"])
+        lspconfig["qmlls"].setup(lsp_opts["qmlls"])
     end
 end
 

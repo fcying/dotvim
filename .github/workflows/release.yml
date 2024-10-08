@@ -37,9 +37,9 @@ jobs:
 
           echo "install plugins===================="
           # set treesitter ensure_install sync install
-          sed 's|sync_install = false|sync_install = true|' -i ~/.config/nvim/lua/plugins/treesitter.lua
-          nvim --headless "+Lazy! sync" -c "qa"
-          sed 's|sync_install = true|sync_install = false|' -i ~/.config/nvim/lua/plugins/treesitter.lua
+          # sed 's|sync_install = false|sync_install = true|' -i ~/.config/nvim/lua/plugins/treesitter.lua
+          nvim --headless "+Lazy! sync" +qa
+          # sed 's|sync_install = true|sync_install = false|' -i ~/.config/nvim/lua/plugins/treesitter.lua
 
           XZ_OPT=-9 tar cJf nvim_config.txz --exclude .git nvim
           mv ./*.txz ~/publish

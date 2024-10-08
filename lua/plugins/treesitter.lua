@@ -42,7 +42,7 @@ return
                     "vim", "vimdoc", "lua", "query", "comment",
                     "cpp", "typescript", "vue"
                 },
-                sync_install = false,
+                sync_install = #vim.api.nvim_list_uis() == 0,
                 auto_install = false,
                 ignore_install = {},
                 matchup = { enable = true },

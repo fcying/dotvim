@@ -99,7 +99,7 @@ local cmp_opts = function()
             end, { "i", "s", "c" }),
         },
         sources = cmp.config.sources({
-            { name = "lazydev", group_index = 0 }, -- set group index to 0 to skip loading LuaLS completions
+            { name = "lazydev", group_index = 0 },     -- set group index to 0 to skip loading LuaLS completions
             { name = "nvim_lsp" },
             { name = "luasnip" },
             { name = "async_path" },
@@ -170,7 +170,8 @@ return {
         { "saadparwaiz1/cmp_luasnip" },
         { "hrsh7th/cmp-buffer" },
         { "hrsh7th/cmp-nvim-lsp" },
-        { "FelipeLema/cmp-async-path", url = "https://codeberg.org/FelipeLema/cmp-async-path" },
+        -- { "FelipeLema/cmp-async-path", url = "https://codeberg.org/FelipeLema/cmp-async-path" },
+        { "FelipeLema/cmp-async-path", url = "https://codeberg.org/fcying/cmp-async-path" },
         { "hrsh7th/cmp-cmdline" },
         { "dmitmel/cmp-cmdline-history" },
         -- { "hrsh7th/cmp-omni" },

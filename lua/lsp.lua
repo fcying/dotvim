@@ -271,8 +271,14 @@ function M.setup()
 
         --client.server_capabilities.semanticTokensProvider = nil
     end
+    local capabilities
+    if g.complete_engine == "blink" then
+        capabilities = nil
+    else
+        capabilities = require("cmp_nvim_lsp").default_capabilities()
+    end
     lsp_zero.extend_lspconfig({
-        capabilities = require("cmp_nvim_lsp").default_capabilities(),
+        capabilities = capabilities,
         lsp_attach = lsp_attach,
         float_border = "rounded",
         sign_text = true,

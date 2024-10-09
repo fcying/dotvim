@@ -66,7 +66,7 @@ local plugins = {
     { import = "plugins.conform" },
     { import = "plugins.todo-comments" },
     { import = "plugins.lazydev" },
-    { import = "plugins.cmp" },
+    { import = vim.g.complete_engine == "blink" and "plugins.blink" or "plugins.cmp" },
     { import = "plugins.treesitter" },
     {
         "neovim/nvim-lspconfig",

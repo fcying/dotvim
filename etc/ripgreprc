@@ -17,6 +17,7 @@
 --glob=!.hg
 --glob=!.repo
 --glob=!.root
+--glob=!.run
 --glob=!.ccache
 --glob=!.cache
 --glob=!.ccls-cache

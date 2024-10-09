@@ -1,16 +1,8 @@
 {
   "shebang": {
     "prefix": ["sb", "sh", "#!", "shebang"],
-    "body": "${1|#!/usr/bin/bash,#!/usr/bin/env bash|}\n${0}",
-    "description": [
-      "Option 1:\n",
-      "#!/usr/bin/bash\n",
-      "Description: My Shebang Bash executor.\n",
-      "Option 2:\n",
-      "#!/usr/bin/env bash\n",
-      "Description: Shell searchs for the first match of bash in the $PATH environment variable.\n",
-      "It can be useful if you aren't aware of the absolute path or don't want to search for it.\n"
-    ]
+    "body": "#!/usr/bin/env bash",
+    "description": "My Shebang Bash executor"
   },
   "read": {
     "prefix": "read",
@@ -31,9 +23,6 @@
       "    esac",
       "done"
     ],
-
-
-
     "description": "Read input parameters."
   },
   "if": {

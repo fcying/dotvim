@@ -10,7 +10,7 @@ return {
         vim.keymap.set({ "n", "v" }, "<c-n>", function() mc.addCursor("*") end)
 
         -- Jump to the next word under cursor but do not add a cursor.
-        vim.keymap.set({ "n", "v" }, "<c-s>", function() mc.skipCursor("*") end)
+        vim.keymap.set({ "n", "v" }, "q", function() mc.skipCursor("*") end)
 
         -- -- Delete the main cursor.
         -- vim.keymap.set({ "n", "v" }, "<leader>x", mc.deleteCursor)

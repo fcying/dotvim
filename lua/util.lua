@@ -183,7 +183,7 @@ function M.go2def(str, opts)
                 vim.cmd("normal " .. lnum .. "G^")
             end
 
-            require("plugins._telescope").telescope_ltaglist()
+            require("plugins.telescope").telescope_ltaglist()
         end
         vim.o.tagfunc = backup
     end

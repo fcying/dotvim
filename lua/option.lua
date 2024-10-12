@@ -224,17 +224,19 @@ else
             vim.fn.getregtype(""),
         }
     end
-    vim.g.clipboard = {
-        name = "osc52",
-        copy = {
-            ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
-            ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
-        },
-        paste = {
-            ["+"] = paste,
-            ["*"] = paste,
-        },
-    }
+    if vim.env.SSH_TTY then
+        vim.g.clipboard = {
+            name = "osc52",
+            copy = {
+                ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+                ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+            },
+            paste = {
+                ["+"] = paste,
+                ["*"] = paste,
+            },
+        }
+    end
 end
 
 -- large file {{{

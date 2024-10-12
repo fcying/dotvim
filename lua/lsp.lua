@@ -315,6 +315,10 @@ function M.setup()
     if fn.executable("qmlls") == 1 then
         lspconfig["qmlls"].setup(lsp_opts["qmlls"])
     end
+
+    if fn.executable("nu") == 1 then
+        lspconfig["nushell"].setup({})
+    end
 end
 
 return M

@@ -11,9 +11,9 @@ return {
         })
         local toggle = function()
             if vim.bo.filetype == "toggleterm" then
-                vim.cmd("ToggleTerm")
+                vim.cmd("ToggleTerm direction=float")
             else
-                vim.cmd("ToggleTerm")
+                vim.cmd("ToggleTerm direction=float")
                 vim.defer_fn(function()
                     if vim.fn.mode() == "n" then
                         vim.cmd("startinsert!")

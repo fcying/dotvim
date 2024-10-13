@@ -57,6 +57,7 @@ M.setup = {
         keys = {
             { "<leader>bb", "<cmd>AsyncTask build<CR>", desc = "AsyncTask build" },
             { "<leader>br", "<cmd>AsyncTask release<CR>", desc = "AsyncTask release" },
+            { "<leader>bt", "<cmd>AsyncTask test<CR>", desc = "AsyncTask test" },
         },
         init = asynctasks_config,
     }

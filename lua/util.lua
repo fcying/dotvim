@@ -13,8 +13,6 @@ Option = {
     asyncrun_post_run = nil,
     clangd_query_driver = nil,
     compile_commands_dir = nil,
-    build = function() return { cmd = "", name = "Build Task", } end,
-    release = function() return { cmd = "", name = "Release Task", } end,
 }
 local option_default = {
     -- ignore list

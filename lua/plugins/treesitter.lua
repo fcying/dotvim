@@ -63,7 +63,7 @@ return
                         return false
                     end,
                 },
-                -- FIXME can't use in c comment
+                -- FIXME: can't use in c comment
                 -- incremental_selection = {
                 --     enable = true,
                 --     keymaps = {

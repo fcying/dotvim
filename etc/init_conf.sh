@@ -17,9 +17,9 @@ if [[ $app == "ln" ]]; then
     fi
 
     if [ -f $HOME/.shrc.local ]; then
-        sed -i --follow-symlinks "s|CONFIG_DIR=.*|CONFIG_DIR=$config_dir|" $HOME/.shrc.local
+        sed -i --follow-symlinks "s|.*CONFIG_DIR=.*|export MY_CONFIG_DIR=$config_dir|" $HOME/.shrc.local
     else
-        echo "CONFIG_DIR=$config_dir" | tee $HOME/.shrc.local
+        echo "MY_CONFIG_DIR=$config_dir" | tee $HOME/.shrc.local
     fi
 
     ln -sfv $PWD/zshrc ~/.zshrc

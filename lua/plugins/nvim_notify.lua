@@ -1,4 +1,4 @@
--- FIXME add wrap or fix wrapped-compact format
+-- FIXME: add wrap or fix wrapped-compact format
 return {
     "rcarriga/nvim-notify",
     config = function()
@@ -19,7 +19,7 @@ return {
         --]])
 
         if NoiceEn == nil then
-            --FIXME https://github.com/rcarriga/nvim-notify/issues/205
+            --FIXME: https://github.com/rcarriga/nvim-notify/issues/205
             -- vim.notify = require("notify")
             vim.notify = vim.schedule_wrap(require("notify")) ---@diagnostic disable-line
             _G.print = function(...)

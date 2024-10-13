@@ -212,8 +212,10 @@ if g.is_tmux == 1 then
         callback = function()
             -- vim.print(vim.v.event)
             if vim.v.operator == "y" then
-                -- require("vim.ui.clipboard.osc52").copy("+")(vim.v.event.regcontents)
-                require("osc52").copy_register("+")
+                local text = vim.fn.getreg("+")
+                local lines = vim.split(text, "\n")
+                -- vim.print(lines)
+                require("vim.ui.clipboard.osc52").copy("+")(lines)
             end
         end,
     })
@@ -224,7 +226,7 @@ else
             vim.fn.getregtype(""),
         }
     end
-    if vim.env.SSH_TTY then
+    -- if vim.env.SSH_TTY then
         vim.g.clipboard = {
             name = "osc52",
             copy = {
@@ -236,7 +238,7 @@ else
                 ["*"] = paste,
             },
         }
-    end
+    -- end
 end
 
 -- large file {{{

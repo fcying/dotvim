@@ -5,8 +5,8 @@ if [ -f "$HOME/.shrc.local" ]; then
     source "$HOME/.shrc.local"
 fi
 
-export CONFIG_DIR=${CONFIG_DIR:-"$HOME/.vim/etc"}
-export ATUIN_CONFIG_DIR=${ATUIN_CONFIG_DIR:-"$CONFIG_DIR/atuin"}
+export MY_CONFIG_DIR=${MY_CONFIG_DIR:-"$HOME/.vim/etc"}
+export ATUIN_CONFIG_DIR=${ATUIN_CONFIG_DIR:-"$MY_CONFIG_DIR/atuin"}
 if [ ! -d "$ATUIN_CONFIG_DIR" ]; then
     unset ATUIN_CONFIG_DIR
 fi
@@ -43,8 +43,8 @@ export QT_VERSION=${QT_VERSION:-"5.15.2"}
 #export QT_DEBUG_PLUGINS=1
 export LD_LIBRARY_PATH=$HOME/bin/lib:$QT_DIR/$QT_VERSION/gcc_64/lib:$LD_LIBRARY_PATH
 PKG_CONFIG_PATH=$QT_DIR/$QT_VERSION/gcc_64/lib/pkgconfig:$PKG_CONFIG_PATH
-PYTHONPATH=$PYTHONPATH:$CONFIG_DIR/python_script
-export RIPGREP_CONFIG_PATH=$CONFIG_DIR/ripgreprc
+PYTHONPATH=$PYTHONPATH:$MY_CONFIG_DIR/python_script
+export RIPGREP_CONFIG_PATH=$MY_CONFIG_DIR/ripgreprc
 export SHELLCHECK_OPTS="-e SC2164,SC1090,SC2086"
 export RUST_SRC_PATH=$HOME/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src
 
@@ -64,7 +64,7 @@ path=(
 )
 fpath=(
     $fpath
-    $CONFIG_DIR/fpath
+    $MY_CONFIG_DIR/fpath
 )
 
 # wsl2 {{{
@@ -163,8 +163,8 @@ function PluginFinish() {
     if [ -n "$zinit_inited" ]; then
         zinit compile --all
     fi
-    if [ -f "$CONFIG_DIR/zsh_plugin.zsh" ]; then
-        source "$CONFIG_DIR/zsh_plugin.zsh"
+    if [ -f "$MY_CONFIG_DIR/zsh_plugin.zsh" ]; then
+        source "$MY_CONFIG_DIR/zsh_plugin.zsh"
     fi
     type PostLoad >/dev/null 2>&1 && PostLoad
 
@@ -533,6 +533,7 @@ alias py3='python3'
 alias ls='ls --color=auto'
 alias ll='ls -alh --time-style=long-iso'
 alias docker_autoremove='docker rmi $(docker images -f "dangling=true" -q)'
+alias lg='lazygit'
 
 # tmux {{{
 function tmux_attach {

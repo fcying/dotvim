@@ -1,6 +1,6 @@
 return {
     { "wsdjeg/vim-fetch", lazy = false },
-    { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
+    -- { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
     {
         "mbbill/fencview",
         cmd = { "FencView", "FencAutoDetect" },

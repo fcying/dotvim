@@ -2,8 +2,8 @@ if [ -f "$HOME/.shrc.local" ]; then
     source "$HOME/.shrc.local"
 fi
 
-export CONFIG_DIR=${CONFIG_DIR:-"$HOME/.vim/etc"}
-export ATUIN_CONFIG_DIR=${ATUIN_CONFIG_DIR:-"$CONFIG_DIR/atuin"}
+export MY_CONFIG_DIR=${MY_CONFIG_DIR:-"$HOME/.vim/etc"}
+export ATUIN_CONFIG_DIR=${ATUIN_CONFIG_DIR:-"$MY_CONFIG_DIR/atuin"}
 if [ ! -d "$ATUIN_CONFIG_DIR" ]; then
     unset ATUIN_CONFIG_DIR
 fi

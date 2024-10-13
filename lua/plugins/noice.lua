@@ -1,4 +1,4 @@
--- FIXME view :map format invalid
+-- FIXME: view :map format invalid
 NoiceEn = true
 vim.opt.cmdheight = 0
 return {

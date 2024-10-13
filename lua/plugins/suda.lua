@@ -7,7 +7,7 @@ return {
         { "<leader>sw", "<cmd>SudaWrite<CR>", desc = "Write Sudo Files" }
     },
     init = function()
-        --FIXME https://github.com/lambdalisue/suda.vim/issues/54
+        --FIXME: https://github.com/lambdalisue/suda.vim/issues/54
         vim.g.suda_smart_edit = 0
     end
 }

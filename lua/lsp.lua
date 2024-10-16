@@ -229,6 +229,41 @@ function configs.lua()
     lsp_opts["lua_ls"] = opts
 end
 
+function configs.ts_ls()
+    local lsp_util = require("lspconfig/util")
+    local vue_typescript_plugin = require("mason-registry")
+        .get_package("vue-language-server")
+        :get_install_path()
+        .. "/node_modules/@vue/language-server"
+        .. "/node_modules/@vue/typescript-plugin"
+    local opts = {
+        root_dir = lsp_util.root_pattern("tsconfig.json", "jsconfig.json", "package.json", ".git"),
+        init_options = {
+            hostInfo = "neovim",
+            plugins = {
+                {
+                    name = "@vue/typescript-plugin",
+                    location = vue_typescript_plugin,
+                    languages = { "javascript", "typescript", "vue" },
+                },
+            },
+        },
+        cmd = { "typescript-language-server", "--stdio" },
+        filetypes = {
+            "javascript",
+            "javascriptreact",
+            "javascript.jsx",
+            "typescript",
+            "typescriptreact",
+            "typescript.tsx",
+            "vue",
+        },
+        single_file_support = true,
+    }
+
+    lsp_opts["ts_ls"] = opts
+end
+
 function M.setup()
     --lsp.set_log_level('debug')
 
@@ -246,6 +281,13 @@ function M.setup()
             end,
         },
     })
+
+    local capabilities
+    if g.complete_engine == "blink" then
+        capabilities = nil
+    else
+        capabilities = require("cmp_nvim_lsp").default_capabilities()
+    end
 
     local lsp_zero = require("lsp-zero")
     local lsp_attach = function(client, bufnr) ---@diagnostic disable-line
@@ -271,26 +313,19 @@ function M.setup()
 
         --client.server_capabilities.semanticTokensProvider = nil
     end
-    local capabilities
-    if g.complete_engine == "blink" then
-        capabilities = nil
-    else
-        capabilities = require("cmp_nvim_lsp").default_capabilities()
-    end
     lsp_zero.extend_lspconfig({
         capabilities = capabilities,
         lsp_attach = lsp_attach,
         float_border = "rounded",
         sign_text = true,
     })
+    -- lsp_zero.set_server_config({
+    --     single_file_support = true,
+    -- })
 
     for _, set in pairs(configs) do
         set()
     end
-
-    lsp_zero.set_server_config({
-        single_file_support = true,
-    })
 
     local lspconfig = require("lspconfig")
     local mason_server = require("mason-lspconfig.mappings.server")

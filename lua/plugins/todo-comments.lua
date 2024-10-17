@@ -1,6 +1,5 @@
 return {
     "folke/todo-comments.nvim",
-    -- event = "VeryLazy",
     -- cmd = { "TodoTelescope", "TodoQuickFix", "TodoLocList" },
     cmd = { "TodoTelescope" },
     config = function()

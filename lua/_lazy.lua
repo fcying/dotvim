@@ -58,6 +58,7 @@ local plugins = {
 
     -- filetype {{{
     --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },
+    { import = "plugins.markview" },
     { "Vimjas/vim-python-pep8-indent", ft = "python" },
     { "wsdjeg/vim-autohotkey", ft = "autohotkey" },
 

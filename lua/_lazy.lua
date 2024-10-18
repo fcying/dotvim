@@ -69,6 +69,7 @@ local plugins = {
     { import = "plugins.lazydev" },
     { import = vim.g.complete_engine == "blink" and "plugins.blink" or "plugins.cmp" },
     { import = "plugins.treesitter" },
+    { import = "plugins.tiny_inline_diagnostic" },
     {
         "neovim/nvim-lspconfig",
         cmd = { "LspInfo", "LspInstall", "LspStart", "LspRestart" },

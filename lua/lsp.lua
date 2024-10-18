@@ -269,18 +269,7 @@ function M.setup()
 
     api.nvim_create_user_command("Format", function() require("lsp").format() end, {})
 
-    vim.diagnostic.config({
-        virtual_text = false,
-        float = {
-            show_header = true,
-            source = true,
-            focusable = false,
-            format = function(diagnostic)
-                --vim.print(diagnostic)
-                return string.format("%s\n[%s]", diagnostic.message, diagnostic.user_data.lsp.code)
-            end,
-        },
-    })
+    vim.diagnostic.config({ virtual_text = false })
 
     local capabilities
     if g.complete_engine == "blink" then
@@ -301,8 +290,8 @@ function M.setup()
         map("n", "gs", vim.lsp.buf.signature_help, opts)
         map("n", "gt", "<cmd>Telescope lsp_type_definitions<cr>", opts)
         map("n", "gl", vim.diagnostic.open_float, opts)
-        map("n", "[d", vim.diagnostic.goto_prev, opts)
-        map("n", "]d", vim.diagnostic.goto_next, opts)
+        map("n", "[d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
+        map("n", "]d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
         map("n", "<leader>la", function() require("actions-preview").code_actions() end, opts)
         map("n", "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>", opts)
         map("n", "<leader>ls", "<cmd>Telescope lsp_workspace_symbols<cr>", opts)

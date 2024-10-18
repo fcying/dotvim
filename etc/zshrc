@@ -119,17 +119,17 @@ bindkey '^xe' edit-command-line
 bindkey '^x^e' edit-command-line
 
 ### zinit {{{
-ZINIT_DIR=$HOME/.zinit
-if [ ! -f "$ZINIT_DIR/bin/zinit.zsh" ]; then
+ZINIT_HOME=$HOME/.zinit
+if [ ! -d "$ZINIT_HOME/bin/.git" ]; then
     zinit_inited="true"
-    mkdir ~/.zinit
-    git clone --depth 1 https://github.com/zdharma-continuum/zinit "$ZINIT_DIR"/bin
+    mkdir -p $ZINIT_HOME/bin
+    git clone --depth 1 https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"/bin
 fi
 declare -A ZINIT
 ZINIT[NO_ALIASES]=1
-source "$ZINIT_DIR/bin/zinit.zsh"
-autoload -Uz _zinit
-(( ${+_comps} )) && _comps[zinit]=_zinit
+source "${ZINIT_HOME}/bin/zinit.zsh"
+# autoload -Uz _zinit
+# (( ${+_comps} )) && _comps[zinit]=_zinit
 
 #zinit light Aloxaf/fzf-tab
 
@@ -149,7 +149,7 @@ else
     zinit light zsh-users/zsh-autosuggestions
     unset ZSH_AUTOSUGGEST_USE_ASYNC
 fi
-bindkey '^K' autosuggest-accept
+bindkey '^f' autosuggest-accept
 
 zinit ice wait'0' lucid atinit'zpcompinit; zpcdreplay'
 zinit light zsh-users/zsh-syntax-highlighting

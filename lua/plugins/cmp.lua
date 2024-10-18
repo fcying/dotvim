@@ -106,7 +106,7 @@ local cmp_opts = function()
             { name = "dictionary" },
             { name = "buffer" },
             -- { name = "tags" },
-            { name = "omni", priority = -1 },
+            -- { name = "omni", priority = -1 },
         }),
         formatting = {
             format = function(entry, vim_item)
@@ -119,7 +119,7 @@ local cmp_opts = function()
                     tmux = "[Tmux]",
                     luasnip = "[Snip]",
                     dictionary = "[Dict]",
-                    omni = "[Omni]",
+                    -- omni = "[Omni]",
                     cmdline_history = "[History]",
                 })[entry.source.name]
                 -- vim_item.dup = ({
@@ -157,8 +157,8 @@ local cmp_opts = function()
 end
 
 return {
-    -- "hrsh7th/nvim-cmp",
-    "iguanacucumber/magazine.nvim",
+    "hrsh7th/nvim-cmp",
+    -- "iguanacucumber/magazine.nvim",
     event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
         {
@@ -170,8 +170,8 @@ return {
         { "saadparwaiz1/cmp_luasnip" },
         { "hrsh7th/cmp-buffer" },
         { "hrsh7th/cmp-nvim-lsp" },
-        -- { "FelipeLema/cmp-async-path", url = "https://codeberg.org/FelipeLema/cmp-async-path" },
-        { "FelipeLema/cmp-async-path", url = "https://codeberg.org/fcying/cmp-async-path" },
+        { "FelipeLema/cmp-async-path", url = "https://codeberg.org/FelipeLema/cmp-async-path" },
+        -- { "FelipeLema/cmp-async-path", url = "https://codeberg.org/fcying/cmp-async-path" },
         { "hrsh7th/cmp-cmdline" },
         { "dmitmel/cmp-cmdline-history" },
         -- { "hrsh7th/cmp-omni" },

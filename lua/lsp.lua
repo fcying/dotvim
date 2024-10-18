@@ -51,7 +51,7 @@ local function diagnostics_config(enable)
 end
 
 function M.format()
-    require("conform").format()
+    require("conform").format({ timeout_ms = 5000 })
 end
 
 function M.null_ls()
@@ -134,6 +134,7 @@ function configs.ahk2()
         root_dir = function()
             return util.root_dir
         end,
+        single_file_support = true,
     }
     require("lspconfig.configs")["autohotkey2-lsp"] = { default_config = opts }
 end
@@ -146,7 +147,23 @@ function configs.bashls()
                 shellcheckArguments = "-e SC1090,SC1091,SC1094,SC2010,SC2012,SC2015,SC2029,SC2046,SC2086,"
                     .. "SC2119,SC2120,SC2154,SC2155,SC2164,SC2181,SC2206,SC2317",
             }
-        }
+        },
+        single_file_support = true,
+    }
+end
+
+function configs.nushell()
+    lsp_opts["nushell"] = {
+        cmd = {
+            "nu",
+            "-I",
+            vim.fn.getcwd(),
+            "--no-config-file",
+            "--lsp",
+        },
+        filetypes = { "nu" },
+        root_dir = function() return util.root_dir end,
+        single_file_support = true,
     }
 end
 
@@ -269,18 +286,7 @@ function M.setup()
 
     api.nvim_create_user_command("Format", function() require("lsp").format() end, {})
 
-    vim.diagnostic.config({
-        virtual_text = false,
-        float = {
-            show_header = true,
-            source = true,
-            focusable = false,
-            format = function(diagnostic)
-                --vim.print(diagnostic)
-                return string.format("%s\n[%s]", diagnostic.message, diagnostic.user_data.lsp.code)
-            end,
-        },
-    })
+    vim.diagnostic.config({ virtual_text = false })
 
     local capabilities
     if g.complete_engine == "blink" then
@@ -301,8 +307,8 @@ function M.setup()
         map("n", "gs", vim.lsp.buf.signature_help, opts)
         map("n", "gt", "<cmd>Telescope lsp_type_definitions<cr>", opts)
         map("n", "gl", vim.diagnostic.open_float, opts)
-        map("n", "[d", vim.diagnostic.goto_prev, opts)
-        map("n", "]d", vim.diagnostic.goto_next, opts)
+        map("n", "[d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
+        map("n", "]d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
         map("n", "<leader>la", function() require("actions-preview").code_actions() end, opts)
         map("n", "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>", opts)
         map("n", "<leader>ls", "<cmd>Telescope lsp_workspace_symbols<cr>", opts)
@@ -350,9 +356,8 @@ function M.setup()
     if fn.executable("qmlls") == 1 then
         lspconfig["qmlls"].setup(lsp_opts["qmlls"])
     end
-
     if fn.executable("nu") == 1 then
-        lspconfig["nushell"].setup({})
+        require("lspconfig").nushell.setup(lsp_opts["nushell"])
     end
 end
 

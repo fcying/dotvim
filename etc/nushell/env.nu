@@ -21,9 +21,8 @@ def create_right_prompt [] {
     let time_segment = ([
         (ansi reset)
         (ansi magenta)
-        (date now | format date '%x %X') # try to respect user's locale
-    ] | str join | str replace --regex --all "([/:])" $"(ansi green)${1}(ansi magenta)" |
-        str replace --regex --all "([AP]M)" $"(ansi magenta_underline)${1}")
+        (date now | format date '%y/%m/%d %H:%M:%S')
+    ] | str join | str replace --regex --all "([/:])" $"(ansi green)${1}(ansi magenta)")
 
     let last_exit_code = if ($env.LAST_EXIT_CODE != 0) {([
         (ansi rb)
@@ -74,21 +73,21 @@ $env.NU_PLUGIN_DIRS = [
     ($nu.default-config-dir | path join 'plugins') # add <nushell-config-dir>/plugins
 ]
 
-# To add entries to PATH (on Windows you might use Path), you can use the following pattern:
-# $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
-# An alternate way to add entries to $env.PATH is to use the custom command `path add`
-# which is built into the nushell stdlib:
-# use std "path add"
-# $env.PATH = ($env.PATH | split row (char esep))
-# path add /some/path
-# path add ($env.CARGO_HOME | path join "bin")
-# path add ($env.HOME | path join ".local" "bin")
-# $env.PATH = ($env.PATH | uniq)
+$env.OS = (sys host).name
+use std "path add"
+mut zlua_path = "~/bin/z.lua"
 
-# To load from a custom file you can use:
-# source ($nu.default-config-dir | path join 'custom.nu')
-
-if (which atuin | is-not-empty) { 
-    atuin init nu | save -f ($nu.default-config-dir | path join "atuin.nu")
+if $env.OS == "Windows" {
+    $zlua_path = "D:/tool/scoop/apps/z.lua/current/z.lua"
+} else {
+    path add ($env.HOME | path join "go/bin" "bin")
+    $env.PATH = ($env.PATH | uniq)
 }
-lua ~/bin/z.lua --init nushell | save -f ($nu.default-config-dir | path join "zlua.nu")
+
+if (which atuin | is-not-empty) {
+    atuin init nu --disable-up-arrow | save -f ($nu.default-config-dir | path join "atuin.nu")
+}
+
+if ($zlua_path | path expand | path exists) {
+    lua ($zlua_path | path expand) --init nushell | save -f ($nu.default-config-dir | path join "zlua.nu")
+}

@@ -61,6 +61,7 @@ local plugins = {
     { import = "plugins.markview" },
     { "Vimjas/vim-python-pep8-indent", ft = "python" },
     { "wsdjeg/vim-autohotkey", ft = "autohotkey" },
+    { "elkasztano/nushell-syntax-vim", ft = "nu" },
 
     -- coding {{{
     { import = "plugins.gen_clang_conf" },
@@ -69,6 +70,7 @@ local plugins = {
     { import = "plugins.lazydev" },
     { import = vim.g.complete_engine == "blink" and "plugins.blink" or "plugins.cmp" },
     { import = "plugins.treesitter" },
+    { import = "plugins.tiny_inline_diagnostic" },
     {
         "neovim/nvim-lspconfig",
         cmd = { "LspInfo", "LspInstall", "LspStart", "LspRestart" },

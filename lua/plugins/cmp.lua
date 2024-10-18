@@ -157,8 +157,8 @@ local cmp_opts = function()
 end
 
 return {
-    -- "hrsh7th/nvim-cmp",
-    "iguanacucumber/magazine.nvim",
+    "hrsh7th/nvim-cmp",
+    -- "iguanacucumber/magazine.nvim",
     event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
         {

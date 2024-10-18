@@ -39,9 +39,10 @@ if [[ $app == "ln" ]]; then
     ln -sfv $PWD/.clang-format ~/
 
     mkdir -p ~/.config/nushell
-    ln -sfv $PWD/env.nu ~/.config/nushell
-    ln -sfv $PWD/config.nu ~/.config/nushell
+    ln -sfv $PWD/nushell/*.nu ~/.config/nushell
 
+    mkdir -p ~/.config/atuin
+    ln -sfv $PWD/atuin/config.toml ~/.config/atuin/config.toml
 fi
 
 # windows

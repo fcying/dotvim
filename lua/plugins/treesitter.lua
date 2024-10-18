@@ -40,7 +40,7 @@ return
                 parser_install_dir = parser_install_dir,
                 ensure_installed = {
                     "vim", "vimdoc", "lua", "query", "comment",
-                    "cpp", "typescript", "vue", "latex",
+                    "cpp", "typescript", "vue"
                 },
                 sync_install = #vim.api.nvim_list_uis() == 0,
                 auto_install = false,

@@ -288,13 +288,6 @@ function M.setup()
 
     vim.diagnostic.config({ virtual_text = false })
 
-    local capabilities
-    if g.complete_engine == "blink" then
-        capabilities = nil
-    else
-        capabilities = require("cmp_nvim_lsp").default_capabilities()
-    end
-
     local lsp_zero = require("lsp-zero")
     local lsp_attach = function(client, bufnr) ---@diagnostic disable-line
         local opts = { buffer = bufnr }
@@ -346,7 +339,13 @@ function M.setup()
                 if fn.index(Option.lsp, server_name) ~= -1 then
                     return
                 else
-                    lspconfig[server_name].setup(lsp_opts[server_name] or {})
+                    local config = lsp_opts[server_name] or {}
+                    if g.complete_engine == "blink" then
+                        config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
+                    else
+                        config.capabilities = require("cmp_nvim_lsp").default_capabilities()
+                    end
+                    lspconfig[server_name].setup(config)
                 end
             end,
         }

@@ -42,6 +42,7 @@ return {
             { "<leader>m", group = "mark" },
             { "<leader>s", group = "sandwich" },
             { "<leader>p", group = "plugin" },
+            { "<leader>s", group = "surround" },
             { "<leader>t", group = "tab" },
             { "<leader>u", group = "util" },
             { "<leader>w", group = "window" },

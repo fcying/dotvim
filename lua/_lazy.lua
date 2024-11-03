@@ -31,7 +31,8 @@ local plugins = {
     -- { import = "plugins.vim-visual-multi" },
     { import = "plugins.multicursor" },
     { import = "plugins.vim_expand_region" },
-    { import = "plugins.flash" },
+    -- { import = "plugins.flash" },
+    { import = "plugins.hop" },
     { import = "plugins.foldsearch" },
     { import = "plugins.lualine" },
 
@@ -55,6 +56,7 @@ local plugins = {
     require("plugins.asynctasks").setup,
     -- { import = "plugins.overseer" },
     { import = "plugins.whichkey" },
+    { import = "plugins.stickybuf" },
 
     -- filetype {{{
     --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },
@@ -70,7 +72,7 @@ local plugins = {
     { import = "plugins.lazydev" },
     { import = vim.g.complete_engine == "blink" and "plugins.blink" or "plugins.cmp" },
     { import = "plugins.treesitter" },
-    { import = "plugins.tiny_inline_diagnostic" },
+    -- { import = "plugins.tiny_inline_diagnostic" },
     {
         "neovim/nvim-lspconfig",
         cmd = { "LspInfo", "LspInstall", "LspStart", "LspRestart" },

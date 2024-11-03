@@ -189,9 +189,10 @@ alias glgp='git log --stat -p'
 alias glgg='git log --graph'
 alias glgga='git log --graph --decorate --all'
 alias glgm='git log --graph --max-count=10'
-alias  glo="git log --graph --pretty='%Cred%h%Creset %C(auto)%d%Creset %s %Cgreen(%ai) %C(bold blue)<%an>%Creset'"
+alias glo="git log --graph --pretty='%Cred%h%Creset %C(auto)%d%Creset %s %Cgreen(%ai) %C(bold blue)<%an>%Creset'"
 alias glos="git log --graph --pretty='%Cred%h%Creset %C(auto)%d%Creset %s %Cgreen(%ai) %C(bold blue)<%an>%Creset' --stat"
 alias gloa="git log --graph --pretty='%Cred%h%Creset %C(auto)%d%Creset %s %Cgreen(%ai) %C(bold blue)<%an>%Creset' --all"
+alias glS='git log --source -S'
 compdef _git glp=git-log
 
 alias gm='git merge'

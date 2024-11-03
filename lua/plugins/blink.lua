@@ -1,32 +1,33 @@
+---@module 'blink.cmp'
+---@type blink.cmp.Config
 local opts = {
     highlight = {
         use_nvim_cmp_as_default = true,
     },
     nerd_font_variant = "normal",
     keymap = {
+        preset = "enter",
         ["<C-l>"] = { "show", "show_documentation", "hide_documentation" },
-        ["<C-e>"] = { "hide" },
-        ["<CR>"] = { "select_and_accept" },
-
-        ["<Up>"] = { "select_prev", "fallback" },
-        ["<Down>"] = { "select_next", "fallback" },
-        ["<C-p>"] = { "select_prev", "fallback" },
-        ["<C-n>"] = { "select_next", "fallback" },
+        ["<C-space>"] = { "fallback" },
         ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
         ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
-
-        ["<C-b>"] = { "scroll_documentation_up", "fallback" },
-        ["<C-f>"] = { "scroll_documentation_down", "fallback" },
     },
     sources = {
         completion = {
-            enabled_providers = { "lsp", "path", "snippets", "buffer", "dictionary" },
+            enabled_providers = { "lsp", "path", "snippets", "buffer", "lazydev", "dictionary" },
         },
         providers = {
+            lsp = {
+                min_keyword_length = 2,
+                -- dont show LuaLS require statements when lazydev has items
+                fallback_for = { "lazydev" },
+            },
+            lazydev = { name = "LazyDev", module = "lazydev.integrations.blink" },
             snippets = {
                 name = "Snippets",
                 module = "blink.cmp.sources.snippets",
                 score_offset = -3,
+                min_keyword_length = 2,
                 opts = {
                     friendly_snippets = true,
                     search_paths = { vim.g.config_dir .. "/snippets" },
@@ -35,13 +36,12 @@ local opts = {
                     ignored_filetypes = {},
                 },
             },
+            buffer = { min_keyword_length = 2, },
             dictionary = {
                 name = "dictionary",
                 module = "blink.compat.source",
                 score_offset = 3,
-                opts = {
-                    { name = "dictionary" },
-                }
+                min_keyword_length = 2,
             },
         },
     },
@@ -49,7 +49,7 @@ local opts = {
 
 return {
     "saghen/blink.cmp",
-    lazy = false,
+    event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
         "rafamadriz/friendly-snippets",
         { "saghen/blink.compat", opts = { impersontate_nvim_cmp = true, } },

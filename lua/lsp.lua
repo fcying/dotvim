@@ -20,6 +20,9 @@ Formats = {
         "--pad-oper", "--pad-header",
         "--align-pointer=name", "--align-reference=name",
     },
+    ["clang-format"] = {
+        -- "--style=file:" .. vim.g.config_dir .. "/etc/.clang-format",
+    },
 }
 
 local diagnostics_on = true
@@ -51,7 +54,7 @@ local function diagnostics_config(enable)
 end
 
 function M.format()
-    require("conform").format({ timeout_ms = 5000 })
+    require("conform").format()
 end
 
 function M.null_ls()
@@ -283,11 +286,9 @@ end
 
 function M.setup()
     --lsp.set_log_level('debug')
-
     api.nvim_create_user_command("Format", function() require("lsp").format() end, {})
 
-    vim.diagnostic.config({ virtual_text = false })
-
+    -- lsp_zero
     local lsp_zero = require("lsp-zero")
     local lsp_attach = function(client, bufnr) ---@diagnostic disable-line
         local opts = { buffer = bufnr }
@@ -325,6 +326,16 @@ function M.setup()
     for _, set in pairs(configs) do
         set()
     end
+
+    -- diagnostic
+    vim.diagnostic.config({
+        virtual_text = false,
+        float = {
+            border = "rounded",
+            source = false,
+        }
+    })
+
 
     local lspconfig = require("lspconfig")
     local mason_server = require("mason-lspconfig.mappings.server")

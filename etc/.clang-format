@@ -8,37 +8,41 @@ UseTab: Never
 AllowShortLoopsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: None
 AlignArrayOfStructures: Right
-AlignConsecutiveAssignments: false
-AlignConsecutiveBitFields: false
-AlignConsecutiveDeclarations: false
-# AlignConsecutiveMacros: Consecutive
+AlignConsecutiveAssignments:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  AlignFunctionPointers: false
+  PadOperators:    true
+AlignConsecutiveBitFields:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  AlignFunctionPointers: false
+  PadOperators:    false
+AlignConsecutiveDeclarations:
+  Enabled:         false
+  AcrossEmptyLines: false
+  AcrossComments:  false
+  AlignCompound:   false
+  AlignFunctionPointers: false
+  PadOperators:    false
+AlignConsecutiveMacros:
+  Enabled:         true
+  AcrossEmptyLines: true
+  AcrossComments:  true
+  AlignCompound:   false
+  AlignFunctionPointers: false
+  PadOperators:    false
 SkipMacroDefinitionBody: true
 SeparateDefinitionBlocks: Leave
 
 BreakBeforeBraces: Allman   # Allman Linux
 AccessModifierOffset: -4
 AlwaysBreakBeforeMultilineStrings: false
-AllowShortIfStatementsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: Never
 AlignEscapedNewlines: Left
-BinPackArguments: true
-BinPackParameters: true
-CommentPragmas: '^ IWYU pragma:'
 IndentCaseLabels: false
-PointerAlignment: Right
 SortIncludes: Never
-BraceWrapping:
-  AfterClass: false
-  AfterControlStatement: false
-  AfterEnum: false
-  AfterFunction: true
-  AfterNamespace: true
-  AfterObjCDeclaration: false
-  AfterStruct: false
-  AfterUnion: false
-  AfterExternBlock: false
-  BeforeCatch: false
-  BeforeElse: false
-  IndentBraces: false
-  SplitEmptyFunction: true
-  SplitEmptyRecord: true
-  SplitEmptyNamespace: true

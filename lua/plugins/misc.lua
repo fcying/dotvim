@@ -1,6 +1,5 @@
 return {
     { "wsdjeg/vim-fetch", lazy = false },
-    -- { "ojroques/nvim-osc52", opts = { silent = true, trim = false } },
     {
         "mbbill/fencview",
         cmd = { "FencView", "FencAutoDetect" },
@@ -10,21 +9,12 @@ return {
         end,
     },
     {
-        "ethanholz/nvim-lastplace",
-        lazy = false,
-        config = function()
-            require("nvim-lastplace").setup {
-                lastplace_ignore_buftype = { "quickfix", "nofile", "help" },
-                lastplace_ignore_filetype = { "gitcommit", "gitrebase", "svn", "hgcommit" },
-                lastplace_open_folds = true
-            }
+        "farmergreg/vim-lastplace",
+        init = function ()
+            vim.g.lastplace_ignore = "gitcommit,gitrebase,hgcommit,svn,xxd"
+            vim.g.lastplace_ignore_buftype = "help,nofile,quickfix"
+            vim.g.lastplace_open_folds = 0
         end
     },
-    -- {
-    --     "karb94/neoscroll.nvim",
-    --     config = function()
-    --         require("neoscroll").setup({})
-    --     end
-    -- },
     --{ 'simnalamburt/vim-mundo', event = 'VimEnter' },
 }

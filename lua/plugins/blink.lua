@@ -8,9 +8,16 @@ local opts = {
     keymap = {
         preset = "enter",
         ["<C-l>"] = { "show", "show_documentation", "hide_documentation" },
-        ["<C-space>"] = { "fallback" },
+        ["<C-space>"] = {},
         ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
         ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+    },
+    -- accept = { auto_brackets = { enabled = true } },
+    trigger = {
+        completion = {
+            show_in_snippet = true,
+        },
+        signature_help = { enabled = false },
     },
     sources = {
         completion = {
@@ -18,7 +25,7 @@ local opts = {
         },
         providers = {
             lsp = {
-                min_keyword_length = 2,
+                min_keyword_length = 0,
                 -- dont show LuaLS require statements when lazydev has items
                 fallback_for = { "lazydev" },
             },
@@ -55,7 +62,7 @@ return {
         { "saghen/blink.compat", opts = { impersontate_nvim_cmp = true, } },
         { import = "plugins.cmp_dictionary" },
     },
-    version = "*",
-    -- build = "cargo build --release",
+    -- version = "v0.*",
+    build = "cargo build --release",
     opts = opts,
 }

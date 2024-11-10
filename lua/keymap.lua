@@ -21,7 +21,7 @@ map("", "<esc>", function()
     if vim.v.hlsearch == 1 then
         vim.cmd("noh")
     end
-    require("notify").dismiss({})
+    -- require("notify").dismiss({})
 end)
 
 -- cmd-line window dd {{{
@@ -151,12 +151,6 @@ noremap <silent><leader>8 :tabn 8<cr>
 noremap <silent><leader>9 :tabn 9<cr>
 noremap <silent><leader>0 :tabn 10<cr>
 ]])
-
-
-map("n", "<F2>", ":set number! number?<CR>")
-map("n", "<F3>", ":set list! list?<CR>")
-map("n", "<F4>", ":set wrap! wrap?<CR>")
-map("n", "<F6>", ":exec exists('syntax_on') ? 'syn off' : 'syn on'<CR>")
 
 -- quickfix {{{
 map("n", "]q", ":cnext<CR>")

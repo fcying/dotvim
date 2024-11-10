@@ -1,12 +1,5 @@
 return {
     {
-        "echasnovski/mini.bufremove",
-        keys = { { "<leader>q", function() require("mini.bufremove").delete() end, desc = "Quit Buffer" } },
-        config = function()
-            require("mini.bufremove").setup()
-        end
-    },
-    {
         "echasnovski/mini.surround",
         keys = { "<leader>s" },
         opts = {

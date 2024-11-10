@@ -18,6 +18,7 @@ local plugins = {
     { import = "plugins.colorscheme" },
     { import = "plugins.suda" },
     { import = "plugins.mini" },
+    { import = "plugins.snacks" },
     { import = "plugins.misc" },
 
     -- editor {{{
@@ -48,7 +49,7 @@ local plugins = {
     { "fcying/vim-plugin-AnsiEsc", cmd = { "AnsiEsc", "AnsiEscClear" } },
     { "stevearc/dressing.nvim", opts = {} },
     -- { import = "plugins.noice" },
-    { import = "plugins.nvim_notify" },
+    -- { import = "plugins.nvim_notify" },
     -- { import = "plugins.ZFVimIM" },
     -- { import = "plugins.ZFVimDirDiff" },
     { import = "plugins.fugitive" },

@@ -149,7 +149,7 @@ M.setup = { --{{{
         { "fl", "<cmd>Telescope current_buffer_fuzzy_find<cr>",     desc = "line" },
         { "fo", "<cmd>Telescope oldfiles<cr>",                      desc = "mru" },
         { "fm", "<cmd>Telescope marks<cr>",                         desc = "marks" },
-        { "fn", "<cmd>Telescope notify<cr>",                        desc = "notify" },
+        { "fn", "<cmd>lua Snacks.notifier.show_history({})<cr>",    desc = "notify" },
         { "fr", "<cmd>Telescope resume<cr>",                        desc = "resume" },
         { "ft", "<cmd>Telescope tags<cr>",                          desc = "tag" },
         { "f/", function() require("util").live_grep() end, mode = {"n", "x"},      desc = "live grep" },
@@ -218,7 +218,7 @@ M.setup = { --{{{
                 },
             },
         })
-        require("telescope").load_extension("notify")
+        -- require("telescope").load_extension("notify")
         require("telescope").load_extension("fzf")
         require("telescope").load_extension("ctags_outline")
         require("telescope").load_extension("live_grep_args")

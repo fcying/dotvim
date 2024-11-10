@@ -13,16 +13,6 @@ return {
             float_opts = float_opts,
             clear_env = true,
         })
-        local lazygit = require("toggleterm.terminal").Terminal:new {
-            cmd = "lazygit",
-            hidden = true,
-            direction = "float",
-            float_opts = float_opts,
-            on_create = function(t)
-                local bufnr = t.bufnr
-                vim.keymap.set("t", "<Esc>", "<Esc>", { buffer = bufnr })
-            end,
-        }
         local toggle = function()
             if vim.bo.filetype == "toggleterm" then
                 vim.cmd("ToggleTerm direction=float")
@@ -43,7 +33,6 @@ return {
             { "<leader>tt", "<cmd>ToggleTerm<CR>", desc = "ToggleTerm" },
             { "<leader>tf", "<cmd>ToggleTerm direction=float<CR>", desc = "ToggleTerm float" },
             { "<leader>gt", function() tig:toggle() end, desc = "tig" },
-            { "<leader>gl", function() lazygit:toggle() end, desc = "lazygit" },
         }
     end,
     config = function()

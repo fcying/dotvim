@@ -25,18 +25,6 @@ Formats = {
     },
 }
 
-local diagnostics_on = true
-function M.diagnostic_toggle()
-    if diagnostics_on then
-        vim.notify("disable diagnostics")
-        vim.diagnostic.enable(false)
-    else
-        vim.notify("enable diagnostics")
-        vim.diagnostic.enable(true)
-    end
-    diagnostics_on = not diagnostics_on
-end
-
 ---@diagnostic disable-next-line unused-local
 local function diagnostics_config(enable)
     if enable == nil then
@@ -306,7 +294,6 @@ function M.setup()
         map("n", "<leader>la", function() require("actions-preview").code_actions() end, opts)
         map("n", "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>", opts)
         map("n", "<leader>ls", "<cmd>Telescope lsp_workspace_symbols<cr>", opts)
-        map("n", "<leader>ltd", '<cmd>lua require("lsp").diagnostic_toggle()<CR>', opts)
         map("n", "<leader>lr", "<cmd>LspRestart<CR>", opts)
         map("n", "<leader>lf", "<cmd>lua require('lsp').format()<CR>", opts)
         map("v", "<leader>lf", "<cmd>lua require('lsp').format()<CR><ESC>", opts)

@@ -766,6 +766,7 @@ alias gd = git diff
 alias gf = git fetch
 alias gfa = git fetch --all --prune
 alias gfo = git fetch origin
+alias gp = git push
 
 def git_analyze [] {
     git filter-repo --analyze --force

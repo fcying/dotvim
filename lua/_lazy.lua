@@ -69,6 +69,7 @@ local plugins = {
     -- coding {{{
     { import = "plugins.gen_clang_conf" },
     { import = "plugins.conform" },
+    { import = "plugins.grug_far" },
     { import = "plugins.todo-comments" },
     { import = "plugins.lazydev" },
     { import = vim.g.complete_engine == "blink" and "plugins.blink" or "plugins.cmp" },

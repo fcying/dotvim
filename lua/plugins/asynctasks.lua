@@ -56,9 +56,9 @@ M.setup = {
         cmd = { "AsyncTask", "AsyncTaskMacro", "AsyncTaskList", "AsyncTaskEdit", },
         keys = {
             { "<leader>bb", "<cmd>AsyncTask build<CR>", desc = "AsyncTask build" },
-            { "<leader>br", "<cmd>AsyncTask release<CR>", desc = "AsyncTask release" },
-            { "<leader>bl", "<cmd>AsyncTask lib<CR>", desc = "AsyncTask test" },
-            { "<leader>bt", "<cmd>AsyncTask test<CR>", desc = "AsyncTask test" },
+            { "<leader>br", "<cmd>AsyncTask release<CR>", desc = "AsyncTask build release" },
+            { "<leader>bl", "<cmd>AsyncTask lib<CR>", desc = "AsyncTask build lib" },
+            { "<leader>bt", "<cmd>AsyncTask test<CR>", desc = "AsyncTask build test" },
         },
         init = asynctasks_config,
     }

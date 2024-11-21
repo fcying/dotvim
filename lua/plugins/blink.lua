@@ -20,8 +20,22 @@ local opts = {
         signature_help = { enabled = false },
     },
     sources = {
+        snippets = {
+            -- expand = function(snippet) vim.snippet.expand(snippet) end,
+            -- active = function(filter) return vim.snippet.active(filter) end,
+            -- jump = function(direction) vim.snippet.jump(direction) end,
+            expand = function(snippet) require("luasnip").lsp_expand(snippet) end,
+            active = function(filter)
+                if filter and filter.direction then
+                    require("luasnip").jumpable(filter.direction)
+                end
+                return require("luasnip").in_snippet()
+            end,
+            jump = function(direction) require("luasnip").jump(direction) end,
+        },
         completion = {
-            enabled_providers = { "lsp", "path", "snippets", "buffer", "lazydev", "dictionary" },
+            -- luasnip snippets
+            enabled_providers = { "lsp", "path", "luasnip", "buffer", "lazydev", "dictionary" },
         },
         providers = {
             lsp = {
@@ -30,6 +44,16 @@ local opts = {
                 fallback_for = { "lazydev" },
             },
             lazydev = { name = "LazyDev", module = "lazydev.integrations.blink" },
+            luasnip = {
+                name = "luasnip",
+                module = "blink.compat.source",
+                score_offset = -3,
+                min_keyword_length = 2,
+                opts = {
+                    use_show_condition = false,
+                    show_autosnippets = true,
+                },
+            },
             snippets = {
                 name = "Snippets",
                 module = "blink.cmp.sources.snippets",
@@ -58,9 +82,11 @@ return {
     "saghen/blink.cmp",
     event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
-        "rafamadriz/friendly-snippets",
-        { "saghen/blink.compat", opts = { impersontate_nvim_cmp = true, } },
+        { "saghen/blink.compat", lazy = true, opts = { impersontate_nvim_cmp = true, } },
         { import = "plugins.cmp_dictionary" },
+        { import = "plugins.luasnip" },
+        { "saadparwaiz1/cmp_luasnip" },
+        -- "rafamadriz/friendly-snippets",
     },
     -- version = "v0.*",
     build = "cargo build --release",

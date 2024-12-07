@@ -3,7 +3,7 @@ return {
     event = "InsertEnter",
     dependencies = { "ZSaberLv0/ZFVimJob", "fcying/ZFVimIM_wubi_jidian" },
     init = function()
-        vim.g.ZFVimIM_cachePath = vim.g.runtime_dir .. vim.g.dir_separator .. "ZFVimIM"
+        vim.g.ZFVimIM_cachePath = join_paths(vim.g.runtime_dir, "ZFVimIM")
         vim.g.ZFVimIM_cloudAsync_outputTo = {
             outputType = "statusline",
             outputId = "ZFVimIM_cloud_async",

@@ -170,8 +170,6 @@ function PluginFinish() {
 
     if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
         . $HOME/.nix-profile/etc/profile.d/nix.sh;
-        unalias ni # register by  nix-zsh-completions
-        unalias ns
         function ni() {
             [ -z "$1" ] && return
             nix profile install nixpkgs#$1

@@ -20,6 +20,7 @@ local opts = {
         signature_help = { enabled = false },
     },
     sources = {
+        default = { "lsp", "path", "luasnip", "buffer", "lazydev", "dictionary" },
         snippets = {
             -- expand = function(snippet) vim.snippet.expand(snippet) end,
             -- active = function(filter) return vim.snippet.active(filter) end,
@@ -33,17 +34,9 @@ local opts = {
             end,
             jump = function(direction) require("luasnip").jump(direction) end,
         },
-        completion = {
-            -- luasnip snippets
-            enabled_providers = { "lsp", "path", "luasnip", "buffer", "lazydev", "dictionary" },
-        },
         providers = {
-            lsp = {
-                min_keyword_length = 0,
-                -- dont show LuaLS require statements when lazydev has items
-                fallback_for = { "lazydev" },
-            },
-            lazydev = { name = "LazyDev", module = "lazydev.integrations.blink" },
+            lsp = { min_keyword_length = 0, },
+            lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", fallbacks= {"lsp"} },
             luasnip = {
                 name = "luasnip",
                 module = "blink.compat.source",

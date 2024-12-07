@@ -38,7 +38,7 @@ return {
     config = function()
         require("toggleterm").setup({
             size = 20,
-            clear_env = true,
+            clear_env = false,
             direction = "horizontal", --'vertical' | 'horizontal' | 'tab' | 'float'
             hide_numbers = true,
             shade_terminals = false,

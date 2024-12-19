@@ -1,10 +1,9 @@
 ---@module 'blink.cmp'
 ---@type blink.cmp.Config
 local opts = {
-    highlight = {
-        use_nvim_cmp_as_default = true,
-    },
-    nerd_font_variant = "normal",
+    enabled = function()
+        return vim.bo.buftype ~= "prompt"
+    end,
     keymap = {
         preset = "enter",
         ["<C-l>"] = { "show", "show_documentation", "hide_documentation" },
@@ -12,31 +11,30 @@ local opts = {
         ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
         ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
     },
-    -- accept = { auto_brackets = { enabled = true } },
-    trigger = {
-        completion = {
-            show_in_snippet = true,
-        },
-        signature_help = { enabled = false },
+    completion = {
+        accept = { auto_brackets = { enabled = false }, },
+        documentation = { auto_show = true, auto_show_delay_ms = 500 },
+        ghost_text = { enabled = true },
+    },
+    snippets = {
+        -- expand = function(snippet) vim.snippet.expand(snippet) end,
+        -- active = function(filter) return vim.snippet.active(filter) end,
+        -- jump = function(direction) vim.snippet.jump(direction) end,
+        expand = function(snippet) require("luasnip").lsp_expand(snippet) end,
+        active = function(filter)
+            if filter and filter.direction then
+                require("luasnip").jumpable(filter.direction)
+            end
+            return require("luasnip").in_snippet()
+        end,
+        jump = function(direction) require("luasnip").jump(direction) end,
     },
     sources = {
         default = { "lsp", "path", "luasnip", "buffer", "lazydev", "dictionary" },
-        snippets = {
-            -- expand = function(snippet) vim.snippet.expand(snippet) end,
-            -- active = function(filter) return vim.snippet.active(filter) end,
-            -- jump = function(direction) vim.snippet.jump(direction) end,
-            expand = function(snippet) require("luasnip").lsp_expand(snippet) end,
-            active = function(filter)
-                if filter and filter.direction then
-                    require("luasnip").jumpable(filter.direction)
-                end
-                return require("luasnip").in_snippet()
-            end,
-            jump = function(direction) require("luasnip").jump(direction) end,
-        },
+        cmdline = {},
         providers = {
             lsp = { min_keyword_length = 0, },
-            lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", fallbacks= {"lsp"} },
+            lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", fallbacks = { "lsp" } },
             luasnip = {
                 name = "luasnip",
                 module = "blink.compat.source",
@@ -81,7 +79,7 @@ return {
         { "saadparwaiz1/cmp_luasnip" },
         -- "rafamadriz/friendly-snippets",
     },
-    -- version = "v0.*",
+    version = "v0.*",
     build = "cargo build --release",
     opts = opts,
 }

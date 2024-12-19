@@ -32,6 +32,7 @@ opt.confirm = false   -- Confirm to save changes before exiting modified buffer
 opt.completeopt = "menu,menuone,noselect,noinsert"
 opt.cursorline = true -- Enable highlighting of the current line
 opt.expandtab = true  -- Use spaces instead of tabs
+opt.jumpoptions = "stack"
 
 opt.modeline = false
 opt.bomb = false

@@ -36,6 +36,7 @@
 --langdef=toml
 --langmap=toml:.toml
 --regex-toml=/(.*)\{\{\{/\1/k,key/
+--regex-go=/(.*)\{\{\{/\1/f,key/
 
 #--langmap=vim:+(*vimrc*)
 #--regex-vim=/(.*)\{\{\{/\1/mk,mykey/

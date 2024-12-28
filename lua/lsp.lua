@@ -202,6 +202,9 @@ function configs.lua()
         end,
         settings = {
             Lua = {
+                semantic = {
+                    enable = true,
+                },
                 workspace = {
                     checkThirdParty = false,
                     library = {

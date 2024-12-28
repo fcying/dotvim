@@ -210,8 +210,122 @@ function M.gentags(type)
     end
 end
 
+-- fork from vim.show_pos
+function M.get_cursor_highlight_color()
+    local curBuf = vim.api.nvim_get_current_buf()
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local line, col = cursor[1] - 1, cursor[2]
+    local items = vim.inspect_pos(curBuf, line, col)
+
+    local lines = { {} }
+    local function append(str, hl)
+        table.insert(lines[#lines], { str, hl })
+    end
+    local function nl()
+        table.insert(lines, {})
+    end
+    local function item(data, comment)
+        append("  - ")
+        append(data.hl_group, data.hl_group)
+        append(" ")
+        if data.hl_group ~= data.hl_group_link then
+            append("links to ", "MoreMsg")
+            append(data.hl_group_link, data.hl_group_link)
+            append("   ")
+            local hl = vim.api.nvim_get_hl(0, { name = data.hl_group_link })
+            local str = vim.inspect(hl):gsub("\n", " ")
+            append(str)
+            append("   ")
+        end
+        if comment then
+            append(comment, "Comment")
+        end
+        nl()
+    end
+
+    -- print(vim.inspect(result))
+    if #items.syntax > 0 then
+        append("Syntax", "Title")
+        nl()
+        for _, syn in ipairs(items.syntax) do
+            item(syn)
+        end
+        nl()
+    end
+
+    if #items.treesitter > 0 then
+        append("Treesitter", "Title")
+        nl()
+        for _, capture in ipairs(items.treesitter) do
+            item(
+                capture,
+                string.format(
+                    "priority: %d   language: %s",
+                    capture.metadata.priority or vim.hl.priorities.treesitter,
+                    capture.lang
+                )
+            )
+        end
+        nl()
+    end
+
+    if #items.semantic_tokens > 0 then
+        append("Semantic Tokens", "Title")
+        nl()
+        local sorted_marks = vim.fn.sort(items.semantic_tokens, function(left, right)
+            local left_first = left.opts.priority < right.opts.priority
+                or left.opts.priority == right.opts.priority and left.opts.hl_group < right.opts.hl_group
+            return left_first and -1 or 1
+        end)
+        for _, extmark in ipairs(sorted_marks) do
+            item(extmark.opts, "priority: " .. extmark.opts.priority)
+        end
+        nl()
+    end
+
+    if #items.extmarks > 0 then
+        append("Extmarks", "Title")
+        nl()
+        for _, extmark in ipairs(items.extmarks) do
+            if extmark.opts.hl_group then
+                item(extmark.opts, extmark.ns)
+            else
+                append("  - ")
+                append(extmark.ns, "Comment")
+                nl()
+            end
+        end
+        nl()
+    end
+
+    if #lines[#lines] == 0 then
+        table.remove(lines)
+    end
+
+    local chunks = {}
+    for _, l in ipairs(lines) do
+        vim.list_extend(chunks, l)
+        table.insert(chunks, { "\n" })
+    end
+    if #chunks == 0 then
+        chunks = {
+            {
+                "No items found at position "
+                .. items.row
+                .. ","
+                .. items.col
+                .. " in buffer "
+                .. items.buffer,
+            },
+        }
+    end
+    vim.api.nvim_echo(chunks, false, {})
+end
+
 M.map("n", "ta", "<cmd>lua require('util').gentags()<CR>")
 M.map("n", "tc", "<cmd>lua require('util').gentags(1)<CR>")
 M.map("n", "tr", "<cmd>lua require('util').removetags()<CR>")
+
+M.map("n", "<leader>gc", "<cmd>lua require('util').get_cursor_highlight_color()<CR>")
 
 return M

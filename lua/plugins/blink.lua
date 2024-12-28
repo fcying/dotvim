@@ -6,59 +6,64 @@ local opts = {
     end,
     keymap = {
         preset = "enter",
-        ["<C-l>"] = { "show", "show_documentation", "hide_documentation" },
         ["<C-space>"] = {},
-        ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+        ["<C-e>"] = { "show", "hide", "show_documentation", "hide_documentation" },
+        ["<S-Tab>"] = { "select_prev", "snippet_forward", "fallback" },
         ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+        ["<C-u>"] = { "scroll_documentation_up", "fallback" },
+        ["<C-d>"] = { "scroll_documentation_down", "fallback" },
+        cmdline = {
+            ["<Tab>"] = { "select_next", "fallback" },
+            ["<S-Tab>"] = { "select_prev", "fallback" },
+            ["<C-n>"] = { "select_next", "fallback" },
+            ["<C-p>"] = { "select_prev", "fallback" },
+        },
     },
     completion = {
-        accept = { auto_brackets = { enabled = false }, },
-        documentation = { auto_show = true, auto_show_delay_ms = 500 },
-        ghost_text = { enabled = true },
+        list = {
+            selection = {
+                preselect = function(ctx) return ctx.mode ~= "cmdline" end,
+                auto_insert = function(ctx) return ctx.mode == "cmdline" end
+            },
+        },
+        trigger = {
+            -- show_on_trigger_character = true,
+            show_on_x_blocked_trigger_characters = { "'", '"', "(", "{" },
+        },
+    },
+    signature = {
+        enabled = true,
+        window = {
+            border = "rounded",
+        },
     },
     snippets = {
-        -- expand = function(snippet) vim.snippet.expand(snippet) end,
-        -- active = function(filter) return vim.snippet.active(filter) end,
-        -- jump = function(direction) vim.snippet.jump(direction) end,
-        expand = function(snippet) require("luasnip").lsp_expand(snippet) end,
+        expand = function(snippet)
+            require("luasnip").lsp_expand(snippet)
+        end,
         active = function(filter)
             if filter and filter.direction then
-                require("luasnip").jumpable(filter.direction)
+                return require("luasnip").locally_jumpable()
             end
             return require("luasnip").in_snippet()
         end,
-        jump = function(direction) require("luasnip").jump(direction) end,
+        jump = function(direction)
+            require("luasnip").jump(direction)
+        end,
     },
     sources = {
-        default = { "lsp", "path", "luasnip", "buffer", "lazydev", "dictionary" },
-        cmdline = {},
+        -- cmdline = {},
+        default = { "lsp", "path", "snippets", "buffer", "lazydev", "dictionary" },
         providers = {
-            lsp = { min_keyword_length = 0, },
             lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", fallbacks = { "lsp" } },
-            luasnip = {
-                name = "luasnip",
-                module = "blink.compat.source",
-                score_offset = -3,
-                min_keyword_length = 2,
-                opts = {
-                    use_show_condition = false,
-                    show_autosnippets = true,
-                },
-            },
             snippets = {
                 name = "Snippets",
                 module = "blink.cmp.sources.snippets",
-                score_offset = -3,
-                min_keyword_length = 2,
                 opts = {
                     friendly_snippets = true,
                     search_paths = { vim.g.config_dir .. "/snippets" },
-                    global_snippets = { "all" },
-                    extended_filetypes = {},
-                    ignored_filetypes = {},
                 },
             },
-            buffer = { min_keyword_length = 2, },
             dictionary = {
                 name = "dictionary",
                 module = "blink.compat.source",

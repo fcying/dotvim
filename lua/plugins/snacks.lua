@@ -48,7 +48,23 @@ return {
             notification = {
                 wo = { wrap = true } -- Wrap notifications
             }
-        }
+        },
+        -- dashboard = {
+        --     preset = {
+        --         header = require("ascii_logo").neovim2,
+        --         ---@type snacks.dashboard.Item[]
+        --         keys = {
+        --             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+        --             { icon = " ", key = "ff", desc = "Find File", action = "lua require('util').find_file()" },
+        --             { icon = " ", key = "f/", desc = "Find Text", action = "lua require('util').live_grep()" },
+        --             { icon = " ", key = "fm", desc = "Recent Files", action = "Telescope oldfiles" },
+        --             { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
+        --             { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+        --             { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+        --             { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+        --         },
+        --     }
+        -- },
     },
     init = function()
         vim.api.nvim_create_autocmd("User", {

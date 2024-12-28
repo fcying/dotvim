@@ -27,21 +27,10 @@
 --exclude=[lL]ib
 --exclude=[lL]ibs
 
---regex-vim=/(.*)\{\{\{/\1/k,key/
---regex-c=/(.*)\{\{\{/\1/f,key/
+--regex-c=/(.*)\{\{\{/\1/k,key/
 --langmap=sh:+(*bashrc)(*zshrc)(*shrc.local)(*.zsh)
 --regex-sh=/(.*)\{\{\{/\1/k,key/
 --regex-lua=/(.*)\{\{\{/\1/k,key/
 --regex-yaml=/(.*)\{\{\{/\1/k,key/
---langdef=toml
---langmap=toml:.toml
 --regex-toml=/(.*)\{\{\{/\1/k,key/
-
-#--langmap=vim:+(*vimrc*)
-#--regex-vim=/(.*)\{\{\{/\1/mk,mykey/
-#--regex-c=/(.*)\{\{\{/\1/mk,mykey/
-#--langmap=sh:+(*bashrc)(*zshrc)(*shrc.local)(*.zsh)
-#--regex-sh=/(.*)\{\{\{/\1/mk,mykey/
-#--regex-lua=/(.*)\{\{\{/\1/mk,mykey/
-#--regex-yaml=/(.*)\{\{\{/\1/mk,mykey/
-#--regex-toml=/(.*)\{\{\{/\1/mk,mykey/
+--regex-go=/(.*)\{\{\{/\1/k,key/

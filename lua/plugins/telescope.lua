@@ -22,6 +22,7 @@ function M.telescope_update_ignore()
             "--line-number",
             "--column",
             "--smart-case",
+            "--no-hidden",
         }
         for _, v in ipairs(option.rg) do
             table.insert(conf.vimgrep_arguments, v)

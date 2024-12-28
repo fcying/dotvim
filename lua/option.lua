@@ -2,9 +2,6 @@ local g, opt, fn = vim.g, vim.opt, vim.fn
 local util = require("util")
 local map = util.map
 
-g.mapleader = " "
-g.maplocalleader = " "
-
 g.has_rg = fn.executable("rg")
 g.has_go = fn.executable("go")
 

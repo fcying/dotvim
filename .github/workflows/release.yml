@@ -19,9 +19,9 @@ jobs:
         run: |
           mkdir ~/publish
 
-          wget -qOnvim.tgz "https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz"
+          wget -qOnvim.tgz "https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz"
           tar xzf nvim.tgz
-          sudo cp -rf ./nvim-linux64/* /usr/local
+          sudo cp -rf ./nvim-linux-x86_64/* /usr/local
           nvim --version
 
       - uses: actions/checkout@v4

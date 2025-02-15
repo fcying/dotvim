@@ -40,14 +40,13 @@ local plugins = {
     -- tool {{{
     { import = "plugins.fern" },
     -- { import = "plugins.nvim_tree" },
-    { import = "plugins.dashboard" },
+    -- { import = "plugins.dashboard" },
     require("plugins.telescope").setup,
     -- { "Yggdroot/LeaderF", cmd = { "Leaderf" }, build = ":LeaderfInstallCExtension" },
     { "chrisbra/Colorizer", cmd = { "ColorToggle" } },
     -- { import = "plugins.baleia" },
 
     { "fcying/vim-plugin-AnsiEsc", cmd = { "AnsiEsc", "AnsiEscClear" } },
-    { "stevearc/dressing.nvim", opts = {} },
     -- { import = "plugins.noice" },
     -- { import = "plugins.nvim_notify" },
     -- { import = "plugins.ZFVimIM" },

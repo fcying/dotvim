@@ -38,7 +38,7 @@ local plugins = {
     { import = "plugins.lualine" },
 
     -- tool {{{
-    { import = "plugins.fern" },
+    -- { import = "plugins.fern" },
     -- { import = "plugins.nvim_tree" },
     -- { import = "plugins.dashboard" },
     require("plugins.telescope").setup,

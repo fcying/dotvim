@@ -1,8 +1,42 @@
+local dashboard_opts = {
+    enabled = false,
+    preset = {
+        header = require("ascii_logo").neovim2,
+        ---@type snacks.dashboard.Item[]
+        keys = {
+            { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+            {
+                icon = " ",
+                key = "f",
+                desc = "Find File",
+                action = function()
+                    require("util").find_file()
+                end
+            },
+            {
+                icon = " ",
+                key = "/",
+                desc = "Find Text",
+                action = function()
+                    require("util").live_grep()
+                end
+            },
+            { icon = " ", key = "m", desc = "Recent Files", action = ":Telescope oldfiles" },
+            { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
+            { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+            { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+            { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+        },
+    }
+}
+
 return {
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
     keys = {
+        { "<leader>wf", function() Snacks.explorer() end, desc = "file explorer" },
+        { "<leader>wl", function() Snacks.explorer.reveal() end, desc = "file location" },
         { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
         { "<leader>q", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
         { "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },
@@ -41,7 +75,10 @@ return {
             enabled = true,
             timeout = 3000,
         },
-        quickfile = { enabled = true },
+        quickfile = {
+            enabled = true,
+            exclude = { "latex" },
+        },
         statuscolumn = { enabled = true },
         words = { enabled = false },
         styles = {
@@ -49,25 +86,16 @@ return {
                 wo = { wrap = true } -- Wrap notifications
             }
         },
-        -- dashboard = {
-        --     preset = {
-        --         header = require("ascii_logo").neovim2,
-        --         ---@type snacks.dashboard.Item[]
-        --         keys = {
-        --             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-        --             { icon = " ", key = "ff", desc = "Find File", action = "lua require('util').find_file()" },
-        --             { icon = " ", key = "f/", desc = "Find Text", action = "lua require('util').live_grep()" },
-        --             { icon = " ", key = "fm", desc = "Recent Files", action = "Telescope oldfiles" },
-        --             { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
-        --             { icon = " ", key = "s", desc = "Restore Session", section = "session" },
-        --             { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
-        --             { icon = " ", key = "q", desc = "Quit", action = ":qa" },
-        --         },
-        --     }
-        -- },
+        input = {},
+        explorer = {},
         picker = {
-
+            sources = {
+                explorer = {
+                    diagnostics = false,
+                }
+            }
         },
+        dashboard_opts,
     },
     init = function()
         vim.api.nvim_create_autocmd("User", {
@@ -86,16 +114,15 @@ return {
                 Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
                 Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
                 Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")
-                Snacks.toggle.diagnostics():map("<leader>ud")
-                Snacks.toggle.line_number():map("<leader>ul")
                 Snacks.toggle.option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
                     :map("<leader>uc")
-                Snacks.toggle.treesitter():map("<leader>uT")
                 Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map(
                     "<leader>ub")
+                Snacks.toggle.diagnostics():map("<leader>ud")
+                Snacks.toggle.line_number():map("<leader>ul")
+                Snacks.toggle.treesitter():map("<leader>uT")
                 Snacks.toggle.inlay_hints():map("<leader>uh")
-
-                Snacks.input.enable()
+                Snacks.toggle.indent():map("<leader>i")
             end,
         })
     end,

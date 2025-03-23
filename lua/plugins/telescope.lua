@@ -208,8 +208,8 @@ M.setup = { --{{{
                 ctags_outline = {
                     ctags = { "ctags", "--options=" .. g.config_dir .. "/etc/ctags" },
                     ft_opt = {
-                        c = "--c-kinds=f",
-                        cpp = "--c++-kinds=f --language-force=C++",
+                        c = "--c-kinds=fk",
+                        cpp = "--c++-kinds=fk --language-force=C++",
                         vim = "--vim-kinds=fk",
                         sh = "--sh-kinds=fk",
                         zsh = "--sh-kinds=fk",

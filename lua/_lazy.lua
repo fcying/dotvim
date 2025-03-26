@@ -29,7 +29,6 @@ local plugins = {
     { import = "plugins.tagbar" },
     { import = "plugins.marks" },
     { import = "plugins.indentLine" },
-    -- { import = "plugins.vim-visual-multi" },
     { import = "plugins.multicursor" },
     { import = "plugins.vim_expand_region" },
     -- { import = "plugins.flash" },

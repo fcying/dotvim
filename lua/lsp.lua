@@ -342,6 +342,7 @@ function M.setup()
                 else
                     local config = lsp_opts[server_name] or {}
                     if g.complete_engine == "blink" then
+                        -- FIXME: On Neovim 0.11+ with vim.lsp.config, you may skip this step
                         config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
                     else
                         config.capabilities = require("cmp_nvim_lsp").default_capabilities()

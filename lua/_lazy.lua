@@ -80,8 +80,6 @@ local plugins = {
         config = require("lsp").setup,
         dependencies = {
             { import = "plugins.mason" },
-            { "VonHeikemen/lsp-zero.nvim", branch = "v4.x" },
-            { "williamboman/mason-lspconfig.nvim" },
         },
     },
 }

@@ -2,6 +2,9 @@ return {
     "williamboman/mason.nvim",
     lazy = false,
     build = ":MasonUpdate",
+    dependencies = {
+        { "williamboman/mason-lspconfig.nvim" },
+    },
     config = function()
         require("mason").setup({
             install_root_dir = vim.g.runtime_dir .. "/mason",

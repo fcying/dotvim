@@ -37,8 +37,8 @@ end
 
 M.setup = {
     {
-        -- "skywind3000/asyncrun.vim",
-        "fcying/asyncrun.vim",
+        "skywind3000/asyncrun.vim",
+        -- "fcying/asyncrun.vim",
         version = "*",
         cmd = { "AsyncRun", "AsyncStop" },
         init = asyncrun_config,

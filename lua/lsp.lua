@@ -25,6 +25,27 @@ Formats = {
     },
 }
 
+local lspAttch = function(args)
+    local opts = { buffer = args.buf }
+    -- vim.bo[args.buf].formatexpr = nil
+    -- vim.bo[args.buf].omnifunc = nil
+    --map("n", "gd", vim.lsp.buf.definition, opts)
+    map("n", "gD", vim.lsp.buf.declaration, opts)
+    map("n", "gri", "<cmd>Telescope lsp_implementations<cr>", opts)
+    map("n", "grr", "<cmd>Telescope lsp_references include_current_line=true<cr>", opts)
+    map("n", "gs", vim.lsp.buf.signature_help, opts)
+    map("n", "gt", "<cmd>Telescope lsp_type_definitions<cr>", opts)
+    map("n", "gl", vim.diagnostic.open_float, opts)
+    map("n", "[d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
+    map("n", "]d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
+    map("n", "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>", opts)
+    map("n", "<leader>lr", "<cmd>LspRestart<CR>", opts)
+    map("n", "<leader>lf", "<cmd>lua require('lsp').format()<CR>", opts)
+    map("v", "<leader>lf", "<cmd>lua require('lsp').format()<CR><ESC>", opts)
+
+    --client.server_capabilities.semanticTokensProvider = nil
+end
+
 ---@diagnostic disable-next-line unused-local
 local function diagnostics_config(enable)
     if enable == nil then
@@ -279,39 +300,9 @@ function M.setup()
     --lsp.set_log_level('debug')
     api.nvim_create_user_command("Format", function() require("lsp").format() end, {})
 
-    -- lsp_zero
-    local lsp_zero = require("lsp-zero")
-    local lsp_attach = function(client, bufnr) ---@diagnostic disable-line
-        local opts = { buffer = bufnr }
-        map("n", "<leader>rn", vim.lsp.buf.rename, opts)
-        map("n", "K", vim.lsp.buf.hover, opts)
-        --map("n", "gd", vim.lsp.buf.definition, opts)
-        map("n", "gD", vim.lsp.buf.declaration, opts)
-        map("n", "gi", "<cmd>Telescope lsp_implementations<cr>", opts)
-        map("n", "gr", "<cmd>Telescope lsp_references include_current_line=true<cr>", opts)
-        map("n", "gs", vim.lsp.buf.signature_help, opts)
-        map("n", "gt", "<cmd>Telescope lsp_type_definitions<cr>", opts)
-        map("n", "gl", vim.diagnostic.open_float, opts)
-        map("n", "[d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
-        map("n", "]d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
-        map("n", "<leader>la", function() require("actions-preview").code_actions() end, opts)
-        map("n", "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>", opts)
-        map("n", "<leader>ls", "<cmd>Telescope lsp_workspace_symbols<cr>", opts)
-        map("n", "<leader>lr", "<cmd>LspRestart<CR>", opts)
-        map("n", "<leader>lf", "<cmd>lua require('lsp').format()<CR>", opts)
-        map("v", "<leader>lf", "<cmd>lua require('lsp').format()<CR><ESC>", opts)
-
-        --client.server_capabilities.semanticTokensProvider = nil
-    end
-    lsp_zero.extend_lspconfig({
-        capabilities = capabilities,
-        lsp_attach = lsp_attach,
-        float_border = "rounded",
-        sign_text = true,
+    vim.api.nvim_create_autocmd("LspAttach", {
+        callback = lspAttch
     })
-    -- lsp_zero.set_server_config({
-    --     single_file_support = true,
-    -- })
 
     for _, set in pairs(configs) do
         set()
@@ -325,7 +316,6 @@ function M.setup()
             source = false,
         }
     })
-
 
     local lspconfig = require("lspconfig")
     local mason_server = require("mason-lspconfig.mappings.server")

@@ -66,6 +66,9 @@ local opts = {
             window = { border = border },
         },
     },
+    fuzzy = {
+        implementation = "lua",  -- prefer_rust_with_warning lua
+    },
     sources = {
         default = { "lsp", "path", "snippets", "buffer", "lazydev", "dictionary" },
         providers = {

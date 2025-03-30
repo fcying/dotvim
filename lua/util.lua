@@ -150,7 +150,7 @@ function M.go2def(str, opts)
                 if ret ~= nil and next(ret) then
                     local result = ret[next(ret)].result or {}
                     if #result == 1 then
-                        vim.lsp.util.jump_to_location(result[1], client.offset_encoding, false)
+                        vim.lsp.util.show_document(result[1], client.offset_encoding, {focus=true})
 
                         -- if not jump, fallback ltag
                         if bufnr ~= fn.bufnr() or lnum ~= fn.line(".") then

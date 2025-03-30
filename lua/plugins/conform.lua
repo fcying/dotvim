@@ -1,6 +1,16 @@
 return {
     "stevearc/conform.nvim",
-    lazy = true,
+    cmd = "ConformInfo",
+    keys = {
+        {
+            "<leader>lf",
+            function()
+                require("conform").format()
+            end,
+            desc = "Format Document",
+            mode = { "n", "v" },
+        },
+    },
     config = function()
         require("conform").setup({
             default_format_opts = {
@@ -16,6 +26,8 @@ return {
                 -- lua = { "stylua" },
                 c = { "clang-format" },
                 cpp = { "clang-format" },
+                -- run formatters that don't have other formatters configured.
+                ["_"] = { "trim_whitespace" },
             },
             formatters = {
                 stylua = {

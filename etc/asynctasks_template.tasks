@@ -7,22 +7,22 @@ name="project"
 command/win32=echo "build $(+name) win32 version"
 command/linux=echo "build $(+name) linux version"
 cwd=$(VIM_ROOT)
-output=terminal
-save=1
+; output=terminal
+save=2
 close=1
 
 [release]
 command/win32=echo "release $(+name) win32 version"
 command/linux=echo "release $(+name) linux version"
 cwd=$(VIM_ROOT)
-output=terminal
-save=1
+; output=terminal
+save=2
 close=1
 
 [test]
 command/win32=echo "test $(+name) win32 version"
 command/linux=echo "test $(+name) linux version"
 cwd=$(VIM_ROOT)
-output=terminal
-save=1
+; output=terminal
+save=2
 close=1

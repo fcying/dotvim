@@ -152,10 +152,7 @@ noremap <silent><leader>9 :tabn 9<cr>
 noremap <silent><leader>0 :tabn 10<cr>
 ]])
 
--- quickfix {{{
-map("n", "]q", ":cnext<CR>")
-map("n", "[q", ":cprev<CR>")
-
+-- RemoveLsplog {{{
 vim.api.nvim_create_user_command("RemoveLsplog", function()
     vim.fn.writefile({}, vim.lsp.get_log_path())
 end, {})

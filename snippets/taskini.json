@@ -1,9 +1,127 @@
 {
+  "VIM_FILEPATH": {
+    "prefix": ["VIM_FILEPATH"],
+    "body": [ "$(VIM_FILEPATH)" ],
+    "description": "File name of current buffer with full path."
+  },
+  "VIM_FILENAME": {
+    "prefix": ["VIM_FILENAME"],
+    "body": [ "$(VIM_FILENAME)" ],
+    "description": "File name of current buffer without path."
+  },
+  "VIM_FILEDIR": {
+    "prefix": ["VIM_FILEDIR"],
+    "body": [ "$(VIM_FILEDIR)" ],
+    "description": "Full path of current buffer without the file name."
+  },
+  "VIM_FILEEXT": {
+    "prefix": ["VIM_FILEEXT"],
+    "body": [ "$(VIM_FILEEXT)" ],
+    "description": "File extension of current buffer."
+  },
+  "VIM_FILETYPE": {
+    "prefix": ["VIM_FILETYPE"],
+    "body": [ "$(VIM_FILETYPE)" ],
+    "description": "File type (value of &ft in vim)"
+  },
+  "VIM_FILENOEXT": {
+    "prefix": ["VIM_FILENOEXT"],
+    "body": [ "$(VIM_FILENOEXT)" ],
+    "description": "File name of current buffer without path and extension."
+  },
+  "VIM_PATHNOEXT": {
+    "prefix": ["VIM_PATHNOEXT"],
+    "body": [ "$(VIM_PATHNOEXT)" ],
+    "description": "Current file name with full path but without extension."
+  },
+  "VIM_CWD": {
+    "prefix": ["VIM_CWD"],
+    "body": [ "$(VIM_CWD)" ],
+    "description": "Current directory (which :pwd returns)."
+  },
+  "VIM_RELDIR": {
+    "prefix": ["VIM_RELDIR"],
+    "body": [ "$(VIM_RELDIR)" ],
+    "description": "File path relativize to current directory."
+  },
+  "VIM_RELNAME": {
+    "prefix": ["VIM_RELNAME"],
+    "body": [ "$(VIM_RELNAME)" ],
+    "description": "File name relativize to current directory."
+  },
+  "VIM_ROOT": {
+    "prefix": ["VIM_ROOT"],
+    "body": [ "$(VIM_ROOT)" ],
+    "description": "Project root directory"
+  },
+  "VIM_CWORD": {
+    "prefix": ["VIM_CWORD"],
+    "body": [ "$(VIM_CWORD)" ],
+    "description": "Word under cursor."
+  },
+  "VIM_CFILE": {
+    "prefix": ["VIM_CFILE"],
+    "body": [ "$(VIM_CFILE)" ],
+    "description": "File name under cursor."
+  },
+  "VIM_CLINE": {
+    "prefix": ["VIM_CLINE"],
+    "body": [ "$(VIM_CLINE)" ],
+    "description": "Cursor line number in current buffer"
+  },
+  "VIM_GUI": {
+    "prefix": ["VIM_GUI"],
+    "body": [ "$(VIM_GUI)" ],
+    "description": "has('gui_runnin')?"
+  },
+  "VIM_VERSION": {
+    "prefix": ["VIM_VERSION"],
+    "body": [ "$(VIM_VERSION)" ],
+    "description": "Value of v:version."
+  },
+  "VIM_COLUMNS": {
+    "prefix": ["VIM_COLUMNS"],
+    "body": [ "$(VIM_COLUMNS)" ],
+    "description": "Current screen width."
+  },
+  "VIM_LINES": { 
+    "prefix": ["VIM_LINES"],
+    "body": [ "$(VIM_LINES)" ],
+    "description": "Current screen height."
+  },
+  "VIM_SVRNAME": {
+    "prefix": ["VIM_SVRNAME"],
+    "body": [ "$(VIM_SVRNAME)" ],
+    "description": "Value of v:servername."
+  },
+  "VIM_PRONAME": {
+    "prefix": ["VIM_PRONAME"],
+    "body": [ "$(VIM_PRONAME)" ],
+    "description": "Name of current project root directory"
+  },
+  "VIM_DIRNAME": {
+    "prefix": ["VIM_DIRNAME"],
+    "body": [ "$(VIM_DIRNAME)" ],
+    "description": "Name of current directory"
+  },
+  "VIM_INIFILE": {
+    "prefix": ["VIM_INIFILE"],
+    "body": [ "$(VIM_INIFILE)" ],
+    "description": "Full path name of current ini (.tasks) file."
+  },
+  "VIM_INIHOME": {
+    "prefix": ["VIM_INIHOME"],
+    "body": [ "$(VIM_INIHOME)" ],
+    "description": "Where the ini file locates."
+  },
   "build": {
     "prefix": ["bu", "build"],
     "body": [
       "[build]",
-      "command=$0"
+      "command=$0",
+      "cwd=$(VIM_ROOT)",
+      "save=2",
+      "close=1"
     ],
     "description": "asynctasks build command"
   }

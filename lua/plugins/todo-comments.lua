@@ -1,7 +1,6 @@
 return {
     "folke/todo-comments.nvim",
-    -- cmd = { "TodoTelescope", "TodoQuickFix", "TodoLocList" },
-    cmd = { "TodoTelescope" },
+    pattern = "VeryLazy",
     config = function()
         require("todo-comments").setup {
             signs = false,

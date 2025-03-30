@@ -1,21 +1,31 @@
 return {
     "stevearc/conform.nvim",
-    lazy = true,
+    cmd = "ConformInfo",
+    keys = {
+        {
+            "<leader>lf",
+            function()
+                require("conform").format()
+            end,
+            desc = "Format Document",
+            mode = { "n", "v" },
+        },
+    },
     config = function()
         require("conform").setup({
             default_format_opts = {
                 timeout_ms = 5000,
-                lsp_format = "fallback", -- fallback never
             },
             -- format_after_save = {
             --     timeout_ms = 5000,
-            --     lsp_format = "fallback",
             -- },
             notify_on_error = true,
             formatters_by_ft = {
                 -- lua = { "stylua" },
                 c = { "clang-format" },
                 cpp = { "clang-format" },
+                -- run formatters that don't have other formatters configured.
+                ["_"] = { "trim_whitespace", lsp_format = "last" },
             },
             formatters = {
                 stylua = {

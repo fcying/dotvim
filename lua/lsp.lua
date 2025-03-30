@@ -1,4 +1,4 @@
-local g, cmd, fn, lsp, api = vim.g, vim.cmd, vim.fn, vim.lsp, vim.api
+local g, cmd, fn, lsp = vim.g, vim.cmd, vim.fn, vim.lsp
 local util = require("util")
 local map = util.map
 local M = {}
@@ -40,8 +40,6 @@ local lspAttch = function(args)
     map("n", "]d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
     map("n", "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>", opts)
     map("n", "<leader>lr", "<cmd>LspRestart<CR>", opts)
-    map("n", "<leader>lf", "<cmd>lua require('lsp').format()<CR>", opts)
-    map("v", "<leader>lf", "<cmd>lua require('lsp').format()<CR><ESC>", opts)
 
     --client.server_capabilities.semanticTokensProvider = nil
 end
@@ -60,10 +58,6 @@ local function diagnostics_config(enable)
             update_in_insert = false,
         })
     end
-end
-
-function M.format()
-    require("conform").format()
 end
 
 function M.null_ls()
@@ -232,7 +226,10 @@ function configs.lua()
                         g.config_dir .. "/lua",
                     },
                 },
-                completion = { callSnippet = "Replace", },
+                completion = {
+                    callSnippet = "Replace",
+                    autoRequire = false,
+                },
                 diagnostics = {
                     globals = { "vim" },
                     enable = true,
@@ -298,7 +295,6 @@ end
 
 function M.setup()
     --lsp.set_log_level('debug')
-    api.nvim_create_user_command("Format", function() require("lsp").format() end, {})
 
     vim.api.nvim_create_autocmd("LspAttach", {
         callback = lspAttch

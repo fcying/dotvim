@@ -6,6 +6,10 @@
   "contributes": {
     "snippets": [
       {
+        "language": [ "all" ],
+        "path": "./all.json"
+      },
+      {
         "language": [ "taskini" ],
         "path": "./taskini.json"
       },

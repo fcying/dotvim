@@ -1,4 +1,4 @@
-local g, cmd, fn, lsp, api = vim.g, vim.cmd, vim.fn, vim.lsp, vim.api
+local g, cmd, fn, lsp = vim.g, vim.cmd, vim.fn, vim.lsp
 local util = require("util")
 local map = util.map
 local M = {}
@@ -40,8 +40,6 @@ local lspAttch = function(args)
     map("n", "]d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
     map("n", "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>", opts)
     map("n", "<leader>lr", "<cmd>LspRestart<CR>", opts)
-    map("n", "<leader>lf", "<cmd>lua require('lsp').format()<CR>", opts)
-    map("v", "<leader>lf", "<cmd>lua require('lsp').format()<CR><ESC>", opts)
 
     --client.server_capabilities.semanticTokensProvider = nil
 end
@@ -60,10 +58,6 @@ local function diagnostics_config(enable)
             update_in_insert = false,
         })
     end
-end
-
-function M.format()
-    require("conform").format()
 end
 
 function M.null_ls()
@@ -149,6 +143,7 @@ function configs.ahk2()
         single_file_support = true,
     }
     require("lspconfig.configs")["autohotkey2-lsp"] = { default_config = opts }
+    lsp_opts["autohotkey2-lsp"] = opts
 end
 
 function configs.bashls()
@@ -232,7 +227,10 @@ function configs.lua()
                         g.config_dir .. "/lua",
                     },
                 },
-                completion = { callSnippet = "Replace", },
+                completion = {
+                    callSnippet = "Replace",
+                    autoRequire = false,
+                },
                 diagnostics = {
                     globals = { "vim" },
                     enable = true,
@@ -297,8 +295,7 @@ function configs.ts_ls()
 end
 
 function M.setup()
-    --lsp.set_log_level('debug')
-    api.nvim_create_user_command("Format", function() require("lsp").format() end, {})
+    -- lsp.set_log_level('debug')
 
     vim.api.nvim_create_autocmd("LspAttach", {
         callback = lspAttch
@@ -330,26 +327,17 @@ function M.setup()
                 if fn.index(Option.lsp, server_name) ~= -1 then
                     return
                 else
-                    local config = lsp_opts[server_name] or {}
-                    if g.complete_engine == "blink" then
-                        -- FIXME: On Neovim 0.11+ with vim.lsp.config, you may skip this step
-                        config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
-                    else
-                        config.capabilities = require("cmp_nvim_lsp").default_capabilities()
-                    end
-                    lspconfig[server_name].setup(config)
+                    -- vim.lsp.config(server_name, lsp_opts[server_name] or {})
+                    -- vim.lsp.enable(server_name)
+                    lspconfig[server_name].setup(lsp_opts[server_name] or {})
                 end
             end,
         }
     })
 
     -- not managed by mason
-    if fn.executable("qmlls") == 1 then
-        lspconfig["qmlls"].setup(lsp_opts["qmlls"])
-    end
-    if fn.executable("nu") == 1 then
-        require("lspconfig").nushell.setup(lsp_opts["nushell"])
-    end
+    lspconfig["qmlls"].setup(lsp_opts["qmlls"])
+    lspconfig["nushell"].setup(lsp_opts["nushell"])
 end
 
 return M

@@ -36,7 +36,6 @@ return {
     lazy = false,
     keys = {
         { "<leader>wf", function() Snacks.explorer() end, desc = "file explorer" },
-        { "<leader>wl", function() Snacks.explorer.reveal() end, desc = "file location" },
         { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
         { "<leader>q", function() Snacks.bufdelete() end, desc = "Delete Buffer" },
         { "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },

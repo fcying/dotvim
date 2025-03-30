@@ -56,6 +56,7 @@ local plugins = {
     -- { import = "plugins.overseer" },
     { import = "plugins.whichkey" },
     { import = "plugins.stickybuf" },
+    { import = "plugins.quicker" },
 
     -- filetype {{{
     --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },

@@ -44,6 +44,12 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
     end,
 })
 
+-- errorformat {{{
+-- Keil
+-- FIXME: invalid %-  https://github.com/neovim/neovim/issues/29061
+-- opt.errorformat:prepend("%-GBuild Time Elapsed:%m") 
+vim.cmd[[set errorformat^=%-GBuild\ Time\ Elapsed:%m,%-GBatch-Build\ summary:%m]]
+
 if g.has_rg == 1 then
     opt.grepformat = "%f:%l:%c:%m"
     opt.grepprg = "rg --vimgrep"
@@ -122,40 +128,10 @@ vim.api.nvim_create_augroup("myft", { clear = true })
 vim.cmd([[
 autocmd myft BufNewFile,BufRead *.conf setl filetype=conf
 autocmd myft BufNewFile,BufRead *.json setl filetype=jsonc
-autocmd myft BufNewFile,BufRead .tasks setl filetype=taskini
+autocmd myft BufNewFile,BufRead *.tasks setl filetype=taskini
 autocmd myft BufNewFile,BufRead syslog setl filetype=messages
 autocmd myft BufNewFile,BufRead *shrc.local,rc.local setl filetype=sh
 autocmd myft BufNewFile,BufRead gitconfig setl filetype=gitconfig
-
-
-" quickfix config: ansi_color ... {{{
-function! s:run_ansi_esc_in_qf()
-  " 获取当前窗口号
-  let l:current_win = winnr()
-  " 获取 quickfix 窗口号
-  let l:qf_win = bufwinnr('quickfix')
-  " 切换到 quickfix 窗口
-  if l:qf_win != -1
-    exe l:qf_win . "wincmd w"
-    AnsiEsc
-    " 切换回原窗口
-    exe l:current_win . "wincmd w"
-  endif
-endfunction
-
-function! s:apply_ansiesc()
-  augroup ApplyAnsiEsc
-    autocmd!
-    autocmd BufReadPost quickfix call s:run_ansi_esc_in_qf()
-    autocmd BufWinEnter quickfix call s:run_ansi_esc_in_qf()
-  augroup END
-endfunction
-
-augroup QuickfixConfig
-  autocmd!
-  autocmd FileType qf setlocal nowrap
-  "autocmd FileType qf call s:apply_ansiesc()
-augroup END
 
 ]])
 
@@ -183,7 +159,7 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
--- FIXME nvim not restore terminal cursorshape https://github.com/neovim/neovim/issues/4396 {{{
+-- FIXME: nvim not restore terminal cursorshape https://github.com/neovim/neovim/issues/4396 {{{
 vim.api.nvim_create_autocmd("VimLeave", {
     group = vim.api.nvim_create_augroup("set_cursorshape", { clear = true }),
     pattern = { "*" },

@@ -5,9 +5,6 @@ vim.g.is_win = vim.fn.has("win32")
 vim.g.is_tmux = vim.fn.exists("$TMUX")
 vim.g.path_separator = vim.g.is_win == 1 and "\\" or "/"
 
--- FIXME: bug in 0.10.3
-vim.hl = vim.highlight
-
 ---@return string
 function _G.join_paths(...)
     local result = table.concat({ ... }, vim.g.path_separator)

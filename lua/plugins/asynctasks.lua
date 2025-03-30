@@ -26,13 +26,13 @@ local asyncrun_config = function()
 end
 
 local asynctasks_config = function()
-    vim.g.asynctasks_config_name = { ".tasks", ".root/.tasks", ".git/.tasks" }
-    vim.g.asynctasks_rtp_config  = vim.g.config_dir .. "/asynctasks.ini"
-    vim.g.asynctasks_template    = vim.g.config_dir .. "/task_template.ini"
-    vim.g.asynctasks_term_pos    = "toggleterm2"
-    vim.g.asynctasks_term_reuse  = 1
-    vim.g.asynctasks_term_focus  = 0
-    vim.g.asynctasks_term_close  = 0
+    vim.g.asynctasks_config_name  = { ".tasks", ".root/.tasks", ".git/.tasks" }
+    vim.g.asynctasks_extra_config = { vim.g.config_dir .. "/etc/asynctasks.tasks" }
+    vim.g.asynctasks_template     = vim.g.config_dir .. "/etc/asynctasks_template.tasks"
+    vim.g.asynctasks_term_pos     = "toggleterm2"
+    vim.g.asynctasks_term_reuse   = 1
+    vim.g.asynctasks_term_focus   = 0
+    vim.g.asynctasks_term_close   = 0
 end
 
 M.setup = {
@@ -55,10 +55,12 @@ M.setup = {
         "skywind3000/asynctasks.vim",
         cmd = { "AsyncTask", "AsyncTaskMacro", "AsyncTaskList", "AsyncTaskEdit", },
         keys = {
-            { "<leader>bb", "<cmd>AsyncTask build<CR>", desc = "AsyncTask build" },
-            { "<leader>br", "<cmd>AsyncTask release<CR>", desc = "AsyncTask build release" },
-            { "<leader>bl", "<cmd>AsyncTask lib<CR>", desc = "AsyncTask build lib" },
-            { "<leader>bt", "<cmd>AsyncTask test<CR>", desc = "AsyncTask build test" },
+            { "<leader>rf", "<cmd>AsyncTask run<CR>", desc = "AsyncTask run" },
+            { "<leader>rb", "<cmd>AsyncTask build<CR>", desc = "AsyncTask build" },
+            { "<leader>rr", "<cmd>AsyncTask release<CR>", desc = "AsyncTask build release" },
+            { "<leader>rl", "<cmd>AsyncTask lib<CR>", desc = "AsyncTask build lib" },
+            { "<leader>rt", "<cmd>AsyncTask test<CR>", desc = "AsyncTask build test" },
+            { "<leader>rc", "<cmd>AsyncTask clean<CR>", desc = "AsyncTask build clean" },
         },
         init = asynctasks_config,
     }

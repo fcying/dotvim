@@ -13,6 +13,18 @@ Option = {
     asyncrun_post_run = nil,
     clangd_query_driver = nil,
     compile_commands_dir = nil,
+    ctags_outline = {
+        ctags = { "ctags", "--options=" .. g.config_dir .. "/etc/ctags" },
+        ft_opt = {
+            c = "--c-kinds=fk",
+            cpp = "--c++-kinds=fk --language-force=C++",
+            vim = "--vim-kinds=fk",
+            sh = "--sh-kinds=fk",
+            zsh = "--sh-kinds=fk",
+            lua = "--lua-kinds=fk",
+        },
+        --sorting_strategy = "ascending",
+    }
 }
 local option_default = {
     -- ignore list
@@ -86,19 +98,6 @@ function M.printCallerInfo(f)
     end
 end
 
-function M.find_file()
-    fn.execute(M.find_command)
-end
-
-function M.live_grep()
-    if vim.api.nvim_get_mode().mode == "v" then
-        require("telescope-live-grep-args.shortcuts").grep_visual_selection()
-    else
-        --require("telescope-live-grep-args.shortcuts").grep_word_under_cursor()
-        require("telescope").extensions.live_grep_args.live_grep_args()
-    end
-end
-
 function M.update_ignore_config()
     M.option = vim.deepcopy(option_default)
 
@@ -121,7 +120,7 @@ function M.update_ignore_config()
         Option.gencconf_default_option)
     --vim.print(g.gencconf_default_option)
 
-    require("plugins.telescope").telescope_update_ignore()
+    -- require("plugins.telescope").telescope_update_ignore()
 end
 
 function M.go2def(str, opts)
@@ -150,14 +149,14 @@ function M.go2def(str, opts)
                 if ret ~= nil and next(ret) then
                     local result = ret[next(ret)].result or {}
                     if #result == 1 then
-                        vim.lsp.util.show_document(result[1], client.offset_encoding, {focus=true})
+                        vim.lsp.util.show_document(result[1], client.offset_encoding, { focus = true })
 
                         -- if not jump, fallback ltag
                         if bufnr ~= fn.bufnr() or lnum ~= fn.line(".") then
                             return
                         end
                     elseif #result > 1 then
-                        require("telescope.builtin").lsp_definitions()
+                        Snacks.picker.lsp_definitions()
                         return
                     end
                 end
@@ -167,24 +166,27 @@ function M.go2def(str, opts)
         -- fallback ltag
         local backup = vim.o.tagfunc
         vim.o.tagfunc = ""
-        local ret = pcall(fn.execute, "silent ltag " .. str)
-        if ret ~= true then
-            return
-        end
+        pcall(fn.execute, "silent ltag " .. str)
 
         if fn.getloclist(0, { size = 0 }).size > 1 then
             -- if resut > 1, not auto jump
-            if bufnr ~= fn.bufnr() then
-                fn.execute("buf " .. bufnr)
-            end
-            if lnum ~= fn.line(".") then
-                vim.cmd("normal " .. lnum .. "G^")
-            end
-
-            require("plugins.telescope").telescope_ltaglist()
+            M.ltaglist()
         end
         vim.o.tagfunc = backup
     end
+end
+
+function M.findFile()
+    require("plugins.snacks").findFile()
+end
+
+function M.grep()
+    require("plugins.snacks").grep()
+end
+
+function M.ltaglist()
+    -- require("plugins.telescope").telescope_ltaglist()
+    require("plugins.snacks").ltaglist()
 end
 
 -- tags ltag {{{

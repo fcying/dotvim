@@ -18,7 +18,6 @@ local plugins = {
     { import = "plugins.colorscheme" },
     { import = "plugins.suda" },
     { import = "plugins.mini" },
-    { import = "plugins.snacks" },
     { import = "plugins.misc" },
 
     -- editor {{{
@@ -40,7 +39,8 @@ local plugins = {
     -- { import = "plugins.fern" },
     -- { import = "plugins.nvim_tree" },
     -- { import = "plugins.dashboard" },
-    require("plugins.telescope").setup,
+    -- require("plugins.telescope").setup,
+    require("plugins.snacks").setup,
     -- { "Yggdroot/LeaderF", cmd = { "Leaderf" }, build = ":LeaderfInstallCExtension" },
     { "chrisbra/Colorizer", cmd = { "ColorToggle" } },
     -- { import = "plugins.baleia" },

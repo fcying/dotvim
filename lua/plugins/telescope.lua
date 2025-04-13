@@ -114,7 +114,6 @@ M.setup = { --{{{
     dependencies = {
         { "nvim-lua/plenary.nvim" },
         { "fcying/telescope-ctags-outline.nvim" },
-        { "nvim-telescope/telescope-live-grep-args.nvim" },
         { "nvim-telescope/telescope-fzf-native.nvim", build = g.make },
         {
             "aznhe21/actions-preview.nvim",
@@ -125,40 +124,39 @@ M.setup = { --{{{
     },
     cmd = { "Telescope" },
     keys = {
-        {
-            "fc",
-            function()
-                require("telescope.builtin").colorscheme({
-                    enable_preview = true,
-                    colors = {
-                        "rose-pine-dawn",
-                        "everforest",
-                        "solarized",
-                        "tokyonight-day",
-                    }
-                })
-            end,
-            desc = "colorscheme"
-        },
+        -- {
+        --     "fc",
+        --     function()
+        --         require("telescope.builtin").colorscheme({
+        --             enable_preview = true,
+        --             colors = {
+        --                 "rose-pine-dawn",
+        --                 "everforest",
+        --                 "solarized",
+        --                 "tokyonight-day",
+        --             }
+        --         })
+        --     end,
+        --     desc = "colorscheme"
+        -- },
         --- @format disable
-        { "ff", function() require("util").find_file() end, desc = "file", silent = true },
-        { "fb", "<cmd>Telescope buffers<cr>",                       desc = "buffer" },
-        { "fg", "<cmd>Telescope grep_string<cr>",                   desc = "string" },
-        { "fg", "<cmd>Telescope grep_string<cr>", mode = "v",       desc = "string" },
-        { "fh", "<cmd>Telescope help_tags<cr>",                     desc = "help" },
-        { "fj", "<cmd>Telescope jumplist<cr>",                      desc = "jumplist" },
-        { "fl", "<cmd>Telescope current_buffer_fuzzy_find<cr>",     desc = "line" },
-        { "fo", "<cmd>Telescope oldfiles<cr>",                      desc = "mru" },
-        { "fm", "<cmd>Telescope marks<cr>",                         desc = "marks" },
-        { "fn", "<cmd>lua Snacks.notifier.show_history({})<cr>",    desc = "notify" },
-        { "fr", "<cmd>Telescope resume<cr>",                        desc = "resume" },
-        { "ft", "<cmd>Telescope tags<cr>",                          desc = "tag" },
-        { "f/", function() require("util").live_grep() end, mode = {"n", "x"},      desc = "live grep" },
-        { "go", "<cmd>Telescope ctags_outline outline<CR>",         desc = "outline" },
-        { "gO", "<cmd>Telescope ctags_outline outline buf=all<CR>", desc = "all buf outline" },
+        -- { "ff", function() require("util").find_file() end, desc = "file", silent = true },
+        -- { "fb", "<cmd>Telescope buffers<cr>",                       desc = "buffer" },
+        -- { "fg", "<cmd>Telescope grep_string<cr>",                   desc = "string" },
+        -- { "fg", "<cmd>Telescope grep_string<cr>", mode = "v",       desc = "string" },
+        -- { "fh", "<cmd>Telescope help_tags<cr>",                     desc = "help" },
+        -- { "fj", "<cmd>Telescope jumplist<cr>",                      desc = "jumplist" },
+        -- { "fl", "<cmd>Telescope current_buffer_fuzzy_find<cr>",     desc = "line" },
+        -- { "fo", "<cmd>Telescope oldfiles<cr>",                      desc = "mru" },
+        -- { "fm", "<cmd>Telescope marks<cr>",                         desc = "marks" },
+        -- { "fn", "<cmd>lua Snacks.notifier.show_history({})<cr>",    desc = "notify" },
+        -- { "fr", "<cmd>Telescope resume<cr>",                        desc = "resume" },
+        -- { "ft", "<cmd>Telescope tags<cr>",                          desc = "tag" },
+        -- { "f/", function() require("util").live_grep() end, mode = {"n", "x"},      desc = "live grep" },
+        { "<leader>go", "<cmd>Telescope ctags_outline outline<CR>",         desc = "outline" },
+        { "<leader>gO", "<cmd>Telescope ctags_outline outline buf=all<CR>", desc = "all buf outline" },
     },
     config = function()
-        --vim.keymap.set("n", "f/", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
         local actions = require("telescope.actions")
         local toggle_modes = function()
             local mode = api.nvim_get_mode().mode
@@ -205,24 +203,12 @@ M.setup = { --{{{
                     -- smart_case ignore_case respect_case
                     case_mode = "smart_case",
                 },
-                ctags_outline = {
-                    ctags = { "ctags", "--options=" .. g.config_dir .. "/etc/ctags" },
-                    ft_opt = {
-                        c = "--c-kinds=fk",
-                        cpp = "--c++-kinds=fk --language-force=C++",
-                        vim = "--vim-kinds=fk",
-                        sh = "--sh-kinds=fk",
-                        zsh = "--sh-kinds=fk",
-                        lua = "--lua-kinds=fk",
-                    },
-                    --sorting_strategy = "ascending",
-                },
+                ctags_outline = Option.ctags_outline,
             },
         })
         -- require("telescope").load_extension("notify")
         require("telescope").load_extension("fzf")
         require("telescope").load_extension("ctags_outline")
-        require("telescope").load_extension("live_grep_args")
         M.telescope_update_ignore()
     end,
 }

@@ -27,18 +27,16 @@ Formats = {
 
 local lspAttch = function(args)
     local opts = { buffer = args.buf }
-    -- vim.bo[args.buf].formatexpr = nil
-    -- vim.bo[args.buf].omnifunc = nil
-    --map("n", "gd", vim.lsp.buf.definition, opts)
+    --map("n", "gd", vim.lsp.buf.definition, opts) -- define in util.lua
     map("n", "gD", vim.lsp.buf.declaration, opts)
-    map("n", "gri", "<cmd>Telescope lsp_implementations<cr>", opts)
-    map("n", "grr", "<cmd>Telescope lsp_references include_current_line=true<cr>", opts)
+    map("n", "gri", function() Snacks.picker.lsp_implementations() end, opts)
+    map("n", "grr", function() Snacks.picker.lsp_references({include_current = true}) end, opts)
+    map("n", "gt", function() Snacks.picker.lsp_type_definitions() end, opts)
     map("n", "gs", vim.lsp.buf.signature_help, opts)
-    map("n", "gt", "<cmd>Telescope lsp_type_definitions<cr>", opts)
     map("n", "gl", vim.diagnostic.open_float, opts)
     map("n", "[d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
     map("n", "]d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
-    map("n", "<leader>ld", "<cmd>Telescope diagnostics bufnr=0<cr>", opts)
+    map("n", "<leader>ld", function() Snacks.picker.diagnostics_buffer() end, opts)
     map("n", "<leader>lr", "<cmd>LspRestart<CR>", opts)
 
     --client.server_capabilities.semanticTokensProvider = nil

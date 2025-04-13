@@ -2,7 +2,6 @@ return {
     "chentoast/marks.nvim",
     event = "VimEnter",
     keys = {
-        { "<leader>ml", "<cmd>Telescope marks<CR>", desc = "list marks" },
         { "dm<space>", "<cmd>delm!<CR>", desc = "delete mark" },
     },
     config = function()

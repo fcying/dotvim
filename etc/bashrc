@@ -188,6 +188,12 @@ type atuin >/dev/null 2>&1 && {
     eval "$(atuin init bash --disable-up-arrow)"
 }
 
+type pixi >/dev/null 2>&1 && { # {{{
+    export PATH=$HOME/.pixi/bin:$PATH
+    source $HOME/.pixi/completions/bash/*
+    eval "$(pixi completion --shell bash)"
+}
+
 function zlua_install() {
     # wsl1 need it
     # sudo apt install lua-filesystem

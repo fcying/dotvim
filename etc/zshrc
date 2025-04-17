@@ -52,7 +52,6 @@ path=(
     "$HOME"/bin
     "$HOME"/.local/bin
     "$GOPATH"/bin
-    "$HOME"/tool/miniconda/bin
     "$HOME"/.cargo/bin
     "$HOME"/.npm/node_modules/.bin
     "$QT_DIR"/"$QT_VERSION"/gcc_64/bin
@@ -60,12 +59,9 @@ path=(
     /usr/local/{sbin,bin}
     /usr/{sbin,bin}
     /{sbin,bin}
-    $path
+    ${path[@]}
 )
-fpath=(
-    $fpath
-    $MY_CONFIG_DIR/fpath
-)
+fpath=(${fpath[@]} $MY_CONFIG_DIR/fpath)
 
 # wsl2 {{{
 [ -d "/mnt/c" ] && [[ "$(uname -a)" == *microsoft* ]] && {
@@ -167,6 +163,12 @@ function PluginFinish() {
         source "$MY_CONFIG_DIR/zsh_plugin.zsh"
     fi
     type PostLoad >/dev/null 2>&1 && PostLoad
+
+    type pixi >/dev/null 2>&1 && { # {{{
+        path=($HOME/.pixi/bin ${path[@]})
+        fpath=($HOME/.pixi/completions/zsh ${fpath[@]})
+        eval "$(pixi completion --shell zsh)"
+    }
 
     if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
         . $HOME/.nix-profile/etc/profile.d/nix.sh;
@@ -390,6 +392,11 @@ function soft_update() {
 
     brew_update
     nix_update
+
+    type pixi >/dev/null 2>&1 && { # {{{
+        pixi g update
+        pixi g sync
+    }
 }
 
 # PROMPT {{{

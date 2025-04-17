@@ -152,6 +152,26 @@ noremap <silent><leader>9 :tabn 9<cr>
 noremap <silent><leader>0 :tabn 10<cr>
 ]])
 
+-- quickfix {{{
+local function jump_to_error(forward)
+    local qflist = vim.fn.getqflist()
+    local current_idx = vim.fn.getqflist({ idx = 0 }).idx
+    local step = forward and 1 or -1
+
+    local i = current_idx + step
+    while i >= 1 and i <= #qflist do
+        local item = qflist[i]
+        if item.type ~= "I" and item.valid == 1 then
+            vim.cmd(i .. "cc")
+            return
+        end
+        i = i + step
+    end
+    vim.notify("No more items", vim.log.levels.INFO)
+end
+map("n", "]q", function() jump_to_error(true) end, { silent = true })
+map("n", "[q", function() jump_to_error(false) end, { silent = true })
+
 -- RemoveLsplog {{{
 vim.api.nvim_create_user_command("RemoveLsplog", function()
     vim.fn.writefile({}, vim.lsp.get_log_path())

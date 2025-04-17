@@ -71,7 +71,7 @@ local plugins = {
     { import = "plugins.grug_far" },
     { import = "plugins.todo-comments" },
     { import = "plugins.lazydev" },
-    { import = vim.g.complete_engine == "blink" and "plugins.blink" or "plugins.cmp" },
+    { import = vim.g.complete_engine == "cmp" and "plugins.cmp" or "plugins.blink" },
     { import = "plugins.treesitter" },
     -- { import = "plugins.tiny_inline_diagnostic" },
     {

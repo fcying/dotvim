@@ -114,10 +114,11 @@ local opts = { -- {{{
         },
     },
     fuzzy = {
-        implementation = "lua", -- prefer_rust_with_warning lua
+        implementation = "prefer_rust_with_warning",
+        -- implementation = "lua",
     },
     sources = {
-        default = { "lsp", "path", "snippets", "buffer", "lazydev", "dictionary" },
+        default = { "lsp", "path", "dictionary", "buffer", "snippets", "lazydev" },
         providers = {
             lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", score_offset = 100, },
             snippets = snippets.name == "default" and snippets.default or snippets.luasnip,

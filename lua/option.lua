@@ -44,11 +44,11 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
     end,
 })
 
--- errorformat {{{
--- Keil
+-- errorformat Keil {{{
 -- FIXME: invalid %-  https://github.com/neovim/neovim/issues/29061
 -- opt.errorformat:prepend("%-GBuild Time Elapsed:%m") 
 vim.cmd[[set errorformat^=%-GBuild\ Time\ Elapsed:%m,%-GBatch-Build\ summary:%m]]
+vim.cmd[[set errorformat^=%I%f(%l):\ warning:\ L6329W:%m]]
 
 if g.has_rg == 1 then
     opt.grepformat = "%f:%l:%c:%m"

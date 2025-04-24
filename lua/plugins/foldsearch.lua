@@ -11,7 +11,7 @@ return {
             "<leader>fp",
             mode = { "x" },
             function()
-                vim.fn.execute("Fp " .. util.get_visual_selection())
+                vim.fn.execute("Fp " .. require("util").get_visual_selection())
             end,
             desc = "foldsearch"
         },

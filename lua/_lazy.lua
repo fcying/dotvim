@@ -56,10 +56,10 @@ local plugins = {
     -- { import = "plugins.overseer" },
     { import = "plugins.whichkey" },
     { import = "plugins.stickybuf" },
-    { import = "plugins.quicker" },
+    -- { import = "plugins.quicker" },
+    { 'kevinhwang91/nvim-bqf', ft = 'qf' },
 
     -- filetype {{{
-    --{ 'kevinhwang91/nvim-bqf', ft = 'qf' },
     { import = "plugins.markview" },
     { "Vimjas/vim-python-pep8-indent", ft = "python" },
     { "wsdjeg/vim-autohotkey", ft = "autohotkey" },

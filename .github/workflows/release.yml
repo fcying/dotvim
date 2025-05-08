@@ -48,8 +48,8 @@ jobs:
         run: |
           cd ~/.config
           echo "install vendor===================="
-          nvim --headless -c 'MasonInstall --sync lua-language-server' -c 'q'
-          nvim --headless -c 'MasonInstall --sync clangd' -c 'q'
+          nvim --headless -c 'MasonInstall --sync lua-language-server' -c qall
+          nvim --headless -c 'MasonInstall --sync clangd' -c qall
 
           echo "update mason script===================="
           # replace link to file

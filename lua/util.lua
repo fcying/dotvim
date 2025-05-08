@@ -28,7 +28,7 @@ Option = {
 }
 local option_default = {
     -- ignore list
-    dir = { ".root", ".svn", ".git", ".repo", ".ccls-cache", ".cache", ".ccache", "CMakeFiles" },
+    dir = { ".root", ".svn", ".git", ".repo", ".ccls-cache", ".cache", ".ccache", ".run", "CMakeFiles" },
     file = { "*.sw?", "~$*", "*.bak", "*.exe", "*.o", "*.so", "*.py[co]", "tags" },
     mru = { "*.so", "*.exe", "*.py[co]", "*.sw?", "~$*", "*.bak", "*.tmp", "*.dll" },
     rg = { "--max-columns=300", "--iglob=!obj", "--iglob=!out" },

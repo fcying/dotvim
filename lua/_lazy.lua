@@ -58,6 +58,7 @@ local plugins = {
     { import = "plugins.stickybuf" },
     -- { import = "plugins.quicker" },
     { 'kevinhwang91/nvim-bqf', ft = 'qf' },
+    -- { import = "plugins.nvim-ufo" },
 
     -- filetype {{{
     { import = "plugins.markview" },

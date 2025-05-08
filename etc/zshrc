@@ -164,6 +164,8 @@ function PluginFinish() {
     fi
     type PostLoad >/dev/null 2>&1 && PostLoad
 
+    test -f "$HOME/.xmake/profile" && source "$HOME/.xmake/profile"
+
     type pixi >/dev/null 2>&1 && { # {{{
         path=($HOME/.pixi/bin ${path[@]})
         fpath=($HOME/.pixi/completions/zsh ${fpath[@]})
@@ -613,4 +615,3 @@ function adb_setenforce0() {
 }
 
 #zprof
-

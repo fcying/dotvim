@@ -57,9 +57,15 @@ local dict_opts = {
             prefix,
         }
         local dict_path = vim.g.config_dir .. "/dict/"
-        local dict_ft = dict_path .. vim.bo.filetype .. ".dict"
-        if vim.loop.fs_stat(dict_ft) then
-            table.insert(rg_opts, dict_ft)
+        local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t")
+        local new_dict
+        if name:find(".*xmake.lua") then
+            new_dict = dict_path .. "xmake.dict"
+        else
+            new_dict = dict_path .. vim.bo.filetype .. ".dict"
+        end
+        if vim.loop.fs_stat(new_dict) then
+            table.insert(rg_opts, new_dict)
         end
         table.insert(rg_opts, dict_path .. "dictionary")
         return rg_opts
@@ -114,8 +120,7 @@ local opts = { -- {{{
         },
     },
     fuzzy = {
-        implementation = "prefer_rust_with_warning",
-        -- implementation = "lua",
+        implementation = vim.g.blink_impl == "rust" and "prefer_rust_with_warning" or "lua",
     },
     sources = {
         default = { "lsp", "path", "dictionary", "buffer", "snippets", "lazydev" },

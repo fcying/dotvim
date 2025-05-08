@@ -34,3 +34,4 @@
 --regex-yaml=/(.*)\{\{\{/\1/k,key/
 --regex-toml=/(.*)\{\{\{/\1/k,key/
 --regex-go=/(.*)\{\{\{/\1/k,key/
+--regex-make=/(.*)\{\{\{/\1/k,key/

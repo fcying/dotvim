@@ -1,9 +1,9 @@
-local g, cmd, fn, lsp = vim.g, vim.cmd, vim.fn, vim.lsp
+local g, fn = vim.g, vim.fn
 local util = require("util")
 local map = util.map
 local M = {}
 local configs = {}
-local lsp_opts = {}
+local system_lsp = { "qmlls", "nushell" }
 
 Formats = {
     stylua = {
@@ -30,70 +30,22 @@ local lspAttch = function(args)
     --map("n", "gd", vim.lsp.buf.definition, opts) -- define in util.lua
     map("n", "gD", vim.lsp.buf.declaration, opts)
     map("n", "gri", function() Snacks.picker.lsp_implementations() end, opts)
-    map("n", "grr", function() Snacks.picker.lsp_references({include_current = true}) end, opts)
+    map("n", "grr", function() Snacks.picker.lsp_references({ include_current = true }) end, opts)
     map("n", "gt", function() Snacks.picker.lsp_type_definitions() end, opts)
     map("n", "gs", vim.lsp.buf.signature_help, opts)
     map("n", "gl", vim.diagnostic.open_float, opts)
-    map("n", "[d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
-    map("n", "]d", function() vim.diagnostic.goto_next({ float = false }) end, opts)
     map("n", "<leader>ld", function() Snacks.picker.diagnostics_buffer() end, opts)
     map("n", "<leader>lr", "<cmd>LspRestart<CR>", opts)
 
     --client.server_capabilities.semanticTokensProvider = nil
 end
 
----@diagnostic disable-next-line unused-local
-local function diagnostics_config(enable)
-    if enable == nil then
-        enable = 1
-    end
-
-    if enable == 0 then
-        return lsp.with(lsp.diagnostic.on_publish_diagnostics, {
-            underline = false,
-            virtual_text = false,
-            signs = false,
-            update_in_insert = false,
-        })
-    end
-end
-
-function M.null_ls()
-    local nls = require("null-ls")
-    local formatting = nls.builtins.formatting
-    ---@diagnostic disable-next-line unused-local
-    local diagnostics = nls.builtins.diagnostics
-
-    return {
-        "nvimtools/none-ls.nvim",
-        event = { "BufReadPre", "BufNewFile" },
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "neovim/nvim-lspconfig",
-        },
-        opts = {
-            debug = false,
-            root_dir = require("null-ls.utils").root_pattern(".root", ".neoconf.json", ".git"),
-            sources = {
-                formatting.gofmt,
-                formatting.goimports,
-                --formatting.clang_format,
-                formatting.astyle.with({ extra_args = Formats.astyle }),
-                --formatting.stylua.with({ extra_args = Formats.stylua }),
-            },
-        }
-    }
-end
-
 function configs.qmlls()
-    local lsp_util = require("lspconfig/util")
-    lsp_opts["qmlls"] = {
+    local opts = {
         cmd = { "qmlls", "--build-dir", util.root_dir .. "/build" },
-        filetypes = { "qml" },
-        root_dir = function(fname)
-            return lsp_util.find_git_ancestor(fname)
-        end,
+        filetypes = { "qml", "qmljs" },
     }
+    vim.lsp.config("qmlls", opts)
 end
 
 function configs.clangd()
@@ -106,7 +58,7 @@ function configs.clangd()
         "--pch-storage=memory",
     }
     if Option.clangd_query_driver then
-        table.insert(clangd_cmd, "--query-driver=" .. g.clangd_query_driver)
+        table.insert(clangd_cmd, "--query-driver=" .. Option.clangd_query_driver)
     end
     if Option.compile_commands_dir ~= nil then
         table.insert(clangd_cmd, "--compile-commands-dir=" .. Option.compile_commands_dir)
@@ -114,38 +66,40 @@ function configs.clangd()
         table.insert(clangd_cmd, "--compile-commands-dir=" .. util.root_marker)
     end
 
-    cmd([[ autocmd myau FileType c,cpp nnoremap <silent> <buffer> <Leader>h <ESC>:ClangdSwitchSourceHeader<CR> ]])
+    vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("clangd_keymap", { clear = true }),
+        pattern = { "c", "cpp", },
+        callback = function()
+            local opts = { buffer = vim.api.nvim_get_current_buf() }
+            map("n", "<leader>h", "<cmd>LspClangdSwitchSourceHeader<cr>", opts)
+        end,
+    })
 
-    lsp_opts["clangd"] = {
+    vim.lsp.config("clangd", {
         cmd = clangd_cmd,
-        --handlers = { ['textDocument/publishDiagnostics'] = diagnostics_config(0) },
-    }
+        root_markers = { ".root", ".git" },
+    })
 end
 
-function configs.ahk2()
-    local path = require("mason-core.path").package_prefix("autohotkey2-lsp")
-    local InterpreterPath = "AutoHotkey64.exe"
-    if fn.has("linux") == 1 then
-        InterpreterPath = fn.expand("$HOME/bin/") .. InterpreterPath
+function configs.autohotkey2_lsp()
+    local function get_autohotkey_path()
+        local path = vim.fn.exepath("AutoHotkey64.exe")
+        return #path > 0 and path or ""
     end
+    local package_path = vim.fn.expand("$MASON/packages/autohotkey2-lsp/autohotkey2-lsp")
     local opts = {
-        cmd = { "node", path .. "/autohotkey2-lsp/server/dist/server.js", "--stdio" },
+        cmd = { "node", package_path .. "/server/dist/server.js", "--stdio" },
         filetypes = { "ahk", "autohotkey", "ah2", "ahk2" },
         init_options = {
             locale = "en-us",
-            InterpreterPath = InterpreterPath,
+            InterpreterPath = get_autohotkey_path(),
         },
-        root_dir = function()
-            return util.root_dir
-        end,
-        single_file_support = true,
     }
-    require("lspconfig.configs")["autohotkey2-lsp"] = { default_config = opts }
-    lsp_opts["autohotkey2-lsp"] = opts
+    vim.lsp.config("autohotkey_lsp", opts)
 end
 
 function configs.bashls()
-    lsp_opts["bashls"] = {
+    local opts = {
         filetypes = { "sh", "zsh" },
         settings = {
             bashIde = {
@@ -155,10 +109,11 @@ function configs.bashls()
         },
         single_file_support = true,
     }
+    vim.lsp.config("bashls", opts)
 end
 
 function configs.nushell()
-    lsp_opts["nushell"] = {
+    local opts = {
         cmd = {
             "nu",
             "-I",
@@ -167,14 +122,14 @@ function configs.nushell()
             "--lsp",
         },
         filetypes = { "nu" },
-        root_dir = function() return util.root_dir end,
         single_file_support = true,
     }
+    vim.lsp.config("nushell", opts)
 end
 
 function configs.gopls()
-    local lsp_util = require("lspconfig/util")
-    lsp_opts["gopls"] = {
+    local opts = {
+        root_markers = { ".root", "go.mod", ".git" },
         settings = {
             gopls = {
                 semanticTokens = true,
@@ -183,14 +138,12 @@ function configs.gopls()
                 },
             }
         },
-        root_dir = function(fname)
-            return lsp_util.root_pattern("go.work", "go.mod", ".root", ".git")(fname)
-        end,
     }
+    vim.lsp.config("gopls", opts)
 end
 
 function configs.python()
-    lsp_opts["pylsp"] = {
+    local opts = {
         settings = {
             pylsp = {
                 plugins = {
@@ -205,16 +158,25 @@ function configs.python()
             },
         },
     }
+    vim.lsp.config("pylsp", opts)
 end
 
 function configs.lua()
     -- :lua vim.print(vim.lsp.get_clients({ name = "lua_ls" })[1].config.settings.Lua)
     -- vim.g.lazydev_enabled = false
     local opts = {
-        root_dir = function(_)
-            return util.root_dir
-        end,
         settings = {
+            root_markers = {
+                ".root",
+                ".luarc.json",
+                ".luarc.jsonc",
+                ".luacheckrc",
+                ".stylua.toml",
+                "stylua.toml",
+                "selene.toml",
+                "selene.yml",
+                ".git",
+            },
             Lua = {
                 semantic = {
                     enable = true,
@@ -222,7 +184,7 @@ function configs.lua()
                 workspace = {
                     checkThirdParty = false,
                     library = {
-                        g.config_dir .. "/lua",
+                        vim.g.config_dir .. "/lua",
                     },
                 },
                 completion = {
@@ -254,18 +216,13 @@ function configs.lua()
         },
     }
 
-    lsp_opts["lua_ls"] = opts
+    vim.lsp.config("lua_ls", opts)
 end
 
 function configs.ts_ls()
-    local lsp_util = require("lspconfig/util")
-    local vue_typescript_plugin = require("mason-registry")
-        .get_package("vue-language-server")
-        :get_install_path()
-        .. "/node_modules/@vue/language-server"
-        .. "/node_modules/@vue/typescript-plugin"
+    local vue_typescript_plugin = vim.fn.expand(
+        "$MASON/packages/vue-language-server/node_modules/@vue/language-server/node_modules/@vue/typescript-plugin")
     local opts = {
-        root_dir = lsp_util.root_pattern("tsconfig.json", "jsconfig.json", "package.json", ".git"),
         init_options = {
             hostInfo = "neovim",
             plugins = {
@@ -277,6 +234,7 @@ function configs.ts_ls()
             },
         },
         cmd = { "typescript-language-server", "--stdio" },
+        root_markers = { ".root", "tsconfig.json", "jsconfig.json", "package.json", ".git" },
         filetypes = {
             "javascript",
             "javascriptreact",
@@ -289,7 +247,7 @@ function configs.ts_ls()
         single_file_support = true,
     }
 
-    lsp_opts["ts_ls"] = opts
+    vim.lsp.config("ts_ls", opts)
 end
 
 function M.setup()
@@ -312,30 +270,16 @@ function M.setup()
         }
     })
 
-    local lspconfig = require("lspconfig")
-    local mason_server = require("mason-lspconfig.mappings.server")
-    mason_server.package_to_lspconfig["autohotkey2-lsp"] = "autohotkey2-lsp"
-
     require("mason-lspconfig").setup({
         ensure_installed = { "lua_ls" },
-        automatic_installation = false,
-        handlers = {
-            function(server_name)
-                -- vim.print(server_name)
-                if fn.index(Option.lsp, server_name) ~= -1 then
-                    return
-                else
-                    -- vim.lsp.config(server_name, lsp_opts[server_name] or {})
-                    -- vim.lsp.enable(server_name)
-                    lspconfig[server_name].setup(lsp_opts[server_name] or {})
-                end
-            end,
-        }
+        automatic_enable = {
+            exclude = Option.lsp,
+        },
     })
 
-    -- not managed by mason
-    lspconfig["qmlls"].setup(lsp_opts["qmlls"])
-    lspconfig["nushell"].setup(lsp_opts["nushell"])
+    for _, lsp in ipairs(system_lsp) do
+        vim.lsp.enable(lsp)
+    end
 end
 
 return M

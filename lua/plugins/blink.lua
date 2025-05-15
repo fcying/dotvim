@@ -57,13 +57,14 @@ local dict_opts = {
             prefix,
         }
         local dict_path = vim.g.config_dir .. "/dict/"
-        local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t")
+        -- local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t")
         local new_dict
-        if name:find(".*xmake.lua") then
-            new_dict = dict_path .. "xmake.dict"
-        else
-            new_dict = dict_path .. vim.bo.filetype .. ".dict"
-        end
+        -- if name:find(".*xmake.lua") then
+        --     new_dict = dict_path .. "xmake.dict"
+        -- else
+        --     new_dict = dict_path .. vim.bo.filetype .. ".dict"
+        -- end
+        new_dict = dict_path .. vim.bo.filetype .. ".dict"
         if vim.loop.fs_stat(new_dict) then
             table.insert(rg_opts, new_dict)
         end

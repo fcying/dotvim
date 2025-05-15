@@ -49,6 +49,8 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 -- opt.errorformat:prepend("%-GBuild Time Elapsed:%m") 
 vim.cmd[[set errorformat^=%-GBuild\ Time\ Elapsed:%m,%-GBatch-Build\ summary:%m]]
 vim.cmd[[set errorformat^=%I%f(%l):\ warning:\ L6329W:%m]]
+-- xmake
+vim.cmd[[set errorformat^=%Eerror:\ %f:%l:%c:\ error:\ %m]]
 
 if g.has_rg == 1 then
     opt.grepformat = "%f:%l:%c:%m"

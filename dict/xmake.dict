@@ -16,6 +16,7 @@ add_gcflags
 add_defines
 add_deps
 add_files
+remove_files
 add_frameworkdirs
 add_frameworks
 add_gcflags

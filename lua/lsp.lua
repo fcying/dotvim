@@ -185,6 +185,8 @@ function configs.lua()
                     checkThirdParty = false,
                     library = {
                         vim.g.config_dir .. "/lua",
+                        -- vim.g.plug_dir .. "/xmake.nvim/addons/en",
+                        vim.g.plug_dir .. "/xmake.nvim/addons/zh-cn",
                     },
                 },
                 completion = {

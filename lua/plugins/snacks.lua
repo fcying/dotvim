@@ -141,6 +141,7 @@ M.setup = { --{{{
     dependencies = {
         { "nvim-lua/plenary.nvim" },
         { "fcying/telescope-ctags-outline.nvim" },
+        { "aznhe21/actions-preview.nvim" },
     },
     keys = { -- {{{
         { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },

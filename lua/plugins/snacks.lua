@@ -141,6 +141,7 @@ M.setup = { --{{{
     dependencies = {
         { "nvim-lua/plenary.nvim" },
         { "fcying/telescope-ctags-outline.nvim" },
+        { "aznhe21/actions-preview.nvim" },
     },
     keys = { -- {{{
         { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
@@ -163,7 +164,7 @@ M.setup = { --{{{
         { "fn", function() Snacks.notifier.show_history({}) end, desc = "Notify" },
         { "fc", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
         { "fr", function() Snacks.picker.resume() end, desc = "Resume" },
-        { "fT", function() Snacks.picker.todo_comments() end, desc = "Todo" },
+        -- { "fT", function() Snacks.picker.todo_comments() end, desc = "Todo" },
         { "go", function() snacks_outline() end, desc = "outline" },
         { "gO", function() snacks_outline({ buf = "all" }) end, desc = "outline all" },
     },

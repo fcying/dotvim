@@ -172,7 +172,17 @@ end
 map("n", "]q", function() jump_to_error(true) end, { silent = true })
 map("n", "[q", function() jump_to_error(false) end, { silent = true })
 
+-- auto bottom and occupy the full width
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "qf",
+    callback = function()
+        vim.cmd("wincmd J")
+    end,
+})
+
 -- RemoveLsplog {{{
 vim.api.nvim_create_user_command("RemoveLsplog", function()
     vim.fn.writefile({}, vim.lsp.get_log_path())
 end, {})
+
+vim.cmd([[ autocmd FileType qf wincmd J ]])

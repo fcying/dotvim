@@ -115,12 +115,7 @@ M.setup = { --{{{
         { "nvim-lua/plenary.nvim" },
         { "fcying/telescope-ctags-outline.nvim" },
         { "nvim-telescope/telescope-fzf-native.nvim", build = g.make },
-        {
-            "aznhe21/actions-preview.nvim",
-            config = function()
-                require("actions-preview").setup()
-            end
-        },
+        { "aznhe21/actions-preview.nvim" },
     },
     cmd = { "Telescope" },
     keys = {
@@ -151,10 +146,11 @@ M.setup = { --{{{
         -- { "fm", "<cmd>Telescope marks<cr>",                         desc = "marks" },
         -- { "fn", "<cmd>lua Snacks.notifier.show_history({})<cr>",    desc = "notify" },
         -- { "fr", "<cmd>Telescope resume<cr>",                        desc = "resume" },
-        -- { "ft", "<cmd>Telescope tags<cr>",                          desc = "tag" },
+        { "ft", "<cmd>Telescope tags<cr>",                          desc = "tag" },
         -- { "f/", function() require("util").live_grep() end, mode = {"n", "x"},      desc = "live grep" },
-        { "<leader>go", "<cmd>Telescope ctags_outline outline<CR>",         desc = "outline" },
-        { "<leader>gO", "<cmd>Telescope ctags_outline outline buf=all<CR>", desc = "all buf outline" },
+        -- { "<leader>go", "<cmd>Telescope ctags_outline outline<CR>",         desc = "outline" },
+        -- { "<leader>gO", "<cmd>Telescope ctags_outline outline buf=all<CR>", desc = "all buf outline" },
+        -- { "<leader>st", "<cmd>TodoTelescope<cr>",                           desc = "Todo" },
     },
     config = function()
         local actions = require("telescope.actions")

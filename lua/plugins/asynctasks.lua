@@ -1,5 +1,3 @@
-local M = {}
-
 local asyncrun_config = function()
     vim.g.asyncrun_bell = 1
     vim.g.asyncrun_silent = 0
@@ -35,7 +33,7 @@ local asynctasks_config = function()
     vim.g.asynctasks_term_close   = 0
 end
 
-M.setup = {
+return {
     {
         "skywind3000/asyncrun.vim",
         -- "fcying/asyncrun.vim",
@@ -66,5 +64,3 @@ M.setup = {
         init = asynctasks_config,
     }
 }
-
-return M

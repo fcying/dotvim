@@ -22,6 +22,7 @@ Option = {
             sh = "--sh-kinds=fk",
             zsh = "--sh-kinds=fk",
             lua = "--lua-kinds=fk",
+            go = "--go-kinds=fk",
         },
         --sorting_strategy = "ascending",
     }

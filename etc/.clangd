@@ -1,5 +1,8 @@
 CompileFlags:
-  Add: -Wno-unknown-warning-option
+  Add: [
+    -Wno-unknown-warning-option,
+    -ferror-limit=0,
+  ]
   Remove: [
     -m*, -f*, 
     -pi32v2-large-program*,

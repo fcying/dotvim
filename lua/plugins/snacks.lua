@@ -33,14 +33,11 @@ local snacks_outline = function(opts)
     require("ctags-outline").snacks_ctags_outline(opts)
 end
 
-M.findFile = function()
+local function get_rg_opts()
     local option = require("util").option
     local opts = {
-        finder = "files",
-        format = "file",
         show_empty = true,
         follow = false,
-        supports_live = true,
         hidden = true,
         ignored = false,
         exclude = {},
@@ -56,33 +53,19 @@ M.findFile = function()
     for _, v in ipairs(option.file) do
         table.insert(opts.exclude, v)
     end
+    return opts
+end
+
+M.findFile = function()
+    local opts = vim.tbl_deep_extend("force", get_rg_opts(), {
+    })
     Snacks.picker.files(opts)
 end
 
 M.grep = function()
-    local option = require("util").option
-    local opts = {
-        finder = "grep",
+    local opts = vim.tbl_deep_extend("force", get_rg_opts(), {
         regex = true,
-        format = "file",
-        show_empty = true,
-        live = true,
-        supports_live = true,
-        hidden = true,
-        ignored = false,
-        exclude = {},
-        cmd = "rg",
-        args = {
-            "--no-config",
-            "--no-binary",
-        }
-    }
-    for _, v in ipairs(option.dir) do
-        table.insert(opts.exclude, v)
-    end
-    for _, v in ipairs(option.file) do
-        table.insert(opts.exclude, v)
-    end
+    })
     local mode = vim.api.nvim_get_mode().mode
     if mode == "n" then
         Snacks.picker.grep(opts)
@@ -141,6 +124,7 @@ M.setup = { --{{{
     dependencies = {
         { "nvim-lua/plenary.nvim" },
         { "fcying/telescope-ctags-outline.nvim" },
+        { "aznhe21/actions-preview.nvim" },
     },
     keys = { -- {{{
         { "<leader>un", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications" },
@@ -150,6 +134,7 @@ M.setup = { --{{{
         { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse" },
         { "<leader>gf", function() Snacks.lazygit.log_file() end, desc = "Lazygit Current File History" },
         { "<leader>gl", function() Snacks.lazygit.log() end, desc = "Lazygit Log (cwd)" },
+        { "<leader>st", function() Snacks.picker.todo_comments(get_rg_opts()) end, desc = "Todo" },
         -- find
         { "fe", function() Snacks.explorer() end, desc = "file explorer" },
         { "ff", require("util").findFile, desc = "Find Files" },
@@ -163,7 +148,6 @@ M.setup = { --{{{
         { "fn", function() Snacks.notifier.show_history({}) end, desc = "Notify" },
         { "fc", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
         { "fr", function() Snacks.picker.resume() end, desc = "Resume" },
-        { "fT", function() Snacks.picker.todo_comments() end, desc = "Todo" },
         { "go", function() snacks_outline() end, desc = "outline" },
         { "gO", function() snacks_outline({ buf = "all" }) end, desc = "outline all" },
     },

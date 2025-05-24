@@ -15,6 +15,22 @@ solarized-light set color_config
 
 $env.config.show_banner = false
 
+$env.config = (
+    $env.config | upsert keybindings (
+        $env.config.keybindings
+        | append {
+            name: "fzf file"
+            modifier: control
+            keycode: char_t
+            mode: [emacs, vi_normal, vi_insert]
+            event: {
+                send: executehostcommand
+                cmd: "commandline edit --replace (fzf --reverse --height 40%)"
+            }
+        }
+    )
+)
+
 # https://github.com/nushell/nushell/issues/8214 Conditional source
 if (which atuin | is-not-empty) {
     source (if (($nu.default-config-dir | path join "atuin.nu") | path expand | path exists) {($nu.default-config-dir | path join "atuin.nu")} else {"empty.nu"})

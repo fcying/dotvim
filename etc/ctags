@@ -31,6 +31,9 @@
 --langmap=sh:+(*bashrc)(*zshrc)(*shrc.local)(*.zsh)
 --regex-sh=/(.*)\{\{\{/\1/k,key/
 --regex-lua=/(.*)\{\{\{/\1/k,key/
+--regex-lua=/^(target.*function)/\1/f,func/
+--regex-lua=/^(rule.*function)/\1/f,func/
+--regex-lua=/^(toolchain.*function)/\1/f,func/
 --regex-yaml=/(.*)\{\{\{/\1/k,key/
 --regex-toml=/(.*)\{\{\{/\1/k,key/
 --regex-go=/(.*)\{\{\{/\1/k,key/
@@ -38,3 +41,6 @@
 --langdef=just
 --langmap=just:+(justfile)
 --regex-just=/^([a-zA-Z0-9_@.-]+)(\s+[^:=]*)?\s*:[^:=]*$$/\1/r,recipe/
+--langdef=nu
+--langmap=nu:+(*.nu)
+--regex-nu=/def(.*)\{/\1/f,func/

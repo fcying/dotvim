@@ -1,48 +1,6 @@
 -- single rounded
 local border = "rounded"
 
----@param direction "backward"|"forward"
-local super_tab = function(direction)
-    local ret = {
-        --- @param cmp blink.cmp.API
-        function(cmp)
-            local ls = require "luasnip"
-            local current_node = ls.session.current_nodes[vim.api.nvim_get_current_buf()]
-            if not ls.session or not current_node or ls.session.jump_active then
-                return false
-            end
-            local current_start, current_end = current_node:get_buf_position()
-            current_start[1] = current_start[1] + 1 -- (1, 0) indexed
-            current_end[1] = current_end[1] + 1     -- (1, 0) indexed
-            local cursor = vim.api.nvim_win_get_cursor(0)
-            if
-                cursor[1] < current_start[1]
-                or cursor[1] > current_end[1]
-                or cursor[2] < current_start[2]
-                or cursor[2] > current_end[2]
-            then
-                ls.unlink_current()
-                return false
-            end
-            if cmp.is_menu_visible() == true then
-                return false
-            end
-            cmp.hide()
-            if direction == "backward" then
-                return cmp.snippet_backward()
-            elseif direction == "forward" then
-                return cmp.snippet_forward()
-            end
-        end,
-        "select_next",
-        "fallback",
-    }
-    if direction == "backward" then
-        ret[2] = "select_prev"
-    end
-    return ret
-end
-
 local dict_opts = {
     get_command = "rg",
     get_command_args = function(prefix, _)
@@ -73,6 +31,11 @@ local dict_opts = {
     end
 }
 
+local function has_words_before()
+  local line, col = (unpack or table.unpack)(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match "%s" == nil
+end
+
 local snippets = {
     -- name = "default",
     name = "luasnip",
@@ -95,8 +58,24 @@ local opts = { -- {{{
         ["<C-e>"] = { "show", "hide", "show_documentation", "hide_documentation" },
         ["<C-u>"] = { "scroll_documentation_up", "fallback" },
         ["<C-d>"] = { "scroll_documentation_down", "fallback" },
-        ["<Tab>"] = super_tab "forward",
-        ["<S-Tab>"] = super_tab "backward",
+        ["<C-j>"] = { "snippet_forward", "fallback" },
+        ["<C-k>"] = { "snippet_backward", "fallback" },
+        ["<Tab>"] = {
+            "select_next",
+            "snippet_forward",
+            function(cmp)
+                if vim.api.nvim_get_mode().mode == "c" then return cmp.show() end
+            end,
+            "fallback",
+        },
+        ["<S-Tab>"] = {
+            "select_prev",
+            "snippet_backward",
+            function(cmp)
+                if vim.api.nvim_get_mode().mode == "c" then return cmp.show() end
+            end,
+            "fallback",
+        },
     },
     signature = {
         enabled = true,

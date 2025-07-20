@@ -1,4 +1,4 @@
-[run]
+[test]
 command:go=go run "$(VIM_FILENAME)"
 command:python=python "$(VIM_FILENAME)"
 command:sh=sh "$(VIM_FILENAME)"

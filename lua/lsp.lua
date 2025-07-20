@@ -152,7 +152,7 @@ function configs.python()
                     },
                     pycodestyle = {
                         maxLineLength = 120,
-                        ignore = { "E302", "E265", "E231" },
+                        ignore = { "E302", "E265", "E231", "W503" },
                     },
                 },
             },
@@ -221,35 +221,27 @@ function configs.lua()
     vim.lsp.config("lua_ls", opts)
 end
 
-function configs.ts_ls()
-    local vue_typescript_plugin = vim.fn.expand(
-        "$MASON/packages/vue-language-server/node_modules/@vue/language-server/node_modules/@vue/typescript-plugin")
-    local opts = {
-        init_options = {
-            hostInfo = "neovim",
-            plugins = {
-                {
-                    name = "@vue/typescript-plugin",
-                    location = vue_typescript_plugin,
-                    languages = { "javascript", "typescript", "vue" },
+function configs.vtsls()
+    local vue_language_server_path = vim.fn.expand "$MASON/packages" ..
+        "/vue-language-server" .. "/node_modules/@vue/language-server"
+    local vue_plugin = {
+        name = "@vue/typescript-plugin",
+        location = vue_language_server_path,
+        languages = { "vue" },
+        configNamespace = "typescript",
+    }
+    vim.lsp.config("vtsls", {
+        settings = {
+            vtsls = {
+                tsserver = {
+                    globalPlugins = {
+                        vue_plugin,
+                    },
                 },
             },
         },
-        cmd = { "typescript-language-server", "--stdio" },
-        root_markers = { ".root", "tsconfig.json", "jsconfig.json", "package.json", ".git" },
-        filetypes = {
-            "javascript",
-            "javascriptreact",
-            "javascript.jsx",
-            "typescript",
-            "typescriptreact",
-            "typescript.tsx",
-            "vue",
-        },
-        single_file_support = true,
-    }
-
-    vim.lsp.config("ts_ls", opts)
+        filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
+    })
 end
 
 function M.setup()
@@ -272,12 +264,17 @@ function M.setup()
         }
     })
 
-    require("mason-lspconfig").setup({
+    local mlsp = require("mason-lspconfig")
+    mlsp.setup({
         ensure_installed = { "lua_ls" },
-        automatic_enable = {
-            exclude = Option.lsp,
-        },
+        automatic_enable = false,
     })
+    for _, name in ipairs(mlsp.get_installed_servers()) do
+        if util.contains(Option.lsp, name) == false then
+            -- print(name)
+            vim.lsp.enable(name)
+        end
+    end
 
     for _, lsp in ipairs(system_lsp) do
         vim.lsp.enable(lsp)

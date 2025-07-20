@@ -99,6 +99,15 @@ function M.printCallerInfo(f)
     end
 end
 
+function M.contains(tbl, str)
+  for _, v in ipairs(tbl) do
+    if v == str then
+      return true
+    end
+  end
+  return false
+end
+
 function M.update_ignore_config()
     M.option = vim.deepcopy(option_default)
 

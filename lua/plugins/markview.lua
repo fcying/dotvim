@@ -6,6 +6,9 @@ return {
         "nvim-tree/nvim-web-devicons"
     },
     opts = {
+        experimental = {
+            check_rtp = false,
+        },
         preview = {
             enable = false,
             hybrid_modes = {},

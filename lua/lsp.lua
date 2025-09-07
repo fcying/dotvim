@@ -203,6 +203,7 @@ function configs.lua()
                         "missing-fields",
                         "inject-field",
                         "lowercase-global",
+                        "redundant-parameter",
                     },
                 },
                 format = {

@@ -1,7 +1,10 @@
 return {
     "al1-ce/just.nvim",
     cmd = { "JustSelect" },
-    keys = { { "<leader>rs", "<cmd>JustSelect<CR>", desc = "JustSelect" } },
+    keys = {
+        { "<leader>rs", "<cmd>JustSelect<CR>", desc = "JustSelect" },
+        { "<leader>rj", "<cmd>Just<CR>", desc = "Just" },
+    },
     dependencies = {
         "nvim-lua/plenary.nvim",         -- async jobs
         "nvim-telescope/telescope.nvim", -- task picker (optional)

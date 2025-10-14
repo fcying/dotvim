@@ -33,7 +33,11 @@ alias gad='git archive -o diff.zip HEAD $(git diff --name-only HEAD~1)'
 gar() {
     local name="release"
     [ -n "$1" ] && name=$1
-    git archive -o $name.zip HEAD
+    if command -v git-archive-all >/dev/null 2>&1; then
+        git-archive-all --force-submodules --prefix="${name}/" "${name}.zip"
+    else
+        git archive -o $name.zip HEAD
+    fi
 }
 
 alias gb='git branch'

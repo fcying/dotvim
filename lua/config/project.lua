@@ -1,23 +1,25 @@
 local M = {}
-local fn, g, cmd = vim.fn, vim.g, vim.cmd
+local fn, g = vim.fn, vim.g
 local util = require("util")
 local config_name = { ".nvim.lua", ".pvimrc" }
-local config_path = ""
+local config_path = nil
 
 local function set_config()
-    cmd.source(config_path)
+    if config_path then
+        vim.cmd.source(vim.fn.fnameescape(config_path))
+    end
 end
 
 local function find_config()
     for _, name in ipairs(config_name) do
-        config_path = vim.fs.find({ name }, { type = "file", path = util.root_marker, upward = true })
-        if config_path ~= "" then
+        config_path = vim.fs.find({ name }, { type = "file", path = util.root_marker, upward = true })[1]
+        if config_path then
             break
         end
     end
 
     --vim.notify(config_path)
-    if config_path == "" then
+    if not config_path then
         config_path = util.root_marker .. "/" .. config_name[1]
         return false
     end
@@ -26,10 +28,12 @@ local function find_config()
 end
 
 function M.edit_config()
-    if config_path == "" then
+    if not config_path then
         find_config()
     end
-    cmd.edit(config_path)
+    if config_path and fn.filereadable(config_path) == 1 then
+        vim.cmd.edit(config_path)
+    end
 end
 
 function M.load_config()
@@ -39,11 +43,7 @@ function M.load_config()
 end
 
 function M.load_user_config()
-    if g.is_win == 1 then
-        g.file_vimrc_local = os.getenv("USERPROFILE") .. "/.vimrc.local"
-    else
-        g.file_vimrc_local = os.getenv("HOME") .. "/.vimrc.local"
-    end
+    g.file_vimrc_local = vim.loop.os_homedir() .. "/.vimrc.local"
     if fn.filereadable(g.file_vimrc_local) == 1 then
         vim.cmd.source(g.file_vimrc_local)
     end

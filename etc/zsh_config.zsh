@@ -32,13 +32,35 @@ alias gap='git apply'
 alias gad='git archive -o diff.zip HEAD $(git diff --name-only HEAD~1)'
 gar() {
     local name="release"
-    [ -n "$1" ] && name=$1
-    if command -v git-archive-all >/dev/null 2>&1; then
-        git-archive-all --force-submodules --prefix="${name}/" "${name}.zip"
+    local use_submodules=0
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --submodules)
+                use_submodules=1
+                shift
+                ;;
+            *)
+                name=$1
+                shift
+                ;;
+        esac
+    done
+
+    if [ "$use_submodules" -ne 0 ]; then
+        if command -v git-archive-all >/dev/null 2>&1; then
+            git-archive-all --force-submodules "${name}.zip"
+        else
+            echo "Error: git-archive-all not found"
+            return 1
+        fi
     else
-        git archive -o $name.zip HEAD
+        git archive -o "${name}.zip" HEAD
     fi
 }
+# _gar() {
+#     compadd -- --submodules
+# }
+# compdef _gar gar
 
 alias gb='git branch'
 alias gba='git branch -a'

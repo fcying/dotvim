@@ -159,9 +159,8 @@ function PluginFinish() {
     if [ -n "$zinit_inited" ]; then
         zinit compile --all
     fi
-    if [ -f "$MY_CONFIG_DIR/zsh_plugin.zsh" ]; then
-        source "$MY_CONFIG_DIR/zsh_plugin.zsh"
-    fi
+    source "$MY_CONFIG_DIR/zsh_config.zsh"
+    source "$MY_CONFIG_DIR/git.zsh"
     type PostLoad >/dev/null 2>&1 && PostLoad
 
     test -f "$HOME/.xmake/profile" && source "$HOME/.xmake/profile"

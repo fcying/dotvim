@@ -3,7 +3,7 @@ local M = {}
 local dashboard_opts = {
     enabled = false,
     preset = {
-        header = require("ascii_logo").neovim2,
+        header = require("config.ascii_logo").neovim2,
         ---@type snacks.dashboard.Item[]
         keys = {
             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },

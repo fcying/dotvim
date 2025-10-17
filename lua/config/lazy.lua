@@ -35,6 +35,7 @@ local plugins = {
     { import = "plugins.hop" },
     { import = "plugins.foldsearch" },
     { import = "plugins.lualine" },
+    { import = "plugins.fidget" },
 
     -- tool {{{
     -- { import = "plugins.fern" },
@@ -83,7 +84,7 @@ local plugins = {
         "neovim/nvim-lspconfig",
         cmd = { "LspInfo", "LspInstall", "LspStart", "LspRestart" },
         event = { "BufReadPre", "BufNewFile" },
-        config = require("lsp").setup,
+        config = require("config.lsp").setup,
         dependencies = {
             { import = "plugins.mason" },
         },

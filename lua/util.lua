@@ -11,6 +11,7 @@ Option = {
     gencconf_default_option = {}, -- for g:gencconf_default_option
     asyncrun_auto_close_qf = false,
     asyncrun_post_run = nil,
+    just_post_run = nil,
     clangd_query_driver = nil,
     compile_commands_dir = nil,
     ctags_outline = {

@@ -53,13 +53,7 @@ return {
         "skywind3000/asynctasks.vim",
         cmd = { "AsyncTask", "AsyncTaskMacro", "AsyncTaskList", "AsyncTaskEdit", },
         keys = {
-            { "<leader>ra", "<cmd>AsyncTask all<CR>", desc = "AsyncTask build all" },
-            { "<leader>rf", "<cmd>AsyncTask factory<CR>", desc = "AsyncTask build factory" },
-            { "<leader>rb", "<cmd>AsyncTask build<CR>", desc = "AsyncTask build debug" },
-            { "<leader>rr", "<cmd>AsyncTask release<CR>", desc = "AsyncTask build release" },
-            { "<leader>rl", "<cmd>AsyncTask lib<CR>", desc = "AsyncTask build lib" },
             { "<leader>rt", "<cmd>AsyncTask test<CR>", desc = "AsyncTask build test" },
-            { "<leader>rc", "<cmd>AsyncTask clean<CR>", desc = "AsyncTask build clean" },
         },
         init = asynctasks_config,
     }

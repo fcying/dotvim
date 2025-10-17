@@ -2,7 +2,7 @@ return {
     "nvim-lualine/lualine.nvim",
     event = "ColorScheme",
     config = function()
-        local s = require("statusline")
+        local s = require("config.statusline")
         local theme = "auto"
         require("lualine").setup({
             tabline = {},
@@ -27,7 +27,7 @@ return {
                 lualine_b = { s.git_status, "diff", "diagnostics" },
                 lualine_c = { "filename" },
                 lualine_x = {
-                    s.lsp_progress,
+                    -- s.lsp_progress,
                     --s.search,
                     --s.macro_recording,
                     "fileformat",

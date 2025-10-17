@@ -31,16 +31,16 @@ vim.o.shadafile = join_paths(vim.g.runtime_dir, "state", "shadafile")
 
 local util = require("util")
 util.get_root_marker({ ".root", ".git", ".repo", ".svn" })
-require("project_config").setup()
+require("config.project").setup()
 
 -- solarized tokyonight-day everforest rose-pine-dawn
 local colorscheme = vim.g.colorscheme or "solarized"
 local background = vim.g.background or "light"
 vim.opt.background = background
 
-require("option")
-require("keymap")
-require("_lazy")
+require("config.option")
+require("config.keymap")
+require("config.lazy")
 
 vim.cmd.colorscheme(colorscheme)
 util.update_ignore_config()

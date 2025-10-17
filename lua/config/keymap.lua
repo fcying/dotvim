@@ -3,7 +3,7 @@ local map = util.map
 
 map("n", "<leader>evc", ":execute 'e '  . g:config_dir<CR>")
 map("n", "<leader>evl", ":execute 'e '  . g:file_vimrc_local<CR>")
-map("n", "<leader>evp", require("project_config").edit_config)
+map("n", "<leader>evp", require("config.project").edit_config)
 
 -- fast ident {{{
 map("n", "<", "<<")

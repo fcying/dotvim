@@ -2,7 +2,7 @@ local opts = {
     theme = "doom",
     hide = { statusline = false },
     config = {
-        header = require("ascii_logo").neovim1,
+        header = require("config.ascii_logo").neovim1,
         center = {
             { action = "ene | startinsert", desc = " New file", icon = " ", key = "n" },
             { action = "lua require('util').find_file()", desc = " Find file", icon = " ", key = "ff" },

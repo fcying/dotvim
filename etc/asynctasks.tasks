@@ -1,6 +1,6 @@
 [test]
 command:go=go run "$(VIM_FILENAME)"
 command:python=python "$(VIM_FILENAME)"
-command:sh=sh "$(VIM_FILENAME)"
+command:sh=bash "$(VIM_FILENAME)"
 command:lua=lua "$(VIM_FILENAME)"
 cwd=$(VIM_FILEDIR)

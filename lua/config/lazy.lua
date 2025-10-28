@@ -65,7 +65,7 @@ local plugins = {
     -- { import = "plugins.nvim-ufo" },
 
     -- filetype {{{
-    { import = "plugins.markview" },
+    { import = "plugins.markdown" },
     { "Vimjas/vim-python-pep8-indent", ft = "python" },
     { "wsdjeg/vim-autohotkey", ft = "autohotkey" },
     { "elkasztano/nushell-syntax-vim", ft = "nu" },

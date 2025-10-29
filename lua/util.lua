@@ -101,12 +101,31 @@ function M.printCallerInfo(f)
 end
 
 function M.contains(tbl, str)
-  for _, v in ipairs(tbl) do
-    if v == str then
-      return true
+    for _, v in ipairs(tbl) do
+        if v == str then
+            return true
+        end
     end
-  end
-  return false
+    return false
+end
+
+function M.run_ansiesc_in_qf()
+    local curwin = vim.api.nvim_get_current_win()
+    local qf_win = nil
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+        local buf = vim.api.nvim_win_get_buf(win)
+        if vim.bo[buf].buftype == "quickfix" then
+            qf_win = win
+            break
+        end
+    end
+    if not qf_win then
+        print("No quickfix window found")
+        return
+    end
+    vim.api.nvim_set_current_win(qf_win)
+    vim.cmd("AnsiEsc")
+    vim.api.nvim_set_current_win(curwin)
 end
 
 function M.update_ignore_config()
@@ -340,5 +359,6 @@ M.map("n", "tc", "<cmd>lua require('util').gentags(1)<CR>")
 M.map("n", "tr", "<cmd>lua require('util').removetags()<CR>")
 
 M.map("n", "<leader>gc", "<cmd>lua require('util').get_cursor_highlight_color()<CR>")
+M.map("n", "<leader>ra", "<cmd>lua require('util').run_ansiesc_in_qf()<CR>")
 
 return M

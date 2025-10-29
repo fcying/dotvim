@@ -33,7 +33,7 @@ $env.config = (
 
 # https://github.com/nushell/nushell/issues/8214 Conditional source
 if (which atuin | is-not-empty) {
-    source (if (($nu.default-config-dir | path join "atuin.nu") | path expand | path exists) {($nu.default-config-dir | path join "atuin.nu")} else {"empty.nu"})
+    source (if (($nu.default-config-dir | path join "atuin.nu") | path expand | path exists) {($nu.default-config-dir | path join "atuin.nu")} else {null})
 }
 
 source ($nu.default-config-dir | path join "zlua.nu")

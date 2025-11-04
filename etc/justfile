@@ -1,0 +1,23 @@
+# https://just.systems
+set unstable
+set shell := ["nu", "-c"]
+set script-interpreter := ["nu"]
+
+os := os()
+py := if os == "windows" { "python" } else { "python3" }
+
+[script]
+run file="":
+    let file = "{{file}}"
+    # print $file
+    let ext = ($file | path parse | get extension)
+
+    if $ext == "sh" {
+        bash $file
+    } else if $ext == "py" {
+        {{py}} $file
+    } else if $ext == "go" {
+        go run $file
+    } else {
+        print $"Unsupported extension: ($ext)"
+    }

@@ -52,9 +52,6 @@ return {
     {
         "skywind3000/asynctasks.vim",
         cmd = { "AsyncTask", "AsyncTaskMacro", "AsyncTaskList", "AsyncTaskEdit", },
-        keys = {
-            { "<leader>rt", "<cmd>AsyncTask test<CR>", desc = "AsyncTask build test" },
-        },
         init = asynctasks_config,
     }
 }

@@ -6,19 +6,28 @@
   "contributes": {
     "snippets": [
       {
-        "language": [ "all" ],
+        "language": [
+          "all"
+        ],
         "path": "./all.json"
       },
       {
-        "language": [ "taskini" ],
+        "language": [
+          "taskini"
+        ],
         "path": "./taskini.json"
       },
       {
-        "language": [ "sh" ],
+        "language": [
+          "sh"
+        ],
         "path": "./sh.json"
       },
       {
-        "language": [ "c", "cpp" ],
+        "language": [
+          "c",
+          "cpp"
+        ],
         "path": "./cpp.json"
       },
       {
@@ -32,6 +41,13 @@
       {
         "language": "dockerfile",
         "path": "./dockerfile.json"
+      },
+      {
+        "language": [
+          "gitcommit",
+          "NeogitCommitMessage"
+        ],
+        "path": "./gitcommit.json"
       },
       {
         "language": "vim",

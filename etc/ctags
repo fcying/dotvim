@@ -39,7 +39,7 @@
 --regex-go=/(.*)\{\{\{/\1/k,key/
 --regex-make=/(.*)\{\{\{/\1/k,key/
 --langdef=just
---langmap=just:+(justfile)
+--langmap=just:+(justfile)(.justfile)
 --regex-just=/^([a-zA-Z0-9_@.-]+)(\s+[^:=]*)?\s*:[^:=]*$$/\1/r,recipe/
 --langdef=nu
 --langmap=nu:+(*.nu)

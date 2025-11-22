@@ -22,8 +22,8 @@ return {
             notify_on_error = true,
             formatters_by_ft = {
                 -- lua = { "stylua" },
-                c = { "clang-format" },
-                cpp = { "clang-format" },
+                c = { "clang_format" },
+                cpp = { "clang_format" },
                 -- run formatters that don't have other formatters configured.
                 ["_"] = { "trim_whitespace", lsp_format = "last" },
             },
@@ -38,8 +38,8 @@ return {
                     command = "astyle",
                     args = Formats.astyle,
                 },
-                ["clang-format"] = {
-                    inherit = false,
+                ["clang_format"] = {
+                    -- inherit = false,
                     command = "clang-format",
                     args = Formats["clang-format"],
                 },

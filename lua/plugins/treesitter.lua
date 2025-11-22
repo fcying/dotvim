@@ -17,21 +17,6 @@ return
         "nvim-treesitter/nvim-treesitter",
         build = ":TSUpdate",
         -- event = "VeryLazy",
-        cmd = {
-            "TSBufDisable",
-            "TSBufEnable",
-            "TSBufToggle",
-            "TSDisable",
-            "TSEnable",
-            "TSToggle",
-            "TSInstall",
-            "TSInstallInfo",
-            "TSInstallSync",
-            "TSModuleInfo",
-            "TSUninstall",
-            "TSUpdate",
-            "TSUpdateSync",
-        },
         dependencies = { "nvim-treesitter/nvim-treesitter-textobjects", lazy = true },
         config = function()
             local parser_install_dir = vim.g.runtime_dir .. "/parsers"

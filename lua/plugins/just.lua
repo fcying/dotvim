@@ -1,6 +1,6 @@
 return {
     "fcying/just.nvim",
-    cmd = { "JustSelect", "Just", "JustStop", "JustCreateTemplate" },
+    cmd = { "Just", "JustSelect", "JustStop", "JustCreateTemplate" },
     keys = {
         { "<leader>rs", "<cmd>JustSelect<CR>", desc = "JustSelect" },
         { "<leader>rj", "<cmd>Just<CR>", desc = "Just" },

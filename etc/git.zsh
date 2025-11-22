@@ -104,6 +104,7 @@ alias gcm='git checkout master'
 alias gcd='git checkout develop'
 alias gcmsg='git commit -m'
 alias gco='git checkout'
+alias gcor='git checkout --recurse-submodules'
 alias gcount='git shortlog -sn'
 compdef _git gcount
 alias gcp='git cherry-pick'

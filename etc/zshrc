@@ -372,7 +372,7 @@ function brew_fix_ssl() {
 }
 
 function soft_update() {
-    zinit self-update
+    env GIT_PAGER=cat zinit self-update
     zinit update --all
     zinit compile --all
 

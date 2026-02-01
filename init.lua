@@ -44,3 +44,7 @@ require("config.lazy")
 
 vim.cmd.colorscheme(colorscheme)
 util.update_ignore_config()
+
+if Option.config_post_run then
+    Option.config_post_run()
+end

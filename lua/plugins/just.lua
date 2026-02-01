@@ -1,12 +1,23 @@
+local keys = {
+    { "<leader>rs", "<cmd>JustSelect<CR>", desc = "JustSelect" },
+    { "<leader>rj", "<cmd>Just<CR>", desc = "Just" },
+    { "<leader>rb", "<cmd>Just build<CR>", desc = "Just build" },
+}
+
+if vim.fn.maparg("<leader>rr", "n") == "" then
+    table.insert(keys, {
+        "<leader>rr",
+        function()
+            vim.cmd("Just run " .. vim.fn.expand("%:p"))
+        end,
+        desc = "Just run file",
+    })
+end
+
 return {
     "fcying/just.nvim",
     cmd = { "Just", "JustSelect", "JustStop", "JustCreateTemplate" },
-    keys = {
-        { "<leader>rs", "<cmd>JustSelect<CR>", desc = "JustSelect" },
-        { "<leader>rj", "<cmd>Just<CR>", desc = "Just" },
-        { "<leader>rb", "<cmd>Just build<CR>", desc = "Just build" },
-        { "<leader>rr", "<cmd>Just run " .. vim.fn.expand("%:p") .. "<CR>", desc = "Just run file" },
-    },
+    keys = keys,
     dependencies = {
         "nvim-lua/plenary.nvim", -- async jobs
         "j-hui/fidget.nvim",     -- task progress (optional)

@@ -1,0 +1,32 @@
+layout {
+    pane
+    pane size=1 borderless=true {
+        // plugin location="file:~/path/to/zjstatus.wasm" {
+        plugin location="https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm" {
+        format_left  "#[fg=#fdf6e3,bg=#586e75,bold][{session}] {mode}{tabs}"
+        format_right "#[fg=#fdf6e3,bg=#586e75,bold]{datetime}"
+        format_space "#[bg=#586e75]"
+
+        mode_normal        "#[fg=#002b36,bg=#268bd2,bold] NORMAL "
+        mode_locked        "#[fg=#002b36,bg=#dc322f,bold] LOCKED "
+        mode_pane          "#[fg=#002b36,bg=#b58900,bold] PANE "
+        mode_scroll        "#[fg=#002b36,bg=#d33682,bold] SCROLL "
+        mode_session       "#[fg=#002b36,bg=#268bd2,bold] SESSION "
+        mode_enter_search  "#[fg=#002b36,bg=#268bd2,bold] ENT-SEARCH "
+        mode_search        "#[fg=#002b36,bg=#268bd2,bold] SEARCH "
+        mode_resize        "#[fg=#002b36,bg=#268bd2,bold] RESIZE "
+        mode_move          "#[fg=#002b36,bg=#268bd2,bold] MOVE "
+        mode_tmux          "#[fg=#002b36,bg=#268bd2,bold] TMUX "
+
+        hide_frame_for_single_pane "true"
+
+        tab_normal   "#[fg=#93a1a1,bg=#586e75] {index}:{name}  "
+        tab_active   "#[fg=#fdf6e3,bg=#859900,bold] {index}:{name}* "
+
+        datetime          "#[fg=#fdf6e3,bg=#586e75] {format} "
+        datetime_format   "%y-%m-%d %H:%M"
+        datetime_timezone "Asia/Shanghai"
+    }
+}
+}
+

@@ -45,6 +45,7 @@ local function get_rg_opts()
         args = {
             "--no-config",
             "--no-binary",
+            "--follow",
         }
     }
     for _, v in ipairs(option.dir) do

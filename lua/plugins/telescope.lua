@@ -6,7 +6,7 @@ function M.telescope_update_ignore()
     local option = util.option
     util.find_command = "Telescope find_files "
     if g.has_rg == 1 then
-        util.find_command = util.find_command .. "find_command=rg,--files,--no-ignore,--color=never"
+        util.find_command = util.find_command .. "find_command=rg,--files,--no-ignore,--follow,--color=never"
         if option.rg ~= {} then
             util.find_command = util.find_command .. "," .. table.concat(option.rg, ",")
         end
@@ -23,6 +23,7 @@ function M.telescope_update_ignore()
             "--column",
             "--smart-case",
             "--no-hidden",
+            "--follow",
         }
         for _, v in ipairs(option.rg) do
             table.insert(conf.vimgrep_arguments, v)

@@ -46,6 +46,10 @@ if [[ $app == "ln" ]]; then
 
     mkdir -p ~/.config/atuin
     ln -sfv $PWD/atuin/config.toml ~/.config/atuin/config.toml
+
+    mkdir -p ~/.config/zellij/
+    ln -sfv $PWD/zellij/config.kdl ~/.config/zellij/config.kdl
+    ln -sfv $PWD/zellij/main.kdl ~/.config/zellij/layouts/main.kdl
 fi
 
 # windows

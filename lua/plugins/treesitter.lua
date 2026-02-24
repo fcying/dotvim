@@ -21,6 +21,7 @@ return
         config = function()
             local parser_install_dir = vim.g.runtime_dir .. "/parsers"
             vim.opt.runtimepath:prepend(parser_install_dir)
+            require('nvim-treesitter.install').compilers = { "gcc", "clang", "cl" }
             require("nvim-treesitter.configs").setup({
                 parser_install_dir = parser_install_dir,
                 ensure_installed = {

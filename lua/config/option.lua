@@ -36,11 +36,10 @@ opt.bomb = false
 opt.fileencodings = "ucs-bom,utf-8,gbk,gb18030,big5,euc-jp,euc-kr,latin1"
 opt.formatoptions = opt.formatoptions + "mM" - "o"
 --stop auto insert comment, set FileType can't work
-vim.api.nvim_create_autocmd({ "BufEnter" }, {
+vim.api.nvim_create_autocmd({ "FileType" }, {
     pattern = "*",
-    group = vim.api.nvim_create_augroup("set_fo", { clear = true }),
     callback = function()
-        vim.opt_local.formatoptions = vim.opt_local.formatoptions - "o"
+        vim.opt_local.formatoptions:remove({ "o" })
     end,
 })
 
@@ -86,7 +85,6 @@ opt.tabstop = 4
 opt.termguicolors = true
 opt.timeoutlen = 500
 opt.ttimeoutlen = 80
-opt.undodir = g.runtime_dir .. "/undodir_nvim"
 opt.undofile = true
 opt.undolevels = 10000
 opt.updatetime = 200

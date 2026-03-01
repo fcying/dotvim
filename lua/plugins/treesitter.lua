@@ -15,6 +15,7 @@ return
     },
     {
         "nvim-treesitter/nvim-treesitter",
+        branch = "master",
         build = ":TSUpdate",
         -- event = "VeryLazy",
         dependencies = { "nvim-treesitter/nvim-treesitter-textobjects", lazy = true },

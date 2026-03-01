@@ -44,6 +44,7 @@ local plugins = {
     require("plugins.telescope").setup,
     require("plugins.snacks").setup,
     { import = "plugins.action_preview" },
+    -- { import = "plugins.opencode" },
     -- { "Yggdroot/LeaderF", cmd = { "Leaderf" }, build = ":LeaderfInstallCExtension" },
     { "chrisbra/Colorizer", cmd = { "ColorToggle" } },
     -- { import = "plugins.baleia" },

@@ -83,7 +83,7 @@ fpath=(${fpath[@]} $MY_CONFIG_DIR/fpath)
 
     type wsl2-ssh-agent >/dev/null 2>&1 && {
         # if [ -z "$SSH_AUTH_SOCK" ]; then
-            WSL2_AGENT=true
+            export WSL2_AGENT=true
             eval "$(wsl2-ssh-agent)"
         # fi
     }
@@ -391,14 +391,14 @@ function brew_fix_ssl() {
 }
 
 function soft_update() {
-    env GIT_PAGER=cat zinit self-update
+    zinit self-update >/dev/null 2>&1
     zinit update --all
     zinit compile --all
 
     fzf_install update
     zlua_install update
 
-    tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/update_plugins all
+    ~/.tmux/plugins/tpm/bin/update_plugins all
 
     brew_update
     nix_update

@@ -7,7 +7,7 @@ g.has_go = fn.executable("go")
 
 vim.api.nvim_create_augroup("myau", { clear = true })
 
-if g.is_win == 1 then
+if g.is_win then
     g.make = "mingw32-make"
 else
     g.make = "make"
@@ -96,7 +96,7 @@ opt.wrap = true
 opt.whichwrap = opt.whichwrap + "<,>,[,],h,l"
 
 -- terminal {{{
-if g.is_win == 0 then
+if not g.is_win then
     vim.o.shellcmdflag = "-ic"
 end
 
@@ -170,7 +170,7 @@ vim.api.nvim_create_autocmd("VimLeave", {
 })
 
 -- osc52 clip {{{
-if g.is_tmux == 1 then
+if g.is_tmux then
     vim.g.clipboard = {
         name = "tmux",
         copy = {

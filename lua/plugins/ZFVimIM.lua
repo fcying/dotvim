@@ -12,7 +12,7 @@ return {
 
         local db_file = "vim_wubi.txt"
         local repo_path
-        if vim.g.is_win == 1 then
+        if vim.g.is_win then
             repo_path = "d:/sync/tool/rime"
         else
             repo_path = vim.fn.expand("~/sync/tool/rime")

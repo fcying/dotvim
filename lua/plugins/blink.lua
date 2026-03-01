@@ -88,6 +88,14 @@ local opts = { -- {{{
         providers = {
             lazydev = { name = "LazyDev", module = "lazydev.integrations.blink", score_offset = 100, },
             snippets = snippets.name == "default" and snippets.default or snippets.luasnip,
+            path = {
+                name = "Path",
+                module = "blink.cmp.sources.path",
+                score_offset = 3,
+                opts = {
+                    show_hidden_files_by_default = true,
+                }
+            },
             dictionary = {
                 module = "blink-cmp-dictionary",
                 name = "Dict",

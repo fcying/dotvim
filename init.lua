@@ -1,30 +1,42 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
-vim.g.is_wsl = vim.fn.isdirectory("/mnt/c")
-vim.g.is_win = vim.fn.has("win32")
-vim.g.is_tmux = vim.fn.exists("$TMUX")
+vim.g.is_wsl = vim.fn.isdirectory("/mnt/c") == 1
+vim.g.is_win = vim.fn.has("win32") == 1
+vim.g.is_tmux = vim.fn.exists("$TMUX") == 1
+
+function _G.join_path(...)
+    local sep = vim.g.is_win and "\\" or "/"
+    -- 1. Concatenate all arguments using the system separator
+    local path = table.concat({ ... }, sep)
+    if vim.g.is_win then
+        -- Convert all forward slashes to backslashes
+        path = path:gsub("/", "\\")
+        path = path:gsub("\\\\+", "\\")
+    else
+        path = path:gsub("//+", "/")
+    end
+    return path
+end
 
 -- set dir path {{{
 vim.g.config_dir = vim.fn.fnamemodify(vim.fn.resolve(vim.fn.expand("<sfile>:p")), ":h")
 vim.opt.rtp:prepend(vim.g.config_dir)
 vim.g.runtime_dir = vim.fs.joinpath(vim.g.config_dir, ".run")
 
-local env_separator = vim.g.is_win == 1 and ";" or ":"
+local env_separator = vim.g.is_win and ";" or ":"
 vim.env.PATH = vim.fs.joinpath(vim.g.config_dir, "vendor") .. env_separator .. vim.env.PATH
 
 local original_stdpath = vim.fn.stdpath
 ---@diagnostic disable-next-line: duplicate-set-field
 vim.fn.stdpath = function(what)
     local path_map = {
-        config = vim.fs.joinpath(vim.g.runtime_dir, "config"),
-        state  = vim.fs.joinpath(vim.g.runtime_dir, "state"),
-        cache  = vim.fs.joinpath(vim.g.runtime_dir, "cache"),
-        log    = vim.fs.joinpath(vim.g.runtime_dir, "log"),
-        run    = vim.fs.joinpath(vim.g.runtime_dir, "run"),
+        config = join_path(vim.g.runtime_dir, "config"),
+        data   = join_path(vim.g.runtime_dir, "data"),
+        state  = join_path(vim.g.runtime_dir, "state"),
+        cache  = join_path(vim.g.runtime_dir, "cache"),
+        log    = join_path(vim.g.runtime_dir, "log"),
+        run    = join_path(vim.g.runtime_dir, "run"),
     }
-    if vim.g.is_win == 0 then
-        path_map.data = vim.fs.joinpath(vim.g.runtime_dir, "data")
-    end
 
     if path_map[what] then
         return path_map[what]
@@ -36,7 +48,7 @@ vim.fn.stdpath = function(what)
         return { path_map.data }
     end
 
-    -- print(what)
+    print(what)
     return original_stdpath(what)
 end
 vim.o.shadafile = vim.fs.joinpath(vim.fn.stdpath("state"), "shadafile")

@@ -83,7 +83,7 @@ fpath=(${fpath[@]} $MY_CONFIG_DIR/fpath)
 
     type wsl2-ssh-agent >/dev/null 2>&1 && {
         # if [ -z "$SSH_AUTH_SOCK" ]; then
-            WSL2_AGENT=true
+            export WSL2_AGENT=true
             eval "$(wsl2-ssh-agent)"
         # fi
     }

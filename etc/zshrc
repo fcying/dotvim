@@ -64,6 +64,19 @@ path=(
 fpath=(${fpath[@]} $MY_CONFIG_DIR/fpath)
 
 # wsl2 {{{
+refresh_wsl_interop() {
+    local static_link="/tmp/wsl_interop_static"
+    local live_socket="/run/WSL/$(ls -t /run/WSL | head -1)"
+
+    if [ -n "$live_socket" ]; then
+        ln -sf "$live_socket" "$static_link"
+        export WSL_INTEROP="$static_link"
+        return 0
+    else
+        return 1
+    fi
+}
+
 [ -d "/mnt/c" ] && [[ "$(uname -a)" == *microsoft* ]] && {
     export SCOOP=${SCOOP:-"/mnt/d/tool/scoop"}
     export PATH=$PATH:$SCOOP/shims:/usr/lib/wsl/lib
@@ -76,11 +89,7 @@ fpath=(${fpath[@]} $MY_CONFIG_DIR/fpath)
     alias fastboot='$SCOOP/shims/fastboot.exe'
     alias wtail='/mnt/d/tool/msys64/usr/bin/tail.exe'
 
-    # run adb in ssh tmux
-    if [ -z "$WSL_INTEROP" ]; then
-        export WSL_INTEROP="/run/WSL/$(ls -t /run/WSL | head -1)"
-    fi
-
+    refresh_wsl_interop
     type wsl2-ssh-agent >/dev/null 2>&1 && {
         # if [ -z "$SSH_AUTH_SOCK" ]; then
             export WSL2_AGENT=true

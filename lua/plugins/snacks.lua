@@ -20,7 +20,12 @@ local dashboard_opts = {
                 action = require("util").grep,
             },
             { icon = " ", key = "m", desc = "Recent Files", action = function() Snacks.picker.recent() end },
-            { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
+            {
+                icon = " ",
+                key = "c",
+                desc = "Config",
+                action = function() Snacks.dashboard.pick("files", { cwd = vim.g.config_dir }) end,
+            },
             { icon = " ", key = "s", desc = "Restore Session", section = "session" },
             { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
             { icon = " ", key = "q", desc = "Quit", action = ":qa" },
@@ -161,8 +166,11 @@ M.setup = { --{{{
             ---@param ctx {buf: number, ft:string}
             setup = function(ctx)
                 vim.b.minianimate_disable = true
+                vim.b.minihipatterns_disable = true
                 vim.schedule(function()
-                    vim.bo[ctx.buf].syntax = ctx.ft
+                    if vim.api.nvim_buf_is_valid(ctx.buf) then
+                        vim.bo[ctx.buf].syntax = ctx.ft
+                    end
                 end)
             end,
         },
@@ -210,8 +218,13 @@ M.setup = { --{{{
                 }
             }
         },
-        dashboard_opts,
+        dashboard = dashboard_opts,
     },
+    config = function(_, opts)
+        require("snacks").setup(opts)
+        vim.ui.input = Snacks.input.input
+        vim.ui.select = Snacks.picker.select
+    end,
     init = function()
         vim.api.nvim_create_autocmd("User", {
             pattern = "VeryLazy",

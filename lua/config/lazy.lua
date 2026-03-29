@@ -22,7 +22,8 @@ local plugins = {
 
     -- editor {{{
     { import = "plugins.sleuth" },
-    { import = "plugins.comment" },
+    -- { import = "plugins.comment" },
+    { import = "plugins.ts_comments" },
     { import = "plugins.window_picker" },
     -- { import = "plugins.incline" },
     -- { import = "plugins.tagbar" },
@@ -44,6 +45,7 @@ local plugins = {
     require("plugins.telescope").setup,
     require("plugins.snacks").setup,
     { import = "plugins.action_preview" },
+    { import = "plugins.atone" },
     -- { import = "plugins.opencode" },
     -- { "Yggdroot/LeaderF", cmd = { "Leaderf" }, build = ":LeaderfInstallCExtension" },
     { "chrisbra/Colorizer", cmd = { "ColorToggle" } },
@@ -83,7 +85,6 @@ local plugins = {
     -- { import = "plugins.tiny_inline_diagnostic" },
     {
         "neovim/nvim-lspconfig",
-        cmd = { "LspInfo", "LspInstall", "LspStart", "LspRestart" },
         event = { "BufReadPre", "BufNewFile" },
         config = require("config.lsp").setup,
         dependencies = {
@@ -95,6 +96,10 @@ local plugins = {
 -- lazy config {{{
 require("lazy").setup(plugins, {
     root = g.plug_dir,
+    rocks = {
+        enabled = false,
+        hererocks = false,
+    },
     checker = {
         enabled = false,
         notify = true,

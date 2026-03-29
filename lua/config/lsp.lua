@@ -165,18 +165,18 @@ function configs.lua()
     -- :lua vim.print(vim.lsp.get_clients({ name = "lua_ls" })[1].config.settings.Lua)
     -- vim.g.lazydev_enabled = false
     local opts = {
+        root_markers = {
+            ".root",
+            ".luarc.json",
+            ".luarc.jsonc",
+            ".luacheckrc",
+            ".stylua.toml",
+            "stylua.toml",
+            "selene.toml",
+            "selene.yml",
+            ".git",
+        },
         settings = {
-            root_markers = {
-                ".root",
-                ".luarc.json",
-                ".luarc.jsonc",
-                ".luacheckrc",
-                ".stylua.toml",
-                "stylua.toml",
-                "selene.toml",
-                "selene.yml",
-                ".git",
-            },
             Lua = {
                 semantic = {
                     enable = true,
@@ -247,6 +247,13 @@ end
 
 function M.setup()
     -- lsp.set_log_level('debug')
+
+    vim.api.nvim_create_user_command("LspRestart", function()
+        util.lspRestart();
+    end, { desc = "Restart LSP clients" })
+    vim.api.nvim_create_user_command("LspInfo", function()
+        vim.cmd("checkhealth lsp")
+    end, { desc = "Alias for checkhealth lsp" })
 
     vim.api.nvim_create_autocmd("LspAttach", {
         callback = lspAttch

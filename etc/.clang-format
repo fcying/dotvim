@@ -39,7 +39,11 @@ AlignConsecutiveMacros:
 SkipMacroDefinitionBody: true
 SeparateDefinitionBlocks: Leave
 
-BreakBeforeBraces: Allman   # Allman Linux
+Cpp11BracedListStyle: Block
+BinPackParameters: BinPack  # BinPack OnePerLine
+BinPackArguments: true
+
+BreakBeforeBraces: Allman   # Allman or Linux
 AccessModifierOffset: -4
 AlwaysBreakBeforeMultilineStrings: false
 AllowShortIfStatementsOnASingleLine: Never

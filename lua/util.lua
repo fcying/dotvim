@@ -15,6 +15,7 @@ Option = {
     config_post_run = nil,
     clangd_query_driver = nil,
     compile_commands_dir = nil,
+    lsp_log_max_size = 50 * 1024 * 1024,
     ctags_outline = {
         ctags = { "ctags", "--options=" .. g.config_dir .. "/etc/ctags" },
         ft_opt = {
@@ -157,8 +158,9 @@ end
 function M.go2def(str, opts)
     opts = opts or {}
 
-    if vim.api.nvim_get_mode() == "v" then
-        vim.cmd("<ESC>")
+    local mode = vim.api.nvim_get_mode().mode
+    if mode == "v" or mode == "V" or mode == "\22" then
+        vim.cmd("normal! <Esc>")
     end
 
     if vim.o.filetype == "help" then
@@ -227,9 +229,31 @@ function M.removetags()
     cmd("ClearCtags")
 end
 
-function M.lspRestart()
-    if vim.fn.exists(":LspRestart") ~= 0 then
-        cmd("LspRestart")
+function M.lspRestart(name)
+    -- Get all active LSP clients
+    local clients = vim.lsp.get_clients()
+    if #clients == 0 then
+        return
+    end
+
+    if name and name ~= "" then
+        -- Restart only the specified client if it is active
+        for _, client in ipairs(clients) do
+            if client.name == name then
+                vim.cmd("lsp restart " .. name)
+                return
+            end
+        end
+        vim.notify("LSP client '" .. name .. "' is not active.", vim.log.levels.WARN)
+    else
+        -- Restart all active clients
+        local restarted_names = {}
+        for _, client in ipairs(clients) do
+            if not restarted_names[client.name] then
+                vim.cmd("lsp restart " .. client.name)
+                restarted_names[client.name] = true
+            end
+        end
     end
 end
 

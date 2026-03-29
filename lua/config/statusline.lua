@@ -41,38 +41,6 @@ function M.indent()
     return ret
 end
 
-function M.lsp_progress()
-    --local msg = vim.lsp.util.get_progress_messages()
-    local msg = {}
-    for _, client in ipairs(vim.lsp.get_clients()) do
-        for progress in client.progress do
-            local value = progress.value
-            if type(value) == "table" and value.kind then
-                msg.name = client.name
-                msg.message = value.message
-                msg.title = value.title
-                msg.kind = value.kind
-                if value.kind == "end" then
-                    msg.percentage = 100
-                else
-                    msg.percentage = value.percentage
-                end
-            end
-        end
-    end
-
-    if vim.tbl_count(msg) > 0 then
-        --vim.print(msg)
-
-        return (msg.name or "")
-            .. (msg.title and (" " .. msg.title) or "")
-            .. (msg.message and (" " .. msg.message) or "")
-            .. (msg.percentage and (" " .. msg.percentage .. "%%") or "")
-    end
-
-    return ""
-end
-
 function M.search()
     if vim.v.hlsearch == 1 then
         local ok, searchcount = pcall(vim.fn.searchcount)

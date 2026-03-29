@@ -185,7 +185,5 @@ vim.api.nvim_create_autocmd("FileType", {
 
 -- RemoveLsplog {{{
 vim.api.nvim_create_user_command("RemoveLsplog", function()
-    vim.fn.writefile({}, vim.lsp.get_log_path())
+    vim.fn.writefile({}, vim.lsp.log.get_filename())
 end, {})
-
-vim.cmd([[ autocmd FileType qf wincmd J ]])

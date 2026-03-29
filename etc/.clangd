@@ -4,9 +4,11 @@ CompileFlags:
     -ferror-limit=0,
   ]
   Remove: [
-    -m*, -f*, 
+    -mcpu*,
+    -f*, 
     -pi32v2-large-program*,
     -target*,
+    --target*,
   ]
 
 Diagnostics:

@@ -42,6 +42,7 @@ set export
 set shell := ["nu", "-c"]
 set script-interpreter := ["nu"]
 
+[private]
 [script]
 default:
     just --list

@@ -44,6 +44,7 @@ return {
             { "<leader>t", group = "tab" },
             { "<leader>u", group = "util" },
             { "<leader>w", group = "window" },
+            { "<leader>y", group = "yank" },
             { "<leader>um", desc = "print current mode" },
             { "<leader>s", group = "surround" },
             { "<leader>sn", desc = "noice" },

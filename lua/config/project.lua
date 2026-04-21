@@ -20,7 +20,7 @@ local function find_config()
 
     --vim.notify(config_path)
     if not config_path then
-        config_path = util.root_marker .. "/" .. config_name[1]
+        config_path = util.root_dir .. "/" .. config_name[1]
         return false
     end
 
@@ -31,7 +31,7 @@ function M.edit_config()
     if not config_path then
         find_config()
     end
-    if config_path and fn.filereadable(config_path) == 1 then
+    if config_path then
         vim.cmd.edit(config_path)
     end
 end

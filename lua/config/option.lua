@@ -170,48 +170,46 @@ vim.api.nvim_create_autocmd("VimLeave", {
 })
 
 -- osc52 clip {{{
-if g.is_tmux then
+local function paste()
+    return {
+        vim.split(vim.fn.getreg(""), "\n"),
+        vim.fn.getregtype(""),
+    }
+end
+
+local osc52_copy_plus = require("vim.ui.clipboard.osc52").copy("+")
+local osc52_copy_star = require("vim.ui.clipboard.osc52").copy("*")
+
+local function tmux_copy(lines, regtype)
+    vim.fn.system({ "tmux", "load-buffer", "-" }, vim.fn.join(lines, "\n"))
+    osc52_copy_plus(lines, regtype)
+end
+
+if vim.env.TMUX then
+    -- Keep tmux buffer integration for paste so yanks can still be shared
+    -- between tmux windows/panes. We additionally send OSC52 on yank to
+    -- sync the copied text to the system clipboard.
     vim.g.clipboard = {
         name = "tmux",
         copy = {
-            ["+"] = { "tmux", "load-buffer", "-" },
-            ["*"] = { "tmux", "load-buffer", "-" },
+            ["+"] = tmux_copy,
+            ["*"] = tmux_copy,
         },
         paste = {
             ["+"] = { "tmux", "save-buffer", "-" },
             ["*"] = { "tmux", "save-buffer", "-" },
         },
     }
-    vim.api.nvim_create_autocmd("TextYankPost", {
-        group = vim.api.nvim_create_augroup("osc52", { clear = true }),
-        callback = function()
-            -- vim.print(vim.v.event)
-            if vim.v.operator == "y" then
-                local text = vim.fn.getreg("+")
-                local lines = vim.split(text, "\n")
-                -- vim.print(lines)
-                require("vim.ui.clipboard.osc52").copy("+")(lines)
-            end
-        end,
-    })
 else
-    local function paste()
-        return {
-            vim.split(vim.fn.getreg(""), "\n"),
-            vim.fn.getregtype(""),
-        }
-    end
-    -- if vim.env.SSH_TTY then
-        vim.g.clipboard = {
-            name = "osc52",
-            copy = {
-                ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
-                ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
-            },
-            paste = {
-                ["+"] = paste,
-                ["*"] = paste,
-            },
-        }
-    -- end
+    vim.g.clipboard = {
+        name = "osc52",
+        copy = {
+            ["+"] = osc52_copy_plus,
+            ["*"] = osc52_copy_star,
+        },
+        paste = {
+            ["+"] = paste,
+            ["*"] = paste,
+        },
+    }
 end

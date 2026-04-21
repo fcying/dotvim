@@ -2,7 +2,6 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 vim.g.is_wsl = vim.fn.isdirectory("/mnt/c") == 1
 vim.g.is_win = vim.fn.has("win32") == 1
-vim.g.is_tmux = vim.fn.exists("$TMUX") == 1
 
 function _G.join_path(...)
     local sep = vim.g.is_win and "\\" or "/"

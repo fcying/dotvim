@@ -9,8 +9,18 @@ tar xJf nvim_config_with_vendor.txz
 mv nvim ~/.config/
 ```
 
-#### nvim_config_with_vendor.zip
-`nvim_config.zip` with `rg` `ctags` `lsp`
+first start will auto install `lazy.nvim` and missing plugins.
+
+#### nvim_config_with_vendor.txz
+portable package built by GitHub Actions.
+
+includes `rg` `ctags` `clangd` `lua-language-server`
+
+#### runtime dir
+runtime data is stored in `.run/` under this repo.
+
+includes:
+`plugins` `mason` `shada` `undo` `cache` `log`
 
 #### etc folder
 other tools config.  e.g.  
@@ -24,9 +34,10 @@ modify user config.
 #### project config
 `<leader>evp`  
 modify project config.  
-e.g. `.git/.nvim.lua`.  
-if there is not `scm` dir, save `.nvim.lua` in workspace.
-autoreload `..nvim.lua` after save this file.
+project config file name: `.nvim.lua` or `.pvimrc`.  
+it is searched by root marker (`.root` `.git` `.repo` `.svn`).  
+if not found, create `.nvim.lua` in root dir.  
+autoreload project config after save this file.
 
 #### config var
 config var, modify it in `user config` or `project config`.  
@@ -34,11 +45,16 @@ config var, modify it in `user config` or `project config`.
 * `Option`  
     Option for fuzzyfind and generate tags, default:
 ```
-Option.dir = { ".root", ".svn", ".git", ".repo", ".ccls-cache", ".cache", ".ccache" }
+Option.dir = { ".root", ".svn", ".git", ".repo", ".ccls-cache", ".cache", ".ccache", ".run", "CMakeFiles" }
 Option.file = { "*.sw?", "~$*", "*.bak", "*.exe", "*.o", "*.so", "*.py[co]", "tags" }
-Option.rg = { "--max-columns=300", "--iglob=!obj", "--iglob=!out" }
 Option.mru = { "*.so", "*.exe", "*.py[co]", "*.sw?", "~$*", "*.bak", "*.tmp", "*.dll" }
-Option.cconf = { ["*"] = { "-ferror-limit=0" }, c = { "gcc", "-c", "-std=c11" }, cpp = { "g++", "-c", "-std=c++14" } }
+Option.rg = { "--max-columns=300", "--iglob=!obj", "--iglob=!out" }
+Option.gencconf_default_option = {
+    ["*"] = { "-ferror-limit=0" },
+    c = { "gcc", "-c", "-std=c11" },
+    cpp = { "g++", "-c", "-std=c++14" },
+}
+Option.lsp = {}
 ```
 
 * `g:colorscheme`  
@@ -55,60 +71,80 @@ Option.cconf = { ["*"] = { "-ferror-limit=0" }, c = { "gcc", "-c", "-std=c11" },
 * `g:pylsp_jedi_environment`
     default `exepath('python3')`
 
+* `g:complete_engine`
+    `blink` or `cmp`, default `blink`
+
 #### Shortcuts
 default `<leader>` is `<space>`
-| Shortcut          | Mode          | Description                                     |
-|-------------------|---------------|-------------------------------------------------|
-| `fb`              | Normal        | fuzzy buffers search                            |
-| `ff`              | Normal        | fuzzy file search                               |
-| `fg`              | Normal/Visual | search under cursor or search visual selection  |
-| `fh`              | Normal        | fuzzy find help tags                            |
-| `fj`              | Normal        | fuzzy find jumplist                             |
-| `fl`              | Normal        | fuzzy find in current buffer                    |
-| `fm`              | Normal        | fuzzy marks file search                         |
-| `fo`              | Normal        | fuzzy mru file search                           |
-| `fr`              | Normal        | resume last search                              |
-| `ft`              | Normal        | fuzzy find tags                                 |
-| `f/`              | Normal        | live grep                                       |
-| `fc`              | Normal        | select colorscheme                              |
-| `gsiw`            | Normal        | search under cursor (display in quickfix)       |
-| `gs`              | Visual        | search visual selection (display in quickfix)   |
-| `gd`              | Normal        | goto definitions                                |
-| `gi`              | Normal        | lsp_implementations                             |
-| `gr`              | Normal        | lsp_references                                  |
-| `gt`              | Normal        | lsp_type_definitions                            |
-| `go`              | Normal        | ctags outline                                   |
-| `gO`              | Normal        | ctags all buffer outline                        |
-| `K`               | Normal        | lsp_hover                                       |
-| `<leader>la`      | Normal        | lsp_code_actions                                |
-| `<leader>ls`      | Normal        | lsp_document_symbols                            |
-| `<leader>ld`      | Normal        | lsp_diagnostics                                 |
-| `]d`              | Normal        | lsp_goto_next_diagnostic                        |
-| `[d`              | Normal        | lsp_goto_previous_diagnostic                    |
-| `<leader>rn`      | Normal        | lsp_rename                                      |
-| `tg`              | Normal        | gen tags(ctags) and compile_commands.json       |
-| `tc`              | Normal        | remove tas and compile_commands.json            |
-| `<leader>wf`      | Normal        | open file explorer                              |
-| `<leader>wl`      | Normal        | locating current file in file explorer          |
-| `gcc`             | Normal/Visual | comment toggle                                  |
-| `<leader>fp`      | Normal/Visual | fold search                                     |
-| `<leader>q`       | Normal        | close current buffer                            |
-| `v`               | Visual        | expand select region                            |
-| `V`               | Visual        | shrink select region                            |
-| `s`               | Normal        | flash move to {char}                            |
-| `S`               | Normal        | flash treesitter                                |
-| `<leader>sa`      | Normal        | surround add                                    |
-| `<leader>sd`      | Normal        | surround delete                                 |
-| `<leader>sr`      | Normal        | surround replace                                |
-| `<F2>`            | Normal        | toggle show number                              |
-| `<F3>`            | Normal        | toggle show list                                |
-| `<F4>`            | Normal        | toggle wrap                                     |
-| `<F6>`            | Normal        | toggle syntax                                   |
-| `<F5>`/`<leader>z`| Normal        | toggle paste                                    |
-| `Q`               | Normal        | `map Q q`, `map q <nop>`                        |
-| `<leader>ds`      | Normal        | delete trailing space                           |
-| `<leader>dm`      | Normal        | delete ^M                                       |
-| `<leader>da`      | Normal        | delete ansi escape codes                        |
-| `<leader>pu`      | Normal        | update plugins                                  |
-| `<leader>pr`      | Normal        | remove unused plugins                           |
-
+| Shortcut            | Mode          | Description                                     |
+|---------------------|---------------|-------------------------------------------------|
+| `fb`                | Normal        | fuzzy buffers search                            |
+| `ff`                | Normal        | fuzzy file search                               |
+| `fg`                | Normal/Visual | grep project or grep visual selection           |
+| `fh`                | Normal        | fuzzy find help pages                           |
+| `fj`                | Normal        | fuzzy find jumps                                |
+| `fl`                | Normal        | fuzzy find in current buffer                    |
+| `fm`                | Normal        | fuzzy marks file search                         |
+| `fo`                | Normal        | fuzzy mru file search                           |
+| `fr`                | Normal        | resume last search                              |
+| `ft`                | Normal        | fuzzy find tags                                 |
+| `fc`                | Normal        | select colorscheme                              |
+| `fe`                | Normal        | open file explorer                              |
+| `go`                | Normal        | ctags outline                                   |
+| `gO`                | Normal        | ctags all buffer outline                        |
+| `gd`                | Normal        | goto definitions, fallback to tags              |
+| `gri`               | Normal        | lsp_implementations                             |
+| `grr`               | Normal        | lsp_references                                  |
+| `gt`                | Normal        | lsp_type_definitions                            |
+| `gs`                | Normal        | lsp_signature_help                              |
+| `gl`                | Normal        | show diagnostic float                           |
+| `gD`                | Normal        | lsp_declaration                                 |
+| `<leader>ld`        | Normal        | buffer diagnostics                              |
+| `<leader>lr`        | Normal        | lsp_restart                                     |
+| `<leader>h`         | Normal        | clangd switch source/header                     |
+| `ta`                | Normal        | gen tags(ctags) and compile_commands.json       |
+| `tc`                | Normal        | gen compile_commands.json                       |
+| `tr`                | Normal        | remove tags and clang conf                      |
+| `<leader>q`         | Normal        | delete current buffer                           |
+| `<leader>gg`        | Normal        | lazygit                                         |
+| `<leader>gb`        | Normal        | git blame line                                  |
+| `<leader>gB`        | Normal        | git browse                                      |
+| `<leader>gf`        | Normal        | lazygit current file history                    |
+| `<leader>gl`        | Normal        | lazygit log                                     |
+| `<leader>st`        | Normal        | todo list                                       |
+| `<leader>rs`        | Normal        | just select                                     |
+| `<leader>rj`        | Normal        | just                                            |
+| `<leader>rb`        | Normal        | just build                                      |
+| `<leader>rr`        | Normal        | just run current file                           |
+| `<leader>yf`        | Normal        | copy filename                                   |
+| `<leader>yr`        | Normal        | copy relative path                              |
+| `<leader>yF`        | Normal        | copy full path                                  |
+| `<leader>evl`       | Normal        | edit user config                                |
+| `<leader>evp`       | Normal        | edit project config                             |
+| `<leader>evc`       | Normal        | edit config dir                                 |
+| `<leader>cda`       | Normal        | set working directory                           |
+| `<leader>cdt`       | Normal        | set working directory for current tab           |
+| `<leader>sa`        | Normal        | surround add                                    |
+| `<leader>sd`        | Normal        | surround delete                                 |
+| `<leader>sf`        | Normal        | surround find                                   |
+| `<leader>sF`        | Normal        | surround find left                              |
+| `<leader>sh`        | Normal        | surround highlight                              |
+| `<leader>sr`        | Normal        | surround replace                                |
+| `<leader>us`        | Normal        | toggle spell                                    |
+| `<leader>uw`        | Normal        | toggle wrap                                     |
+| `<leader>uL`        | Normal        | toggle relative number                          |
+| `<leader>uc`        | Normal        | toggle conceallevel                             |
+| `<leader>ub`        | Normal        | toggle background                               |
+| `<leader>ud`        | Normal        | toggle diagnostics                              |
+| `<leader>ul`        | Normal        | toggle line number                              |
+| `<leader>uT`        | Normal        | toggle treesitter                               |
+| `<leader>uh`        | Normal        | toggle inlay hints                              |
+| `<leader>i`         | Normal        | toggle indent guides                            |
+| `<leader>pu`        | Normal        | update plugins                                  |
+| `<leader>pr`        | Normal        | remove unused plugins                           |
+| `<leader>ds`        | Normal        | delete trailing space                           |
+| `<leader>dm`        | Normal        | delete ^M                                       |
+| `<leader>da`        | Normal        | delete ansi escape codes                        |
+| `]q`                | Normal        | next quickfix error                             |
+| `[q`                | Normal        | previous quickfix error                         |
+| `Q`                 | Normal        | `map Q q`, `map q <nop>`                        |

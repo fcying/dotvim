@@ -1,9 +1,41 @@
 local util = require("util")
 local map = util.map
 
+local function copy_to_clipboard(text, label)
+    local clipboard = vim.g.clipboard
+    local copy = clipboard and clipboard.copy and clipboard.copy["+"]
+    local regtype = "v"
+    local lines = vim.split(text, "\n", { plain = true })
+
+    if type(copy) == "function" then
+        copy(lines, regtype)
+    elseif type(copy) == "table" then
+        vim.fn.system(copy, text)
+    end
+
+    vim.fn.setreg("+", text, regtype)
+
+    vim.notify("Copied " .. label .. ": " .. text)
+end
+
 map("n", "<leader>evc", ":execute 'e '  . g:config_dir<CR>")
 map("n", "<leader>evl", ":execute 'e '  . g:file_vimrc_local<CR>")
 map("n", "<leader>evp", require("config.project").edit_config)
+
+map("n", "<leader>yf", function()
+    local name = vim.fn.expand("%:t")
+    copy_to_clipboard(name, "filename")
+end, { desc = "copy filename" })
+
+map("n", "<leader>yr", function()
+    local name = vim.fn.expand("%:.")
+    copy_to_clipboard(name, "relative path")
+end, { desc = "copy relative path" })
+
+map("n", "<leader>yF", function()
+    local name = vim.fn.expand("%:p")
+    copy_to_clipboard(name, "full path")
+end, { desc = "copy full path" })
 
 map("n", "j", "gj")
 map("n", "k", "gk")

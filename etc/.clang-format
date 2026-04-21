@@ -7,7 +7,7 @@ ColumnLimit: 100
 UseTab: Never
 AllowShortLoopsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: None
-AlignArrayOfStructures: Right
+AlignArrayOfStructures: None
 AlignConsecutiveAssignments:
   Enabled:         false
   AcrossEmptyLines: false

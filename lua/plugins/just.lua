@@ -34,7 +34,7 @@ return {
                 return nil
             end,
             global_justfile = vim.g.config_dir .. "/etc/justfile",
-            justfile_name = ".justfile",
+            justfile_name = "justfile",
             justfile_template = [[
 # https://just.systems
 set unstable

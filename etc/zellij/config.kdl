@@ -6,30 +6,46 @@ mouse_mode true
 pane_frames false
 session_name "dev"
 attach_to_session true
-session_serialization true
+session_serialization false
 serialization_interval 10
 
 plugins {
     about location="zellij:about"
-    compact-bar location="zellij:compact-bar" {
-        tooltip "\\" // FIXME: can't work with TMUX mode
-    }
     configuration location="zellij:configuration"
-    filepicker location="zellij:strider" {
-        cwd "/"
-    }
+    filepicker location="zellij:strider"
     plugin-manager location="zellij:plugin-manager"
     session-manager location="zellij:session-manager"
-    status-bar location="zellij:status-bar"
     strider location="zellij:strider"
-    tab-bar location="zellij:tab-bar"
+    // status-bar location="zellij:status-bar"
+    // tab-bar location="zellij:tab-bar"
+    // compact-bar location="zellij:compact-bar" {
+    //     tooltip "\\" // FIXME: can't work with TMUX mode
+    // }
     welcome-screen location="zellij:session-manager" {
         welcome_screen true
     }
-}
+    zjstatus location="https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm" {
+        datetime_format   "%y-%m-%d %H:%M"
+        datetime_timezone "Asia/Shanghai"
+        // hide_frame_for_single_pane "true"
 
-load_plugins {
-    compact-bar
+        datetime            "#[fg=#fdf6e3,bg=#60767b] {format} "
+        format_left         "#[fg=#fdf6e3,bg=#60767b,bold][{session}] {mode}{tabs}"
+        format_right        "#[fg=#fdf6e3,bg=#60767b]{datetime}"
+        format_space        "#[bg=#60767b]"
+        mode_normal         "#[fg=#002b36,bg=#268bd2,bold] NORMAL "
+        mode_locked         "#[fg=#fdf6e3,bg=#dc322f,bold] LOCKED "
+        mode_pane           "#[fg=#002b36,bg=#859900,bold] PANE "
+        mode_scroll         "#[fg=#fdf6e3,bg=#d33682,bold] SCROLL "
+        mode_session        "#[fg=#002b36,bg=#2aa198,bold] SESSION "
+        mode_enter_search   "#[fg=#002b36,bg=#2aa198,bold] ENT-SEARCH "
+        mode_search         "#[fg=#002b36,bg=#2aa198,bold] SEARCH "
+        mode_resize         "#[fg=#002b36,bg=#c69a00,bold] RESIZE "
+        mode_move           "#[fg=#002b36,bg=#cb4b16,bold] MOVE "
+        mode_tmux           "#[fg=#002b36,bg=#2aa198,bold] TMUX "
+        tab_normal          "#[fg=#d6d0bd,bg=#60767b] {index}:{name} "
+        tab_active          "#[fg=#073642,bg=#eee8d5,bold] {index}:{name} "
+    }
 }
 
 keybinds clear-defaults=true {
@@ -180,10 +196,10 @@ keybinds clear-defaults=true {
     tmux {
         bind "Ctrl g" { SwitchToMode "locked"; }
         bind "Ctrl b" { Write 2; SwitchToMode "normal"; }
-        bind "Ctrl o" { SwitchToMode "session"; }
         bind "Ctrl s" { SwitchToMode "scroll"; }
+        bind "Ctrl r" { SwitchToMode "resize"; }
         bind "Ctrl p" { SwitchToMode "pane"; }
-        bind "Ctrl n" { SwitchToMode "resize"; }
+        bind "o" { SwitchToMode "session"; }
         bind "left" { MoveFocus "left"; SwitchToMode "normal"; }
         bind "down" { MoveFocus "down"; SwitchToMode "normal"; }
         bind "up" { MoveFocus "up"; SwitchToMode "normal"; }
@@ -196,13 +212,17 @@ keybinds clear-defaults=true {
         bind "%" { NewPane "right"; SwitchToMode "normal"; }
         bind "," { SwitchToMode "renametab"; TabNameInput 0; }
         bind "[" { SwitchToMode "scroll"; }
-        bind "c" { 
-            NewTab {
-                cwd "." // FIXME:
-            };
+        bind "c" {
+            NewTab;
             SwitchToMode "normal";
         }
-        bind "s" { ToggleActiveSyncTab; SwitchToMode "normal"; }
+        bind "s" {
+            LaunchOrFocusPlugin "session-manager" {
+                floating true
+                move_to_focused_tab true
+            }
+            SwitchToMode "normal"
+        }
         bind "n" { GoToNextTab; SwitchToMode "normal"; }
         bind "p" { GoToPreviousTab; SwitchToMode "normal"; }
         bind "z" { ToggleFocusFullscreen; SwitchToMode "normal"; }

@@ -53,6 +53,10 @@ end
 vim.o.shadafile = vim.fs.joinpath(vim.fn.stdpath("state"), "shadafile")
 vim.opt.undodir = vim.fs.joinpath(vim.g.runtime_dir, "undodir_nvim")
 
+if vim.fn.has("nvim-0.12") == 0 then
+    vim.notify("This config requires Neovim 0.12 or newer", vim.log.levels.ERROR)
+end
+
 local util = require("util")
 util.get_root_marker({ ".root", ".git", ".repo", ".svn" })
 require("config.project").setup()

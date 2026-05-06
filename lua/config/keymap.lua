@@ -37,6 +37,8 @@ map("n", "<leader>yF", function()
     copy_to_clipboard(name, "full path")
 end, { desc = "copy full path" })
 
+map({ "n", "x" }, "<leader>yy", '"+y', { desc = "copy to system clipboard" })
+
 map("n", "j", "gj")
 map("n", "k", "gk")
 

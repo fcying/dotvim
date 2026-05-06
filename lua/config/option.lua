@@ -22,7 +22,9 @@ opt.autochdir = false
 opt.autoread = true
 opt.autowrite = false
 opt.backup = false
-opt.clipboard = "unnamedplus" -- Sync with system clipboard
+if g.osc52_auto_yank ~= 0 then
+    opt.clipboard = "unnamedplus" -- Sync normal yank with system clipboard
+end
 opt.cinkeys = opt.cinkeys - "0#"
 opt.cmdheight = 1
 opt.confirm = false   -- Confirm to save changes before exiting modified buffer
@@ -180,36 +182,14 @@ end
 local osc52_copy_plus = require("vim.ui.clipboard.osc52").copy("+")
 local osc52_copy_star = require("vim.ui.clipboard.osc52").copy("*")
 
-local function tmux_copy(lines, regtype)
-    vim.fn.system({ "tmux", "load-buffer", "-" }, vim.fn.join(lines, "\n"))
-    osc52_copy_plus(lines, regtype)
-end
-
-if vim.env.TMUX then
-    -- Keep tmux buffer integration for paste so yanks can still be shared
-    -- between tmux windows/panes. We additionally send OSC52 on yank to
-    -- sync the copied text to the system clipboard.
-    vim.g.clipboard = {
-        name = "tmux",
-        copy = {
-            ["+"] = tmux_copy,
-            ["*"] = tmux_copy,
-        },
-        paste = {
-            ["+"] = { "tmux", "save-buffer", "-" },
-            ["*"] = { "tmux", "save-buffer", "-" },
-        },
-    }
-else
-    vim.g.clipboard = {
-        name = "osc52",
-        copy = {
-            ["+"] = osc52_copy_plus,
-            ["*"] = osc52_copy_star,
-        },
-        paste = {
-            ["+"] = paste,
-            ["*"] = paste,
-        },
-    }
-end
+vim.g.clipboard = {
+    name = "osc52",
+    copy = {
+        ["+"] = osc52_copy_plus,
+        ["*"] = osc52_copy_star,
+    },
+    paste = {
+        ["+"] = paste,
+        ["*"] = paste,
+    },
+}

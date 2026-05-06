@@ -9,5 +9,6 @@ return {
     init = function()
         --FIXME: https://github.com/lambdalisue/suda.vim/issues/54
         vim.g.suda_smart_edit = 0
+        vim.cmd([[cabbr w!! SudaWrite]])
     end
 }

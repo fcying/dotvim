@@ -42,7 +42,7 @@ local function get_rg_opts()
     local option = require("util").option
     local opts = {
         show_empty = true,
-        follow = false,
+        follow = true,
         hidden = true,
         ignored = false,
         exclude = {},
@@ -50,7 +50,7 @@ local function get_rg_opts()
         args = {
             "--no-config",
             "--no-binary",
-            "--follow",
+            "--no-messages",
         }
     }
     for _, v in ipairs(option.dir) do
@@ -63,8 +63,21 @@ local function get_rg_opts()
 end
 
 M.findFile = function()
-    local opts = vim.tbl_deep_extend("force", get_rg_opts(), {
-    })
+    local option = require("util").option
+    local opts = {
+        show_empty = true,
+        follow = true,
+        hidden = true,
+        ignored = false,
+        exclude = {},
+        cmd = "fd",
+    }
+    for _, v in ipairs(option.dir) do
+        table.insert(opts.exclude, v)
+    end
+    for _, v in ipairs(option.file) do
+        table.insert(opts.exclude, v)
+    end
     Snacks.picker.files(opts)
 end
 

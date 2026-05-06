@@ -24,7 +24,7 @@ jobs:
           sudo cp -rf ./nvim-linux-x86_64/* /usr/local
           nvim --version
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Prepare nvim config
         run: |
           pwd && ls
@@ -33,8 +33,14 @@ jobs:
           # init default nvim config
           cp -r init.lua lua/ dict/ ~/.config/nvim
           cp -r snippets/ vendor/ etc/  ~/.config/nvim/
-          cd ~/.config
 
+          echo "get tree-sitter====================" # {{{
+          cd /tmp
+          wget -qOts.txz "https://github.com/fcying/tools/releases/download/tools/tree-sitter_linux_amd64.txz"
+          tar xJvf ts.txz
+          cp ./tree-sitter /usr/local/bin/
+
+          cd ~/.config
           echo "install plugins===================="
           nvim --headless "+Lazy! sync" +qa
 
@@ -43,17 +49,20 @@ jobs:
 
       - name: Prepare nvim config with vendor
         run: |
+          cp /usr/local/bin/tree-sitter ~/.config/nvim/vendor/
+
+          echo "mason install====================" # {{{
           cd ~/.config
-          echo "install vendor===================="
-          nvim --headless -c 'MasonInstall --sync tree-sitter-cli' -c qall
+          # Clear the corrupted tree-sitter cache directories before installation
+          rm -rf ./nvim/.run/cache
           nvim --headless -c 'MasonInstall --sync lua-language-server' -c qall
           nvim --headless -c 'MasonInstall --sync clangd' -c qall
 
-          echo "update mason script===================="
+          echo "update mason script====================" # {{{
           # replace link to file
           sed 's|/home/runner|~|' -i ~/.config/nvim/.run/mason/share/mason-schemas/lsp/clangd.json
           sed 's|/home/runner|~|' -i ~/.config/nvim/.run/mason/share/mason-schemas/lsp/lua-language-server.json
-          rm ~/.config/nvim/.run/mason/bin/*
+          rm -f ~/.config/nvim/.run/mason/bin/*
           {
             echo "#!/usr/bin/env bash"
             echo 'cd "$(dirname $(readlink -f $0))"'
@@ -66,21 +75,36 @@ jobs:
           } | tee ~/.config/nvim/.run/mason/bin/lua-language-server
           chmod +x ~/.config/nvim/.run/mason/bin/*
 
-          echo "get rg===================="
+          echo "get rg====================" # {{{
+          cd /tmp
           new_ver=$(curl -sv "https://github.com/BurntSushi/ripgrep/releases/latest" 2>&1 | grep -P location: | grep -Po "(\d+\.){2}\d+")
           filename=ripgrep-${new_ver}-x86_64-unknown-linux-musl
           wget -qOrg.tgz "https://github.com/BurntSushi/ripgrep/releases/download/$new_ver/$filename.tar.gz"
           tar xzf rg.tgz
           chmod a+x ./$filename/rg
           mv ./$filename/rg ~/.config/nvim/vendor/
-          rm -r rg.tgz $filename
+          cp ./$filename/complete/_rg ~/.config/nvim/etc/fpath/
 
-          echo "get universal-ctags===================="
+          echo "get fd====================" # {{{
+          cd /tmp
+          new_ver=$(curl -sv "https://github.com/sharkdp/fd/releases/latest" 2>&1 | grep -P location: | grep -Po "(\d+\.){2}\d+")
+          filename=fd-v${new_ver}-x86_64-unknown-linux-musl
+          wget -qOfd.tgz "https://github.com/sharkdp/fd/releases/download/v$new_ver/$filename.tar.gz"
+          tar xzf fd.tgz
+          chmod a+x ./$filename/fd
+          mv ./$filename/fd ~/.config/nvim/vendor/
+          cp ./$filename/autocomplete/_fd ~/.config/nvim/etc/fpath/
+
+          echo "get universal-ctags====================" # {{{
+          cd /tmp
           wget -qO ctags.txz https://github.com/fcying/tools/releases/download/tools/ctags_linux_amd64.txz
           tar xJf ctags.txz
-          rm ctags.txz
           mv ctags ~/.config/nvim/vendor/
 
+          echo "pack config===================="
+          cd ~/.config
+          # Remove runtime caches to prevent tar conflicts and reduce package size
+          rm -rf ./nvim/.run/cache
           XZ_OPT=-9 tar cJf nvim_config_with_vendor.txz --exclude .git nvim
           mv ./*.txz ~/publish
 
@@ -93,6 +117,7 @@ jobs:
             echo -e "\n"
             echo "### vendor:"
             echo "[ripgrep](https://github.com/BurntSushi/ripgrep)"
+            echo "[fd](https://github.com/sharkdp/fd)"
             echo "[universal-ctags](https://github.com/universal-ctags/ctags)"
             echo "[clangd](https://github.com/clangd/clangd)"
             echo "[sumneko_lua](https://github.com/sumneko/lua-language-server)"

@@ -143,7 +143,7 @@ return {
         "Kaiser-Yang/blink-cmp-dictionary",
         "rafamadriz/friendly-snippets",
     },
-    version = "v1.*",
+    version = "1.*",
     -- build = "cargo build --release",
     opts = opts,
 }

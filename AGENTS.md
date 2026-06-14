@@ -13,6 +13,7 @@
 
 ## Local Config Hooks
 - User config is sourced from `~/.vimrc.local` if present.
+- Zsh shell configuration is in `etc/zshrc`; supporting zsh files live under `etc/`.
 - Project config is `.nvim.lua` or `.pvimrc`, found upward from root markers `.root`, `.git`, `.repo`, `.svn`; this repo has `.nvim.lua` adding `.vim_origin`, `vim_config`, and `.run` to `Option.dir`.
 - `Option` is a global extension point defined in `lua/util.lua`; `Option.dir/file/mru/rg/lsp` extend defaults, not replace them.
 

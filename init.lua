@@ -1,6 +1,6 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
-vim.g.is_wsl = vim.fn.isdirectory("/mnt/c") == 1
+vim.g.is_wsl = vim.fn.isdirectory("/mnt/c") == 1 and not (vim.env.SSH_CONNECTION or vim.env.SSH_CLIENT)
 vim.g.is_win = vim.fn.has("win32") == 1
 
 function _G.join_path(...)

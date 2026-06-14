@@ -47,11 +47,11 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
 
 -- errorformat Keil {{{
 -- FIXME: invalid %-  https://github.com/neovim/neovim/issues/29061
--- opt.errorformat:prepend("%-GBuild Time Elapsed:%m") 
-vim.cmd[[set errorformat^=%-GBuild\ Time\ Elapsed:%m,%-GBatch-Build\ summary:%m]]
-vim.cmd[[set errorformat^=%I%f(%l):\ warning:\ L6329W:%m]]
+-- opt.errorformat:prepend("%-GBuild Time Elapsed:%m")
+vim.cmd [[set errorformat^=%-GBuild\ Time\ Elapsed:%m,%-GBatch-Build\ summary:%m]]
+vim.cmd [[set errorformat^=%I%f(%l):\ warning:\ L6329W:%m]]
 -- xmake
-vim.cmd[[set errorformat^=%Eerror:\ %f:%l:%c:\ error:\ %m]]
+vim.cmd [[set errorformat^=%Eerror:\ %f:%l:%c:\ error:\ %m]]
 
 if g.has_rg == 1 then
     opt.grepformat = "%f:%l:%c:%m"
@@ -161,22 +161,34 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
--- FIXME: nvim not restore terminal cursorshape https://github.com/neovim/neovim/issues/4396 {{{
-vim.api.nvim_create_autocmd("VimLeave", {
-    group = vim.api.nvim_create_augroup("set_cursorshape", { clear = true }),
-    pattern = { "*" },
-    callback = function()
-        vim.cmd([[ set guicursor= | call chansend(v:stderr, "\x1b[ q") ]])
-        -- vim.cmd([[ set guicursor=a:block-blinkon0 ]])
-    end,
-})
-
 -- osc52 clip {{{
 local function paste()
-    return {
-        vim.split(vim.fn.getreg(""), "\n"),
-        vim.fn.getregtype(""),
-    }
+    if vim.g.is_wsl then
+        local cmd
+        if vim.fn.executable("win32yank.exe") == 1 then
+            cmd = "win32yank.exe -o --lf"
+        else
+            cmd = 'powershell -NoProfile -Command "[Console]::Out.Write((Get-Clipboard -Raw))"'
+        end
+        local stdout = vim.fn.system(cmd)
+        stdout = stdout:gsub("\r\n", "\n")
+        local lines = vim.split(stdout, "\n", { plain = true })
+        local regtype = "v" -- Default to characterwise (normal text)
+
+        -- If the original text ends with a newline, it's a linewise copy (like yy)
+        if stdout:sub(-1) == "\n" then
+            regtype = "V"           -- Set to linewise so 'p' pastes on the next line
+            if #lines > 1 and lines[#lines] == "" then
+                table.remove(lines) -- Remove the empty element caused by the trailing split
+            end
+        end
+        return { lines, regtype }
+    else
+        return {
+            vim.split(vim.fn.getreg(""), "\n"),
+            vim.fn.getregtype(""),
+        }
+    end
 end
 
 local osc52_copy_plus = require("vim.ui.clipboard.osc52").copy("+")

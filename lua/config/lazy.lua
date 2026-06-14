@@ -52,8 +52,6 @@ local plugins = {
     -- { import = "plugins.baleia" },
 
     { "fcying/vim-plugin-AnsiEsc", cmd = { "AnsiEsc", "AnsiEscClear" } },
-    -- { import = "plugins.noice" },
-    -- { import = "plugins.nvim_notify" },
     -- { import = "plugins.ZFVimIM" },
     -- { import = "plugins.ZFVimDirDiff" },
     { import = "plugins.fugitive" },

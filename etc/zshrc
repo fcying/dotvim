@@ -630,6 +630,14 @@ alias zrm='zellij_remove_layout'
 alias zl=' zellij ls'
 alias zd=' zellij_delete'
 alias zda=' zellij_delete_all'
+function zellij_reset_pane {
+    local old_pane="$ZELLIJ_PANE_ID"
+    local new_pane
+    new_pane="$(zellij action new-pane)"
+    zellij action focus-pane --pane-id "$new_pane"
+    zellij action close-pane --pane-id "$old_pane"
+}
+alias zr='zellij_reset_pane'
 
 alias rs='rsync -rval --partial --delete --progress '
 alias cpa='cp -rfavx '

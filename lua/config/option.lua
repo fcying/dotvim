@@ -52,6 +52,7 @@ vim.cmd [[set errorformat^=%-GBuild\ Time\ Elapsed:%m,%-GBatch-Build\ summary:%m
 vim.cmd [[set errorformat^=%I%f(%l):\ warning:\ L6329W:%m]]
 -- xmake
 vim.cmd [[set errorformat^=%Eerror:\ %f:%l:%c:\ error:\ %m]]
+vim.cmd [[set errorformat^=%Eerror:\ %f:%l:\ error:\ %m]]
 
 if g.has_rg == 1 then
     opt.grepformat = "%f:%l:%c:%m"

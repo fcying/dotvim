@@ -10,6 +10,7 @@ export ATUIN_CONFIG_DIR=${ATUIN_CONFIG_DIR:-"$MY_CONFIG_DIR/atuin"}
 if [ ! -d "$ATUIN_CONFIG_DIR" ]; then
     unset ATUIN_CONFIG_DIR
 fi
+CDN=${CDN-"https://gh-proxy.org/"}
 
 export PAGER=${PAGER:-"less"}
 export EDITOR="$VISUAL"
@@ -143,7 +144,6 @@ FZ_HISTORY_CD_CMD=_zlua
 zinit ice wait'0' lucid; zinit light zsh-users/zsh-history-substring-search
 bindkey -M emacs '^p' history-substring-search-up
 bindkey -M emacs '^n' history-substring-search-down
-zinit ice wait'0' lucid atinit'zpcompinit; zpcdreplay'
 zinit light zsh-users/zsh-syntax-highlighting
 zinit ice wait'1' blockf lucid atload'zsh_after_init'
 zinit light zsh-users/zsh-completions
@@ -198,7 +198,7 @@ function zsh_after_init() {
 function fzf_install() {
     if [[ ! -f "$HOME/.fzf/install" ]] || [[ "$1" == "update" ]]; then
         mkdir -p ~/.fzf
-        curl -sLo$HOME/.fzf/install https://raw.githubusercontent.com/junegunn/fzf/master/install
+        curl -sLo$HOME/.fzf/install ${CDN}https://raw.githubusercontent.com/junegunn/fzf/master/install
         if [ $? -eq 0 ]; then
             bash ~/.fzf/install --all
             ln -sf ~/.fzf/bin/fzf ~/bin/
@@ -211,7 +211,7 @@ function zlua_install() {
     # wsl1 need it
     # sudo apt install lua-filesystem
     if [[ ! -f "$HOME/bin/z.lua" ]] || [[ "$1" == "update" ]]; then
-        curl -Lo$HOME/bin/z.lua https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua
+        curl -Lo$HOME/bin/z.lua ${CDN}https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua
     fi
     export _ZL_HYPHEN=1
     alias zi='z -i'      # cd with interactive selection
@@ -403,6 +403,7 @@ function soft_update() {
     zlua_install update
 
     # ~/.tmux/plugins/tpm/bin/update_plugins all
+    zellij_plugin_install update
     # nix_update
     brew_update
     type pixi >/dev/null 2>&1 && { # {{{
@@ -451,9 +452,75 @@ else
 fi
 
 old_sock=
+zellij_cmd_start=
+zellij_tab_notified=
+function _zellij_pane_focused() {
+    [ -z "$ZELLIJ_PANE_ID" ] && return 1
+
+    local pane_id="$ZELLIJ_PANE_ID"
+    local pane_id_full="$pane_id"
+    [[ "$pane_id" != terminal_* ]] && pane_id_full="terminal_$pane_id"
+
+    zellij action list-clients 2>/dev/null | command grep -Eq "^[^[:space:]]+[[:space:]]+(${pane_id}|${pane_id_full})[[:space:]]"
+}
+function _zellij_current_tab_info() {
+    [ -z "$ZELLIJ_PANE_ID" ] && return 1
+
+    zellij action list-panes --json 2>/dev/null | python3 -c '
+import json
+import os
+import sys
+
+pane_id = os.environ.get("ZELLIJ_PANE_ID", "")
+if pane_id.startswith("terminal_"):
+    pane_id = pane_id.split("_", 1)[1]
+
+try:
+    panes = json.load(sys.stdin)
+except Exception:
+    sys.exit(1)
+
+for pane in panes:
+    if pane.get("is_plugin"):
+        continue
+    if str(pane.get("id")) == pane_id:
+        print("{}\t{}".format(pane.get("tab_id"), pane.get("tab_name", "")))
+        sys.exit(0)
+
+sys.exit(1)
+'
+}
+function _zellij_mark_tab_notify() {
+    local tab_info tab_id tab_name
+    tab_info=$(_zellij_current_tab_info) || return 1
+    tab_id=${tab_info%%$'\t'*}
+    tab_name=${tab_info#*$'\t'}
+
+    [ -z "$tab_id" ] && return 1
+    [[ "$tab_name" == \!* ]] && return 0
+    zellij action rename-tab-by-id "$tab_id" "!${tab_name}" >/dev/null 2>&1 && zellij_tab_notified=1
+}
+function _zellij_clear_tab_notify() {
+    [ "$zellij_tab_notified" = 1 ] || return 0
+    _zellij_pane_focused || return 0
+
+    local tab_info tab_id tab_name
+    tab_info=$(_zellij_current_tab_info) || return 1
+    tab_id=${tab_info%%$'\t'*}
+    tab_name=${tab_info#*$'\t'}
+
+    [ -z "$tab_id" ] && return 1
+    [[ "$tab_name" == \!* ]] && zellij action rename-tab-by-id "$tab_id" "${tab_name#!}" >/dev/null 2>&1
+    zellij_tab_notified=
+}
+function mypreexec() {
+    if [ -n "$ZELLIJ" ]; then
+        zellij_cmd_start=$SECONDS
+    fi
+}
 function myprecmd() {
     # SSH_AUTH_SOCK {{{
-    if [ -n "$TMUX" ] && [ "$WSL2_AGENT" != "true" ]; then
+    if { [ -n "$TMUX" ] || [ -n "$ZELLIJ" ]; } && [ "$WSL2_AGENT" != "true" ]; then
         new_sock=$(find /tmp/ssh-* -type s -perm -700 -user "$USER" 2>/dev/null)
         if [ -n "$new_sock" ]; then
             new_sock=$(echo "$new_sock" | xargs ls -t | head -n 1)
@@ -469,8 +536,24 @@ function myprecmd() {
     if [ -n "$TMUX" ]; then
         echo -n -e "\a"
     fi
+
+    if [ -n "$ZELLIJ" ]; then
+        _zellij_clear_tab_notify
+    fi
+
+    if [ -n "$ZELLIJ" ] && [ -n "$zellij_cmd_start" ]; then
+        local notify_after=${ZELLIJ_NOTIFY_AFTER:-3}
+        local elapsed=$((SECONDS - zellij_cmd_start))
+
+        if [[ "$notify_after" == <-> ]] && [ "$elapsed" -ge "$notify_after" ] && ! _zellij_pane_focused; then
+            _zellij_mark_tab_notify
+        fi
+
+        zellij_cmd_start=
+    fi
 }
 add-zsh-hook precmd myprecmd
+add-zsh-hook preexec mypreexec
 
 # setting {{{
 [ -t 0 ] && stty -ixon                  # disable terminal <c-s>
@@ -638,6 +721,35 @@ function zellij_reset_pane {
     zellij action close-pane --pane-id "$old_pane"
 }
 alias zr='zellij_reset_pane'
+function zellij_plugin_install() {
+    local force="$1"
+    local plugin_dir="$HOME/.config/zellij/plugins"
+    local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zellij"
+    local permissions_file="$cache_dir/permissions.kdl"
+
+    mkdir -p "$plugin_dir"
+    mkdir -p "$cache_dir"
+    # zjstatus
+    if [[ ! -f "$plugin_dir/zjstatus.wasm" ]] || [[ "$force" == "update" ]]; then
+        local zjstatus_path="$plugin_dir/zjstatus.wasm"
+        local tmp_file="${zjstatus_path}.tmp"
+        if curl -fSL -o "$tmp_file" \
+            "${CDN}https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm"; then
+            mv -f "$tmp_file" "$zjstatus_path"
+        else
+            rm -f "$tmp_file"
+            echo "Failed to download zjstatus.wasm" >&2
+        fi
+        cat >"$permissions_file" <<EOF
+"$zjstatus_path" {
+    ReadApplicationState
+    RunCommands
+    ChangeApplicationState
+}
+EOF
+    fi
+}
+[ -d "$HOME/.config/zellij" ] && zellij_plugin_install
 
 alias rs='rsync -rval --partial --delete --progress '
 alias cpa='cp -rfavx '

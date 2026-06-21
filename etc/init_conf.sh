@@ -28,9 +28,13 @@ if [[ $app == "ln" ]]; then
     ln -sfv $PWD/inputrc ~/.inputrc
     ln -sfv $PWD/editorconfig ~/.editorconfig
 
-    mkdir -p ~/.tmux
-    ln -sfv $PWD/tmux.conf ~/.tmux.conf
-    ln -sfv $PWD/colortheme ~/.tmux
+    # mkdir -p ~/.tmux
+    # ln -sfv $PWD/tmux.conf ~/.tmux.conf
+    # ln -sfv $PWD/colortheme ~/.tmux
+
+    mkdir -p ~/.config/zellij/layouts/
+    ln -sfv $PWD/zellij/config.kdl ~/.config/zellij/config.kdl
+    ln -sfv $PWD/zellij/main.kdl ~/.config/zellij/layouts/main.kdl
 
     mkdir -p ~/.config/tig
     ln -sfv $PWD/tigrc ~/.config/tig/config
@@ -46,10 +50,6 @@ if [[ $app == "ln" ]]; then
 
     mkdir -p ~/.config/atuin
     ln -sfv $PWD/atuin/config.toml ~/.config/atuin/config.toml
-
-    mkdir -p ~/.config/zellij/layouts/
-    ln -sfv $PWD/zellij/config.kdl ~/.config/zellij/config.kdl
-    ln -sfv $PWD/zellij/main.kdl ~/.config/zellij/layouts/main.kdl
 fi
 
 # windows

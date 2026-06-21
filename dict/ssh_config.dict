@@ -1,0 +1,17 @@
+StrictHostKeyChecking
+UserKnownHostsFile
+tcpkeepalive
+serveralivecountmax
+serveraliveinterval
+Host
+PubkeyAcceptedKeyTypes
+HostKeyAlgorithms
+ProxyCommand
+ForwardAgent
+hostname
+user
+port
+LocalForward
+RemoteForward
+IdentityFile
+

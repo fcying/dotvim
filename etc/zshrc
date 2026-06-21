@@ -403,6 +403,7 @@ function soft_update() {
     zlua_install update
 
     # ~/.tmux/plugins/tpm/bin/update_plugins all
+    zellij_plugin_install update
     # nix_update
     brew_update
     type pixi >/dev/null 2>&1 && { # {{{
@@ -451,9 +452,75 @@ else
 fi
 
 old_sock=
+zellij_cmd_start=
+zellij_tab_notified=
+function _zellij_pane_focused() {
+    [ -z "$ZELLIJ_PANE_ID" ] && return 1
+
+    local pane_id="$ZELLIJ_PANE_ID"
+    local pane_id_full="$pane_id"
+    [[ "$pane_id" != terminal_* ]] && pane_id_full="terminal_$pane_id"
+
+    zellij action list-clients 2>/dev/null | command grep -Eq "^[^[:space:]]+[[:space:]]+(${pane_id}|${pane_id_full})[[:space:]]"
+}
+function _zellij_current_tab_info() {
+    [ -z "$ZELLIJ_PANE_ID" ] && return 1
+
+    zellij action list-panes --json 2>/dev/null | python3 -c '
+import json
+import os
+import sys
+
+pane_id = os.environ.get("ZELLIJ_PANE_ID", "")
+if pane_id.startswith("terminal_"):
+    pane_id = pane_id.split("_", 1)[1]
+
+try:
+    panes = json.load(sys.stdin)
+except Exception:
+    sys.exit(1)
+
+for pane in panes:
+    if pane.get("is_plugin"):
+        continue
+    if str(pane.get("id")) == pane_id:
+        print("{}\t{}".format(pane.get("tab_id"), pane.get("tab_name", "")))
+        sys.exit(0)
+
+sys.exit(1)
+'
+}
+function _zellij_mark_tab_notify() {
+    local tab_info tab_id tab_name
+    tab_info=$(_zellij_current_tab_info) || return 1
+    tab_id=${tab_info%%$'\t'*}
+    tab_name=${tab_info#*$'\t'}
+
+    [ -z "$tab_id" ] && return 1
+    [[ "$tab_name" == \!* ]] && return 0
+    zellij action rename-tab-by-id "$tab_id" "!${tab_name}" >/dev/null 2>&1 && zellij_tab_notified=1
+}
+function _zellij_clear_tab_notify() {
+    [ "$zellij_tab_notified" = 1 ] || return 0
+    _zellij_pane_focused || return 0
+
+    local tab_info tab_id tab_name
+    tab_info=$(_zellij_current_tab_info) || return 1
+    tab_id=${tab_info%%$'\t'*}
+    tab_name=${tab_info#*$'\t'}
+
+    [ -z "$tab_id" ] && return 1
+    [[ "$tab_name" == \!* ]] && zellij action rename-tab-by-id "$tab_id" "${tab_name#!}" >/dev/null 2>&1
+    zellij_tab_notified=
+}
+function mypreexec() {
+    if [ -n "$ZELLIJ" ]; then
+        zellij_cmd_start=$SECONDS
+    fi
+}
 function myprecmd() {
     # SSH_AUTH_SOCK {{{
-    if [ -n "$TMUX" ] && [ "$WSL2_AGENT" != "true" ]; then
+    if { [ -n "$TMUX" ] || [ -n "$ZELLIJ" ]; } && [ "$WSL2_AGENT" != "true" ]; then
         new_sock=$(find /tmp/ssh-* -type s -perm -700 -user "$USER" 2>/dev/null)
         if [ -n "$new_sock" ]; then
             new_sock=$(echo "$new_sock" | xargs ls -t | head -n 1)
@@ -469,8 +536,24 @@ function myprecmd() {
     if [ -n "$TMUX" ]; then
         echo -n -e "\a"
     fi
+
+    if [ -n "$ZELLIJ" ]; then
+        _zellij_clear_tab_notify
+    fi
+
+    if [ -n "$ZELLIJ" ] && [ -n "$zellij_cmd_start" ]; then
+        local notify_after=${ZELLIJ_NOTIFY_AFTER:-3}
+        local elapsed=$((SECONDS - zellij_cmd_start))
+
+        if [[ "$notify_after" == <-> ]] && [ "$elapsed" -ge "$notify_after" ] && ! _zellij_pane_focused; then
+            _zellij_mark_tab_notify
+        fi
+
+        zellij_cmd_start=
+    fi
 }
 add-zsh-hook precmd myprecmd
+add-zsh-hook preexec mypreexec
 
 # setting {{{
 [ -t 0 ] && stty -ixon                  # disable terminal <c-s>
@@ -638,6 +721,17 @@ function zellij_reset_pane {
     zellij action close-pane --pane-id "$old_pane"
 }
 alias zr='zellij_reset_pane'
+function zellij_plugin_install() {
+    local force="$1"
+    local dir="$HOME/.config/zellij/plugins"
+    # zjstatus
+    if [[ ! -f "$dir/zjstatus.wasm" ]] || [[ "$force" == "update" ]]; then
+        mkdir -p "$dir"
+        curl -fSL -o "$dir/zjstatus.wasm" \
+            "https://gh-proxy.org/https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm"
+    fi
+}
+[ -d "$HOME/.config/zellij" ] && zellij_plugin_install
 
 alias rs='rsync -rval --partial --delete --progress '
 alias cpa='cp -rfavx '

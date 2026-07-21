@@ -98,11 +98,6 @@ opt.winminwidth = 5
 opt.wrap = true
 opt.whichwrap = opt.whichwrap + "<,>,[,],h,l"
 
--- terminal {{{
-if not g.is_win then
-    vim.o.shellcmdflag = "-ic"
-end
-
 -- foldmethod {{{
 opt.foldmethod = "manual"
 opt.foldenable = false

@@ -1,5 +1,3 @@
-#zmodload zsh/zprof
-
 # shellcheck disable=SC2034,SC1117,SC2179,SC2015,SC2181,SC2032,SC2033,SC2154,SC2004
 if [ -f "$HOME/.shrc.local" ]; then
     source "$HOME/.shrc.local"
@@ -109,6 +107,31 @@ type nvim >/dev/null 2>&1 && {
     alias tvim='nvim -u ~/test/nvim/init.lua'
 }
 
+function download() {
+    local output="$1"
+    local url="$2"
+
+    if [ -z "$output" ] || [ -z "$url" ]; then
+        echo "Usage: download <output|-> <url>" >&2
+        return 2
+    fi
+
+    if [ "$output" = "-" ]; then
+        command curl -fSL "$url"
+        return
+    fi
+
+    local tmp_file="${output}.tmp"
+    mkdir -p "${output:h}" || return 1
+    if command curl -fSL -o "$tmp_file" "$url"; then
+        mv -f "$tmp_file" "$output"
+    else
+        rm -f "$tmp_file"
+        echo "Failed to download $url" >&2
+        return 1
+    fi
+}
+
 # key bindings {{{
 bindkey -e  # Use emacs key bindings
 bindkey "\e[3~" delete-char
@@ -124,35 +147,8 @@ zle -N edit-command-line
 bindkey '^xe' edit-command-line
 bindkey '^x^e' edit-command-line
 
-### zinit {{{
-ZINIT_HOME=$HOME/.zinit
-if [ ! -d "$ZINIT_HOME/bin/.git" ]; then
-    zinit_inited="true"
-    mkdir -p $ZINIT_HOME/bin
-    git clone --depth 1 https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"/bin
-fi
-declare -A ZINIT
-ZINIT[NO_ALIASES]=1
-source "${ZINIT_HOME}/bin/zinit.zsh"
-
-#zinit light Aloxaf/fzf-tab
-zinit light zsh-users/zsh-autosuggestions
-bindkey '^f' autosuggest-accept
-
-zinit ice wait'0' lucid; zinit light changyuheng/fz
-FZ_HISTORY_CD_CMD=_zlua
-zinit ice wait'0' lucid; zinit light zsh-users/zsh-history-substring-search
-bindkey -M emacs '^p' history-substring-search-up
-bindkey -M emacs '^n' history-substring-search-down
-zinit light zsh-users/zsh-syntax-highlighting
-zinit ice wait'1' blockf lucid atload'zsh_after_init'
-zinit light zsh-users/zsh-completions
-
-function zsh_after_init() {
-    if [ -n "$zinit_inited" ]; then
-        zinit compile --all
-    fi
-    source "$MY_CONFIG_DIR/zsh_config.zsh"
+function zsh_post_init() {
+    plugin_post_init
     source "$MY_CONFIG_DIR/git.zsh"
     type PostLoad >/dev/null 2>&1 && PostLoad
 
@@ -197,9 +193,7 @@ function zsh_after_init() {
 
 function fzf_install() {
     if [[ ! -f "$HOME/.fzf/install" ]] || [[ "$1" == "update" ]]; then
-        mkdir -p ~/.fzf
-        curl -sLo$HOME/.fzf/install ${CDN}https://raw.githubusercontent.com/junegunn/fzf/master/install
-        if [ $? -eq 0 ]; then
+        if download "$HOME/.fzf/install" "${CDN}https://raw.githubusercontent.com/junegunn/fzf/master/install"; then
             bash ~/.fzf/install --all
             ln -sf ~/.fzf/bin/fzf ~/bin/
         fi
@@ -211,7 +205,7 @@ function zlua_install() {
     # wsl1 need it
     # sudo apt install lua-filesystem
     if [[ ! -f "$HOME/bin/z.lua" ]] || [[ "$1" == "update" ]]; then
-        curl -Lo$HOME/bin/z.lua ${CDN}https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua
+        download "$HOME/bin/z.lua" "${CDN}https://raw.githubusercontent.com/skywind3000/z.lua/master/z.lua"
     fi
     export _ZL_HYPHEN=1
     alias zi='z -i'      # cd with interactive selection
@@ -229,11 +223,15 @@ function zlua_install() {
     eval "$(lua "$HOME/bin/z.lua" --init zsh enhanced once fzf)"
 }
 
+### Plugin manager {{{
+# source "$MY_CONFIG_DIR/zinit.zsh"
+source "$MY_CONFIG_DIR/zimfw.zsh"
+
 # tmux {{{
 if [ -f "$HOME/.tmux.conf" ]; then
     if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
         mkdir -p "$HOME/.tmux/plugins" && pushd "$_"
-        git clone https://github.com/tmux-plugins/tpm --depth 1
+        git clone "${CDN}https://github.com/tmux-plugins/tpm" --depth 1
         popd
         ~/.tmux/plugins/tpm/bin/install_plugins
     fi
@@ -300,12 +298,12 @@ function nix_install() {
     echo 'extra-experimental-features = nix-command flakes' > ~/.config/nix/nix.conf
     if [[ "$NIX_MIRROR" == "cn" ]]; then
         #sh <(curl https://mirrors.tuna.tsinghua.edu.cn/nix/latest/install) --no-modify-profile --no-channel-add "$@"
-        sh <(curl https://mirrors.bfsu.edu.cn/nix/latest/install) --no-modify-profile --no-channel-add "$@"
+        sh <(download - https://mirrors.bfsu.edu.cn/nix/latest/install) --no-modify-profile --no-channel-add "$@"
         nix_subtituters ustc
         if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi
         nix_channel bfsu
     else
-        sh <(curl -L https://nixos.org/nix/install) --no-modify-profile "$@"
+        sh <(download - https://nixos.org/nix/install) --no-modify-profile "$@"
     fi
 }
 function nix_update(){
@@ -376,9 +374,9 @@ function brew_update() {
 function brew_install() {
     if [[ "$BREW_MIRROR" == "cn" ]]; then
         echo "install from cn mirror"
-        bash -c "$(curl -fsSL https://mirrors.ustc.edu.cn/misc/brew-install.sh)"
+        bash -c "$(download - https://mirrors.ustc.edu.cn/misc/brew-install.sh)"
     else
-        bash -c "$(curl -fsSL https://github.com/Homebrew/install/raw/master/install.sh)"
+        bash -c "$(download - https://github.com/Homebrew/install/raw/master/install.sh)"
     fi
 }
 function brew_set_mirror() {
@@ -395,9 +393,7 @@ function brew_fix_ssl() {
 }
 
 function soft_update() {
-    zinit self-update >/dev/null 2>&1
-    zinit update --all
-    zinit compile --all
+    plugin_update
 
     fzf_install update
     zlua_install update
@@ -732,14 +728,7 @@ function zellij_plugin_install() {
     # zjstatus
     if [[ ! -f "$plugin_dir/zjstatus.wasm" ]] || [[ "$force" == "update" ]]; then
         local zjstatus_path="$plugin_dir/zjstatus.wasm"
-        local tmp_file="${zjstatus_path}.tmp"
-        if curl -fSL -o "$tmp_file" \
-            "${CDN}https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm"; then
-            mv -f "$tmp_file" "$zjstatus_path"
-        else
-            rm -f "$tmp_file"
-            echo "Failed to download zjstatus.wasm" >&2
-        fi
+        download "$zjstatus_path" "${CDN}https://github.com/dj95/zjstatus/releases/latest/download/zjstatus.wasm"
         cat >"$permissions_file" <<EOF
 "$zjstatus_path" {
     ReadApplicationState
@@ -808,5 +797,3 @@ function adb_setenforce0() {
     adb remount
     adb shell setenforce 0
 }
-
-#zprof

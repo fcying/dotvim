@@ -1,0 +1,13 @@
+# This file is only read by zimfw to generate its static init script.
+
+# Completion definitions must be in fpath before zsh_post_init runs compinit.
+zmodule zsh-users/zsh-completions --fpath src
+zmodule completion
+
+zmodule archive
+zmodule changyuheng/fz --cmd 'FZ_HISTORY_CD_CMD=_zlua; source {}/fz.sh'
+zmodule zsh-users/zsh-history-substring-search --cmd 'source {}/zsh-history-substring-search.zsh; bindkey -M emacs "^p" history-substring-search-up; bindkey -M emacs "^n" history-substring-search-down'
+zmodule zsh-users/zsh-autosuggestions --cmd 'source {}/zsh-autosuggestions.zsh; bindkey "^f" autosuggest-accept'
+
+# Must load after plugins that register ZLE widgets.
+zmodule zsh-users/zsh-syntax-highlighting --source zsh-syntax-highlighting.zsh

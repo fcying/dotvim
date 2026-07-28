@@ -62,14 +62,11 @@ function M.map(mode, lhs, rhs, opts)
 end
 
 function M.get_root_marker(root_markers)
-    local dir
-    for _, item in pairs(root_markers) do
-        dir = fn.finddir(item, ".;")
-        if fn.empty(dir) == 0 then
-            M.root_dir = fn.fnamemodify(dir .. "/../", ":p:h")
-            M.root_marker = fn.fnamemodify(dir, ":p:h")
-            return M.root_marker, M.root_dir
-        end
+    local marker = vim.fs.find(root_markers, { path = fn.getcwd(), upward = true })[1]
+    if marker then
+        M.root_dir = vim.fs.dirname(marker)
+        M.root_marker = vim.uv.fs_stat(marker).type == "directory" and marker or M.root_dir
+        return M.root_marker, M.root_dir
     end
     M.root_dir = fn.getcwd()
     M.root_marker = fn.getcwd()

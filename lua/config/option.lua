@@ -19,7 +19,36 @@ vim.g.loaded_netrwPlugin = 1
 
 -- options {{{
 opt.autochdir = false
+
+-- Automatically reload externally modified files, checking every second. {{{
 opt.autoread = true
+local function check_current_file()
+    local buf = vim.api.nvim_get_current_buf()
+    if vim.bo[buf].buftype ~= "" or vim.bo[buf].modified or vim.api.nvim_buf_get_name(buf) == "" then
+        return
+    end
+    vim.cmd("silent! checktime " .. buf)
+end
+
+-- Sync clients may update files without triggering an editor event.
+local file_change_timer = assert(vim.uv.new_timer())
+local timer_callback = vim.schedule_wrap(check_current_file)
+file_change_timer:start(1000, 1000, timer_callback)
+
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+    group = "myau",
+    callback = check_current_file,
+})
+vim.api.nvim_create_autocmd("VimLeavePre", {
+    group = "myau",
+    callback = function()
+        file_change_timer:stop()
+        if not file_change_timer:is_closing() then
+            file_change_timer:close()
+        end
+    end,
+})
+
 opt.autowrite = false
 opt.backup = false
 if g.osc52_auto_yank ~= 0 then

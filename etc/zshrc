@@ -15,6 +15,11 @@ export EDITOR="$VISUAL"
 
 USER=${USER:-$(id -u -n)}
 
+# Check if max open files limit is less than 8192, and update if necessary
+if [ "$(ulimit -n)" -lt 8192 ]; then
+    ulimit -n 8192 2>/dev/null
+fi
+
 # Set the default Less options.
 # Mouse-wheel scrolling has been disabled by -X (disable screen clearing).
 # Remove -X and -F (exit if the content fits on one screen) to enable it.
@@ -32,6 +37,7 @@ export LC_ALL=$LANG
 # path {{{
 # Ensure path arrays do not contain duplicates.
 typeset -gU cdpath fpath mailpath PATH path
+typeset +x FPATH
 
 export GO111MODULE=auto
 export GOPATH=$HOME/go
@@ -332,7 +338,7 @@ elif [ -d "/home/linuxbrew/.linuxbrew/bin" ]; then
     HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
 fi
 if [ -n "$HOMEBREW_PREFIX" ]; then
-    export FPATH="$HOMEBREW_PREFIX/share/zsh/site-functions:$FPATH"
+    fpath=($HOMEBREW_PREFIX/share/zsh/site-functions ${fpath[@]})
     export MANPATH="$HOMEBREW_PREFIX/share/man:$MANPATH"
     export INFOPATH="$HOMEBREW_PREFIX/share/info:$INFOPATH"
     function brew() {

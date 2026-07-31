@@ -42,7 +42,8 @@ if [[ $app == "ln" ]]; then
     # mkdir -p ~/.ctags.d
     # ln -sfv $PWD/ctags ~/.ctags.d/global.ctags
 
-    ln -sfv $PWD/.clangd ~/
+    mkdir -p ~/.config/clangd/
+    ln -sfv $PWD/clangd_config.yaml ~/.config/clangd/config.yaml
     ln -sfv $PWD/.clang-format ~/
 
     mkdir -p ~/.config/nushell

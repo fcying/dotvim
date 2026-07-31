@@ -22,8 +22,8 @@ sync_address = "https://api.atuin.sh"
 sync_frequency = "1h"
 
 ## which search mode to use
-## possible values: prefix, fulltext, fuzzy, skim
-search_mode = "skim"
+## possible values: prefix, fulltext, fuzzy
+search_mode = "fuzzy"
 
 ## which filter mode to use
 ## possible values: global, host, session, directory

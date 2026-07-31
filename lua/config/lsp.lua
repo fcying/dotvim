@@ -62,8 +62,6 @@ function configs.clangd()
     end
     if Option.compile_commands_dir ~= nil then
         table.insert(clangd_cmd, "--compile-commands-dir=" .. Option.compile_commands_dir)
-    elseif g.gencconf_storein_rootmarker == 1 then
-        table.insert(clangd_cmd, "--compile-commands-dir=" .. util.root_marker)
     end
 
     vim.api.nvim_create_autocmd("FileType", {

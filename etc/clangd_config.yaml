@@ -5,6 +5,8 @@ CompileFlags:
   ]
   Remove: [
     -mcpu*,
+    -mfpu*,
+    -mfloat*,
     -f*, 
     -pi32v2-large-program*,
     -target*,

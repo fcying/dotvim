@@ -58,6 +58,7 @@ path=(
     "$HOME"/.local/bin
     "$GOPATH"/bin
     "$HOME"/.cargo/bin
+    "$HOME"/.bun/bin
     "$HOME"/.npm/node_modules/.bin
     "$QT_DIR"/"$QT_VERSION"/gcc_64/bin
     /snap/bin
@@ -232,6 +233,10 @@ function zlua_install() {
 ### Plugin manager {{{
 # source "$MY_CONFIG_DIR/zinit.zsh"
 source "$MY_CONFIG_DIR/zimfw.zsh"
+if [[ -n "$OMPCODE" ]]; then
+    add-zsh-hook -d precmd _zimfw_schedule_post_init
+    zsh_post_init >/dev/null 2>&1
+fi
 
 # tmux {{{
 if [ -f "$HOME/.tmux.conf" ]; then

@@ -1,0 +1,146 @@
+#compdef apt apt-get apt-cache apt-cdrom apt-config apt-mark
+
+# Keep the system implementations for every APT command except apt(8).
+source /usr/share/zsh/functions/Completion/Debian/_apt
+functions[_apt_system]=$functions[_apt]
+
+_apt_custom() {
+  local command option_terminator=0 word
+  local -i i
+  local -a commands common_options generic_options transaction_options options expl_packages
+
+  commands=(
+    list search show showsrc install reinstall remove purge autoremove autopurge
+    update upgrade full-upgrade dist-upgrade edit-sources help source build-dep
+    clean autoclean download changelog moo modernize-sources depends rdepends policy
+  )
+  common_options=(
+    -h --help -v --version -c --config-file -o --option -t --target-release
+  )
+  generic_options=(
+    -d --download-only -y --assume-yes --assume-no -u --show-upgraded
+    -m --ignore-missing -t --target-release --download --fix-missing
+    --ignore-hold --upgrade --only-upgrade --allow-change-held-packages
+    --allow-remove-essential --allow-downgrades --print-uris --trivial-only
+    --remove --arch-only --allow-unauthenticated --allow-insecure-repositories
+    --install-recommends --install-suggests --no-install-recommends
+    --no-install-suggests --fix-policy
+  )
+  transaction_options=(
+    --show-progress --fix-broken --purge --verbose-versions --no-list-columns
+    --auto-remove -s --simulate --dry-run --force-yes --reinstall --solver
+    --no-strict-pinning
+  )
+
+  for (( i = 2; i <= CURRENT; i++ )); do
+    word=$words[i]
+    if (( i < CURRENT )) && [[ $word == -- ]]; then
+      option_terminator=1
+    fi
+    if [[ -z $command ]] && (( $+commands[(r)$word] )); then
+      command=$word
+    fi
+  done
+
+  case $words[CURRENT-1] in
+    -t|--target-release)
+      _apt_releases
+      return
+      ;;
+    -c|--config-file)
+      _files
+      return
+      ;;
+  esac
+
+  if (( ! option_terminator )) && [[ $PREFIX == -* ]]; then
+    options=($common_options)
+    case $command in
+      install|reinstall|remove|purge|upgrade|dist-upgrade|full-upgrade|autoremove|autopurge)
+        options+=($generic_options $transaction_options)
+        ;;
+      update)
+        options+=(--list-cleanup --print-uris --allow-insecure-repositories)
+        ;;
+      list)
+        options+=(--installed --upgradable --manual-installed -a --all-versions)
+        ;;
+      show)
+        options+=(-a --all-versions)
+        ;;
+      depends|rdepends)
+        options+=(-i --important --installed --pre-depends --depends --recommends
+          --suggests --replaces --breaks --conflicts --enhances --recurse --implicit)
+        ;;
+      search)
+        options+=(-n --names-only -f --full)
+        ;;
+      showsrc)
+        options+=(--only-source)
+        ;;
+      source)
+        options+=(-s --simulate --dry-run -b --compile --build -P --build-profiles
+          --diff-only --debian-only --tar-only --dsc-only $generic_options)
+        ;;
+      build-dep)
+        options+=(-a --host-architecture -s --simulate --dry-run -P --build-profiles
+          --purge --solver --no-strict-pinning $generic_options)
+        ;;
+      clean|autoclean)
+        options+=(-s --simulate --dry-run)
+        ;;
+      moo)
+        options+=(--color)
+        ;;
+    esac
+    typeset -aU options
+    _describe -t options option options
+    return
+  fi
+
+  if [[ -z $command ]]; then
+    _describe -t commands command commands
+    return
+  fi
+  _description packages expl_packages package
+
+  case $command in
+    install|reinstall)
+      if [[ $PREFIX == (.|/|~)* ]]; then
+        _deb_files -c
+      else
+        _deb_packages -qr $'\n\t\- /=+-' "$expl_packages[@]" avail
+      fi
+      ;;
+    remove|purge|autoremove|autopurge)
+      _deb_packages "$expl_packages[@]" installed
+      ;;
+    show|list|download|changelog|depends|rdepends|source|build-dep|showsrc|policy)
+      _deb_packages "$expl_packages[@]" avail
+      ;;
+    search)
+      _message pattern
+      ;;
+    edit-sources)
+      _files -W /etc/apt/sources.list.d
+      ;;
+    moo)
+      compadd moo
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+_apt() {
+  if [[ $service == apt ]]; then
+    _apt_custom "$@"
+  else
+    _apt_system "$@"
+  fi
+}
+
+# The body runs once when compinit autoloads this file. The sourced system file
+# already handled that first call, so run the custom dispatcher as well.
+_apt "$@"

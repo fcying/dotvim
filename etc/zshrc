@@ -67,7 +67,7 @@ path=(
     /{sbin,bin}
     ${path[@]}
 )
-fpath=(${fpath[@]} $MY_CONFIG_DIR/fpath)
+fpath=($MY_CONFIG_DIR/fpath ${fpath[@]})
 
 # wsl2 {{{
 refresh_wsl_interop() {

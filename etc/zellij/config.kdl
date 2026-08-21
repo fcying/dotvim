@@ -74,7 +74,7 @@ keybinds clear-defaults=true {
         bind "Alt n" { NewPane; }
         bind "Alt o" { MoveTab "right"; }
         bind "Alt p" { TogglePaneInGroup; }
-        bind "Alt Shift p" { ToggleGroupMarking; }
+        // bind "Alt Shift p" { ToggleGroupMarking; }
     }
     pane {
         bind "Ctrl p" { SwitchToMode "normal"; }

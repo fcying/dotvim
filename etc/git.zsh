@@ -300,3 +300,21 @@ alias glum='git pull upstream main'
 alias gwch='git whatchanged -p --abbrev-commit --pretty=medium'
 alias gwip='git add -A; git rm $(git ls-files --deleted) 2> /dev/null; git commit --no-verify -m "--wip-- [skip ci]"'
 
+gsyncmain() {
+    local branch="${1:-dev}"
+
+    [ "$(git branch --show-current)" = "$branch" ] || {
+        echo "Not on $branch"
+        return 1
+    }
+
+    git diff --quiet &&
+    git diff --cached --quiet || {
+        echo "Working tree is dirty"
+        return 1
+    }
+
+    git fetch origin &&
+    git reset --hard origin/main &&
+    git push --force-with-lease origin "$branch"
+}

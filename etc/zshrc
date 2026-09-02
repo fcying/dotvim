@@ -641,6 +641,8 @@ alias ls='ls --color=auto'
 alias ll='ls -alh --time-style=long-iso'
 alias docker_autoremove='docker rmi $(docker images -f "dangling=true" -q)'
 alias lg='lazygit'
+alias ompp='omp --config ~/.omp/roles-pro.yml'
+alias ompl='omp --config ~/.omp/roles-plus.yml'
 
 function zellij_attach {
     [ -n "$ZELLIJ" ] && {
@@ -707,6 +709,7 @@ function zellij_delete {
     zellij delete-session -f "$session_name" 2>/dev/null | grep -v "exists and is active"
 }
 function zellij_delete_all {
+    zellij kill-all-sessions -y
     zellij delete-all-sessions -f --yes 2>/dev/null | grep -v "exists and is active"
 }
 alias zj='zellij'

@@ -39,15 +39,12 @@ return {
 # https://just.systems
 set unstable
 set export
-set shell := ["nu", "-c"]
-set script-interpreter := ["nu"]
+set default-script
+set script-interpreter := ["bash", "-eu"]
 
-[private]
-[script]
-default:
-    just --list
+_default:
+    just build
 
-[script]
 build:
     echo "Building project..."
 ]],

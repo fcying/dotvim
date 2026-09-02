@@ -42,6 +42,12 @@ return {
             direction = "horizontal", --'vertical' | 'horizontal' | 'tab' | 'float'
             hide_numbers = true,
             shade_terminals = false,
+            highlights = {
+                Normal = { link = "TerminalNormal" },
+                NormalFloat = { link = "TerminalNormal" },
+                FloatBorder = { link = "TerminalFloatBorder" },
+                Visual = { link = "TerminalVisual" },
+            },
             start_in_insert = true,
             insert_mappings = true,
             ---@param term Terminal

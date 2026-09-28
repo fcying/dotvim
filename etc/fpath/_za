@@ -1,0 +1,11 @@
+#compdef za zellij_attach
+
+(( CURRENT == 2 )) || return 1
+
+local layout
+local -a layouts
+for layout in "$HOME"/.config/zellij/layouts/*.kdl(N); do
+    [[ -f "$layout" ]] && layouts+=("${layout:t:r}")
+done
+
+(( $#layouts )) && _describe 'layout' layouts

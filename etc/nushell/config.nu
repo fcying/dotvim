@@ -39,9 +39,8 @@ if (which atuin | is-not-empty) {
 source ($nu.default-config-dir | path join "zlua.nu")
 
 alias vim = nvim
-alias z = _zlua
-alias zb = _zlua -b
-alias zi = _zlua -i
+alias zb = z -b
+alias zi = z -i
 
 alias ll = ls -la
 

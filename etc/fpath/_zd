@@ -1,0 +1,11 @@
+#compdef zd zellij_delete
+
+(( CURRENT == 2 )) || return 1
+
+local session_names
+session_names=$(zellij ls -s 2>/dev/null) || return 1
+[[ -n "$session_names" ]] || return 1
+
+local -a sessions
+sessions=("${(@f)session_names}")
+_describe 'session' sessions

@@ -35,6 +35,10 @@ def replace_blocks(lines):
             match = pattern.match(line)
             if not match:
                 continue
+            if replacement == 'pane':
+                cwd_match = PANE_CWD_RE.search(line)
+                if cwd_match:
+                    replacement += cwd_match.group(0)
             out.append(f'{match.group(1)}{replacement}\n')
             skip_depth = 1
             break

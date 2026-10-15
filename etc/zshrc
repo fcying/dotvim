@@ -641,8 +641,8 @@ alias ls='ls --color=auto'
 alias ll='ls -alh --time-style=long-iso'
 alias docker_autoremove='docker rmi $(docker images -f "dangling=true" -q)'
 alias lg='lazygit'
-alias ompp='omp --config ~/.omp/roles-pro.yml'
-alias ompl='omp --config ~/.omp/roles-plus.yml'
+alias ompp='omp --config ~/.omp/roles-pro.yml --model @default'
+alias ompl='omp --config ~/.omp/roles-plus.yml --model @default'
 
 function zellij_attach {
     [ -n "$ZELLIJ" ] && {

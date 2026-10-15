@@ -26,6 +26,10 @@ includes:
 other tools config.  e.g.  
 `zsh` `ctags` `rg` `tmux` `tig`...
 
+`zc [name]` 保存当前 Zellij 布局到 `~/.config/zellij/layouts/`.
+保存时移除运行命令及其参数, 但保留各 pane 的工作目录并转换为绝对路径.
+`za [name]` 在会话不存在时使用已保存的布局创建会话, 不重新执行原命令.
+
 #### user config
 `<leader>evl`  
 modify user config.  

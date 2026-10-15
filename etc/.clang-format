@@ -3,8 +3,10 @@
 Language: Cpp
 BasedOnStyle: LLVM
 IndentWidth: 4
-ColumnLimit: 100
+ColumnLimit: 110
 UseTab: Never
+AlignTrailingComments:
+  Kind: Always
 AllowShortLoopsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: None
 AlignArrayOfStructures: None
@@ -40,8 +42,10 @@ SkipMacroDefinitionBody: true
 SeparateDefinitionBlocks: Leave
 
 Cpp11BracedListStyle: Block
-BinPackParameters: BinPack  # BinPack OnePerLine
-BinPackArguments: true
+PackParameters:
+  BinPack: BinPack
+PackArguments:
+  BinPack: BinPack
 
 BreakBeforeBraces: Allman   # Allman or Linux
 AccessModifierOffset: -4
@@ -49,4 +53,5 @@ AlwaysBreakBeforeMultilineStrings: false
 AllowShortIfStatementsOnASingleLine: Never
 AlignEscapedNewlines: Left
 IndentCaseLabels: false
-SortIncludes: Never
+SortIncludes:
+  Enabled: false

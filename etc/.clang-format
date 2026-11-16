@@ -42,10 +42,8 @@ SkipMacroDefinitionBody: true
 SeparateDefinitionBlocks: Leave
 
 Cpp11BracedListStyle: Block
-PackParameters:
-  BinPack: BinPack
-PackArguments:
-  BinPack: BinPack
+BinPackParameters: BinPack  # BinPack OnePerLine
+BinPackArguments: true
 
 BreakBeforeBraces: Allman   # Allman or Linux
 AccessModifierOffset: -4
